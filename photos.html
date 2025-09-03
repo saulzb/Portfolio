@@ -3,16 +3,13 @@
 <head>
   <title>Photos</title>
   <style>
-    /* General page styling */
     body {
       text-align: center;
       margin: 0;
       padding: 0;
-      color: black;
       font-family: Arial, sans-serif;
     }
 
-    /* Navigation bar */
     nav {
       margin: 20px 0;
     }
@@ -22,8 +19,11 @@
       color: black;
       font-weight: bold;
     }
+    nav a:hover {
+      color: blue;
+      text-decoration: underline;
+    }
 
-    /* Photo gallery grid */
     .gallery {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -43,7 +43,6 @@
       transform: scale(1.05);
     }
 
-    /* Lightbox background */
     .lightbox {
       display: none;
       position: fixed;
@@ -55,8 +54,6 @@
       overflow: auto;
       background-color: rgba(0,0,0,0.9);
     }
-
-    /* Full-size image */
     .lightbox img {
       display: block;
       margin: auto;
@@ -64,13 +61,9 @@
       max-height: 80vh;
       margin-top: 5%;
     }
-
-    /* Show lightbox when targeted */
     .lightbox:target {
       display: block;
     }
-
-    /* Close button */
     .close {
       position: absolute;
       top: 20px;
@@ -83,31 +76,47 @@
     .close:hover {
       color: red;
     }
+
+    h2 {
+      margin-top: 40px;
+    }
   </style>
 </head>
 <body>
   <h1>My Photos</h1>
+
   <nav>
     <a href="index.html">Home</a> |
     <a href="about.html">About</a> |
     <a href="contact.html">Contact</a>
   </nav>
 
-  <!-- Photo gallery -->
+  <!-- Double Exposures -->
+  <h2>Double Exposures</h2>
   <div class="gallery">
-    <a href="#img1"><img src="IMG_8630_2.jpg" alt="Evil dog"></a>
-    <a href="#img2"><img src="IMG_8512 copy.jpg" alt="Description of photo 2"></a>
+    <a href="#de1"><img src="de1-thumb.jpg" alt="Double Exposure 1"></a>
+    <a href="#de2"><img src="de2-thumb.jpg" alt="Double Exposure 2"></a>
   </div>
+  <div id="de1" class="lightbox"><a href="#" class="close">&times;</a><img src="de1.jpg"></div>
+  <div id="de2" class="lightbox"><a href="#" class="close">&times;</a><img src="de2.jpg"></div>
 
-  <!-- Lightboxes -->
-  <div id="img1" class="lightbox">
-    <a href="#" class="close">&times;</a>
-    <img src="IMG_8630_2.jpg" alt="Evil dog">
+  <!-- Animals -->
+  <h2>Animals</h2>
+  <div class="gallery">
+    <a href="#a1"><img src="a1-thumb.jpg" alt="Animal 1"></a>
+    <a href="#a2"><img src="a2-thumb.jpg" alt="Animal 2"></a>
   </div>
+  <div id="a1" class="lightbox"><a href="#" class="close">&times;</a><img src="a1.jpg"></div>
+  <div id="a2" class="lightbox"><a href="#" class="close">&times;</a><img src="a2.jpg"></div>
 
-  <div id="img2" class="lightbox">
-    <a href="#" class="close">&times;</a>
-    <img src="IMG_8512 copy.jpg" alt="Description of photo 2">
+  <!-- Landscapes -->
+  <h2>Landscapes</h2>
+  <div class="gallery">
+    <a href="#l1"><img src="l1-thumb.jpg" alt="Landscape 1"></a>
+    <a href="#l2"><img src="l2-thumb.jpg" alt="Landscape 2"></a>
   </div>
+  <div id="l1" class="lightbox"><a href="#" class="close">&times;</a><img src="l1.jpg"></div>
+  <div id="l2" class="lightbox"><a href="#" class="close">&times;</a><img src="l2.jpg"></div>
+
 </body>
 </html>

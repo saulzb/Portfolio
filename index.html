@@ -32,12 +32,31 @@
 <body>
   <p>Homepage</p>
 
-  <!-- Navigation -->
+   /* Navigation bar */
+    nav {
+      margin: 20px 0;
+    }
+    nav a {
+      margin: 0 10px;
+      text-decoration: none;   /* removes underline */
+      color: black;            /* makes text black */
+      font-weight: bold;       /* makes it bold */
+    }
+    nav a:hover {
+      color: blue;             /* changes color when you hover */
+      text-decoration: underline; /* underline only on hover */
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to My Website</h1>
+
   <nav>
-    <a href="index.html">Home</a> |
     <a href="about.html">About</a> |
-    <a href="contact.html">Contact</a> |
-    <a href="photos.html">Photos</a>
+    <a href="photos.html">Photos</a> |
+    <a href="contact.html">Contact</a>
   </nav>
+
+  <p>This is my homepage content.</p>
 </body>
 </html>

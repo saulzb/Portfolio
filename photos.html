@@ -2,6 +2,46 @@
 <html>
 <head>
   <title>Photos</title>
+   <style>
+    /* General page styling */
+    body {
+      text-align: center;   /* centers text and nav */
+      margin: 0;
+      padding: 0;
+      background-color: lightblue; /* you can change to a photo later */
+      color: black;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Navigation bar */
+    nav {
+      margin: 20px 0;
+    }
+    nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: black;
+      font-weight: bold;
+    }
+
+    /* Photo gallery grid */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* 3 photos per row */
+      gap: 20px; /* space between photos */
+      justify-items: start; /* align to left */
+      padding: 20px 60px; /* padding gives left/right margin */
+      text-align: left; /* keeps text aligned left inside gallery */
+    }
+
+    .gallery img {
+      width: 100%;       /* fills its grid cell */
+      max-width: 300px;  /* limits size of each photo */
+      border-radius: 8px; /* optional rounded corners */
+    }
+  </style>
+</head>
+<body>
 </head>
 <body>
   <h1>My Photos</h1>

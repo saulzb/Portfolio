@@ -4,51 +4,124 @@
   <title>Double Exposures - Saul Zidulka-Bejcek Photography</title>
   <style>
     body {
-      text-align: center;
-      margin: 0;
-      padding: 0;
       font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
     }
-    nav {
-      margin: 20px 0;
+
+    h1 {
+      margin-bottom: 20px;
     }
-    nav a {
-      margin: 0 10px;
-      text-decoration: none;
-      color: black;
-      font-weight: bold;
-    }
-    nav a:hover {
-      color: blue;
-      text-decoration: underline;
-    }
+
     .gallery {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      justify-items: center;
-      padding: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
     }
+
     .gallery img {
       width: 100%;
-      max-width: 300px;
+      height: auto;
+      cursor: pointer;
       border-radius: 8px;
+      transition: transform 0.2s ease;
+    }
+
+    .gallery img:hover {
+      transform: scale(1.05);
+    }
+
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .lightbox img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 8px;
+    }
+
+    .lightbox:target {
+      display: flex;
+    }
+
+    .lightbox-close,
+    .lightbox-prev,
+    .lightbox-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 40px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 10px;
+      user-select: none;
+    }
+
+    .lightbox-close {
+      top: 20px;
+      right: 30px;
+      transform: none;
+      font-size: 50px;
+    }
+
+    .lightbox-prev {
+      left: 30px;
+    }
+
+    .lightbox-next {
+      right: 30px;
+    }
+
+    .lightbox-close:hover,
+    .lightbox-prev:hover,
+    .lightbox-next:hover {
+      color: #ccc;
     }
   </style>
 </head>
 <body>
   <h1>Double Exposures</h1>
-  <nav>
-    <a href="index.html">Home</a> |
-    <a href="photos.html">Photos</a> |
-    <a href="about.html">About</a> |
-    <a href="contact.html">Contact</a>
-  </nav>
 
   <div class="gallery">
-    <img src="de1.jpg" alt="Double Exposure 1">
-    <img src="de2.jpg" alt="Double Exposure 2">
-    <img src="de3.jpg" alt="Double Exposure 3">
+    <a href="#img1"><img src="images/double-exposures/de1.jpg" alt="Double Exposure 1"></a>
+    <a href="#img2"><img src="images/double-exposures/de2.jpg" alt="Double Exposure 2"></a>
+    <a href="#img3"><img src="images/double-exposures/de3.jpg" alt="Double Exposure 3"></a>
+  </div>
+
+  <!-- Lightbox items -->
+  <div id="img1" class="lightbox">
+    <a href="#" class="lightbox-close">&times;</a>
+    <a href="#img3" class="lightbox-prev">&#10094;</a>
+    <img src="images/double-exposures/de1.jpg" alt="Double Exposure 1">
+    <a href="#img2" class="lightbox-next">&#10095;</a>
+  </div>
+
+  <div id="img2" class="lightbox">
+    <a href="#" class="lightbox-close">&times;</a>
+    <a href="#img1" class="lightbox-prev">&#10094;</a>
+    <img src="images/double-exposures/de2.jpg" alt="Double Exposure 2">
+    <a href="#img3" class="lightbox-next">&#10095;</a>
+  </div>
+
+  <div id="img3" class="lightbox">
+    <a href="#" class="lightbox-close">&times;</a>
+    <a href="#img2" class="lightbox-prev">&#10094;</a>
+    <img src="images/double-exposures/de3.jpg" alt="Double Exposure 3">
+    <a href="#img1" class="lightbox-next">&#10095;</a>
   </div>
 </body>
 </html>

@@ -1,68 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Photos</title>
+  <title>Photos - Saul Zidulka-Bejcek Photography</title>
   <style>
     body {
+      font-family: Arial, sans-serif;
       text-align: center;
       margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f8f8f8;
     }
 
-    nav {
-      margin: 20px 0;
+    h1 {
+      margin-bottom: 30px;
     }
-    nav a {
-      margin: 0 10px;
+
+    /* Subgallery links */
+    .subgallery {
+      display: inline-block;
+      width: 200px;
+      margin: 20px;
+      text-align: center;
       text-decoration: none;
       color: black;
       font-weight: bold;
-    }
-    nav a:hover {
-      color: blue;
-      text-decoration: underline;
-    }
-
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      justify-items: center;
-      padding: 20px;
+      border: 2px solid #ccc;
+      padding: 10px;
+      border-radius: 10px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
     }
 
-    .gallery img {
-      width: 100%;
-      max-width: 300px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    .gallery img:hover {
+    .subgallery:hover {
       transform: scale(1.05);
+      border-color: #888;
     }
 
-    h2 {
-      margin-top: 40px;
+    .subgallery img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
-  <h1>My Photos</h1>
+  <h1>Photo Galleries</h1>
 
-  <nav>
-    <a href="index.html">Home</a> |
-    <a href="about.html">About</a> |
-    <a href="contact.html">Contact</a>
-  </nav>
+  <a href="double-exposures.html" class="subgallery">
+    <img src="images/double-exposures/de1.jpg" alt="Double Exposures">
+    <div>Double Exposures</div>
+  </a>
 
-  <!-- Subgenre links -->
-  <h2>Categories</h2>
-  <div class="gallery">
-    <a href="double-exposures.html"><img src="de1-thumb.jpg" alt="Double Exposures"></a>
-    <a href="wildlife.html"><img src="a1-thumb.jpg" alt="Animals"></a>
-    <a href="landscapes.html"><img src="l1-thumb.jpg" alt="Landscapes"></a>
-  </div>
+  <a href="animals.html" class="subgallery">
+    <img src="images/animals/animal1.jpg" alt="Animals">
+    <div>Animals</div>
+  </a>
+
+  <a href="landscapes.html" class="subgallery">
+    <img src="images/landscapes/land1.jpg" alt="Landscapes">
+    <div>Landscapes</div>
+  </a>
 </body>
 </html>

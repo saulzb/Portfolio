@@ -1,14 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Photos</title>
+  <title>Photos - Saul Zidulka-Bejcek Photography</title>
   <style>
-    body { text-align: center; font-family: Arial, sans-serif; }
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      background: #f8f8f8;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    nav {
+      margin: 15px 0;
+    }
     nav a {
-      display: inline-block;
-      margin: 20px;
+      margin: 0 10px;
       text-decoration: none;
-      font-size: 20px;
       color: black;
       font-weight: bold;
     }
@@ -16,17 +28,52 @@
       color: blue;
       text-decoration: underline;
     }
+
+    /* Subgallery links */
+    .subgallery {
+      display: inline-block;
+      width: 200px;
+      margin: 20px;
+      text-align: center;
+      text-decoration: none;
+      color: black;
+      font-weight: bold;
+      border: 2px solid #ccc;
+      padding: 10px;
+      border-radius: 10px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .subgallery:hover {
+      transform: scale(1.05);
+      border-color: #888;
+    }
+
+    .subgallery img {
+      width: 100%;
+      height: auto;
+      border-radius: 0px;
+      margin-bottom: 0px;
+    }
   </style>
 </head>
 <body>
-  <h1>Photo Categories</h1>
+  <h1>Photo Galleries</h1>
 
-  <!-- Subgenre navigation -->
+  <!-- Main navigation -->
   <nav>
-    <a href="double-exposures.html">Double Exposures</a>
-    <a href="Wildlife.html">Animals</a>
-    <a href="landscapes.html">Landscapes</a>
+    <a href="index.html">Home</a> |
+    <a href="about.html">About</a> |
+    <a href="contact.html">Contact</a> |
+    <a href="photos.html">Photos</a>
   </nav>
-</body>
-</html>
 
+  <!-- Subgalleries -->
+  <a href="double-exposures.html" class="subgallery">
+    <img src="photos/double-exposures/de1.jpg" alt="Double Exposures">
+    <div>Double Exposures</div>
+  </a>
+
+  <a href="wildlife.html" class="subgallery">
+    <img src="photos/animals/animal1.jpg" alt="Animals">
+    <div>

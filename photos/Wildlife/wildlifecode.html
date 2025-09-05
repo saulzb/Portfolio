@@ -83,6 +83,18 @@
     .lightbox-next:hover {
       color: #ccc;
     }
+
+    .back-link {
+      display: block;
+      margin-top: 30px;
+      font-size: 18px;
+      text-decoration: none;
+      color: #333;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -98,13 +110,14 @@
     <a href="#" class="lightbox-next">&#10095;</a>
   </div>
 
+  <a href="photoholder.html" class="back-link">&larr; Back to Photos</a>
+
   <script>
-    // List of images in the folder
+    // List of images in the same folder (special characters handled)
     const images = [
-      "images/animals/animal1.jpg",
-      "images/animals/animal2.jpg",
-      "images/animals/animal3.jpg"
-      // Add more here as you upload new photos
+      "IMG_8491_4.jpg",
+      "IMG_8512_1.jpg",
+      "RAW's Jul-Aug478 copy 2.jpg"
     ];
 
     const gallery = document.getElementById('gallery');
@@ -118,7 +131,7 @@
     // Generate gallery
     images.forEach((src, index) => {
       const img = document.createElement('img');
-      img.src = src;
+      img.src = encodeURI(src);  // Encode spaces/apostrophes
       img.alt = `Animal ${index+1}`;
       img.onclick = () => openLightbox(index);
       gallery.appendChild(img);
@@ -127,7 +140,7 @@
     // Open lightbox
     function openLightbox(index) {
       currentIndex = index;
-      lightboxImg.src = images[currentIndex];
+      lightboxImg.src = encodeURI(images[currentIndex]); // Encode again for lightbox
       lightbox.style.display = 'flex';
     }
 
@@ -139,12 +152,12 @@
     // Navigate lightbox
     prevBtn.onclick = () => {
       currentIndex = (currentIndex - 1 + images.length) % images.length;
-      lightboxImg.src = images[currentIndex];
+      lightboxImg.src = encodeURI(images[currentIndex]);
     };
 
     nextBtn.onclick = () => {
       currentIndex = (currentIndex + 1) % images.length;
-      lightboxImg.src = images[currentIndex];
+      lightboxImg.src = encodeURI(images[currentIndex]);
     };
 
     // Close when clicking outside the image

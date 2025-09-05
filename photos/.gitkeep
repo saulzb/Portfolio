@@ -69,11 +69,19 @@
   </nav>
 
   <!-- Subgalleries -->
-  <a href="double-exposures.html" class="subgallery">
+  <a href="photos/double-exposures/index.html" class="subgallery">
     <img src="photos/double-exposures/de1.jpg" alt="Double Exposures">
     <div>Double Exposures</div>
   </a>
 
-  <a href="wildlife.html" class="subgallery">
-    <img src="photos/animals/animal1.jpg" alt="Animals">
-    <div>
+  <a href="photos/wildlife/index.html" class="subgallery">
+    <img src="photos/wildlife/animal1.jpg" alt="Animals">
+    <div>Animals</div>
+  </a>
+
+  <a href="photos/landscapes/index.html" class="subgallery">
+    <img src="photos/landscapes/land1.jpg" alt="Landscapes">
+    <div>Landscapes</div>
+  </a>
+</body>
+</html>

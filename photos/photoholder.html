@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Photos - Saul Zidulka-Bejcek Photography</title>
   <style>
     body {
@@ -8,60 +10,74 @@
       text-align: center;
       margin: 0;
       padding: 20px;
-      background: #f8f8f8;
+      background: #222; /* charcoal background */
+      color: white;     /* white text */
     }
 
     h1 {
-      margin-bottom: 30px;
+      margin-bottom: 40px;
+      font-weight: 400;
     }
 
-    /* Subgallery links */
+    .galleries {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+    }
+
     .subgallery {
-      display: inline-block;
-      width: 200px;
-      margin: 20px;
-      text-align: center;
       text-decoration: none;
-      color: black;
-      font-weight: bold;
-      border: 2px solid #ccc;
-      padding: 10px;
-      border-radius: 10px;
-      transition: transform 0.2s ease, border-color 0.2s ease;
-    }
-
-    .subgallery:hover {
-      transform: scale(1.05);
-      border-color: #888;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .subgallery img {
-      width: 100%;
-      height: auto;
-      border-radius: 0px;
-      margin-bottom: 0px;
+      width: 250px;
+      height: 250px;
+      object-fit: cover;  /* fills square, keeps aspect ratio */
+      margin-bottom: 10px;
+    }
+
+    .subgallery div {
+      font-size: 18px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
   <h1>Photo Galleries</h1>
 
-  <!-- Double Exposures -->
-  <a href="double-exposures/double-exposurecode.html" class="subgallery">
-    <img src="double-exposures/de1.jpg" alt="Double Exposures">
-    <div>Double Exposures</div>
-  </a>
+  <div class="galleries" id="galleries"></div>
 
-  <!-- Wildlife -->
-  <a href="wildlife/wildlifecode.html" class="subgallery">
-    <img src="wildlife/wild1.jpg" alt="Wildlife">
-    <div>Wildlife</div>
-  </a>
+  <script>
+    // Define your subgalleries and first images
+    const galleries = [
+      { name: "Double Exposures", folder: "double-exposures", firstImage: "de1.jpg", page: "double-exposurecode.html" },
+      { name: "Wildlife", folder: "wildlife", firstImage: "wild1.jpg", page: "wildlifecode.html" },
+      { name: "Landscapes", folder: "landscapes", firstImage: "land1.jpg", page: "landscapescode.html" }
+    ];
 
-  <!-- Landscapes -->
-  <a href="landscapes/landscapescode.html" class="subgallery">
-    <img src="landscapes/land1.jpg" alt="Landscapes">
-    <div>Landscapes</div>
-  </a>
+    const container = document.getElementById('galleries');
+
+    galleries.forEach(gallery => {
+      const link = document.createElement('a');
+      link.href = `${gallery.folder}/${gallery.page}`;
+      link.className = 'subgallery';
+
+      const img = document.createElement('img');
+      img.src = `${gallery.folder}/${gallery.firstImage}`;
+      img.alt = gallery.name;
+
+      const title = document.createElement('div');
+      title.textContent = gallery.name;
+
+      link.appendChild(img);
+      link.appendChild(title);
+      container.appendChild(link);
+    });
+  </script>
 </body>
 </html>

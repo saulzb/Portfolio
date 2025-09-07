@@ -27,11 +27,10 @@
     }
 
     .gallery img {
-      height: 250px;        /* 🔑 same height for all */
-      width: auto;          /* 🔑 keep natural width */
+      height: 250px;        /* same height */
+      width: auto;          /* natural width */
       cursor: pointer;
       transition: transform 0.2s ease;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
     }
 
     .gallery img:hover {
@@ -138,7 +137,7 @@
     images.forEach((src, index) => {
       const img = document.createElement('img');
       img.src = encodeURI(src);
-      img.alt = `Animal ${index+1}`;
+      img.alt = `Wildlife ${index+1}`;
       img.onclick = () => openLightbox(index);
       gallery.appendChild(img);
     });

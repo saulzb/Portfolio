@@ -1,25 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Double Exposures - Saul Zidulka-Bejcek Photography</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 20px; background: #f8f8f8; }
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      background: #222;
+      color: white;
+    }
+
     h1 { margin-bottom: 30px; }
-    .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; justify-items: center; }
-    .gallery img { width: 100%; max-width: 250px; border-radius: 8px; cursor: pointer; transition: transform 0.2s ease; }
-    .gallery img:hover { transform: scale(1.05); }
-    .lightbox { display: none; position: fixed; z-index: 1000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
-    .lightbox img { max-width: 90%; max-height: 90%; border-radius: 8px; }
-    .lightbox:target { display: flex; }
-    .lightbox-close, .lightbox-prev, .lightbox-next { position: absolute; top: 50%; transform: translateY(-50%); font-size: 40px; color: white; text-decoration: none; font-weight: bold; padding: 10px; user-select: none; }
-    .lightbox-close { top: 20px; right: 30px; transform: none; font-size: 50px; }
+
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .gallery img {
+      height: 250px;
+      width: auto;
+      object-fit: contain;
+      cursor: pointer;
+    }
+
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.95);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .lightbox img {
+      max-width: 90%;
+      max-height: 90%;
+    }
+
+    .lightbox-close,
+    .lightbox-prev,
+    .lightbox-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 40px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 10px;
+      user-select: none;
+    }
+
+    .lightbox-close {
+      top: 20px;
+      right: 30px;
+      transform: none;
+      font-size: 50px;
+    }
+
     .lightbox-prev { left: 30px; }
     .lightbox-next { right: 30px; }
-    .lightbox-close:hover, .lightbox-prev:hover, .lightbox-next:hover { color: #ccc; }
+
+    .back-link {
+      display: block;
+      margin-top: 30px;
+      font-size: 18px;
+      text-decoration: none;
+      color: white;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
   <h1>Double Exposures</h1>
+
   <div class="gallery" id="gallery"></div>
 
   <div id="lightbox" class="lightbox">
@@ -29,11 +96,14 @@
     <a href="#" class="lightbox-next">&#10095;</a>
   </div>
 
+  <a href="../photoholder.html" class="back-link">&larr; Back to Photos</a>
+
   <script>
     const images = [
-      "images/double-exposures/de1.jpg",
-      "images/double-exposures/de2.jpg",
-      "images/double-exposures/de3.jpg"
+      "de1.jpg",
+      "de2.jpg",
+      "de3.jpg"
+      // Add more images here
     ];
 
     const gallery = document.getElementById('gallery');
@@ -41,11 +111,12 @@
     const lightboxImg = document.getElementById('lightbox-img');
     const prevBtn = lightbox.querySelector('.lightbox-prev');
     const nextBtn = lightbox.querySelector('.lightbox-next');
+
     let currentIndex = 0;
 
     images.forEach((src, index) => {
       const img = document.createElement('img');
-      img.src = src;
+      img.src = encodeURIComponent(src);
       img.alt = `Double Exposure ${index+1}`;
       img.onclick = () => openLightbox(index);
       gallery.appendChild(img);
@@ -53,14 +124,14 @@
 
     function openLightbox(index) {
       currentIndex = index;
-      lightboxImg.src = images[currentIndex];
+      lightboxImg.src = encodeURIComponent(images[currentIndex]);
       lightbox.style.display = 'flex';
     }
 
     lightbox.querySelector('.lightbox-close').onclick = () => lightbox.style.display = 'none';
-    prevBtn.onclick = () => { currentIndex = (currentIndex - 1 + images.length) % images.length; lightboxImg.src = images[currentIndex]; }
-    nextBtn.onclick = () => { currentIndex = (currentIndex + 1) % images.length; lightboxImg.src = images[currentIndex]; }
-    lightbox.onclick = (e) => { if (e.target === lightbox) lightbox.style.display = 'none'; }
+    prevBtn.onclick = () => { currentIndex = (currentIndex-1+images.length)%images.length; lightboxImg.src = encodeURIComponent(images[currentIndex]); };
+    nextBtn.onclick = () => { currentIndex = (currentIndex+1)%images.length; lightboxImg.src = encodeURIComponent(images[currentIndex]); };
+    lightbox.onclick = e => { if(e.target === lightbox) lightbox.style.display='none'; };
   </script>
 </body>
 </html>

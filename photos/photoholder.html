@@ -53,27 +53,47 @@
   <div class="galleries" id="galleries"></div>
 
   <script>
-    // Define your subgalleries and first images
+    // Define galleries with exact folder and page names
     const galleries = [
-      { name: "Double Exposures", folder: "double-exposures", firstImage: "de1.jpg", page: "double-exposurecode.html" },
-      { name: "Wildlife", folder: "wildlife", firstImage: "IMG_8491_4.jpg", page: "wildlifecode.html" },
-      { name: "Landscapes", folder: "landscapes", firstImage: "land1.jpg", page: "landscapescode.html" }
+      { 
+        name: "Double Exposures", 
+        folder: "double-exposures", 
+        firstImage: "de1.jpg", 
+        page: "double-exposurecode.html" 
+      },
+      { 
+        name: "Wildlife", 
+        folder: "wildlife", 
+        firstImage: "IMG_8491_4.jpg", 
+        page: "wildlifecode.html" 
+      },
+      { 
+        name: "Landscapes", 
+        folder: "landscapes", 
+        firstImage: "land1.jpg", 
+        page: "landscapescode.html" 
+      }
     ];
 
     const container = document.getElementById('galleries');
 
     galleries.forEach(gallery => {
+      // Create link
       const link = document.createElement('a');
       link.href = `${gallery.folder}/${gallery.page}`;
       link.className = 'subgallery';
+      link.target = "_self"; // ensures it opens in the same tab
 
+      // Create preview image
       const img = document.createElement('img');
       img.src = `${gallery.folder}/${gallery.firstImage}`;
       img.alt = gallery.name;
 
+      // Create title
       const title = document.createElement('div');
       title.textContent = gallery.name;
 
+      // Assemble elements
       link.appendChild(img);
       link.appendChild(title);
       container.appendChild(link);

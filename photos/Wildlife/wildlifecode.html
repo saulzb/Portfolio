@@ -1,8 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wildlife - Saul Zidulka-Bejcek Photography</title>
   <style>
     body {
@@ -10,25 +8,23 @@
       text-align: center;
       margin: 0;
       padding: 20px;
-      background: #222;   /* charcoal */
-      color: #fff;        /* white text */
+      background: #222; /* charcoal background */
+      color: white;     /* white font */
     }
 
-    h1 { 
-      margin-bottom: 30px; 
-      font-weight: 400;
-    }
+    h1 { margin-bottom: 30px; }
 
     .gallery {
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;  /* centers the gallery */
-      gap: 15px;
+      justify-content: center;
+      gap: 10px;
     }
 
     .gallery img {
-      height: 250px;        /* same height */
-      width: auto;          /* natural width */
+      height: 250px; /* all images same height */
+      width: auto;   /* width adjusts based on orientation */
+      object-fit: contain; /* ensures full image shows */
       cursor: pointer;
       transition: transform 0.2s ease;
     }
@@ -44,7 +40,7 @@
       z-index: 1000;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(0,0,0,0.95);
+      background: rgba(0,0,0,0.9);
       justify-content: center;
       align-items: center;
     }
@@ -93,7 +89,7 @@
       margin-top: 30px;
       font-size: 18px;
       text-decoration: none;
-      color: #fff;
+      color: white;
     }
 
     .back-link:hover {
@@ -114,11 +110,11 @@
     <a href="#" class="lightbox-next">&#10095;</a>
   </div>
 
-  <!-- Back link -->
-  <a href="../photos/photoholder.html" class="back-link">&larr; Back to Photos</a>
+  <!-- Corrected Back link -->
+  <a href="../photoholder.html" class="back-link">&larr; Back to Photos</a>
 
   <script>
-    // List of images
+    // List of images in the same folder
     const images = [
       "IMG_8491_4.jpg",
       "IMG_8512_1.jpg",
@@ -136,22 +132,25 @@
     // Generate gallery
     images.forEach((src, index) => {
       const img = document.createElement('img');
-      img.src = encodeURI(src);
+      img.src = encodeURI(src);  // Encode spaces/apostrophes
       img.alt = `Wildlife ${index+1}`;
       img.onclick = () => openLightbox(index);
       gallery.appendChild(img);
     });
 
+    // Open lightbox
     function openLightbox(index) {
       currentIndex = index;
       lightboxImg.src = encodeURI(images[currentIndex]);
       lightbox.style.display = 'flex';
     }
 
+    // Close lightbox
     lightbox.querySelector('.lightbox-close').onclick = () => {
       lightbox.style.display = 'none';
     };
 
+    // Navigate lightbox
     prevBtn.onclick = () => {
       currentIndex = (currentIndex - 1 + images.length) % images.length;
       lightboxImg.src = encodeURI(images[currentIndex]);
@@ -162,6 +161,7 @@
       lightboxImg.src = encodeURI(images[currentIndex]);
     };
 
+    // Close when clicking outside the image
     lightbox.onclick = (e) => {
       if (e.target === lightbox) lightbox.style.display = 'none';
     }

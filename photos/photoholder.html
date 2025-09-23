@@ -3,69 +3,79 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Photos - Saul Zidulka-Bejcek Photography</title>
+  <title>Photo Galleries - Saul Zidulka-Bejcek Photography</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 20px;
+      padding: 0;
       background: #222;
+      font-family: Arial, sans-serif;
       color: white;
+      overflow-x: hidden;
     }
 
     h1 {
       text-align: center;
-      margin-bottom: 40px;
+      margin: 20px 0;
       font-weight: 400;
     }
 
     .galleries {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      grid-auto-rows: 10px; /* base unit for masonry effect */
-      gap: 10px;
+      column-count: 3; /* number of columns */
+      column-gap: 0;
+      width: 100%;
     }
 
     .subgallery {
+      display: inline-block;
+      width: 100%;
+      margin: 0;
       position: relative;
       text-decoration: none;
       color: white;
-      display: block;
+      break-inside: avoid;
     }
 
     .subgallery img {
       width: 100%;
-      height: auto;
       display: block;
+      object-fit: cover;
     }
 
     .subgallery div {
       position: absolute;
       bottom: 0;
       width: 100%;
-      background: rgba(0,0,0,0.6);
-      padding: 10px;
-      font-size: 18px;
-      font-weight: bold;
-      box-sizing: border-box;
+      background: rgba(0,0,0,0.5);
       text-align: center;
+      padding: 10px 0;
+      font-size: 20px;
+      font-weight: bold;
     }
 
     .back-link {
       display: block;
-      margin: 30px 0;
+      margin: 20px auto;
+      text-align: center;
       font-size: 18px;
       text-decoration: none;
       color: white;
-      text-align: center;
     }
 
     .back-link:hover {
       text-decoration: underline;
     }
+
+    @media (max-width: 1200px) {
+      .galleries { column-count: 2; }
+    }
+    @media (max-width: 800px) {
+      .galleries { column-count: 1; }
+    }
   </style>
 </head>
 <body>
+
   <a href="../index.html" class="back-link">&larr; Back to Home</a>
   <h1>Photo Galleries</h1>
 
@@ -73,7 +83,7 @@
 
   <script>
     const galleries = [
-      { name: "Double Exposures", folder: "double exposures", firstImage: "de1.jpg", page: "doubleexposurecode.html" },
+      { name: "Double Exposures", folder: "double-exposures", firstImage: "de1.jpg", page: "double exposure code.html" },
       { name: "Wildlife", folder: "wildlife", firstImage: "IMG_8491_4.jpg", page: "wildlifecode.html" },
       { name: "Landscapes", folder: "landscapes", firstImage: "land1.jpg", page: "landscapescode.html" }
     ];
@@ -97,5 +107,6 @@
       container.appendChild(link);
     });
   </script>
+
 </body>
 </html>

@@ -45,30 +45,12 @@
       font-size: 18px;
       font-weight: bold;
     }
-
-    .back-home {
-      display: inline-block;
-      margin-top: 40px;
-      padding: 10px 20px;
-      background: #444;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      font-size: 16px;
-    }
-
-    .back-home:hover {
-      background: #666;
-    }
   </style>
 </head>
 <body>
   <h1>Photo Galleries</h1>
 
   <div class="galleries" id="galleries"></div>
-
-  <!-- Back to Home button -->
-  <a href="index.html" class="back-home">← Back to Home</a>
 
   <script>
     // Define galleries with exact folder and page names
@@ -87,4 +69,38 @@
       },
       { 
         name: "Landscapes", 
-        folder: "landsc
+        folder: "landscapes", 
+        firstImage: "land1.jpg", 
+        page: "landscapescode.html" 
+      }
+    ];
+
+    const container = document.getElementById('galleries');
+
+    galleries.forEach(gallery => {
+      // Create link
+      const link = document.createElement('a');
+      link.href = `${gallery.folder}/${gallery.page}`;
+      link.className = 'subgallery';
+      link.target = "_self"; // ensures it opens in the same tab
+
+      // Create preview image
+      const img = document.createElement('img');
+      img.src = `${gallery.folder}/${gallery.firstImage}`;
+      img.alt = gallery.name;
+
+      // Create title
+      const title = document.createElement('div');
+      title.textContent = gallery.name;
+
+      // Assemble elements
+      link.appendChild(img);
+      link.appendChild(title);
+      container.appendChild(link);
+    });
+  </script>
+
+  <!-- Back to Home (bottom) -->
+  <a href="../index.html" style="display:inline-block;margin-top:24px;color:white;text-decoration:none;">&larr; Back to Home</a>
+</body>
+</html>

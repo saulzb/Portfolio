@@ -102,7 +102,7 @@
     const images = [
       "DSCN3961.jpg",
       "DSCN5492.jpg",
-      "waterfromferry 2.jpg"
+      "waterfromferry2.jpg"
       // Add more images here
     ];
 
@@ -117,7 +117,7 @@
     images.forEach((src, index) => {
       const img = document.createElement('img');
       img.src = encodeURIComponent(src);
-      img.alt = `Landscape ${index+1}`;
+      img.alt = `Water ${index+1}`;
       img.onclick = () => openLightbox(index);
       gallery.appendChild(img);
     });

@@ -100,9 +100,10 @@
 
   <script>
     const images = [
-      "land1.jpg",
-      "land2.jpg",
-      "land3.jpg"
+      "DSCN7048.JPG",
+      "DSCN7061.jpg",
+      "DSCN8036.JPG"
+      "DSCN8046.JPG
       // Add more images here
     ];
 

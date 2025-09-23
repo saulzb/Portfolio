@@ -13,7 +13,7 @@
       background: #222; /* charcoal background */
       color: white;     /* white text */
     }
-<a href="../index.html" class="back-link">&larr; Back to Home</a>
+
     h1 {
       margin-bottom: 40px;
       font-weight: 400;
@@ -45,23 +45,31 @@
       font-size: 18px;
       font-weight: bold;
     }
-    .back-link {
-  display: block;
-  margin-bottom: 20px;
-  font-size: 18px;
-  text-decoration: none;
-  color: white;
-}
 
-.back-link:hover {
-  text-decoration: underline;
-}
+    /* Back to Home links */
+    .back-link {
+      display: block;
+      margin: 20px 0;
+      font-size: 18px;
+      text-decoration: none;
+      color: white;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
+  <!-- Back to Home at top -->
+  <a href="../index.html" class="back-link">&larr; Back to Home</a>
+
   <h1>Photo Galleries</h1>
 
   <div class="galleries" id="galleries"></div>
+
+  <!-- Back to Home at bottom -->
+  <a href="../index.html" class="back-link">&larr; Back to Home</a>
 
   <script>
     // Define galleries with exact folder and page names
@@ -101,14 +109,4 @@
       img.alt = gallery.name;
 
       // Create title
-      const title = document.createElement('div');
-      title.textContent = gallery.name;
-
-      // Assemble elements
-      link.appendChild(img);
-      link.appendChild(title);
-      container.appendChild(link);
-    });
-  </script>
-</body>
-</html>
+      const title = document.createElement('di

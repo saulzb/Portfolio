@@ -89,6 +89,7 @@
 
   <div class="gallery" id="gallery"></div>
 
+  <!-- Lightbox -->
   <div id="lightbox" class="lightbox">
     <a href="#" class="lightbox-close">&times;</a>
     <a href="#" class="lightbox-prev">&#10094;</a>
@@ -99,6 +100,7 @@
   <a href="../photoholder.html" class="back-link">&larr; Back to Photos</a>
 
   <script>
+    // List of images
     const images = [
       "DSCN7048.JPG",
       "DSCN7061.jpg",
@@ -116,24 +118,39 @@
 
     let currentIndex = 0;
 
+    // Generate gallery images
     images.forEach((src, index) => {
       const img = document.createElement('img');
-      img.src = encodeURIComponent(src);
-      img.alt = `Landscape ${index+1}`;
+      img.src = src;
+      img.alt = `Light ${index+1}`;
       img.onclick = () => openLightbox(index);
       gallery.appendChild(img);
     });
 
+    // Open lightbox
     function openLightbox(index) {
       currentIndex = index;
-      lightboxImg.src = encodeURIComponent(images[currentIndex]);
+      lightboxImg.src = images[currentIndex];
       lightbox.style.display = 'flex';
     }
 
+    // Close lightbox
     lightbox.querySelector('.lightbox-close').onclick = () => lightbox.style.display = 'none';
-    prevBtn.onclick = () => { currentIndex = (currentIndex-1+images.length)%images.length; lightboxImg.src = encodeURIComponent(images[currentIndex]); };
-    nextBtn.onclick = () => { currentIndex = (currentIndex+1)%images.length; lightboxImg.src = encodeURIComponent(images[currentIndex]); };
-    lightbox.onclick = e => { if(e.target === lightbox) lightbox.style.display='none'; };
+
+    // Navigate
+    prevBtn.onclick = () => {
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      lightboxImg.src = images[currentIndex];
+    };
+    nextBtn.onclick = () => {
+      currentIndex = (currentIndex + 1) % images.length;
+      lightboxImg.src = images[currentIndex];
+    };
+
+    // Close when clicking outside image
+    lightbox.onclick = e => {
+      if(e.target === lightbox) lightbox.style.display = 'none';
+    };
   </script>
 </body>
 </html>

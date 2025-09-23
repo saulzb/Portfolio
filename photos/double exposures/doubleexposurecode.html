@@ -99,11 +99,15 @@
   <a href="../photoholder.html" class="back-link">&larr; Back to Photos</a>
 
   <script>
+    // Add your images here
     const images = [
       "de1.jpg",
       "de2.jpg",
-      "de3.jpg"
-      // Add more images here
+      "de3.jpg",
+      "de4.jpg",
+      "de5.jpg",
+      "de6.jpg"
+      // keep adding as needed
     ];
 
     const gallery = document.getElementById('gallery');
@@ -114,9 +118,10 @@
 
     let currentIndex = 0;
 
+    // Build thumbnails
     images.forEach((src, index) => {
       const img = document.createElement('img');
-      img.src = encodeURIComponent(src);
+      img.src = src; // no encodeURIComponent so filenames with spaces still load
       img.alt = `Double Exposure ${index+1}`;
       img.onclick = () => openLightbox(index);
       gallery.appendChild(img);
@@ -124,13 +129,13 @@
 
     function openLightbox(index) {
       currentIndex = index;
-      lightboxImg.src = encodeURIComponent(images[currentIndex]);
+      lightboxImg.src = images[currentIndex];
       lightbox.style.display = 'flex';
     }
 
     lightbox.querySelector('.lightbox-close').onclick = () => lightbox.style.display = 'none';
-    prevBtn.onclick = () => { currentIndex = (currentIndex-1+images.length)%images.length; lightboxImg.src = encodeURIComponent(images[currentIndex]); };
-    nextBtn.onclick = () => { currentIndex = (currentIndex+1)%images.length; lightboxImg.src = encodeURIComponent(images[currentIndex]); };
+    prevBtn.onclick = () => { currentIndex = (currentIndex-1+images.length)%images.length; lightboxImg.src = images[currentIndex]; };
+    nextBtn.onclick = () => { currentIndex = (currentIndex+1)%images.length; lightboxImg.src = images[currentIndex]; };
     lightbox.onclick = e => { if(e.target === lightbox) lightbox.style.display='none'; };
   </script>
 </body>

@@ -102,8 +102,9 @@
     const images = [
       "DSCN7048.JPG",
       "DSCN7061.jpg",
-      "DSCN8036.JPG"
-      "DSCN8046.JPG
+      "DSCN8036.JPG",
+      "DSCN8046.JPG",
+      "IMG_1776/jpg"
       // Add more images here
     ];
 

@@ -3,53 +3,77 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Photos - Saul Zidulka-Bejcek Photography</title>
+  <title>Double Exposures - Saul Zidulka-Bejcek Photography</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
       margin: 0;
       padding: 20px;
-      background: #222; /* charcoal background */
-      color: white;     /* white text */
+      background: #222;
+      color: white;
     }
 
-    h1 {
-      margin-bottom: 40px;
-      font-weight: 400;
-    }
+    h1 { margin-bottom: 30px; }
 
-    .galleries {
+    .gallery {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 50px; /* more space between galleries */
+      gap: 15px;
     }
 
-    .subgallery {
-      text-decoration: none;
-      color: white;
-      display: flex;
-      flex-direction: column;
+    .gallery img {
+      height: 250px;
+      width: auto;
+      object-fit: contain;
+      cursor: pointer;
+    }
+
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.95);
+      justify-content: center;
       align-items: center;
-      width: 400px;       /* make larger */
     }
 
-    .subgallery img {
-      width: 100%;        /* fills the 400px width */
-      height: 400px;      /* square preview */
-      object-fit: cover;  /* keeps aspect ratio, crops if needed */
-      margin-bottom: 15px;
+    .lightbox img {
+      max-width: 90%;
+      max-height: 90%;
     }
 
-    .subgallery div {
-      font-size: 24px;    /* bigger text */
+    .lightbox-close,
+    .lightbox-prev,
+    .lightbox-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 40px;
+      color: white;
+      text-decoration: none;
       font-weight: bold;
+      padding: 10px;
+      user-select: none;
     }
+
+    .lightbox-close {
+      top: 20px;
+      right: 30px;
+      transform: none;
+      font-size: 50px;
+    }
+
+    .lightbox-prev { left: 30px; }
+    .lightbox-next { right: 30px; }
 
     .back-link {
       display: block;
-      margin: 30px 0;
+      margin-top: 30px;
       font-size: 18px;
       text-decoration: none;
       color: white;
@@ -61,59 +85,56 @@
   </style>
 </head>
 <body>
-  <a href="../index.html" class="back-link">&larr; Back to Home</a>
-  <h1>Photo Galleries</h1>
+  <h1>Double Exposures</h1>
 
-  <div class="galleries" id="galleries"></div>
+  <div class="gallery" id="gallery"></div>
 
-  <a href="../index.html" class="back-link">&larr; Back to Home</a>
+  <div id="lightbox" class="lightbox">
+    <a href="#" class="lightbox-close">&times;</a>
+    <a href="#" class="lightbox-prev">&#10094;</a>
+    <img id="lightbox-img" src="" alt="">
+    <a href="#" class="lightbox-next">&#10095;</a>
+  </div>
+
+  <a href="../photoholder.html" class="back-link">&larr; Back to Photos</a>
 
   <script>
-    // Define galleries with exact folder and page names
-    const galleries = [
-      { 
-        name: "Double Exposures", 
-        folder: "double-exposures", 
-        firstImage: "de1.jpg", 
-        page: "double exposure code.html" 
-      },
-      { 
-        name: "Wildlife", 
-        folder: "wildlife", 
-        firstImage: "IMG_8491_4.jpg", 
-        page: "wildlifecode.html" 
-      },
-      { 
-        name: "Landscapes", 
-        folder: "landscapes", 
-        firstImage: "land1.jpg", 
-        page: "landscapescode.html" 
-      }
+    // Add your images here
+    const images = [
+      "IMG_9492.jpg",
+      "IMG_9493.jpg",
+      "IMG_9495.jpg",
+      "IMG_9496.jpg",
+      // keep adding as needed
     ];
 
-    const container = document.getElementById('galleries');
+    const gallery = document.getElementById('gallery');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const prevBtn = lightbox.querySelector('.lightbox-prev');
+    const nextBtn = lightbox.querySelector('.lightbox-next');
 
-    galleries.forEach(gallery => {
-      // Create link
-      const link = document.createElement('a');
-      link.href = `${gallery.folder}/${gallery.page}`;
-      link.className = 'subgallery';
-      link.target = "_self"; // ensures it opens in the same tab
+    let currentIndex = 0;
 
-      // Create preview image
+    // Build thumbnails
+    images.forEach((src, index) => {
       const img = document.createElement('img');
-      img.src = `${gallery.folder}/${gallery.firstImage}`;
-      img.alt = gallery.name;
-
-      // Create title
-      const title = document.createElement('div');
-      title.textContent = gallery.name;
-
-      // Assemble elements
-      link.appendChild(img);
-      link.appendChild(title);
-      container.appendChild(link);
+      img.src = src; // no encodeURIComponent so filenames with spaces still load
+      img.alt = `Double Exposure ${index+1}`;
+      img.onclick = () => openLightbox(index);
+      gallery.appendChild(img);
     });
+
+    function openLightbox(index) {
+      currentIndex = index;
+      lightboxImg.src = images[currentIndex];
+      lightbox.style.display = 'flex';
+    }
+
+    lightbox.querySelector('.lightbox-close').onclick = () => lightbox.style.display = 'none';
+    prevBtn.onclick = () => { currentIndex = (currentIndex-1+images.length)%images.length; lightboxImg.src = images[currentIndex]; };
+    nextBtn.onclick = () => { currentIndex = (currentIndex+1)%images.length; lightboxImg.src = images[currentIndex]; };
+    lightbox.onclick = e => { if(e.target === lightbox) lightbox.style.display='none'; };
   </script>
 </body>
 </html>

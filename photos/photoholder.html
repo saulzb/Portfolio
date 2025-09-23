@@ -45,32 +45,14 @@
       font-size: 18px;
       font-weight: bold;
     }
-
-    /* Back to Home links */
-    .back-link {
-      display: block;
-      margin: 20px 0;
-      font-size: 18px;
-      text-decoration: none;
-      color: white;
-    }
-
-    .back-link:hover {
-      text-decoration: underline;
-    }
   </style>
 </head>
 <body>
-  <!-- Back to Home at top -->
-  <a href="../index.html" class="back-link">&larr; Back to Home</a>
-
   <h1>Photo Galleries</h1>
 
   <div class="galleries" id="galleries"></div>
 
-  <!-- Back to Home at bottom -->
-  <a href="../index.html" class="back-link">&larr; Back to Home</a>
-
+  <!-- Script moved to bottom -->
   <script>
     // Define galleries with exact folder and page names
     const galleries = [
@@ -104,9 +86,4 @@
       link.target = "_self"; // ensures it opens in the same tab
 
       // Create preview image
-      const img = document.createElement('img');
-      img.src = `${gallery.folder}/${gallery.firstImage}`;
-      img.alt = gallery.name;
-
-      // Create title
-      const title = document.createElement('di
+      const img = doc

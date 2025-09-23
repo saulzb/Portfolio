@@ -45,6 +45,21 @@
       font-size: 18px;
       font-weight: bold;
     }
+
+    .back-home {
+      display: inline-block;
+      margin-top: 40px;
+      padding: 10px 20px;
+      background: #444;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .back-home:hover {
+      background: #666;
+    }
   </style>
 </head>
 <body>
@@ -52,7 +67,9 @@
 
   <div class="galleries" id="galleries"></div>
 
-  <!-- Script moved to bottom -->
+  <!-- Back to Home button -->
+  <a href="index.html" class="back-home">← Back to Home</a>
+
   <script>
     // Define galleries with exact folder and page names
     const galleries = [
@@ -70,20 +87,4 @@
       },
       { 
         name: "Landscapes", 
-        folder: "landscapes", 
-        firstImage: "land1.jpg", 
-        page: "landscapescode.html" 
-      }
-    ];
-
-    const container = document.getElementById('galleries');
-
-    galleries.forEach(gallery => {
-      // Create link
-      const link = document.createElement('a');
-      link.href = `${gallery.folder}/${gallery.page}`;
-      link.className = 'subgallery';
-      link.target = "_self"; // ensures it opens in the same tab
-
-      // Create preview image
-      const img = doc
+        folder: "landsc

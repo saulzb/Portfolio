@@ -20,44 +20,38 @@
       font-weight: 400;
     }
 
-    /* use grid instead of columns */
     .galleries {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 0;
+      column-count: 3; /* number of columns */
+      column-gap: 0;
       width: 100%;
     }
 
     .subgallery {
+      display: inline-block;
+      width: 100%;
+      margin: 0;
       position: relative;
       text-decoration: none;
       color: white;
-      overflow: hidden;
+      break-inside: avoid;
+      overflow: hidden; /* hides overflow when sliding */
     }
 
     /* slideshow wrapper */
     .slideshow {
-      overflow: hidden;
-      width: 100%;
-      aspect-ratio: 4/3; /* keeps consistent height */
-      position: relative;
-    }
-
-    .slideshow-track {
       display: flex;
       transition: transform 1s ease;
-      width: 100%;
-      height: 100%;
     }
 
     .slideshow img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
       flex-shrink: 0;
+      object-fit: cover;
+      display: block;
     }
 
-    .subgallery div {
+    /* keep title pinned */
+    .subgallery .title {
       position: absolute;
       bottom: 0;
       width: 100%;
@@ -66,6 +60,7 @@
       padding: 10px 0;
       font-size: 20px;
       font-weight: bold;
+      z-index: 2;
     }
 
     .back-link {
@@ -79,6 +74,13 @@
 
     .back-link:hover {
       text-decoration: underline;
+    }
+
+    @media (max-width: 1200px) {
+      .galleries { column-count: 2; }
+    }
+    @media (max-width: 800px) {
+      .galleries { column-count: 1; }
     }
   </style>
 </head>
@@ -110,36 +112,51 @@
       const slideshow = document.createElement('div');
       slideshow.className = 'slideshow';
 
-      // track wrapper
-      const track = document.createElement('div');
-      track.className = 'slideshow-track';
-
-      gallery.images.forEach(image => {
+      // add all images twice for seamless looping
+      gallery.images.forEach(imgFile => {
         const img = document.createElement('img');
-        img.src = `${gallery.folder}/${image}`;
-        img.alt = gallery.name;
-        track.appendChild(img);
+        img.src = `${gallery.folder}/${imgFile}`;
+        slideshow.appendChild(img);
+      });
+      gallery.images.forEach(imgFile => {
+        const img = document.createElement('img');
+        img.src = `${gallery.folder}/${imgFile}`;
+        slideshow.appendChild(img);
       });
 
-      slideshow.appendChild(track);
-
       const title = document.createElement('div');
+      title.className = 'title';
       title.textContent = gallery.name;
 
       link.appendChild(slideshow);
       link.appendChild(title);
       container.appendChild(link);
 
-      // slideshow animation
-      let index = 0;
-      const startDelay = galleryIndex * 1000; // stagger
+      if (gallery.images.length > 1) {
+        let index = 0;
+        const slideCount = gallery.images.length;
+        const slideWidth = 100; // percent width per slide
 
-      setTimeout(() => {
-        setInterval(() => {
-          index = (index + 1) % gallery.images.length;
-          track.style.transform = `translateX(-${index * 100}%)`;
-        }, 3000);
-      }, startDelay);
+        // stagger start time by gallery index
+        const delay = galleryIndex * 800; // 0.8s offset each gallery
+
+        setTimeout(() => {
+          setInterval(() => {
+            index++;
+            slideshow.style.transition = "transform 1s ease";
+            slideshow.style.transform = `translateX(-${index * slideWidth}%)`;
+
+            // reset instantly when reaching duplicate set
+            if (index === slideCount) {
+              setTimeout(() => {
+                slideshow.style.transition = "none";
+                slideshow.style.transform = "translateX(0)";
+                index = 0;
+              }, 1000); // match transition duration
+            }
+          }, 3000);
+        }, delay);
+      }
     });
   </script>
 

@@ -3,21 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gallery</title>
+  <title>Photo Galleries - Saul Zidulka-Bejcek Photography</title>
   <style>
-    .subgallery {
-      display: inline-block;
-      width: 200px;   /* adjust as needed */
-      margin: 10px;
-      text-align: center;
+    body {
+      margin: 0;
+      padding: 0;
+      background: #222;
+      font-family: Arial, sans-serif;
+      color: white;
+      overflow-x: hidden;
     }
 
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+      font-weight: 400;
+    }
+
+    .galleries {
+      column-count: 3; /* number of columns */
+      column-gap: 0;
+      width: 100%;
+    }
+
+    .subgallery {
+      display: inline-block;
+      width: 100%;
+      margin: 0;
+      position: relative;
+      text-decoration: none;
+      color: white;
+      break-inside: avoid;
+    }
+
+    /* slideshow wrapper */
     .slideshow {
       overflow: hidden;
       width: 100%;
-      height: 150px; /* adjust for your images */
+      height: 250px; /* adjust height for your images */
       position: relative;
-      border-radius: 8px;
     }
 
     .slideshow-track {
@@ -29,34 +53,58 @@
 
     .slideshow img {
       width: 100%;
-      height: auto;
+      height: 100%;
+      object-fit: cover;
       flex-shrink: 0;
+    }
+
+    .subgallery div {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background: rgba(0,0,0,0.5);
+      text-align: center;
+      padding: 10px 0;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .back-link {
+      display: block;
+      margin: 20px auto;
+      text-align: center;
+      font-size: 18px;
+      text-decoration: none;
+      color: white;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 1200px) {
+      .galleries { column-count: 2; }
+    }
+    @media (max-width: 800px) {
+      .galleries { column-count: 1; }
     }
   </style>
 </head>
 <body>
-  <div id="galleries"></div>
+
+  <a href="../index.html" class="back-link">&larr; Back to Home</a>
+  <h1>Photo Galleries</h1>
+
+  <div class="galleries" id="galleries"></div>
 
   <script>
     const galleries = [
-      {
-        name: "Gallery 1",
-        folder: "gallery1",
-        page: "index.html",
-        images: ["1.jpg", "2.jpg", "3.jpg"]
-      },
-      {
-        name: "Gallery 2",
-        folder: "gallery2",
-        page: "index.html",
-        images: ["a.jpg", "b.jpg", "c.jpg"]
-      },
-      {
-        name: "Gallery 3",
-        folder: "gallery3",
-        page: "index.html",
-        images: ["x.jpg", "y.jpg", "z.jpg"]
-      }
+      { name: "Double Exposures", folder: "double exposures", images: ["IMG_9495.JPG", "IMG_9493.jpg", "IMG_9495.JPG"], page: "doubleexposurecode.html" },
+      { name: "Wildlife", folder: "wildlife", images: ["IMG_8491_4.jpg", "IMG_8512_1.jpg", "RAW's Jul-Aug478 copy 2.jpg"], page: "wildlifecode.html" },
+      { name: "Landscapes", folder: "landscapes", images: ["DSCN3626.jpg", "DSCN3600.jpg", "DSCN3626.jpg"], page: "landscapescode.html" },
+      { name: "Colour", folder: "Colour", images: ["col1.jpg"], page: "Colourcode.html" },
+      { name: "Light", folder: "Light", images: ["IMG_1776.jpg", "DSCN7048.JPG", "DSCN8046.JPG"], page: "Lightcode.html" },
+      { name: "Water", folder: "Water", images: ["DSCN3961.jpg", "DSCN5492.jpg", "waterfromferry2.jpg"], page: "Watercode.html" }
     ];
 
     const container = document.getElementById('galleries');
@@ -104,5 +152,6 @@
       }, startDelay);
     });
   </script>
+
 </body>
 </html>

@@ -103,7 +103,7 @@
 
     const container = document.getElementById('galleries');
 
-    galleries.forEach((gallery, galleryIndex) => {
+    galleries.forEach((gallery) => {
       const link = document.createElement('a');
       link.href = `${gallery.folder}/${gallery.page}`;
       link.className = 'subgallery';
@@ -135,10 +135,13 @@
       if (gallery.images.length > 1) {
         let index = 0;
         const slideCount = gallery.images.length;
-        const slideWidth = 100; // percent width per slide
+        const slideWidth = 100;
 
-        // stagger start time by gallery index
-        const delay = galleryIndex * 2000; // 0.8s offset each gallery
+        // randomize start delay (0–4s)
+        const staggerDelay = Math.random() * 4000;
+
+        // slightly random slide interval (6–8s)
+        const slideInterval = 6000 + Math.random() * 2000;
 
         setTimeout(() => {
           setInterval(() => {
@@ -152,10 +155,10 @@
                 slideshow.style.transition = "none";
                 slideshow.style.transform = "translateX(0)";
                 index = 0;
-              }, 1000); // match transition duration
+              }, 1000);
             }
-          }, 6000);
-        }, delay);
+          }, slideInterval);
+        }, staggerDelay);
       }
     });
   </script>

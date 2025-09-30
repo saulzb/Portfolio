@@ -12,6 +12,7 @@
     overflow-y: scroll;
     scroll-snap-type: y mandatory;
     font-family: Arial, sans-serif;
+    scroll-behavior: smooth;
   }
 
   section {
@@ -20,15 +21,15 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    scroll-snap-align: start;
+    scroll-snap-align: center;
     text-align: center;
     position: relative;
-    overflow: hidden;
   }
 
+  /* Hero video section */
   .hero {
-    position: relative;
     color: white;
+    overflow: hidden;
   }
 
   .hero video {
@@ -36,13 +37,14 @@
     top: 0; left: 0;
     width: 100%; height: 100%;
     object-fit: cover;
-    z-index: -2; /* video behind canvas */
+    z-index: -2; /* behind everything */
   }
 
   .hero h1 {
     font-size: 3rem;
     margin-bottom: 20px;
     z-index: 1;
+    position: relative;
   }
 
   nav a {
@@ -50,153 +52,77 @@
     text-decoration: none;
     color: white;
     font-weight: bold;
+    transition: color 0.3s ease;
+    position: relative;
     z-index: 1;
   }
-
   nav a:hover {
     color: lightblue;
+    text-decoration: underline;
   }
 
   .drawings { background: #222; color: white; }
   .contact { background: #eee; color: black; }
 
-  canvas {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+  /* Ocean blobs */
+  .ocean-blob {
+    position: fixed; /* fixed so they move with cursor across all sections */
+    border-radius: 50%;
     pointer-events: none;
-    z-index: -1; /* above video but below text */
-  }
-
-  .interactive-word {
-    position: relative;
-    z-index: 1;
-    font-size: 2rem;
-    font-weight: bold;
-    margin: 20px;
-    display: inline-block;
+    mix-blend-mode: screen;
   }
 </style>
 </head>
 <body>
 
+<!-- Hero section with video -->
 <section class="hero">
   <video autoplay muted loop playsinline>
     <source src="1757373621.967906.MOV" type="video/mp4">
     Your browser does not support the video tag.
   </video>
-  <h1 class="interactive-word">SAUL ZIDULKA-BEJCEK</h1>
+  <h1>SAUL ZIDULKA-BEJCEK</h1>
   <nav>
     <a href="photos/photoholder.html">PHOTOS</a>
     <a href="drawings.html">DRAWINGS</a>
   </nav>
-  <canvas id="bubbleCanvas"></canvas>
 </section>
 
 <section class="drawings">
-  <h2 class="interactive-word">ABOUT</h2>
+  <h2>ABOUT</h2>
   <p>All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
 </section>
 
 <section class="contact">
-  <h2 class="interactive-word">CONTACT</h2>
+  <h2>CONTACT</h2>
   <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
   <p>Instagram: <a href="https://www.instagram.com/saul_5607/" target="_blank">@saul_5607</a></p>
 </section>
 
 <script>
-const canvas = document.getElementById('bubbleCanvas');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+  const colors = ['#00bfff', '#1e90ff', '#40e0d0', '#48d1cc', '#20b2aa']; // ocean/turquoise shades
+  const blobCount = 7;
+  const blobs = [];
 
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
-
-const words = Array.from(document.querySelectorAll('.interactive-word'));
-
-// Create bubbles
-const bubbles = [];
-const numBubbles = 40;
-for(let i=0;i<numBubbles;i++){
-  const hue = Math.random() * 60 + 180; // turquoise/blue
-  bubbles.push({
-    x: Math.random()*canvas.width,
-    y: Math.random()*canvas.height,
-    vx: 0,
-    vy: -Math.random()*0.5 - 0.2,
-    size: Math.random()*20 + 10,
-    color: `hsla(${hue}, 70%, 50%, ${Math.random()*0.4+0.2})`
-  });
-}
-
-const mouse = {x: canvas.width/2, y: canvas.height/2, moving: false};
-window.addEventListener('mousemove', e=>{
-  mouse.x = e.clientX;
-  mouse.y = e.clientY;
-  mouse.moving = true;
-  clearTimeout(mouse.timer);
-  mouse.timer = setTimeout(()=>{ mouse.moving = false; }, 800);
-});
-
-function updateBubbles(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  for(let b of bubbles){
-    if(mouse.moving){
-      // Move gently toward cursor
-      b.vx += (mouse.x - b.x) * 0.001;
-      b.vy += (mouse.y - b.y) * 0.001;
-    } else {
-      // Disperse upward when cursor stops
-      b.vx += (Math.random()-0.5)*0.02;
-      b.vy -= 0.02;
-    }
-
-    // Word collisions
-    for(let w of words){
-      const rect = w.getBoundingClientRect();
-      if(b.x + b.size > rect.left && b.x - b.size < rect.right &&
-         b.y + b.size > rect.top && b.y - b.size < rect.bottom){
-        const cx = (rect.left + rect.right)/2;
-        const cy = (rect.top + rect.bottom)/2;
-        const distX = b.x - cx;
-        const distY = b.y - cy;
-        const dist = Math.sqrt(distX*distX + distY*distY) || 1;
-        b.vx += (distX/dist)*0.05;
-        b.vy += (distY/dist)*0.05;
-      }
-    }
-
-    // Update position
-    b.x += b.vx;
-    b.y += b.vy;
-
-    // Wrap vertically
-    if(b.y + b.size < 0){ b.y = canvas.height + b.size; }
-    if(b.y - b.size > canvas.height){ b.y = -b.size; }
-
-    // Bounce from sides gently
-    if(b.x - b.size < 0){ b.x = b.size; b.vx *= 0.5; }
-    if(b.x + b.size > canvas.width){ b.x = canvas.width - b.size; b.vx *= 0.5; }
-
-    // Apply damping
-    b.vx *= 0.95;
-    b.vy *= 0.95;
-
-    // Draw bubble
-    ctx.beginPath();
-    ctx.arc(b.x,b.y,b.size,0,Math.PI*2);
-    ctx.fillStyle = b.color;
-    ctx.fill();
+  for (let i = 0; i < blobCount; i++) {
+    const blob = document.createElement('div');
+    blob.classList.add('ocean-blob');
+    const size = 50 + Math.random() * 100;
+    blob.style.width = size + 'px';
+    blob.style.height = size + 'px';
+    blob.style.background = colors[Math.floor(Math.random() * colors.length)];
+    blob.style.opacity = 0.4 + Math.random() * 0.3;
+    document.body.appendChild(blob);
+    blobs.push(blob);
   }
 
-  requestAnimationFrame(updateBubbles);
-}
-
-updateBubbles();
+  document.addEventListener('mousemove', e => {
+    blobs.forEach((blob, i) => {
+      const offset = i * 20; // slight spacing so they don't perfectly overlap
+      blob.style.left = (e.clientX + offset) + 'px';
+      blob.style.top = (e.clientY + offset) + 'px';
+    });
+  });
 </script>
 
 </body>

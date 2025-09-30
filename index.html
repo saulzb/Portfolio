@@ -112,22 +112,29 @@ window.addEventListener('resize', () => {
   height = canvas.height = window.innerHeight;
 });
 
-const numBlobs = 15;
+const numBlobs = 20;
 const blobs = [];
 
 for (let i = 0; i < numBlobs; i++) {
+  const size = 10 + Math.random() * 50;
   blobs.push({
     x: Math.random() * width,
     y: Math.random() * height,
-    size: 20 + Math.random() * 50,
-    color: `rgba(${Math.floor(10+Math.random()*50)}, ${Math.floor(150+Math.random()*100)}, ${Math.floor(200+Math.random()*55)}, 0.6)`,
+    size,
+    color: `rgba(${Math.floor(10+Math.random()*50)}, ${Math.floor(150+Math.random()*100)}, ${Math.floor(200+Math.random()*55)}, ${Math.random()*0.6 + 0.2})`,
     vx: 0,
     vy: 0
   });
 }
 
 const cursor = { x: width/2, y: height/2 };
-document.addEventListener('mousemove', e => { cursor.x = e.clientX; cursor.y = e.clientY; });
+let lastCursorMove = Date.now();
+
+document.addEventListener('mousemove', e => {
+  cursor.x = e.clientX;
+  cursor.y = e.clientY;
+  lastCursorMove = Date.now();
+});
 
 function getWords() {
   const words = [];
@@ -147,12 +154,20 @@ function animate() {
   ctx.clearRect(0, 0, width, height);
   const words = getWords();
 
+  const idle = Date.now() - lastCursorMove > 1500; // idle after 1.5s
+
   blobs.forEach((blob, i) => {
-    // Move towards cursor with gentle acceleration
-    const dx = cursor.x - blob.x + (Math.random()-0.5)*20;
-    const dy = cursor.y - blob.y + (Math.random()-0.5)*20;
-    blob.vx += dx * 0.002; // slower acceleration
-    blob.vy += dy * 0.002;
+    if(idle){
+      // Slow upward drift
+      blob.vy -= 0.01 * Math.random();
+      blob.vx += (Math.random()-0.5)*0.1;
+    } else {
+      // Move toward cursor with gentle acceleration
+      const dx = cursor.x - blob.x + (Math.random()-0.5)*20;
+      const dy = cursor.y - blob.y + (Math.random()-0.5)*20;
+      blob.vx += dx * 0.002;
+      blob.vy += dy * 0.002;
+    }
 
     // Friction
     blob.vx *= 0.92;
@@ -166,7 +181,6 @@ function animate() {
       const halfH = w.height/2 + blob.size/2;
       const deltaX = blob.x - wx;
       const deltaY = blob.y - wy;
-
       if (Math.abs(deltaX)<halfW && Math.abs(deltaY)<halfH) {
         const repelX = (deltaX>0?1:-1)*(halfW - Math.abs(deltaX))*0.01;
         const repelY = (deltaY>0?1:-1)*(halfH - Math.abs(deltaY))*0.01;
@@ -183,7 +197,7 @@ function animate() {
       const dyB = blob.y - other.y;
       const dist = Math.sqrt(dxB*dxB + dyB*dyB);
       const minDist = blob.size + other.size;
-      if(dist < minDist) {
+      if(dist < minDist){
         blob.vx += (dxB/dist) * 0.05;
         blob.vy += (dyB/dist) * 0.05;
       }
@@ -204,6 +218,5 @@ function animate() {
 
 animate();
 </script>
-
 </body>
 </html>

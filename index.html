@@ -25,7 +25,6 @@
     position: relative;
   }
 
-  /* Hero section with video */
   .hero {
     position: relative;
     color: white;
@@ -63,7 +62,6 @@
   }
   nav a:hover { color: lightblue; text-decoration: underline; }
 
-  /* Blobs canvas overlay */
   canvas#blobs {
     position: absolute;
     top: 0;
@@ -71,16 +69,10 @@
     z-index: -1;
   }
 
-  /* Other sections */
   .drawings { background: #222; color: white; }
   .contact { background: #eee; color: black; }
 
-  /* Make text selectable for collision */
-  h2, p {
-    display: inline-block;
-    padding: 5px 10px;
-    margin: 10px 0;
-  }
+  h2, p { display: inline-block; padding: 5px 10px; margin: 10px 0; }
 </style>
 </head>
 <body>
@@ -120,25 +112,23 @@ window.addEventListener('resize', () => {
   height = canvas.height = window.innerHeight;
 });
 
-// Blob setup
 const numBlobs = 15;
 const blobs = [];
-for (let i=0; i<numBlobs; i++) {
+
+for (let i = 0; i < numBlobs; i++) {
   blobs.push({
-    x: Math.random()*width,
-    y: Math.random()*height,
-    size: 20 + Math.random()*50,
+    x: Math.random() * width,
+    y: Math.random() * height,
+    size: 20 + Math.random() * 50,
     color: `rgba(${Math.floor(10+Math.random()*50)}, ${Math.floor(150+Math.random()*100)}, ${Math.floor(200+Math.random()*55)}, 0.6)`,
     vx: 0,
     vy: 0
   });
 }
 
-// Track cursor
 const cursor = { x: width/2, y: height/2 };
 document.addEventListener('mousemove', e => { cursor.x = e.clientX; cursor.y = e.clientY; });
 
-// Collect interactive words
 function getWords() {
   const words = [];
   document.querySelectorAll('h1, h2, p, nav a').forEach(el => {
@@ -153,45 +143,56 @@ function getWords() {
   return words;
 }
 
-// Animate blobs
 function animate() {
-  ctx.clearRect(0,0,width,height);
+  ctx.clearRect(0, 0, width, height);
   const words = getWords();
 
-  blobs.forEach(blob => {
-    // Move towards cursor with slight randomness
-    const dx = cursor.x - blob.x + (Math.random()-0.5)*50;
-    const dy = cursor.y - blob.y + (Math.random()-0.5)*50;
-    const distance = Math.sqrt(dx*dx + dy*dy);
-    const speed = 0.02 * blob.size; // bigger blob = slower lag
-    blob.vx += dx * 0.01;
-    blob.vy += dy * 0.01;
+  blobs.forEach((blob, i) => {
+    // Move towards cursor with gentle acceleration
+    const dx = cursor.x - blob.x + (Math.random()-0.5)*20;
+    const dy = cursor.y - blob.y + (Math.random()-0.5)*20;
+    blob.vx += dx * 0.002; // slower acceleration
+    blob.vy += dy * 0.002;
 
-    // Apply friction
-    blob.vx *= 0.9;
-    blob.vy *= 0.9;
+    // Friction
+    blob.vx *= 0.92;
+    blob.vy *= 0.92;
 
-    // Soft collision with words
+    // Avoid words softly
     words.forEach(w => {
       const wx = w.x + w.width/2;
       const wy = w.y + w.height/2;
-      const halfW = w.width/2 + blob.size;
-      const halfH = w.height/2 + blob.size;
-      const deltaX = (blob.x - wx);
-      const deltaY = (blob.y - wy);
+      const halfW = w.width/2 + blob.size/2;
+      const halfH = w.height/2 + blob.size/2;
+      const deltaX = blob.x - wx;
+      const deltaY = blob.y - wy;
 
       if (Math.abs(deltaX)<halfW && Math.abs(deltaY)<halfH) {
-        const repelX = (deltaX>0?1:-1)*(halfW - Math.abs(deltaX))*0.05;
-        const repelY = (deltaY>0?1:-1)*(halfH - Math.abs(deltaY))*0.05;
+        const repelX = (deltaX>0?1:-1)*(halfW - Math.abs(deltaX))*0.01;
+        const repelY = (deltaY>0?1:-1)*(halfH - Math.abs(deltaY))*0.01;
         blob.vx += repelX;
         blob.vy += repelY;
       }
     });
 
+    // Avoid other blobs gently
+    for (let j=0; j<blobs.length; j++) {
+      if(i === j) continue;
+      const other = blobs[j];
+      const dxB = blob.x - other.x;
+      const dyB = blob.y - other.y;
+      const dist = Math.sqrt(dxB*dxB + dyB*dyB);
+      const minDist = blob.size + other.size;
+      if(dist < minDist) {
+        blob.vx += (dxB/dist) * 0.05;
+        blob.vy += (dyB/dist) * 0.05;
+      }
+    }
+
     blob.x += blob.vx;
     blob.y += blob.vy;
 
-    // Draw blob
+    // Draw
     ctx.beginPath();
     ctx.arc(blob.x, blob.y, blob.size, 0, Math.PI*2);
     ctx.fillStyle = blob.color;
@@ -200,6 +201,7 @@ function animate() {
 
   requestAnimationFrame(animate);
 }
+
 animate();
 </script>
 

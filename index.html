@@ -12,6 +12,7 @@
     overflow-y: scroll;
     scroll-snap-type: y mandatory;
     font-family: Arial, sans-serif;
+    background: #000; /* fallback background for canvas */
   }
 
   section {
@@ -28,7 +29,9 @@
   .hero {
     position: relative;
     color: white;
+    overflow: hidden;
   }
+
   .hero video {
     position: absolute;
     top: 0; left: 0;
@@ -36,17 +39,20 @@
     object-fit: cover;
     z-index: -1;
   }
+
   .hero h1 {
     font-size: 3rem;
     margin-bottom: 20px;
     z-index: 1;
   }
+
   nav a {
     margin: 0 15px;
     text-decoration: none;
     color: white;
     font-weight: bold;
   }
+
   nav a:hover {
     color: lightblue;
   }
@@ -111,16 +117,18 @@ window.addEventListener('resize', () => {
 
 const words = Array.from(document.querySelectorAll('.interactive-word'));
 
+// Create bubbles
 const bubbles = [];
 const numBubbles = 40;
 for(let i=0;i<numBubbles;i++){
+  const hue = Math.random() * 60 + 180; // turquoise/blue range
   bubbles.push({
     x: Math.random()*canvas.width,
     y: Math.random()*canvas.height,
     vx: 0,
     vy: -Math.random()*0.5 - 0.2,
     size: Math.random()*20 + 10,
-    color: `rgba(${Math.floor(Math.random()*50)},${Math.floor(Math.random()*100)},${Math.floor(Math.random()*255)},${Math.random()*0.5+0.3})`
+    color: `hsla(${hue}, 70%, 50%, ${Math.random()*0.4+0.2})`
   });
 }
 
@@ -136,19 +144,17 @@ window.addEventListener('mousemove', e=>{
 function updateBubbles(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   for(let b of bubbles){
-    if(!mouse.moving){
-      // Bubbling motion when cursor still
-      b.vx += (Math.random()-0.5)*0.05;
-      b.vy += (Math.random()-0.5)*0.02 - 0.02;
+    // Smoothly follow cursor
+    if(mouse.moving){
+      b.vx += (mouse.x - b.x) * 0.001; 
+      b.vy += (mouse.y - b.y) * 0.001;
     } else {
-      // Move toward cursor
-      const dx = mouse.x - b.x;
-      const dy = mouse.y - b.y;
-      b.vx += dx*0.002 / b.size; 
-      b.vy += dy*0.002 / b.size;
+      // Gentle floating motion
+      b.vx += (Math.random()-0.5)*0.02;
+      b.vy += (Math.random()-0.5)*0.01 - 0.01;
     }
 
-    // Word collisions
+    // Word collisions (gentle bounce)
     for(let w of words){
       const rect = w.getBoundingClientRect();
       if(b.x + b.size > rect.left && b.x - b.size < rect.right &&
@@ -158,8 +164,8 @@ function updateBubbles(){
         const distX = b.x - cx;
         const distY = b.y - cy;
         const dist = Math.sqrt(distX*distX + distY*distY) || 1;
-        b.vx += (distX/dist)*0.2;
-        b.vy += (distY/dist)*0.2;
+        b.vx += (distX/dist)*0.05;
+        b.vy += (distY/dist)*0.05;
       }
     }
 
@@ -167,13 +173,17 @@ function updateBubbles(){
     b.x += b.vx;
     b.y += b.vy;
 
-    // Wrap around top/bottom
+    // Wrap vertically
     if(b.y + b.size < 0){ b.y = canvas.height + b.size; }
     if(b.y - b.size > canvas.height){ b.y = -b.size; }
 
-    // Bounce from sides
-    if(b.x - b.size < 0){ b.x = b.size; b.vx = Math.abs(b.vx); }
-    if(b.x + b.size > canvas.width){ b.x = canvas.width - b.size; b.vx = -Math.abs(b.vx); }
+    // Bounce from sides (gentler)
+    if(b.x - b.size < 0){ b.x = b.size; b.vx *= 0.5; }
+    if(b.x + b.size > canvas.width){ b.x = canvas.width - b.size; b.vx *= 0.5; }
+
+    // Apply damping for smooth motion
+    b.vx *= 0.95;
+    b.vy *= 0.95;
 
     // Draw bubble
     ctx.beginPath();

@@ -26,7 +26,6 @@
     position: relative;
   }
 
-  /* Hero video */
   .hero {
     color: white;
     overflow: hidden;
@@ -61,12 +60,20 @@
   .drawings { background: #222; color: white; }
   .contact { background: #eee; color: black; }
 
-  /* Ocean blobs */
   .ocean-blob {
     position: fixed;
     border-radius: 50%;
     pointer-events: none;
     mix-blend-mode: screen;
+  }
+
+  .world {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    pointer-events: none;
   }
 </style>
 </head>
@@ -100,24 +107,40 @@ const colors = ['#00bfff', '#1e90ff', '#40e0d0', '#48d1cc', '#20b2aa'];
 const blobCount = 7;
 const blobs = [];
 
+// Example interactive worlds
+const worlds = [];
+function createWorld(x, y, size) {
+  const world = document.createElement('div');
+  world.classList.add('world');
+  world.style.width = size + 'px';
+  world.style.height = size + 'px';
+  world.style.left = x + 'px';
+  world.style.top = y + 'px';
+  document.body.appendChild(world);
+  worlds.push({el: world, x, y, size});
+}
+createWorld(300, 400, 150);
+createWorld(800, 200, 120);
+createWorld(1200, 600, 180);
+
 // Initialize blobs
 for (let i = 0; i < blobCount; i++) {
   const blob = document.createElement('div');
   blob.classList.add('ocean-blob');
-  const size = 50 + Math.random() * 100;
+  const size = 50 + Math.random()*100;
   blob.style.width = size + 'px';
   blob.style.height = size + 'px';
-  blob.style.background = colors[Math.floor(Math.random() * colors.length)];
-  blob.style.opacity = 0.3 + Math.random() * 0.4;
-  blob.x = window.innerWidth/2; // start in center
+  blob.style.background = colors[Math.floor(Math.random()*colors.length)];
+  blob.style.opacity = 0.3 + Math.random()*0.4;
+  blob.x = window.innerWidth/2;
   blob.y = window.innerHeight/2;
+  blob.size = size;
   blob.offsetX = 0;
   blob.offsetY = 0;
   document.body.appendChild(blob);
   blobs.push(blob);
 }
 
-// Mouse position
 let mouseX = window.innerWidth/2;
 let mouseY = window.innerHeight/2;
 
@@ -126,21 +149,37 @@ document.addEventListener('mousemove', e => {
   mouseY = e.clientY;
 });
 
-// Animation loop
 function animate() {
   blobs.forEach(blob => {
-    // Add slow random drift
-    blob.offsetX += (Math.random()-0.5)*0.5; 
+    // Random drift
+    blob.offsetX += (Math.random()-0.5)*0.5;
     blob.offsetY += (Math.random()-0.5)*0.5;
 
-    // Move blob slightly towards cursor + add drift
-    blob.x += (mouseX - blob.x)*0.1 + blob.offsetX;
-    blob.y += (mouseY - blob.y)*0.1 + blob.offsetY;
+    // Compute speed factor based on size (larger = slower)
+    const speed = 0.15 / (blob.size/50);
 
-    // Apply to style
+    // Move toward cursor with inertia
+    blob.x += (mouseX - blob.x) * speed + blob.offsetX;
+    blob.y += (mouseY - blob.y) * speed + blob.offsetY;
+
+    // Check for worlds - simple "stick" effect if close
+    worlds.forEach(world => {
+      const dx = (blob.x + blob.size/2) - (world.x + world.size/2);
+      const dy = (blob.y + blob.size/2) - (world.y + world.size/2);
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < (blob.size/2 + world.size/2)) {
+        // Stick on edge
+        const angle = Math.atan2(dy, dx);
+        const targetDist = (blob.size/2 + world.size/2);
+        blob.x = world.x + world.size/2 + Math.cos(angle)*targetDist - blob.size/2;
+        blob.y = world.y + world.size/2 + Math.sin(angle)*targetDist - blob.size/2;
+      }
+    });
+
     blob.style.left = blob.x + 'px';
     blob.style.top = blob.y + 'px';
   });
+
   requestAnimationFrame(animate);
 }
 

@@ -1,156 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Saul Zidulka-Bejcek</title>
-  <style>
-    /* Enable vertical scroll snapping */
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow-y: scroll;
-      scroll-snap-type: y mandatory;
-      scroll-behavior: smooth;   /* smooth transition */
-      font-family: Arial, sans-serif;
-      background: #000;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saul Zidulka-Bejcek</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    font-family: Arial, sans-serif;
+    scroll-behavior: smooth;
+  }
 
-    section {
-      height: 100vh;              
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      scroll-snap-align: center;   /* center lock */
-      text-align: center;
-    }
+  section {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    scroll-snap-align: center;
+    text-align: center;
+    position: relative;
+  }
 
-    /* First section with video background */
-    .hero {
-      position: relative;
-      color: white;
-      overflow: hidden;
-    }
-    .hero video {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      z-index: -2;
-    }
-    .hero h1 {
-      font-size: 3rem;
-      margin-bottom: 20px;
-      z-index: 1;
-    }
-    nav a {
-      margin: 0 15px;
-      text-decoration: none;
-      color: white;
-      font-weight: bold;
-      transition: color 0.3s ease;
-      z-index: 1;
-      position: relative;
-    }
-    nav a:hover {
-      color: lightblue;
-      text-decoration: underline;
-    }
+  /* Hero video section */
+  .hero {
+    color: white;
+    overflow: hidden;
+  }
 
-    /* Section styling */
-    .drawings {
-      background: #222;
-      color: white;
-    }
-    .contact {
-      background: #eee;
-      color: black;
-    }
+  .hero video {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: -2; /* behind everything */
+  }
 
-    /* Moss blobs */
-    .moss {
-      position: fixed;
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-      z-index: -1; /* behind text but above video */
-      background: radial-gradient(
-        circle,
-        rgba(34, 139, 34, 0.35) 0%,   /* forest green */
-        rgba(107, 142, 35, 0.25) 40%, /* olive */
-        rgba(85, 107, 47, 0.15) 70%,
-        transparent 100%
-      );
-      mix-blend-mode: screen;
-    }
-  </style>
+  .hero h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    z-index: 1;
+    position: relative;
+  }
+
+  nav a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    position: relative;
+    z-index: 1;
+  }
+  nav a:hover {
+    color: lightblue;
+    text-decoration: underline;
+  }
+
+  /* Section styling */
+  .drawings { background: #222; color: white; }
+  .contact { background: #eee; color: black; }
+
+  /* Moss blobs */
+  .moss {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(
+      circle,
+      rgba(34,139,34,0.35) 0%,
+      rgba(107,142,35,0.25) 40%,
+      rgba(85,107,47,0.15) 70%,
+      transparent 100%
+    );
+    mix-blend-mode: screen;
+  }
+</style>
 </head>
 <body>
 
-  <!-- Section 1: Hero with video background -->
-  <section class="hero">
-    <video autoplay muted loop playsinline>
-      <source src="1757373621.967906.MOV" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-    <h1>SAUL ZIDULKA-BEJCEK</h1>
-    <nav>
-      <a href="photos/photoholder.html">PHOTOS</a>
-      <a href="drawings.html">DRAWINGS</a>
-    </nav>
-  </section>
+<!-- Hero section with video -->
+<section class="hero">
+  <video autoplay muted loop playsinline>
+    <source src="1757373621.967906.MOV" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <h1>SAUL ZIDULKA-BEJCEK</h1>
+  <nav>
+    <a href="photos/photoholder.html">PHOTOS</a>
+    <a href="drawings.html">DRAWINGS</a>
+  </nav>
+</section>
 
-  <!-- Section 2: About / Drawings -->
-  <section class="drawings">
-    <h2>ABOUT</h2>
-    <p>All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
-  </section>
+<!-- Drawings / About section -->
+<section class="drawings">
+  <h2>ABOUT</h2>
+  <p>All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
+</section>
 
-  <!-- Section 3: Contact -->
-  <section class="contact">
-    <h2>CONTACT</h2>
-    <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
-    <p>Instagram: <a href="https://www.instagram.com/saul_5607/" target="_blank">@saul_5607</a></p>
-  </section>
+<!-- Contact section -->
+<section class="contact">
+  <h2>CONTACT</h2>
+  <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
+  <p>Instagram: <a href="https://www.instagram.com/saul_5607/" target="_blank">@saul_5607</a></p>
+</section>
 
-  <script>
-    // Create multiple moss blobs
-    const mossBlobs = [];
-    const blobCount = 3;
+<script>
+  // Create multiple moss blobs
+  const blobCount = 5;
+  const mossBlobs = [];
 
-    for (let i = 0; i < blobCount; i++) {
-      const moss = document.createElement("div");
-      moss.classList.add("moss");
-      moss.style.width = `${150 + i*50}px`;
-      moss.style.height = `${150 + i*50}px`;
-      moss.style.opacity = 0.6 - i * 0.15;
-      document.body.appendChild(moss);
-      mossBlobs.push({ el: moss, x: window.innerWidth/2, y: window.innerHeight/2 });
-    }
+  for (let i = 0; i < blobCount; i++) {
+    const blob = document.createElement('div');
+    blob.classList.add('moss');
+    const size = 100 + Math.random() * 100;
+    blob.style.width = size + 'px';
+    blob.style.height = size + 'px';
+    blob.style.opacity = 0.4 + Math.random() * 0.3;
+    document.querySelector('.hero').appendChild(blob);
+    mossBlobs.push({ el: blob, x: window.innerWidth/2, y: window.innerHeight/2 });
+  }
 
-    let targetX = window.innerWidth / 2;
-    let targetY = window.innerHeight / 2;
+  let targetX = window.innerWidth/2;
+  let targetY = window.innerHeight/2;
 
-    document.addEventListener("mousemove", e => {
-      targetX = e.pageX;
-      targetY = e.pageY;
+  document.addEventListener('mousemove', e => {
+    targetX = e.clientX;
+    targetY = e.clientY;
+  });
+
+  function animate() {
+    mossBlobs.forEach((blob, i) => {
+      blob.x += (targetX - blob.x) * (0.05 - i*0.005);
+      blob.y += (targetY - blob.y) * (0.05 - i*0.005);
+      blob.el.style.left = blob.x + 'px';
+      blob.el.style.top = blob.y + 'px';
     });
+    requestAnimationFrame(animate);
+  }
+  animate();
+</script>
 
-    function animate() {
-      mossBlobs.forEach((blob, i) => {
-        // Apply easing for smooth "laggy" motion
-        blob.x += (targetX - blob.x) * (0.05 - i * 0.01);
-        blob.y += (targetY - blob.y) * (0.05 - i * 0.01);
-        blob.el.style.left = blob.x + "px";
-        blob.el.style.top = blob.y + "px";
-      });
-      requestAnimationFrame(animate);
-    }
-    animate();
-  </script>
 </body>
 </html>

@@ -11,7 +11,6 @@
       height: 100%;
       overflow-y: scroll;
       scroll-snap-type: y mandatory;
-      scroll-behavior: smooth;
       font-family: Arial, sans-serif;
     }
 
@@ -30,6 +29,7 @@
       position: relative;
       color: white;
     }
+
     .hero video {
       position: absolute;
       top: 0; left: 0;
@@ -37,12 +37,14 @@
       object-fit: cover;
       z-index: -2;
     }
+
     .hero h1 {
       font-size: 3rem;
       margin-bottom: 20px;
       z-index: 2;
       position: relative;
     }
+
     nav a {
       margin: 0 15px;
       text-decoration: none;
@@ -52,15 +54,12 @@
       position: relative;
       z-index: 2;
     }
-    nav a:hover {
-      color: lightblue;
-      text-decoration: underline;
-    }
+
+    nav a:hover { color: lightblue; text-decoration: underline; }
 
     .drawings { background: #222; color: white; }
     .contact { background: #eee; color: black; }
 
-    /* Words to block bubbles */
     .block-word {
       display: inline-block;
       position: relative;
@@ -70,7 +69,7 @@
     }
 
     canvas {
-      position: absolute;
+      position: fixed;
       top: 0; left: 0;
       z-index: -1;
       pointer-events: none;
@@ -123,8 +122,12 @@ document.addEventListener('mousemove', e => {
   cursor.y = e.clientY;
 });
 
-// Select words to interact with
-const words = Array.from(document.querySelectorAll('.block-word')).map(el => el.getBoundingClientRect());
+let wordRects = [];
+function updateWords() {
+  wordRects = Array.from(document.querySelectorAll('.block-word')).map(el => el.getBoundingClientRect());
+}
+updateWords();
+window.addEventListener('resize', updateWords);
 
 class Blob {
   constructor() {
@@ -133,44 +136,59 @@ class Blob {
   reset() {
     this.x = Math.random() * width;
     this.y = height + Math.random() * 100;
-    this.size = 10 + Math.random() * 40;
+    this.size = 8 + Math.random() * 30;
     this.vx = 0;
-    this.vy = -Math.random() * 0.5 - 0.2;
+    this.vy = -0.2 - Math.random()*0.3;
     this.color = `hsla(${180 + Math.random()*60}, 70%, 50%, ${0.2+Math.random()*0.4})`;
   }
-  update() {
-    // Idle upward bubble movement
-    this.vy -= 0.002*(50/this.size); // smaller bubbles rise faster
-    this.vx += Math.sin(Date.now()*0.001 + this.x)*0.1; // gentle sway
-    this.vy += (Math.random()-0.5)*0.05; // vertical jitter
+  update(blobs) {
+    // Natural upward motion
+    this.vy -= 0.001*(50/this.size);
+    this.vx += Math.sin(Date.now()*0.001 + this.x)*0.05;
+    this.vy += (Math.random()-0.5)*0.03;
 
-    // Move toward cursor
+    // Follow cursor softly
     const dx = cursor.x - this.x;
     const dy = cursor.y - this.y;
-    this.vx += dx * 0.001;
-    this.vy += dy * 0.001;
+    this.vx += dx * 0.0005;
+    this.vy += dy * 0.0005;
 
-    // Interact with words
-    words.forEach(w => {
+    // Repel from words
+    wordRects.forEach(w => {
       const closestX = Math.max(w.left, Math.min(this.x, w.right));
       const closestY = Math.max(w.top, Math.min(this.y, w.bottom));
       const distX = this.x - closestX;
       const distY = this.y - closestY;
       const dist = Math.sqrt(distX*distX + distY*distY);
-      if(dist < this.size + 5) {
-        this.vx += distX*0.05;
-        this.vy += distY*0.05;
+      if(dist < this.size + 5){
+        const force = 0.05 * (this.size/20);
+        this.vx += (distX/dist)*force;
+        this.vy += (distY/dist)*force;
       }
     });
 
-    // Limit speed for smoothness
+    // Simple collision avoidance with other blobs
+    blobs.forEach(b => {
+      if(b === this) return;
+      const dx = this.x - b.x;
+      const dy = this.y - b.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      const minDist = this.size + b.size;
+      if(dist < minDist && dist > 0){
+        const push = 0.02;
+        this.vx += (dx/dist)*push;
+        this.vy += (dy/dist)*push;
+      }
+    });
+
+    // Limit speed
     this.vx *= 0.98;
     this.vy *= 0.98;
 
     this.x += this.vx;
     this.y += this.vy;
 
-    // Reset if above screen
+    // Wrap around edges
     if(this.y + this.size < 0) this.reset();
     if(this.x - this.size > width) this.x = 0;
     if(this.x + this.size < 0) this.x = width;
@@ -188,7 +206,7 @@ for(let i=0;i<50;i++) blobs.push(new Blob());
 
 function animate(){
   ctx.clearRect(0,0,width,height);
-  blobs.forEach(b => { b.update(); b.draw(); });
+  blobs.forEach(b => { b.update(blobs); b.draw(); });
   requestAnimationFrame(animate);
 }
 animate();

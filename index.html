@@ -1,56 +1,95 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Saul Zidulka-Bejcek Photography</title>
   <style>
-    body {
-      text-align: center;
+    /* Enable vertical scroll snapping */
+    html, body {
       margin: 0;
       padding: 0;
-      background-image: url('1757373621.967906.MOV'); /* your photo file */
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      min-height: 100vh;
-      color: black;
+      height: 100%;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
       font-family: Arial, sans-serif;
     }
 
-    img {
-      display: block;
-      margin: 20px auto;
+    section {
+      height: 100vh;              /* full viewport height */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      scroll-snap-align: start;   /* lock to each section */
+      text-align: center;
     }
 
-    /* Push content down */
-    .header {
-      padding-top: 300px; /* adjust this number */
+    /* First section with video background */
+    .hero {
+      position: relative;
+      color: white;
     }
-
-    /* Navigation bar styling */
-    nav {
-      margin: 20px 0;
+    .hero video {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
     }
     nav a {
-      margin: 0 10px;
-      text-decoration: none;   /* removes underline */
-      color: black;            /* link color */
+      margin: 0 15px;
+      text-decoration: none;
+      color: white;
       font-weight: bold;
     }
     nav a:hover {
-      color: blue;             
+      color: lightblue;
       text-decoration: underline;
+    }
+
+    /* Example styling for other sections */
+    .about {
+      background: #222;
+      color: white;
+    }
+    .contact {
+      background: #eee;
+      color: black;
     }
   </style>
 </head>
 <body>
-  <div class="header">
+
+  <!-- Section 1: Hero with video background -->
+  <section class="hero">
+    <video autoplay muted loop playsinline>
+      <source src="1757373621.967906.MOV" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
     <h1>SAUL ZIDULKA-BEJCEK</h1>
-    <!-- Navigation -->
     <nav>
-      <a href="photos/photoholder.html">Photos</a> |
-      <a href="about.html">About</a> |
+      <a href="photos/photoholder.html">Photos</a>
+      <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
     </nav>
-  </div>
+  </section>
+
+  <!-- Section 2: About (example) -->
+  <section class="about">
+    <h2>About</h2>
+    <p>Write something about your photography here.</p>
+  </section>
+
+  <!-- Section 3: Contact (example) -->
+  <section class="contact">
+    <h2>Contact</h2>
+    <p>Email: yourname@example.com</p>
+  </section>
+
 </body>
 </html>

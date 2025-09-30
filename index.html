@@ -1,190 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saul Zidulka-Bejcek</title>
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow-y: scroll;
-    scroll-snap-type: y mandatory;
-    font-family: Arial, sans-serif;
-    scroll-behavior: smooth;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saul Zidulka-Bejcek</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      font-family: Arial, sans-serif;
+    }
 
-  section {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    scroll-snap-align: center;
-    text-align: center;
-    position: relative;
-  }
+    section {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      scroll-snap-align: center;
+      text-align: center;
+      position: relative;
+    }
 
-  .hero {
-    color: white;
-    overflow: hidden;
-  }
-  .hero video {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
-    z-index: -2;
-  }
-  .hero h1 {
-    font-size: 3rem;
-    margin-bottom: 20px;
-    z-index: 1;
-    position: relative;
-  }
-  nav a {
-    margin: 0 15px;
-    text-decoration: none;
-    color: white;
-    font-weight: bold;
-    transition: color 0.3s ease;
-    position: relative;
-    z-index: 1;
-  }
-  nav a:hover {
-    color: lightblue;
-    text-decoration: underline;
-  }
+    /* Hero section with video */
+    .hero {
+      position: relative;
+      color: white;
+      overflow: hidden;
+    }
+    .hero video {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      z-index: 2;
+      position: relative;
+    }
+    nav a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      transition: color 0.3s ease;
+      position: relative;
+      z-index: 2;
+    }
+    nav a:hover {
+      color: lightblue;
+      text-decoration: underline;
+    }
 
-  .drawings { background: #222; color: white; }
-  .contact { background: #eee; color: black; }
+    /* Section styling */
+    .drawings {
+      background: #222;
+      color: white;
+    }
+    .contact {
+      background: #eee;
+      color: black;
+    }
 
-  .ocean-blob {
-    position: fixed;
-    border-radius: 50%;
-    pointer-events: none;
-    mix-blend-mode: screen;
-  }
-
-  .world {
-    position: absolute;
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.1);
-    pointer-events: none;
-  }
-</style>
+    /* Blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      z-index: 1;
+    }
+  </style>
 </head>
 <body>
 
-<section class="hero">
-  <video autoplay muted loop playsinline>
-    <source src="1757373621.967906.MOV" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-  <h1>SAUL ZIDULKA-BEJCEK</h1>
-  <nav>
-    <a href="photos/photoholder.html">PHOTOS</a>
-    <a href="drawings.html">DRAWINGS</a>
-  </nav>
-</section>
+  <!-- Section 1: Hero -->
+  <section class="hero">
+    <video autoplay muted loop playsinline>
+      <source src="1757373621.967906.MOV" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <h1>SAUL ZIDULKA-BEJCEK</h1>
+    <nav>
+      <a href="photos/photoholder.html">PHOTOS</a>
+      <a href="drawings.html">DRAWINGS</a>
+    </nav>
+  </section>
 
-<section class="drawings">
-  <h2>ABOUT</h2>
-  <p>All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
-</section>
+  <!-- Section 2: About / Drawings -->
+  <section class="drawings">
+    <h2>ABOUT</h2>
+    <p>All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
+  </section>
 
-<section class="contact">
-  <h2>CONTACT</h2>
-  <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
-  <p>Instagram: <a href="https://www.instagram.com/saul_5607/" target="_blank">@saul_5607</a></p>
-</section>
+  <!-- Section 3: Contact -->
+  <section class="contact">
+    <h2>CONTACT</h2>
+    <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
+    <p>Instagram: <a href="https://www.instagram.com/saul_5607/" target="_blank">@saul_5607</a></p>
+  </section>
 
-<script>
-const colors = ['#00bfff', '#1e90ff', '#40e0d0', '#48d1cc', '#20b2aa'];
-const blobCount = 7;
-const blobs = [];
+  <script>
+    const NUM_BLOBS = 10;
+    const blobs = [];
+    const worlds = [];
+    const colors = ["#1CA9C9","#40E0D0","#00CED1","#48D1CC","#20B2AA"];
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
 
-// Example interactive worlds
-const worlds = [];
-function createWorld(x, y, size) {
-  const world = document.createElement('div');
-  world.classList.add('world');
-  world.style.width = size + 'px';
-  world.style.height = size + 'px';
-  world.style.left = x + 'px';
-  world.style.top = y + 'px';
-  document.body.appendChild(world);
-  worlds.push({el: world, x, y, size});
-}
-createWorld(300, 400, 150);
-createWorld(800, 200, 120);
-createWorld(1200, 600, 180);
+    // Create blobs
+    for (let i=0; i<NUM_BLOBS; i++){
+      const blob = document.createElement('div');
+      const size = 30 + Math.random()*70;
+      blob.className = 'blob';
+      blob.style.width = blob.style.height = size + 'px';
+      blob.style.background = colors[Math.floor(Math.random()*colors.length)];
+      document.body.appendChild(blob);
+      blobs.push({
+        el: blob,
+        x: Math.random()*window.innerWidth,
+        y: Math.random()*window.innerHeight,
+        size: size,
+        offsetX: 0,
+        offsetY: 0
+      });
+    }
 
-// Initialize blobs
-for (let i = 0; i < blobCount; i++) {
-  const blob = document.createElement('div');
-  blob.classList.add('ocean-blob');
-  const size = 50 + Math.random()*100;
-  blob.style.width = size + 'px';
-  blob.style.height = size + 'px';
-  blob.style.background = colors[Math.floor(Math.random()*colors.length)];
-  blob.style.opacity = 0.3 + Math.random()*0.4;
-  blob.x = window.innerWidth/2;
-  blob.y = window.innerHeight/2;
-  blob.size = size;
-  blob.offsetX = 0;
-  blob.offsetY = 0;
-  document.body.appendChild(blob);
-  blobs.push(blob);
-}
-
-let mouseX = window.innerWidth/2;
-let mouseY = window.innerHeight/2;
-
-document.addEventListener('mousemove', e => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-});
-
-function animate() {
-  blobs.forEach(blob => {
-    // Random drift
-    blob.offsetX += (Math.random()-0.5)*0.5;
-    blob.offsetY += (Math.random()-0.5)*0.5;
-
-    // Compute speed factor based on size (larger = slower)
-    const speed = 0.15 / (blob.size/50);
-
-    // Move toward cursor with inertia
-    blob.x += (mouseX - blob.x) * speed + blob.offsetX;
-    blob.y += (mouseY - blob.y) * speed + blob.offsetY;
-
-    // Check for worlds - simple "stick" effect if close
-    worlds.forEach(world => {
-      const dx = (blob.x + blob.size/2) - (world.x + world.size/2);
-      const dy = (blob.y + blob.size/2) - (world.y + world.size/2);
-      const dist = Math.sqrt(dx*dx + dy*dy);
-      if (dist < (blob.size/2 + world.size/2)) {
-        // Stick on edge
-        const angle = Math.atan2(dy, dx);
-        const targetDist = (blob.size/2 + world.size/2);
-        blob.x = world.x + world.size/2 + Math.cos(angle)*targetDist - blob.size/2;
-        blob.y = world.y + world.size/2 + Math.sin(angle)*targetDist - blob.size/2;
-      }
+    // Add text elements as rectangle worlds
+    const textBlocks = document.querySelectorAll('h1, h2, p, nav a');
+    textBlocks.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      worlds.push({
+        el: el,
+        x: rect.left,
+        y: rect.top,
+        width: rect.width,
+        height: rect.height,
+        isRect: true
+      });
     });
 
-    blob.style.left = blob.x + 'px';
-    blob.style.top = blob.y + 'px';
-  });
+    // Optional: add circular worlds anywhere
+    // worlds.push({x:300, y:300, size:60, isRect:false});
 
-  requestAnimationFrame(animate);
-}
+    window.addEventListener('mousemove', e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
 
-animate();
-</script>
+    function animate(){
+      blobs.forEach(blob=>{
+        // Random drift
+        blob.offsetX += (Math.random()-0.5)*0.5;
+        blob.offsetY += (Math.random()-0.5)*0.5;
 
+        // Speed factor by size (larger = slower behind cursor)
+        const speed = 0.1 / (blob.size/50);
+
+        blob.x += (mouseX - blob.x) * speed + blob.offsetX;
+        blob.y += (mouseY - blob.y) * speed + blob.offsetY;
+
+        // Collision with worlds
+        worlds.forEach(world=>{
+          if(world.isRect){
+            if(blob.x + blob.size > world.x &&
+               blob.x < world.x + world.width &&
+               blob.y + blob.size > world.y &&
+               blob.y < world.y + world.height){
+                 // Push blob outside rectangle
+                 if(blob.x + blob.size/2 < world.x + world.width/2) blob.x = world.x - blob.size;
+                 else blob.x = world.x + world.width;
+                 if(blob.y + blob.size/2 < world.y + world.height/2) blob.y = world.y - blob.size;
+                 else blob.y = world.y + world.height;
+            }
+          } else {
+            // Circle collision
+            const dx = (blob.x + blob.size/2) - (world.x + world.size/2);
+            const dy = (blob.y + blob.size/2) - (world.y + world.size/2);
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if(dist < (blob.size/2 + world.size/2)){
+              const angle = Math.atan2(dy, dx);
+              const targetDist = blob.size/2 + world.size/2;
+              blob.x = world.x + world.size/2 + Math.cos(angle)*targetDist - blob.size/2;
+              blob.y = world.y + world.size/2 + Math.sin(angle)*targetDist - blob.size/2;
+            }
+          }
+        });
+
+        blob.el.style.left = blob.x + 'px';
+        blob.el.style.top = blob.y + 'px';
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    // Update text block positions on resize
+    window.addEventListener('resize', () => {
+      worlds.length = 0; // reset
+      textBlocks.forEach(el=>{
+        const rect = el.getBoundingClientRect();
+        worlds.push({
+          el: el,
+          x: rect.left,
+          y: rect.top,
+          width: rect.width,
+          height: rect.height,
+          isRect: true
+        });
+      });
+    });
+  </script>
 </body>
 </html>

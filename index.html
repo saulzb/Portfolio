@@ -35,9 +35,10 @@
   .hero video {
     position: absolute;
     top: 0; left: 0;
-    width: 100%; height: 100%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    z-index: -2; /* video behind canvas */
+    z-index: -2;
   }
 
   .hero h1 {
@@ -64,9 +65,7 @@
   canvas {
     position: absolute;
     top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: -1; /* canvas above video, below text */
+    z-index: -1; /* above video, below text */
   }
 
   .interactive-word {
@@ -108,23 +107,30 @@
 <script>
 const canvas = document.getElementById('bubbleCanvas');
 const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
 
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
+// Match canvas resolution to device pixels
+function resizeCanvas(){
+  canvas.width = window.innerWidth * devicePixelRatio;
+  canvas.height = window.innerHeight * devicePixelRatio;
+  canvas.style.width = window.innerWidth + 'px';
+  canvas.style.height = window.innerHeight + 'px';
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 
 const words = Array.from(document.querySelectorAll('.interactive-word'));
 
+// Create bubbles
 const bubbles = [];
 const numBubbles = 40;
 for(let i=0;i<numBubbles;i++){
   const hue = Math.random() * 60 + 180; // turquoise/blue
   bubbles.push({
-    x: Math.random()*canvas.width,
-    y: Math.random()*canvas.height,
+    x: Math.random()*window.innerWidth,
+    y: Math.random()*window.innerHeight,
     vx: 0,
     vy: -Math.random()*0.5 - 0.2,
     size: Math.random()*20 + 10,
@@ -132,7 +138,7 @@ for(let i=0;i<numBubbles;i++){
   });
 }
 
-const mouse = {x: canvas.width/2, y: canvas.height/2, moving: false};
+const mouse = {x: window.innerWidth/2, y: window.innerHeight/2, moving: false};
 window.addEventListener('mousemove', e=>{
   mouse.x = e.clientX;
   mouse.y = e.clientY;
@@ -142,20 +148,20 @@ window.addEventListener('mousemove', e=>{
 });
 
 function updateBubbles(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.clearRect(0,0,window.innerWidth, window.innerHeight);
 
   for(let b of bubbles){
     if(mouse.moving){
-      // Move gently toward cursor
+      // Move toward cursor gently
       b.vx += (mouse.x - b.x) * 0.001;
       b.vy += (mouse.y - b.y) * 0.001;
     } else {
-      // Disperse upwards when cursor stops
+      // Disperse upward when cursor stops
       b.vx += (Math.random()-0.5)*0.02;
-      b.vy -= 0.02; // gently rise
+      b.vy -= 0.02;
     }
 
-    // Word collisions (gentle bounce)
+    // Word collisions
     for(let w of words){
       const rect = w.getBoundingClientRect();
       if(b.x + b.size > rect.left && b.x - b.size < rect.right &&
@@ -174,15 +180,15 @@ function updateBubbles(){
     b.x += b.vx;
     b.y += b.vy;
 
-    // Wrap vertically (loop from bottom)
-    if(b.y + b.size < 0){ b.y = canvas.height + b.size; }
-    if(b.y - b.size > canvas.height){ b.y = -b.size; }
+    // Wrap vertically
+    if(b.y + b.size < 0){ b.y = window.innerHeight + b.size; }
+    if(b.y - b.size > window.innerHeight){ b.y = -b.size; }
 
-    // Bounce from sides gently
+    // Bounce from sides
     if(b.x - b.size < 0){ b.x = b.size; b.vx *= 0.5; }
-    if(b.x + b.size > canvas.width){ b.x = canvas.width - b.size; b.vx *= 0.5; }
+    if(b.x + b.size > window.innerWidth){ b.x = window.innerWidth - b.size; b.vx *= 0.5; }
 
-    // Apply damping
+    // Damping
     b.vx *= 0.95;
     b.vy *= 0.95;
 

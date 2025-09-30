@@ -54,7 +54,6 @@
   .drawings { background: #222; color: white; }
   .contact { background: #eee; color: black; }
 
-  /* Bubble canvas */
   canvas {
     position: absolute;
     top: 0; left: 0;
@@ -63,7 +62,6 @@
     z-index: 0;
   }
 
-  /* Words to interact with */
   .interactive-word {
     position: relative;
     z-index: 1;
@@ -122,7 +120,7 @@ for(let i=0;i<numBubbles;i++){
     vx: 0,
     vy: -Math.random()*0.5 - 0.2,
     size: Math.random()*20 + 10,
-    color: `rgba(0,${Math.floor(Math.random()*200+55)},${Math.floor(Math.random()*255)},${Math.random()*0.5+0.3})`
+    color: `rgba(${Math.floor(Math.random()*50)},${Math.floor(Math.random()*100)},${Math.floor(Math.random()*255)},${Math.random()*0.5+0.3})`
   });
 }
 
@@ -132,22 +130,22 @@ window.addEventListener('mousemove', e=>{
   mouse.y = e.clientY;
   mouse.moving = true;
   clearTimeout(mouse.timer);
-  mouse.timer = setTimeout(()=>{ mouse.moving = false; }, 1000);
+  mouse.timer = setTimeout(()=>{ mouse.moving = false; }, 800);
 });
 
 function updateBubbles(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   for(let b of bubbles){
-    // Bubbling motion
-    b.vx += (Math.random()-0.5)*0.05;
-    b.vy += (Math.random()-0.5)*0.02 - 0.02; // upward drift
-    
-    // Cursor attraction
-    if(mouse.moving){
+    if(!mouse.moving){
+      // Bubbling motion when cursor still
+      b.vx += (Math.random()-0.5)*0.05;
+      b.vy += (Math.random()-0.5)*0.02 - 0.02;
+    } else {
+      // Move toward cursor
       const dx = mouse.x - b.x;
       const dy = mouse.y - b.y;
-      b.vx += dx*0.001 / b.size; 
-      b.vy += dy*0.001 / b.size;
+      b.vx += dx*0.002 / b.size; 
+      b.vy += dy*0.002 / b.size;
     }
 
     // Word collisions
@@ -155,14 +153,13 @@ function updateBubbles(){
       const rect = w.getBoundingClientRect();
       if(b.x + b.size > rect.left && b.x - b.size < rect.right &&
          b.y + b.size > rect.top && b.y - b.size < rect.bottom){
-        // simple repel from center
         const cx = (rect.left + rect.right)/2;
         const cy = (rect.top + rect.bottom)/2;
         const distX = b.x - cx;
         const distY = b.y - cy;
         const dist = Math.sqrt(distX*distX + distY*distY) || 1;
-        b.vx += (distX/dist)*0.5;
-        b.vy += (distY/dist)*0.5;
+        b.vx += (distX/dist)*0.2;
+        b.vy += (distY/dist)*0.2;
       }
     }
 
@@ -178,7 +175,7 @@ function updateBubbles(){
     if(b.x - b.size < 0){ b.x = b.size; b.vx = Math.abs(b.vx); }
     if(b.x + b.size > canvas.width){ b.x = canvas.width - b.size; b.vx = -Math.abs(b.vx); }
 
-    // Draw
+    // Draw bubble
     ctx.beginPath();
     ctx.arc(b.x,b.y,b.size,0,Math.PI*2);
     ctx.fillStyle = b.color;

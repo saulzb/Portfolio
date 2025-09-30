@@ -1,223 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Saul Zidulka-Bejcek</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow-y: scroll;
-      scroll-snap-type: y mandatory;
-      scroll-behavior: smooth;
-      font-family: Arial, sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saul Zidulka-Bejcek</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    font-family: Arial, sans-serif;
+  }
 
-    section {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      scroll-snap-align: center;
-      text-align: center;
-      position: relative;
-    }
+  section {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    scroll-snap-align: start;
+    text-align: center;
+    position: relative;
+  }
 
-    /* Hero section with video */
-    .hero {
-      position: relative;
-      color: white;
-      overflow: hidden;
-    }
-    .hero video {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      z-index: -2;
-    }
-    .hero h1 {
-      font-size: 3rem;
-      margin-bottom: 20px;
-      z-index: 2;
-      position: relative;
-    }
-    nav a {
-      margin: 0 15px;
-      text-decoration: none;
-      color: white;
-      font-weight: bold;
-      transition: color 0.3s ease;
-      position: relative;
-      z-index: 2;
-    }
-    nav a:hover {
-      color: lightblue;
-      text-decoration: underline;
-    }
+  /* Hero section with video */
+  .hero {
+    position: relative;
+    color: white;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
 
-    /* Section styling */
-    .drawings {
-      background: #222;
-      color: white;
-    }
-    .contact {
-      background: #eee;
-      color: black;
-    }
+  .hero video {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: -2;
+  }
 
-    /* Blobs */
-    .blob {
-      position: absolute;
-      border-radius: 50%;
-      pointer-events: none;
-      mix-blend-mode: screen;
-      z-index: 1;
-    }
-  </style>
+  .hero h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  nav {
+    position: relative;
+    z-index: 1;
+  }
+
+  nav a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    transition: color 0.3s ease;
+  }
+  nav a:hover { color: lightblue; text-decoration: underline; }
+
+  /* Blobs canvas overlay */
+  canvas#blobs {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
+
+  /* Other sections */
+  .drawings { background: #222; color: white; }
+  .contact { background: #eee; color: black; }
+
+  /* Make text selectable for collision */
+  h2, p {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 10px 0;
+  }
+</style>
 </head>
 <body>
 
-  <!-- Section 1: Hero -->
-  <section class="hero">
-    <video autoplay muted loop playsinline>
-      <source src="1757373621.967906.MOV" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-    <h1>SAUL ZIDULKA-BEJCEK</h1>
-    <nav>
-      <a href="photos/photoholder.html">PHOTOS</a>
-      <a href="drawings.html">DRAWINGS</a>
-    </nav>
-  </section>
+<section class="hero">
+  <video autoplay muted loop playsinline>
+    <source src="1757373621.967906.MOV" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <canvas id="blobs"></canvas>
+  <h1>SAUL ZIDULKA-BEJCEK</h1>
+  <nav>
+    <a href="photos/photoholder.html">PHOTOS</a>
+    <a href="drawings.html">DRAWINGS</a>
+  </nav>
+</section>
 
-  <!-- Section 2: About / Drawings -->
-  <section class="drawings">
-    <h2>ABOUT</h2>
-    <p>All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
-  </section>
+<section class="drawings">
+  <h2>ABOUT</h2>
+  <p>All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
+</section>
 
-  <!-- Section 3: Contact -->
-  <section class="contact">
-    <h2>CONTACT</h2>
-    <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
-    <p>Instagram: <a href="https://www.instagram.com/saul_5607/" target="_blank">@saul_5607</a></p>
-  </section>
+<section class="contact">
+  <h2>CONTACT</h2>
+  <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
+  <p>Instagram: <a href="https://www.instagram.com/saul_5607/" target="_blank">@saul_5607</a></p>
+</section>
 
-  <script>
-    const NUM_BLOBS = 10;
-    const blobs = [];
-    const worlds = [];
-    const colors = ["#1CA9C9","#40E0D0","#00CED1","#48D1CC","#20B2AA"];
-    let mouseX = window.innerWidth / 2;
-    let mouseY = window.innerHeight / 2;
+<script>
+const canvas = document.getElementById('blobs');
+const ctx = canvas.getContext('2d');
+let width = canvas.width = window.innerWidth;
+let height = canvas.height = window.innerHeight;
 
-    // Create blobs
-    for (let i=0; i<NUM_BLOBS; i++){
-      const blob = document.createElement('div');
-      const size = 30 + Math.random()*70;
-      blob.className = 'blob';
-      blob.style.width = blob.style.height = size + 'px';
-      blob.style.background = colors[Math.floor(Math.random()*colors.length)];
-      document.body.appendChild(blob);
-      blobs.push({
-        el: blob,
-        x: Math.random()*window.innerWidth,
-        y: Math.random()*window.innerHeight,
-        size: size,
-        offsetX: 0,
-        offsetY: 0
-      });
-    }
+window.addEventListener('resize', () => {
+  width = canvas.width = window.innerWidth;
+  height = canvas.height = window.innerHeight;
+});
 
-    // Add text elements as rectangle worlds
-    const textBlocks = document.querySelectorAll('h1, h2, p, nav a');
-    textBlocks.forEach(el => {
-      const rect = el.getBoundingClientRect();
-      worlds.push({
-        el: el,
-        x: rect.left,
-        y: rect.top,
-        width: rect.width,
-        height: rect.height,
-        isRect: true
-      });
+// Blob setup
+const numBlobs = 15;
+const blobs = [];
+for (let i=0; i<numBlobs; i++) {
+  blobs.push({
+    x: Math.random()*width,
+    y: Math.random()*height,
+    size: 20 + Math.random()*50,
+    color: `rgba(${Math.floor(10+Math.random()*50)}, ${Math.floor(150+Math.random()*100)}, ${Math.floor(200+Math.random()*55)}, 0.6)`,
+    vx: 0,
+    vy: 0
+  });
+}
+
+// Track cursor
+const cursor = { x: width/2, y: height/2 };
+document.addEventListener('mousemove', e => { cursor.x = e.clientX; cursor.y = e.clientY; });
+
+// Collect interactive words
+function getWords() {
+  const words = [];
+  document.querySelectorAll('h1, h2, p, nav a').forEach(el => {
+    const rect = el.getBoundingClientRect();
+    words.push({
+      x: rect.left,
+      y: rect.top + window.scrollY,
+      width: rect.width,
+      height: rect.height
+    });
+  });
+  return words;
+}
+
+// Animate blobs
+function animate() {
+  ctx.clearRect(0,0,width,height);
+  const words = getWords();
+
+  blobs.forEach(blob => {
+    // Move towards cursor with slight randomness
+    const dx = cursor.x - blob.x + (Math.random()-0.5)*50;
+    const dy = cursor.y - blob.y + (Math.random()-0.5)*50;
+    const distance = Math.sqrt(dx*dx + dy*dy);
+    const speed = 0.02 * blob.size; // bigger blob = slower lag
+    blob.vx += dx * 0.01;
+    blob.vy += dy * 0.01;
+
+    // Apply friction
+    blob.vx *= 0.9;
+    blob.vy *= 0.9;
+
+    // Soft collision with words
+    words.forEach(w => {
+      const wx = w.x + w.width/2;
+      const wy = w.y + w.height/2;
+      const halfW = w.width/2 + blob.size;
+      const halfH = w.height/2 + blob.size;
+      const deltaX = (blob.x - wx);
+      const deltaY = (blob.y - wy);
+
+      if (Math.abs(deltaX)<halfW && Math.abs(deltaY)<halfH) {
+        const repelX = (deltaX>0?1:-1)*(halfW - Math.abs(deltaX))*0.05;
+        const repelY = (deltaY>0?1:-1)*(halfH - Math.abs(deltaY))*0.05;
+        blob.vx += repelX;
+        blob.vy += repelY;
+      }
     });
 
-    // Optional: add circular worlds anywhere
-    // worlds.push({x:300, y:300, size:60, isRect:false});
+    blob.x += blob.vx;
+    blob.y += blob.vy;
 
-    window.addEventListener('mousemove', e => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    });
+    // Draw blob
+    ctx.beginPath();
+    ctx.arc(blob.x, blob.y, blob.size, 0, Math.PI*2);
+    ctx.fillStyle = blob.color;
+    ctx.fill();
+  });
 
-    function animate(){
-      blobs.forEach(blob=>{
-        // Random drift
-        blob.offsetX += (Math.random()-0.5)*0.5;
-        blob.offsetY += (Math.random()-0.5)*0.5;
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
 
-        // Speed factor by size (larger = slower behind cursor)
-        const speed = 0.1 / (blob.size/50);
-
-        blob.x += (mouseX - blob.x) * speed + blob.offsetX;
-        blob.y += (mouseY - blob.y) * speed + blob.offsetY;
-
-        // Collision with worlds
-        worlds.forEach(world=>{
-          if(world.isRect){
-            if(blob.x + blob.size > world.x &&
-               blob.x < world.x + world.width &&
-               blob.y + blob.size > world.y &&
-               blob.y < world.y + world.height){
-                 // Push blob outside rectangle
-                 if(blob.x + blob.size/2 < world.x + world.width/2) blob.x = world.x - blob.size;
-                 else blob.x = world.x + world.width;
-                 if(blob.y + blob.size/2 < world.y + world.height/2) blob.y = world.y - blob.size;
-                 else blob.y = world.y + world.height;
-            }
-          } else {
-            // Circle collision
-            const dx = (blob.x + blob.size/2) - (world.x + world.size/2);
-            const dy = (blob.y + blob.size/2) - (world.y + world.size/2);
-            const dist = Math.sqrt(dx*dx + dy*dy);
-            if(dist < (blob.size/2 + world.size/2)){
-              const angle = Math.atan2(dy, dx);
-              const targetDist = blob.size/2 + world.size/2;
-              blob.x = world.x + world.size/2 + Math.cos(angle)*targetDist - blob.size/2;
-              blob.y = world.y + world.size/2 + Math.sin(angle)*targetDist - blob.size/2;
-            }
-          }
-        });
-
-        blob.el.style.left = blob.x + 'px';
-        blob.el.style.top = blob.y + 'px';
-      });
-
-      requestAnimationFrame(animate);
-    }
-
-    animate();
-
-    // Update text block positions on resize
-    window.addEventListener('resize', () => {
-      worlds.length = 0; // reset
-      textBlocks.forEach(el=>{
-        const rect = el.getBoundingClientRect();
-        worlds.push({
-          el: el,
-          x: rect.left,
-          y: rect.top,
-          width: rect.width,
-          height: rect.height,
-          isRect: true
-        });
-      });
-    });
-  </script>
 </body>
 </html>

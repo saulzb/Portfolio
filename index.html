@@ -61,22 +61,14 @@
     text-decoration: underline;
   }
 
-  /* Section styling */
   .drawings { background: #222; color: white; }
   .contact { background: #eee; color: black; }
 
-  /* Moss blobs */
-  .moss {
-    position: absolute;
+  /* Ocean blobs */
+  .ocean-blob {
+    position: fixed; /* fixed so they move with cursor across all sections */
     border-radius: 50%;
     pointer-events: none;
-    background: radial-gradient(
-      circle,
-      rgba(34,139,34,0.35) 0%,
-      rgba(107,142,35,0.25) 40%,
-      rgba(85,107,47,0.15) 70%,
-      transparent 100%
-    );
     mix-blend-mode: screen;
   }
 </style>
@@ -96,13 +88,11 @@
   </nav>
 </section>
 
-<!-- Drawings / About section -->
 <section class="drawings">
   <h2>ABOUT</h2>
   <p>All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
 </section>
 
-<!-- Contact section -->
 <section class="contact">
   <h2>CONTACT</h2>
   <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
@@ -110,39 +100,29 @@
 </section>
 
 <script>
-  // Create multiple moss blobs
-  const blobCount = 5;
-  const mossBlobs = [];
+  const colors = ['#00bfff', '#1e90ff', '#40e0d0', '#48d1cc', '#20b2aa']; // ocean/turquoise shades
+  const blobCount = 7;
+  const blobs = [];
 
   for (let i = 0; i < blobCount; i++) {
     const blob = document.createElement('div');
-    blob.classList.add('moss');
-    const size = 100 + Math.random() * 100;
+    blob.classList.add('ocean-blob');
+    const size = 50 + Math.random() * 100;
     blob.style.width = size + 'px';
     blob.style.height = size + 'px';
+    blob.style.background = colors[Math.floor(Math.random() * colors.length)];
     blob.style.opacity = 0.4 + Math.random() * 0.3;
-    document.querySelector('.hero').appendChild(blob);
-    mossBlobs.push({ el: blob, x: window.innerWidth/2, y: window.innerHeight/2 });
+    document.body.appendChild(blob);
+    blobs.push(blob);
   }
-
-  let targetX = window.innerWidth/2;
-  let targetY = window.innerHeight/2;
 
   document.addEventListener('mousemove', e => {
-    targetX = e.clientX;
-    targetY = e.clientY;
-  });
-
-  function animate() {
-    mossBlobs.forEach((blob, i) => {
-      blob.x += (targetX - blob.x) * (0.05 - i*0.005);
-      blob.y += (targetY - blob.y) * (0.05 - i*0.005);
-      blob.el.style.left = blob.x + 'px';
-      blob.el.style.top = blob.y + 'px';
+    blobs.forEach((blob, i) => {
+      const offset = i * 20; // slight spacing so they don't perfectly overlap
+      blob.style.left = (e.clientX + offset) + 'px';
+      blob.style.top = (e.clientY + offset) + 'px';
     });
-    requestAnimationFrame(animate);
-  }
-  animate();
+  });
 </script>
 
 </body>

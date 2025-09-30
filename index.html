@@ -12,16 +12,17 @@
       height: 100%;
       overflow-y: scroll;
       scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;   /* smooth transition */
       font-family: Arial, sans-serif;
     }
 
     section {
-      height: 100vh;              /* full viewport height */
+      height: 100vh;              
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      scroll-snap-align: start;   /* lock to each section */
+      scroll-snap-align: center;   /* center lock */
       text-align: center;
     }
 
@@ -46,6 +47,7 @@
       text-decoration: none;
       color: white;
       font-weight: bold;
+      transition: color 0.3s ease;
     }
     nav a:hover {
       color: lightblue;
@@ -79,9 +81,9 @@
     </nav>
   </section>
 
-  <!-- Section 2: Drawings -->
-  <section class="About">
-    <h2>About</h2>
+  <!-- Section 2: About / Drawings -->
+  <section class="drawings">
+    <h2>Drawings</h2>
     <p>All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
   </section>
 

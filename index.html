@@ -85,12 +85,13 @@
     <a href="photos/photoholder.html" class="interactive-word">PHOTOS</a>
     <a href="drawings.html" class="interactive-word">DRAWINGS</a>
   </nav>
-  <canvas id="bubbleCanvas"></canvas>
 </section>
 
 <section class="drawings">
   <h2 class="interactive-word">ABOUT</h2>
   <p>All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
+  <!-- bubbles canvas lives only in About section -->
+  <canvas id="bubbleCanvas"></canvas>
 </section>
 
 <section class="contact">
@@ -102,15 +103,15 @@
 <script>
 const canvas = document.getElementById('bubbleCanvas');
 const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
 
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
+function resizeCanvas(){
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
-const words = Array.from(document.querySelectorAll('.interactive-word'));
+const words = Array.from(document.querySelectorAll('.drawings .interactive-word'));
 
 // Bubbles
 const bubbles = [];
@@ -129,11 +130,15 @@ for(let i=0;i<numBubbles;i++){
 
 const mouse = {x: canvas.width/2, y: canvas.height/2, moving: false};
 window.addEventListener('mousemove', e=>{
-  mouse.x = e.clientX;
-  mouse.y = e.clientY;
-  mouse.moving = true;
-  clearTimeout(mouse.timer);
-  mouse.timer = setTimeout(()=>{ mouse.moving = false; }, 800);
+  // only affect bubbles if mouse is inside About section
+  const rect = canvas.getBoundingClientRect();
+  if(e.clientY >= rect.top && e.clientY <= rect.bottom){
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+    mouse.moving = true;
+    clearTimeout(mouse.timer);
+    mouse.timer = setTimeout(()=>{ mouse.moving = false; }, 800);
+  }
 });
 
 function updateBubbles(){
@@ -172,11 +177,16 @@ function updateBubbles(){
     // Word collisions
     for(let w of words){
       const rect = w.getBoundingClientRect();
-      if(b.x + b.size > rect.left && b.x - b.size < rect.right &&
-         b.y + b.size > rect.top && b.y - b.size < rect.bottom){
-        // Simple bounce: push bubble out of the word box
-        const dx = b.x - (rect.left + rect.width/2);
-        const dy = b.y - (rect.top + rect.height/2);
+      const canvasRect = canvas.getBoundingClientRect();
+      const left = rect.left - canvasRect.left;
+      const right = rect.right - canvasRect.left;
+      const top = rect.top - canvasRect.top;
+      const bottom = rect.bottom - canvasRect.top;
+
+      if(b.x + b.size > left && b.x - b.size < right &&
+         b.y + b.size > top && b.y - b.size < bottom){
+        const dx = b.x - (left + (right-left)/2);
+        const dy = b.y - (top + (bottom-top)/2);
         const dist = Math.sqrt(dx*dx + dy*dy) || 1;
         b.vx += (dx/dist) * 0.3;
         b.vy += (dy/dist) * 0.3;
@@ -186,7 +196,7 @@ function updateBubbles(){
     b.x += b.vx;
     b.y += b.vy;
 
-    // Wrap vertically
+    // Wrap vertically inside about section
     if(b.y + b.size < 0){ b.y = canvas.height + b.size; }
     if(b.y - b.size > canvas.height){ b.y = -b.size; }
 

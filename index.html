@@ -55,7 +55,7 @@
     color: lightblue;
   }
 
-  .drawings { background: #222; color: white; }
+  .about { background: #222; color: white; }
   .contact { background: #eee; color: black; }
 
   canvas {
@@ -75,6 +75,7 @@
 </head>
 <body>
 
+<!-- HERO / VIDEO PAGE -->
 <section class="hero">
   <video autoplay muted loop playsinline>
     <source src="1757373621.967906.MOV" type="video/mp4">
@@ -85,14 +86,16 @@
     <a href="photos/photoholder.html" class="interactive-word">PHOTOS</a>
     <a href="drawings.html" class="interactive-word">DRAWINGS</a>
   </nav>
+</section>
+
+<!-- ABOUT PAGE WITH BUBBLES -->
+<section class="about" id="about-section">
+  <h2 class="interactive-word">ABOUT</h2>
+  <p class="interactive-word">All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
   <canvas id="bubbleCanvas"></canvas>
 </section>
 
-<section class="drawings">
-  <h2 class="interactive-word">ABOUT</h2>
-  <p>All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
-</section>
-
+<!-- CONTACT PAGE -->
 <section class="contact">
   <h2 class="interactive-word">CONTACT</h2>
   <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
@@ -102,21 +105,22 @@
 <script>
 const canvas = document.getElementById('bubbleCanvas');
 const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
 
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
+function resizeCanvas(){
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
-const words = Array.from(document.querySelectorAll('.interactive-word'));
+const words = Array.from(document.querySelectorAll('#about-section .interactive-word'));
 
 // Bubbles
 const bubbles = [];
 const numBubbles = 40;
 for(let i=0;i<numBubbles;i++){
-  const hue = Math.random() * 60 + 180; // turquoise/blue
+  const hue = Math.random() * 60 + 180; // turquoise/blue range
   bubbles.push({
     x: Math.random()*canvas.width,
     y: Math.random()*canvas.height,
@@ -129,8 +133,9 @@ for(let i=0;i<numBubbles;i++){
 
 const mouse = {x: canvas.width/2, y: canvas.height/2, moving: false};
 window.addEventListener('mousemove', e=>{
-  mouse.x = e.clientX;
-  mouse.y = e.clientY;
+  const rect = canvas.getBoundingClientRect();
+  mouse.x = e.clientX - rect.left;
+  mouse.y = e.clientY - rect.top;
   mouse.moving = true;
   clearTimeout(mouse.timer);
   mouse.timer = setTimeout(()=>{ mouse.moving = false; }, 800);
@@ -166,17 +171,22 @@ function updateBubbles(){
       b.vy += (mouse.y - b.y) * 0.001;
     } else {
       b.vx += (Math.random()-0.5)*0.02;
-      b.vy -= 0.02;
+      b.vy -= 0.02; // float upward
     }
 
     // Word collisions
     for(let w of words){
       const rect = w.getBoundingClientRect();
-      if(b.x + b.size > rect.left && b.x - b.size < rect.right &&
-         b.y + b.size > rect.top && b.y - b.size < rect.bottom){
-        // Simple bounce: push bubble out of the word box
-        const dx = b.x - (rect.left + rect.width/2);
-        const dy = b.y - (rect.top + rect.height/2);
+      const canvasRect = canvas.getBoundingClientRect();
+      const left = rect.left - canvasRect.left;
+      const right = rect.right - canvasRect.left;
+      const top = rect.top - canvasRect.top;
+      const bottom = rect.bottom - canvasRect.top;
+
+      if(b.x + b.size > left && b.x - b.size < right &&
+         b.y + b.size > top && b.y - b.size < bottom){
+        const dx = b.x - (left + (right-left)/2);
+        const dy = b.y - (top + (bottom-top)/2);
         const dist = Math.sqrt(dx*dx + dy*dy) || 1;
         b.vx += (dx/dist) * 0.3;
         b.vy += (dy/dist) * 0.3;
@@ -191,8 +201,8 @@ function updateBubbles(){
     if(b.y - b.size > canvas.height){ b.y = -b.size; }
 
     // Bounce sides
-    if(b.x - b.size < 0){ b.x = b.size; b.vx *= 0.5; }
-    if(b.x + b.size > canvas.width){ b.x = canvas.width - b.size; b.vx *= 0.5; }
+    if(b.x - b.size < 0){ b.x = b.size; b.vx *= -0.5; }
+    if(b.x + b.size > canvas.width){ b.x = canvas.width - b.size; b.vx *= -0.5; }
 
     b.vx *= 0.95;
     b.vy *= 0.95;
@@ -206,7 +216,6 @@ function updateBubbles(){
 
   requestAnimationFrame(updateBubbles);
 }
-
 updateBubbles();
 </script>
 

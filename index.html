@@ -55,20 +55,21 @@
     color: lightblue;
   }
 
-  .about { background: #222; color: white; }
+  .drawings { background: #222; color: white; }
   .contact { background: #eee; color: black; }
 
   canvas {
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    z-index: -1; /* words on top */
     pointer-events: none;
+    z-index: -1;
   }
 
   .interactive-word {
     position: relative;
     z-index: 1;
+    display: inline-block;
   }
 </style>
 </head>
@@ -84,13 +85,12 @@
     <a href="photos/photoholder.html" class="interactive-word">PHOTOS</a>
     <a href="drawings.html" class="interactive-word">DRAWINGS</a>
   </nav>
+  <canvas id="bubbleCanvas"></canvas>
 </section>
 
-<section class="about" id="about-section">
+<section class="drawings">
   <h2 class="interactive-word">ABOUT</h2>
-  <p class="interactive-word">All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
-  <!-- bubbles only here -->
-  <canvas id="bubbleCanvas"></canvas>
+  <p>All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
 </section>
 
 <section class="contact">
@@ -102,19 +102,17 @@
 <script>
 const canvas = document.getElementById('bubbleCanvas');
 const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-function resizeCanvas(){
-  const rect = canvas.parentElement.getBoundingClientRect();
-  canvas.width = rect.width;
-  canvas.height = rect.height;
-}
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
 
-// get words inside About section
-const aboutSection = document.getElementById('about-section');
-const words = Array.from(aboutSection.querySelectorAll('.interactive-word'));
+const words = Array.from(document.querySelectorAll('.interactive-word'));
 
+// Bubbles
 const bubbles = [];
 const numBubbles = 40;
 for(let i=0;i<numBubbles;i++){
@@ -123,17 +121,16 @@ for(let i=0;i<numBubbles;i++){
     x: Math.random()*canvas.width,
     y: Math.random()*canvas.height,
     vx: 0,
-    vy: 0,
+    vy: -Math.random()*0.5 - 0.2,
     size: Math.random()*20 + 10,
     color: `hsla(${hue}, 70%, 50%, ${Math.random()*0.4+0.2})`
   });
 }
 
 const mouse = {x: canvas.width/2, y: canvas.height/2, moving: false};
-aboutSection.addEventListener('mousemove', e=>{
-  const rect = canvas.getBoundingClientRect();
-  mouse.x = e.clientX - rect.left;
-  mouse.y = e.clientY - rect.top;
+window.addEventListener('mousemove', e=>{
+  mouse.x = e.clientX;
+  mouse.y = e.clientY;
   mouse.moving = true;
   clearTimeout(mouse.timer);
   mouse.timer = setTimeout(()=>{ mouse.moving = false; }, 800);
@@ -142,7 +139,7 @@ aboutSection.addEventListener('mousemove', e=>{
 function updateBubbles(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  // repel bubbles
+  // Bubble repulsion
   for(let i=0;i<bubbles.length;i++){
     const b1 = bubbles[i];
     for(let j=i+1;j<bubbles.length;j++){
@@ -164,53 +161,43 @@ function updateBubbles(){
   }
 
   for(let b of bubbles){
-    // follow cursor or float up
     if(mouse.moving){
       b.vx += (mouse.x - b.x) * 0.001;
       b.vy += (mouse.y - b.y) * 0.001;
     } else {
-      b.vy -= 0.02; // drift upwards
+      b.vx += (Math.random()-0.5)*0.02;
+      b.vy -= 0.02;
     }
 
-    // bounce off words
+    // Word collisions
     for(let w of words){
       const rect = w.getBoundingClientRect();
-      const canvasRect = canvas.getBoundingClientRect();
-      const left = rect.left - canvasRect.left;
-      const right = rect.right - canvasRect.left;
-      const top = rect.top - canvasRect.top;
-      const bottom = rect.bottom - canvasRect.top;
-
-      if(b.x + b.size > left && b.x - b.size < right &&
-         b.y + b.size > top && b.y - b.size < bottom){
-        // push away from word center
-        const cx = (left+right)/2;
-        const cy = (top+bottom)/2;
-        const dx = b.x - cx;
-        const dy = b.y - cy;
+      if(b.x + b.size > rect.left && b.x - b.size < rect.right &&
+         b.y + b.size > rect.top && b.y - b.size < rect.bottom){
+        // Simple bounce: push bubble out of the word box
+        const dx = b.x - (rect.left + rect.width/2);
+        const dy = b.y - (rect.top + rect.height/2);
         const dist = Math.sqrt(dx*dx + dy*dy) || 1;
         b.vx += (dx/dist) * 0.3;
         b.vy += (dy/dist) * 0.3;
       }
     }
 
-    // update position
     b.x += b.vx;
     b.y += b.vy;
 
-    // wrap vertically
+    // Wrap vertically
     if(b.y + b.size < 0){ b.y = canvas.height + b.size; }
     if(b.y - b.size > canvas.height){ b.y = -b.size; }
 
-    // bounce sides
-    if(b.x - b.size < 0){ b.x = b.size; b.vx *= -0.5; }
-    if(b.x + b.size > canvas.width){ b.x = canvas.width - b.size; b.vx *= -0.5; }
+    // Bounce sides
+    if(b.x - b.size < 0){ b.x = b.size; b.vx *= 0.5; }
+    if(b.x + b.size > canvas.width){ b.x = canvas.width - b.size; b.vx *= 0.5; }
 
-    // damping
     b.vx *= 0.95;
     b.vy *= 0.95;
 
-    // draw
+    // Draw bubble
     ctx.beginPath();
     ctx.arc(b.x,b.y,b.size,0,Math.PI*2);
     ctx.fillStyle = b.color;

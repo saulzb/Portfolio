@@ -62,7 +62,7 @@
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    z-index: -1; /* text on top */
+    z-index: -1; /* words on top */
     pointer-events: none;
   }
 
@@ -86,9 +86,10 @@
   </nav>
 </section>
 
-<section class="about">
+<section class="about" id="about-section">
   <h2 class="interactive-word">ABOUT</h2>
-  <p>All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
+  <p class="interactive-word">All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
+  <!-- bubbles only here -->
   <canvas id="bubbleCanvas"></canvas>
 </section>
 
@@ -110,13 +111,14 @@ function resizeCanvas(){
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
-// Words inside About only
-const words = Array.from(document.querySelectorAll('.about .interactive-word'));
+// get words inside About section
+const aboutSection = document.getElementById('about-section');
+const words = Array.from(aboutSection.querySelectorAll('.interactive-word'));
 
 const bubbles = [];
 const numBubbles = 40;
 for(let i=0;i<numBubbles;i++){
-  const hue = Math.random() * 60 + 180; // blue/turquoise
+  const hue = Math.random() * 60 + 180; // turquoise/blue
   bubbles.push({
     x: Math.random()*canvas.width,
     y: Math.random()*canvas.height,
@@ -128,7 +130,7 @@ for(let i=0;i<numBubbles;i++){
 }
 
 const mouse = {x: canvas.width/2, y: canvas.height/2, moving: false};
-canvas.parentElement.addEventListener('mousemove', e=>{
+aboutSection.addEventListener('mousemove', e=>{
   const rect = canvas.getBoundingClientRect();
   mouse.x = e.clientX - rect.left;
   mouse.y = e.clientY - rect.top;
@@ -162,26 +164,53 @@ function updateBubbles(){
   }
 
   for(let b of bubbles){
+    // follow cursor or float up
     if(mouse.moving){
       b.vx += (mouse.x - b.x) * 0.001;
       b.vy += (mouse.y - b.y) * 0.001;
     } else {
-      b.vy -= 0.02; // bubble upwards when idle
+      b.vy -= 0.02; // drift upwards
     }
 
+    // bounce off words
+    for(let w of words){
+      const rect = w.getBoundingClientRect();
+      const canvasRect = canvas.getBoundingClientRect();
+      const left = rect.left - canvasRect.left;
+      const right = rect.right - canvasRect.left;
+      const top = rect.top - canvasRect.top;
+      const bottom = rect.bottom - canvasRect.top;
+
+      if(b.x + b.size > left && b.x - b.size < right &&
+         b.y + b.size > top && b.y - b.size < bottom){
+        // push away from word center
+        const cx = (left+right)/2;
+        const cy = (top+bottom)/2;
+        const dx = b.x - cx;
+        const dy = b.y - cy;
+        const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+        b.vx += (dx/dist) * 0.3;
+        b.vy += (dy/dist) * 0.3;
+      }
+    }
+
+    // update position
     b.x += b.vx;
     b.y += b.vy;
 
     // wrap vertically
     if(b.y + b.size < 0){ b.y = canvas.height + b.size; }
+    if(b.y - b.size > canvas.height){ b.y = -b.size; }
 
-    // sides
+    // bounce sides
     if(b.x - b.size < 0){ b.x = b.size; b.vx *= -0.5; }
     if(b.x + b.size > canvas.width){ b.x = canvas.width - b.size; b.vx *= -0.5; }
 
+    // damping
     b.vx *= 0.95;
     b.vy *= 0.95;
 
+    // draw
     ctx.beginPath();
     ctx.arc(b.x,b.y,b.size,0,Math.PI*2);
     ctx.fillStyle = b.color;

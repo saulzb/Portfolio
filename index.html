@@ -26,6 +26,7 @@
     overflow:hidden;
   }
 
+  /* HERO */
   .hero{ position:relative; color:white; }
   .hero video{
     position:absolute; top:0; left:0;
@@ -34,26 +35,54 @@
     z-index:-2;
   }
 
-  /* About section (next page after hero) */
-  .about { background:#222; color:white; }
+  /* HERO text with orange "submarine light" */
+  @keyframes glowPulse {
+    0%, 100% {
+      text-shadow:
+        0 0 10px rgba(255,140,0,0.6),
+        0 0 20px rgba(255,140,0,0.4),
+        0 0 40px rgba(255,69,0,0.2);
+    }
+    50% {
+      text-shadow:
+        0 0 15px rgba(255,140,0,0.8),
+        0 0 30px rgba(255,140,0,0.5),
+        0 0 60px rgba(255,69,0,0.3);
+    }
+  }
 
+  .hero h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    color: black;
+    background: radial-gradient(circle at center, orange 20%, transparent 70%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: black;
+    position: relative;
+    animation: glowPulse 2s infinite ease-in-out;
+  }
+
+  nav a{
+    margin:0 15px; text-decoration:none; color:white;
+    font-weight:bold; z-index:2; position:relative;
+  }
+  nav a:hover{ color:lightblue; }
+
+  /* ABOUT */
+  .about { background:#222; color:white; }
   .contact { background:#eee; color:#111; }
 
-  /* The canvas covers only the about section */
+  /* Canvas for bubbles */
   #bubbleCanvas{
-    position:absolute;
-    left:0; top:0;
+    position:absolute; left:0; top:0;
     width:100%; height:100%;
-    z-index:0;           /* canvas below text but above background */
+    z-index:0;           /* below text but above background */
     pointer-events:none;
     display:block;
   }
 
-  /* Make sure words are above canvas */
   .interactive-word{ position:relative; z-index:2; display:inline-block; }
 
-  nav a{ margin:0 15px; text-decoration:none; color:white; font-weight:bold; z-index:2; position:relative;}
-  nav a:hover{ color:lightblue; }
 </style>
 </head>
 <body>
@@ -72,12 +101,10 @@
   </nav>
 </section>
 
-<!-- ABOUT (next page after hero) -->
+<!-- ABOUT -->
 <section class="about" id="about-section">
   <h2 class="interactive-word">ABOUT</h2>
   <p class="interactive-word">All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
-
-  <!-- Canvas is INSIDE this section so the bubbles are only here -->
   <canvas id="bubbleCanvas" aria-hidden="true"></canvas>
 </section>
 
@@ -101,26 +128,17 @@ function resizeCanvas(){
   const h = Math.max(100, Math.floor(rect.height));
   viewW = w;
   viewH = h;
-  // keep crisp on high-DPR screens
   canvas.style.width = w + 'px';
   canvas.style.height = h + 'px';
   canvas.width = Math.floor(w * dpr);
   canvas.height = Math.floor(h * dpr);
-  // map drawing units to CSS pixels
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  console.log('bubble canvas resized:', w, h, 'dpr:', dpr);
 }
-window.addEventListener('resize', () => {
-  // delay slightly to allow layout to settle
-  setTimeout(resizeCanvas, 0);
-});
+window.addEventListener('resize', () => setTimeout(resizeCanvas,0));
 resizeCanvas();
 
-/* ---------- Elements that bubbles will bounce off ---------- */
-function getAboutWords(){
-  // pick only the interactive words that sit inside the about section
-  return Array.from(aboutSection.querySelectorAll('.interactive-word'));
-}
+/* ---------- Words inside About section ---------- */
+function getAboutWords(){ return Array.from(aboutSection.querySelectorAll('.interactive-word')); }
 let words = getAboutWords();
 
 /* ---------- Bubble data ---------- */
@@ -140,171 +158,98 @@ function initBubbles(){
       color: `hsla(${hue},70%,50%,${Math.random()*0.4 + 0.18})`
     });
   }
-  console.log('bubbles initialized:', bubbles.length);
 }
-
-// ensure we init after first sizing
 initBubbles();
 
-/* ---------- Mouse handling (only inside about section) ---------- */
-const mouse = { x: viewW/2, y: viewH/2, moving: false };
-aboutSection.addEventListener('mousemove', (e)=>{
+/* ---------- Mouse ---------- */
+const mouse = { x:viewW/2, y:viewH/2, moving:false };
+aboutSection.addEventListener('mousemove', e=>{
   const r = canvas.getBoundingClientRect();
   mouse.x = e.clientX - r.left;
   mouse.y = e.clientY - r.top;
   mouse.moving = true;
   clearTimeout(mouse.timer);
-  mouse.timer = setTimeout(()=>{ mouse.moving = false; }, 700);
+  mouse.timer = setTimeout(()=>{ mouse.moving=false; },700);
 });
 
-/* ---------- Utility ---------- */
-function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
-
-/* ---------- Collision helpers ---------- */
-/* Push bubble out of rectangle if overlapping: */
-function resolveBubbleRectCollision(b, left, top, right, bottom){
-  // find closest point on rect to bubble center
-  const closestX = clamp(b.x, left, right);
-  const closestY = clamp(b.y, top, bottom);
+/* ---------- Utilities ---------- */
+function clamp(v,a,b){ return Math.max(a, Math.min(b,v)); }
+function resolveBubbleRectCollision(b,left,top,right,bottom){
+  const closestX = clamp(b.x,left,right);
+  const closestY = clamp(b.y,top,bottom);
   let dx = b.x - closestX;
   let dy = b.y - closestY;
   const dist = Math.sqrt(dx*dx + dy*dy);
   if(dist < b.size){
-    // if exactly inside rect center, push upward
     const safeDist = dist || 0.0001;
     const overlap = b.size - dist;
-    const nx = dx / safeDist;
-    const ny = dy / safeDist;
-    // push position out immediately
-    b.x += nx * overlap;
-    b.y += ny * overlap;
-    // add a velocity push away from the rect
-    const PUSH = 0.45;
-    b.vx += nx * PUSH;
-    b.vy += ny * PUSH;
+    const nx = dx/safeDist;
+    const ny = dy/safeDist;
+    b.x += nx*overlap; b.y += ny*overlap;
+    const PUSH=0.45; b.vx += nx*PUSH; b.vy += ny*PUSH;
   }
 }
 
-/* ---------- Main physics & draw loop ---------- */
+/* ---------- Main loop ---------- */
 function update(){
-  if(viewW === 0 || viewH === 0) { requestAnimationFrame(update); return; }
-
-  // clear with CSS pixel coords (ctx is transformed)
+  if(viewW===0||viewH===0){ requestAnimationFrame(update); return; }
   ctx.clearRect(0,0,viewW,viewH);
 
-  // bubble repulsion (pairwise)
   for(let i=0;i<bubbles.length;i++){
     const a = bubbles[i];
     for(let j=i+1;j<bubbles.length;j++){
       const b = bubbles[j];
-      const dx = b.x - a.x;
-      const dy = b.y - a.y;
-      const dist = Math.sqrt(dx*dx + dy*dy) || 1;
-      const minD = a.size + b.size;
-      if(dist < minD){
-        const overlap = (minD - dist);
-        const nx = dx/dist;
-        const ny = dy/dist;
-        // push each slightly away (split overlap)
-        const push = overlap * 0.03;
-        a.vx -= nx * push;
-        a.vy -= ny * push;
-        b.vx += nx * push;
-        b.vy += ny * push;
+      const dx = b.x - a.x; const dy = b.y - a.y;
+      const dist = Math.sqrt(dx*dx + dy*dy)||1;
+      const minD = a.size+b.size;
+      if(dist<minD){
+        const overlap=minD-dist;
+        const nx=dx/dist, ny=dy/dist, push=overlap*0.03;
+        a.vx-=nx*push; a.vy-=ny*push;
+        b.vx+=nx*push; b.vy+=ny*push;
       }
     }
   }
 
-  // recompute words rects each frame (in case layout changes)
   words = getAboutWords();
   const canvasRect = canvas.getBoundingClientRect();
 
-  for(let b of bubbles){
-    // follow mouse gently or float upward when idle
-    if(mouse.moving){
-      const ax = (mouse.x - b.x) * 0.0012; // small acceleration towards cursor
-      const ay = (mouse.y - b.y) * 0.0012;
-      b.vx += ax;
-      b.vy += ay;
-    } else {
-      // gentle horizontal jitter, steady upward drift
-      b.vx += (Math.random()-0.5) * 0.01;
-      b.vy -= 0.02;
-    }
+  for(const b of bubbles){
+    if(mouse.moving){ b.vx += (mouse.x-b.x)*0.0012; b.vy += (mouse.y-b.y)*0.0012; }
+    else { b.vx += (Math.random()-0.5)*0.01; b.vy -= 0.02; }
 
-    // bounce off each interactive word (rectangle)
     for(const w of words){
-      const r = w.getBoundingClientRect();
-      const left = r.left - canvasRect.left;
-      const top  = r.top  - canvasRect.top;
-      const right = left + r.width;
-      const bottom = top + r.height;
-      resolveBubbleRectCollision(b, left, top, right, bottom);
+      const r=w.getBoundingClientRect();
+      const left=r.left-canvasRect.left;
+      const top=r.top-canvasRect.top;
+      const right=left+r.width;
+      const bottom=top+r.height;
+      resolveBubbleRectCollision(b,left,top,right,bottom);
     }
 
-    // integrate
-    b.x += b.vx;
-    b.y += b.vy;
+    b.x+=b.vx; b.y+=b.vy;
 
-    // wrap vertically (loop from bottom to top)
-    if(b.y + b.size < 0) b.y = viewH + b.size;
-    if(b.y - b.size > viewH) b.y = -b.size;
+    if(b.y+b.size<0)b.y=viewH+b.size;
+    if(b.y-b.size>viewH)b.y=-b.size;
 
-    // horizontal bounds bounce
-    if(b.x - b.size < 0){ b.x = b.size; b.vx *= -0.45; }
-    if(b.x + b.size > viewW){ b.x = viewW - b.size; b.vx *= -0.45; }
+    if(b.x-b.size<0){ b.x=b.size; b.vx*=-0.45; }
+    if(b.x+b.size>viewW){ b.x=viewW-b.size; b.vx*=-0.45; }
 
-    // damping
-    b.vx *= 0.95;
-    b.vy *= 0.95;
+    b.vx*=0.95; b.vy*=0.95;
 
-    // draw
-    ctx.beginPath();
-    ctx.arc(b.x, b.y, b.size, 0, Math.PI*2);
-    ctx.fillStyle = b.color;
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(b.x,b.y,b.size,0,Math.PI*2); ctx.fillStyle=b.color; ctx.fill();
   }
 
   requestAnimationFrame(update);
 }
+update();
 
-// re-init on first load or when size changes
-function restartIfNeeded(){
-  resizeCanvas();
-  // reposition any bubbles that would be out of bounds
-  for(const b of bubbles){
-    b.x = clamp(b.x, 0, Math.max(0, viewW));
-    b.y = clamp(b.y, 0, Math.max(0, viewH));
-  }
-}
-
-// If layout changes after fonts/images load, do a safe restart
-window.addEventListener('load', () => {
-  resizeCanvas();
-  // if canvas was small on startup, ensure bubbles init after size known
-  if(bubbles.length === 0) initBubbles();
-});
-
-// watch for a potential layout change (e.g. nav fonts)
-const ro = new ResizeObserver(() => {
-  resizeCanvas();
-});
-ro.observe(aboutSection);
-
-update(); // start loop
 /* --- Reset bubbles when About section re-enters view --- */
 const observer = new IntersectionObserver((entries)=>{
   entries.forEach(entry=>{
-    if(entry.isIntersecting){
-      // reset bubble positions & velocities
-      initBubbles();
-    }
+    if(entry.isIntersecting){ initBubbles(); }
   });
-},{
-  threshold: 0.4 // ~40% of the section needs to be in view
-});
-
-// watch the about section
+},{ threshold:0.4 });
 observer.observe(aboutSection);
 </script>
 </body>

@@ -43,28 +43,6 @@ section{
   z-index:1;
 }
 
-/* Actual HTML letters (clickable) on top */
-.hero-text {
-  position:absolute;
-  top:0; left:0;
-  width:100%; height:100%;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  pointer-events:auto;
-  z-index:2;
-}
-
-.hero-text a, .hero-text h1 {
-  margin:10px;
-  color:black;
-  font-weight:bold;
-  font-family:Arial,sans-serif;
-  text-decoration:none;
-  position:relative;
-}
-
 /* ABOUT & CONTACT */
 .about{ background:#222; color:white; position:relative; }
 .contact{ background:#eee; color:#111; position:relative; }
@@ -78,6 +56,8 @@ section{
 }
 
 .interactive-word{ display:inline-block; position:relative; }
+nav a{ color:black; font-weight:bold; margin:0 15px; text-decoration:none; }
+nav a:hover{ color:orange; }
 </style>
 </head>
 <body>
@@ -88,16 +68,15 @@ section{
     <source src="1757373621.967906.MOV" type="video/mp4">
   </video>
 
+  <!-- Canvas for letters + spotlight -->
   <canvas id="heroCanvas"></canvas>
 
-  <!-- Actual clickable text -->
-  <div class="hero-text">
-    <h1 class="interactive-word">SAUL ZIDULKA-BEJCEK</h1>
-    <nav>
-      <a href="photos/photoholder.html" class="interactive-word">PHOTOS</a>
-      <a href="drawings.html" class="interactive-word">DRAWINGS</a>
-    </nav>
-  </div>
+  <!-- Actual letters (clickable) -->
+  <h1 class="interactive-word" id="title">SAUL ZIDULKA-BEJCEK</h1>
+  <nav>
+    <a href="photos/photoholder.html" class="interactive-word" id="photos">PHOTOS</a>
+    <a href="drawings.html" class="interactive-word" id="drawings">DRAWINGS</a>
+  </nav>
 </section>
 
 <!-- ABOUT -->
@@ -118,10 +97,9 @@ section{
 /* ---------- HERO LETTERS + SPOTLIGHT ---------- */
 const heroCanvas = document.getElementById('heroCanvas');
 const hCtx = heroCanvas.getContext('2d');
-let heroWidth = window.innerWidth;
-let heroHeight = window.innerHeight;
+let heroWidth=0, heroHeight=0;
 
-function resizeHeroCanvas() {
+function resizeHeroCanvas(){
   heroWidth = window.innerWidth;
   heroHeight = window.innerHeight;
   heroCanvas.width = heroWidth;
@@ -130,40 +108,40 @@ function resizeHeroCanvas() {
 window.addEventListener('resize', resizeHeroCanvas);
 resizeHeroCanvas();
 
-// Letter positions
-const letterPositions = [
-  {text:"SAUL ZIDULKA-BEJCEK", fontSize: heroWidth/18, x:heroWidth/2, y:heroHeight/2 - 50},
-  {text:"PHOTOS", fontSize: heroWidth/28, x:heroWidth/3, y:heroHeight/2 + 20},
-  {text:"DRAWINGS", fontSize: heroWidth/28, x:2*heroWidth/3, y:heroHeight/2 + 20}
+// Grab actual HTML elements
+const elements = [
+  document.getElementById('title'),
+  document.getElementById('photos'),
+  document.getElementById('drawings')
 ];
 
-function getLettersBounds() {
-  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-  letterPositions.forEach(l => {
-    hCtx.font = `bold ${l.fontSize}px Arial`;
-    const metrics = hCtx.measureText(l.text);
-    const w = metrics.width;
-    const h = l.fontSize;
-    minX = Math.min(minX, l.x - w/2);
-    maxX = Math.max(maxX, l.x + w/2);
-    minY = Math.min(minY, l.y - h/2);
-    maxY = Math.max(maxY, l.y + h/2);
+function getLetterPositions(){
+  return elements.map(el=>{
+    const rect = el.getBoundingClientRect();
+    return {
+      text: el.innerText,
+      x: rect.left + rect.width/2,
+      y: rect.top + rect.height/2,
+      width: rect.width,
+      height: rect.height,
+      fontSize: parseInt(window.getComputedStyle(el).fontSize)
+    };
   });
-  return {minX, maxX, minY, maxY};
 }
 
-let bounds = getLettersBounds();
-let spotX = (bounds.minX+bounds.maxX)/2;
-let spotY = (bounds.minY+bounds.maxY)/2;
-let dx = 0;
-let dy = 0;
-let targetX = spotX, targetY = spotY;
-const SPOT_RADIUS = 80;
+let letterPositions = getLetterPositions();
+window.addEventListener('resize', ()=>{ letterPositions = getLetterPositions(); });
 
-function animateHeroSpotlight() {
+/* spotlight position */
+let spotX = heroWidth/2;
+let spotY = heroHeight/2;
+let dx = 1, dy = 0.8;
+const SPOT_RADIUS = 120;
+
+function animateHero(){
   hCtx.clearRect(0,0,heroWidth,heroHeight);
 
-  // Draw black letters
+  // Draw letters in black (canvas only for spotlight)
   letterPositions.forEach(l=>{
     hCtx.font = `bold ${l.fontSize}px Arial`;
     hCtx.textAlign = "center";
@@ -172,38 +150,30 @@ function animateHeroSpotlight() {
     hCtx.fillText(l.text, l.x, l.y);
   });
 
-  // Move spotlight smoothly toward target
-  spotX += (targetX - spotX) * 0.05;
-  spotY += (targetY - spotY) * 0.05;
+  // Update spotlight within letter bounding rectangle area
+  const minX = Math.min(...letterPositions.map(l=>l.x-l.width/2));
+  const maxX = Math.max(...letterPositions.map(l=>l.x+l.width/2));
+  const minY = Math.min(...letterPositions.map(l=>l.y-l.height/2));
+  const maxY = Math.max(...letterPositions.map(l=>l.y+l.height/2));
 
-  // Change target occasionally
-  if(Math.random()<0.01){
-    targetX = bounds.minX + Math.random()*(bounds.maxX-bounds.minX);
-    targetY = bounds.minY + Math.random()*(bounds.maxY-bounds.minY);
-  }
+  spotX += dx; spotY += dy;
+  if(spotX<minX+SPOT_RADIUS || spotX>maxX-SPOT_RADIUS) dx*=-1;
+  if(spotY<minY+SPOT_RADIUS || spotY>maxY-SPOT_RADIUS) dy*=-1;
 
-  // Draw spotlight only on letters
+  // Draw radial gradient spotlight on top of letters only
   hCtx.save();
   hCtx.globalCompositeOperation = 'source-atop';
-  const grad = hCtx.createRadialGradient(spotX, spotY, 0, spotX, spotY, SPOT_RADIUS);
-  grad.addColorStop(0, 'rgba(255,255,255,0.9)');
-  grad.addColorStop(0.3, 'rgba(255,140,0,0.6)');
-  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  const grad = hCtx.createRadialGradient(spotX,spotY,0, spotX,spotY,SPOT_RADIUS);
+  grad.addColorStop(0,'rgba(255,255,255,0.9)');
+  grad.addColorStop(0.3,'rgba(255,140,0,0.6)');
+  grad.addColorStop(1,'rgba(0,0,0,0)');
   hCtx.fillStyle = grad;
-
-  letterPositions.forEach(l=>{
-    hCtx.font = `bold ${l.fontSize}px Arial`;
-    hCtx.textAlign = "center";
-    hCtx.textBaseline = "middle";
-    hCtx.fillText(l.text, l.x, l.y);
-  });
-
   hCtx.fillRect(0,0,heroWidth,heroHeight);
   hCtx.restore();
 
-  requestAnimationFrame(animateHeroSpotlight);
+  requestAnimationFrame(animateHero);
 }
-animateHeroSpotlight();
+animateHero();
 
 /* ---------- ABOUT BUBBLES ---------- */
 const aboutSection = document.getElementById('about-section');
@@ -213,12 +183,13 @@ let viewW=0, viewH=0, dpr=window.devicePixelRatio||1;
 
 function resizeCanvas(){
   const rect = aboutSection.getBoundingClientRect();
-  viewW = Math.max(100, Math.floor(rect.width));
-  viewH = Math.max(100, Math.floor(rect.height));
-  bubbleCanvas.style.width = viewW+'px';
-  bubbleCanvas.style.height = viewH+'px';
-  bubbleCanvas.width = Math.floor(viewW*dpr);
-  bubbleCanvas.height = Math.floor(viewH*dpr);
+  const w = Math.max(100, Math.floor(rect.width));
+  const h = Math.max(100, Math.floor(rect.height));
+  viewW = w; viewH = h;
+  bubbleCanvas.style.width = w+'px';
+  bubbleCanvas.style.height = h+'px';
+  bubbleCanvas.width = Math.floor(w*dpr);
+  bubbleCanvas.height = Math.floor(h*dpr);
   ctx.setTransform(dpr,0,0,dpr,0,0);
 }
 window.addEventListener('resize',()=>setTimeout(resizeCanvas,0));
@@ -258,7 +229,7 @@ function clamp(v,a,b){ return Math.max(a, Math.min(b,v)); }
 function resolveBubbleRectCollision(b,left,top,right,bottom){
   const closestX = clamp(b.x,left,right);
   const closestY = clamp(b.y,top,bottom);
-  let dx = b.x-closestX, dy = b.y-closestY;
+  let dx = b.x-closestX, dy=b.y-closestY;
   const dist = Math.sqrt(dx*dx + dy*dy);
   if(dist<b.size){
     const safeDist = dist || 0.0001;
@@ -323,6 +294,7 @@ function updateBubbles(){
 }
 updateBubbles();
 
+/* Reset bubbles when About section comes back into view */
 const observer = new IntersectionObserver(entries=>{
   entries.forEach(entry=>{ if(entry.isIntersecting){ initBubbles(); } });
 },{ threshold:0.4 });

@@ -55,9 +55,13 @@
     color: lightblue;
   }
 
-  .drawings { background: #222; color: white; }
+  /* About section */
+  .about { background: #222; color: white; }
+
+  /* Contact section */
   .contact { background: #eee; color: black; }
 
+  /* Bubble canvas */
   canvas {
     position: absolute;
     top: 0; left: 0;
@@ -87,10 +91,10 @@
   </nav>
 </section>
 
-<section class="drawings">
+<section class="about">
   <h2 class="interactive-word">ABOUT</h2>
   <p>All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
-  <!-- bubbles canvas lives only in About section -->
+  <!-- bubbles only in this section -->
   <canvas id="bubbleCanvas"></canvas>
 </section>
 
@@ -111,13 +115,13 @@ function resizeCanvas(){
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
-const words = Array.from(document.querySelectorAll('.drawings .interactive-word'));
+// only words in About section
+const words = Array.from(document.querySelectorAll('.about .interactive-word'));
 
-// Bubbles
 const bubbles = [];
 const numBubbles = 40;
 for(let i=0;i<numBubbles;i++){
-  const hue = Math.random() * 60 + 180; // turquoise/blue
+  const hue = Math.random() * 60 + 180; 
   bubbles.push({
     x: Math.random()*canvas.width,
     y: Math.random()*canvas.height,
@@ -130,7 +134,6 @@ for(let i=0;i<numBubbles;i++){
 
 const mouse = {x: canvas.width/2, y: canvas.height/2, moving: false};
 window.addEventListener('mousemove', e=>{
-  // only affect bubbles if mouse is inside About section
   const rect = canvas.getBoundingClientRect();
   if(e.clientY >= rect.top && e.clientY <= rect.bottom){
     mouse.x = e.clientX - rect.left;
@@ -144,7 +147,7 @@ window.addEventListener('mousemove', e=>{
 function updateBubbles(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  // Bubble repulsion
+  // repel bubbles
   for(let i=0;i<bubbles.length;i++){
     const b1 = bubbles[i];
     for(let j=i+1;j<bubbles.length;j++){
@@ -174,7 +177,7 @@ function updateBubbles(){
       b.vy -= 0.02;
     }
 
-    // Word collisions
+    // bounce off words
     for(let w of words){
       const rect = w.getBoundingClientRect();
       const canvasRect = canvas.getBoundingClientRect();
@@ -196,18 +199,17 @@ function updateBubbles(){
     b.x += b.vx;
     b.y += b.vy;
 
-    // Wrap vertically inside about section
+    // wrap vertically
     if(b.y + b.size < 0){ b.y = canvas.height + b.size; }
     if(b.y - b.size > canvas.height){ b.y = -b.size; }
 
-    // Bounce sides
+    // sides
     if(b.x - b.size < 0){ b.x = b.size; b.vx *= 0.5; }
     if(b.x + b.size > canvas.width){ b.x = canvas.width - b.size; b.vx *= 0.5; }
 
     b.vx *= 0.95;
     b.vy *= 0.95;
 
-    // Draw bubble
     ctx.beginPath();
     ctx.arc(b.x,b.y,b.size,0,Math.PI*2);
     ctx.fillStyle = b.color;

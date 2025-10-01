@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Saul Zidulka-Bejcek</title>
 <style>
 html,body{
@@ -12,6 +12,7 @@ html,body{
   overflow-y:scroll;
   scroll-snap-type:y mandatory;
 }
+
 section{
   height:100vh;
   display:flex;
@@ -23,62 +24,66 @@ section{
   text-align:center;
   overflow:hidden;
 }
+
 /* HERO */
-.hero{ position:relative; color:black; }
+.hero{ position:relative; color:black; z-index:0; }
 .hero video{
   position:absolute; top:0; left:0;
   width:100%; height:100%;
   object-fit:cover;
   z-index:-2;
 }
+
+/* Canvas on top of hero for letters + spotlight */
 #heroCanvas{
-  position:absolute; top:0; left:0;
+  position:absolute;
+  top:0; left:0;
   width:100%; height:100%;
   pointer-events:none;
   z-index:1;
 }
-.hero h1, nav a{
-  color:black;
-  font-weight:bold;
-  position:relative;
-  z-index:2;
-  margin:0 15px;
-}
-nav a:hover{ color:lightblue; }
+
 /* ABOUT & CONTACT */
 .about{ background:#222; color:white; position:relative; }
 .contact{ background:#eee; color:#111; position:relative; }
+
+/* Canvas for bubbles */
 #bubbleCanvas{
   position:absolute; left:0; top:0;
   width:100%; height:100%;
   z-index:0;
   pointer-events:none;
 }
+
 .interactive-word{ display:inline-block; position:relative; }
 </style>
 </head>
 <body>
 
+<!-- HERO -->
 <section class="hero">
   <video autoplay muted loop playsinline>
     <source src="1757373621.967906.MOV" type="video/mp4">
   </video>
 
-  <h1 class="interactive-word">SAUL ZIDULKA-BEJCEK</h1>
-  <nav>
+  <canvas id="heroCanvas"></canvas>
+
+  <!-- Hidden accessible text -->
+  <h1 class="interactive-word" style="position:absolute;opacity:0;">SAUL ZIDULKA-BEJCEK</h1>
+  <nav style="position:absolute;opacity:0;">
     <a href="photos/photoholder.html" class="interactive-word">PHOTOS</a>
     <a href="drawings.html" class="interactive-word">DRAWINGS</a>
   </nav>
-
-  <canvas id="heroCanvas"></canvas>
 </section>
 
+<!-- ABOUT -->
 <section class="about" id="about-section">
   <h2 class="interactive-word">ABOUT</h2>
   <p class="interactive-word">All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
   <canvas id="bubbleCanvas" aria-hidden="true"></canvas>
 </section>
 
+<!-- CONTACT -->
 <section class="contact">
   <h2 class="interactive-word">CONTACT</h2>
   <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
@@ -86,7 +91,7 @@ nav a:hover{ color:lightblue; }
 </section>
 
 <script>
-/* ---------- HERO SPOTLIGHT ---------- */
+/* ---------- HERO LETTERS + SPOTLIGHT ---------- */
 const heroCanvas = document.getElementById('heroCanvas');
 const hCtx = heroCanvas.getContext('2d');
 let heroWidth = window.innerWidth;
@@ -102,15 +107,14 @@ window.addEventListener('resize', resizeHeroCanvas);
 resizeHeroCanvas();
 
 const letters = [
-  {text:"SAUL ZIDULKA-BEJCEK", fontSize:heroWidth/12},
-  {text:"PHOTOS", fontSize:heroWidth/18},
-  {text:"DRAWINGS", fontSize:heroWidth/18}
+  {text:"SAUL ZIDULKA-BEJCEK", fontSize:heroWidth/18},
+  {text:"PHOTOS", fontSize:heroWidth/28},
+  {text:"DRAWINGS", fontSize:heroWidth/28}
 ];
 
-// Precompute letter positions
 function computeLetterPositions() {
   const positions = [];
-  let y = heroHeight/2 - 60;
+  let y = heroHeight/2 - 50;
   positions.push({text:letters[0].text, x:heroWidth/2, y, fontSize:letters[0].fontSize});
   y = heroHeight/2 + 20;
   positions.push({text:letters[1].text, x:heroWidth/3, y, fontSize:letters[1].fontSize});
@@ -119,7 +123,6 @@ function computeLetterPositions() {
 }
 let letterPositions = computeLetterPositions();
 
-// Compute bounding box around all letters
 function getLettersBounds() {
   let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
   letterPositions.forEach(l => {
@@ -136,17 +139,15 @@ function getLettersBounds() {
 }
 
 let bounds = getLettersBounds();
-
-// Spotlight position constrained within letter bounds
 let spotX = (bounds.minX+bounds.maxX)/2;
 let spotY = (bounds.minY+bounds.maxY)/2;
-let dx = 1.2, dy = 0.8;
-const SPOT_RADIUS = 120;
+let dx = 1, dy = 0.8;
+const SPOT_RADIUS = 80;
 
 function animateHeroSpotlight() {
   hCtx.clearRect(0,0,heroWidth,heroHeight);
 
-  // Draw letters in black
+  // Draw letters
   letterPositions.forEach(l=>{
     hCtx.font = `bold ${l.fontSize}px Arial`;
     hCtx.textAlign = "center";
@@ -155,12 +156,12 @@ function animateHeroSpotlight() {
     hCtx.fillText(l.text, l.x, l.y);
   });
 
-  // Move spotlight and constrain within bounds
+  // Move spotlight within bounds
   spotX += dx; spotY += dy;
   if(spotX - SPOT_RADIUS < bounds.minX || spotX + SPOT_RADIUS > bounds.maxX) dx *= -1;
   if(spotY - SPOT_RADIUS < bounds.minY || spotY + SPOT_RADIUS > bounds.maxY) dy *= -1;
 
-  // Draw spotlight **only on letters**
+  // Draw spotlight only on letters
   hCtx.save();
   hCtx.globalCompositeOperation = 'source-atop';
   const grad = hCtx.createRadialGradient(spotX, spotY, 0, spotX, spotY, SPOT_RADIUS);
@@ -168,19 +169,19 @@ function animateHeroSpotlight() {
   grad.addColorStop(0.3, 'rgba(255,140,0,0.6)');
   grad.addColorStop(1, 'rgba(0,0,0,0)');
   hCtx.fillStyle = grad;
-  // Clip to letters
+
   letterPositions.forEach(l=>{
     hCtx.font = `bold ${l.fontSize}px Arial`;
     hCtx.textAlign = "center";
     hCtx.textBaseline = "middle";
-    hCtx.fillText(l.text, l.x, l.y); // fillText is used to define the clipping
+    hCtx.fillText(l.text, l.x, l.y);
   });
+
   hCtx.fillRect(0,0,heroWidth,heroHeight);
   hCtx.restore();
 
   requestAnimationFrame(animateHeroSpotlight);
 }
-
 animateHeroSpotlight();
 
 /* ---------- ABOUT BUBBLES ---------- */
@@ -191,38 +192,38 @@ let viewW=0, viewH=0, dpr=window.devicePixelRatio||1;
 
 function resizeCanvas(){
   const rect = aboutSection.getBoundingClientRect();
-  const w = Math.max(100, Math.floor(rect.width));
-  const h = Math.max(100, Math.floor(rect.height));
-  viewW = w; viewH = h;
-  bubbleCanvas.style.width = w+'px';
-  bubbleCanvas.style.height = h+'px';
-  bubbleCanvas.width = Math.floor(w*dpr);
-  bubbleCanvas.height = Math.floor(h*dpr);
+  viewW = Math.max(100, Math.floor(rect.width));
+  viewH = Math.max(100, Math.floor(rect.height));
+  bubbleCanvas.style.width = viewW+'px';
+  bubbleCanvas.style.height = viewH+'px';
+  bubbleCanvas.width = Math.floor(viewW*dpr);
+  bubbleCanvas.height = Math.floor(viewH*dpr);
   ctx.setTransform(dpr,0,0,dpr,0,0);
 }
 window.addEventListener('resize',()=>setTimeout(resizeCanvas,0));
 resizeCanvas();
 
+let words = Array.from(aboutSection.querySelectorAll('.interactive-word'));
 const bubbles = [];
 const NUM = 40;
 
 function initBubbles(){
-  bubbles.length = 0;
+  bubbles.length=0;
   for(let i=0;i<NUM;i++){
-    const hue = Math.random()*60+180;
+    const hue = Math.random()*60 + 180;
     bubbles.push({
       x: Math.random()*viewW,
       y: Math.random()*viewH,
       vx: (Math.random()-0.5)*0.2,
-      vy: (Math.random()-0.5)*0.2-0.2,
+      vy: (Math.random()-0.5)*0.2 -0.2,
       size: Math.random()*18+10,
-      color: `hsla(${hue},70%,50%,${Math.random()*0.4+0.18})`
+      color: `hsla(${hue},70%,50%,${Math.random()*0.4 +0.18})`
     });
   }
 }
 initBubbles();
 
-const mouse = {x:viewW/2, y:viewH/2, moving:false};
+const mouse = { x:viewW/2, y:viewH/2, moving:false };
 aboutSection.addEventListener('mousemove',e=>{
   const r = bubbleCanvas.getBoundingClientRect();
   mouse.x = e.clientX - r.left;
@@ -233,15 +234,17 @@ aboutSection.addEventListener('mousemove',e=>{
 });
 
 function clamp(v,a,b){ return Math.max(a, Math.min(b,v)); }
-function resolveCollision(b,left,top,right,bottom){
-  const cx = clamp(b.x,left,right), cy = clamp(b.y,top,bottom);
-  let dx = b.x-cx, dy = b.y-cy;
-  const dist = Math.sqrt(dx*dx+dy*dy);
+function resolveBubbleRectCollision(b,left,top,right,bottom){
+  const closestX = clamp(b.x,left,right);
+  const closestY = clamp(b.y,top,bottom);
+  let dx = b.x-closestX, dy=b.y-closestY;
+  const dist = Math.sqrt(dx*dx + dy*dy);
   if(dist<b.size){
+    const safeDist = dist || 0.0001;
     const overlap = b.size-dist;
-    const safeDist = dist||0.0001;
-    b.x += dx/safeDist*overlap; b.y += dy/safeDist*overlap;
-    const PUSH=0.45; b.vx+=dx/safeDist*PUSH; b.vy+=dy/safeDist*PUSH;
+    const nx=dx/safeDist, ny=dy/safeDist;
+    b.x += nx*overlap; b.y += ny*overlap;
+    const PUSH=0.45; b.vx+=nx*PUSH; b.vy+=ny*PUSH;
   }
 }
 
@@ -249,63 +252,59 @@ function updateBubbles(){
   if(viewW===0||viewH===0){ requestAnimationFrame(updateBubbles); return; }
   ctx.clearRect(0,0,viewW,viewH);
 
-  const words = Array.from(aboutSection.querySelectorAll('.interactive-word'));
+  for(let i=0;i<bubbles.length;i++){
+    const a = bubbles[i];
+    for(let j=i+1;j<bubbles.length;j++){
+      const b = bubbles[j];
+      const dx = b.x-a.x, dy = b.y-a.y;
+      const dist = Math.sqrt(dx*dx + dy*dy)||1;
+      const minD = a.size+b.size;
+      if(dist<minD){
+        const overlap=minD-dist;
+        const nx=dx/dist, ny=dy/dist, push=overlap*0.03;
+        a.vx-=nx*push; a.vy-=ny*push;
+        b.vx+=nx*push; b.vy+=ny*push;
+      }
+    }
+  }
+
+  words = Array.from(aboutSection.querySelectorAll('.interactive-word'));
   const canvasRect = bubbleCanvas.getBoundingClientRect();
 
-  for(let i=0;i<bubbles.length;i++){
-    const b = bubbles[i];
+  for(const b of bubbles){
     if(mouse.moving){ b.vx += (mouse.x-b.x)*0.0012; b.vy += (mouse.y-b.y)*0.0012; }
     else { b.vx += (Math.random()-0.5)*0.01; b.vy -= 0.02; }
 
-    // Bubble repulsion
-    for(let j=i+1;j<bubbles.length;j++){
-      const b2 = bubbles[j];
-      const dx = b2.x-b.x, dy=b2.y-b.y;
-      const dist = Math.sqrt(dx*dx+dy*dy)||1;
-      const minD = b.size+b2.size;
-      if(dist<minD){
-        const push=(minD-dist)*0.03;
-        b.vx -= dx/dist*push; b.vy -= dy/dist*push;
-        b2.vx += dx/dist*push; b2.vy += dy/dist*push;
-      }
-    }
-
-    // Bounce off words
     for(const w of words){
-      const r = w.getBoundingClientRect();
-      const left = r.left-canvasRect.left;
-      const top = r.top-canvasRect.top;
-      const right = left+r.width;
-      const bottom = top+r.height;
-      resolveCollision(b,left,top,right,bottom);
+      const r=w.getBoundingClientRect();
+      const left=r.left-canvasRect.left;
+      const top=r.top-canvasRect.top;
+      const right=left+r.width;
+      const bottom=top+r.height;
+      resolveBubbleRectCollision(b,left,top,right,bottom);
     }
 
-    b.x += b.vx; b.y += b.vy;
+    b.x+=b.vx; b.y+=b.vy;
 
-    // Wrap vertically
-    if(b.y+b.size<0) b.y=viewH+b.size;
-    if(b.y-b.size>viewH) b.y=-b.size;
-    // Bounce horizontally
+    if(b.y+b.size<0)b.y=viewH+b.size;
+    if(b.y-b.size>viewH)b.y=-b.size;
+
     if(b.x-b.size<0){ b.x=b.size; b.vx*=-0.45; }
     if(b.x+b.size>viewW){ b.x=viewW-b.size; b.vx*=-0.45; }
 
-    b.vx *= 0.95; b.vy *= 0.95;
+    b.vx*=0.95; b.vy*=0.95;
 
-    ctx.beginPath();
-    ctx.arc(b.x,b.y,b.size,0,Math.PI*2);
-    ctx.fillStyle=b.color;
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(b.x,b.y,b.size,0,Math.PI*2);
+    ctx.fillStyle=b.color; ctx.fill();
   }
 
   requestAnimationFrame(updateBubbles);
 }
 updateBubbles();
 
-// Reset bubbles when About comes back
+/* Reset bubbles when About section comes back into view */
 const observer = new IntersectionObserver(entries=>{
-  entries.forEach(entry=>{
-    if(entry.isIntersecting) initBubbles();
-  });
+  entries.forEach(entry=>{ if(entry.isIntersecting){ initBubbles(); } });
 },{ threshold:0.4 });
 observer.observe(aboutSection);
 </script>

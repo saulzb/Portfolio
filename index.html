@@ -292,6 +292,20 @@ const ro = new ResizeObserver(() => {
 ro.observe(aboutSection);
 
 update(); // start loop
+/* --- Reset bubbles when About section re-enters view --- */
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      // reset bubble positions & velocities
+      initBubbles();
+    }
+  });
+},{
+  threshold: 0.4 // ~40% of the section needs to be in view
+});
+
+// watch the about section
+observer.observe(aboutSection);
 </script>
 </body>
 </html>

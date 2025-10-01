@@ -23,7 +23,6 @@ section{
   text-align:center;
   overflow:hidden;
 }
-
 /* HERO */
 .hero{ position:relative; color:black; }
 .hero video{
@@ -46,7 +45,6 @@ section{
   margin:0 15px;
 }
 nav a:hover{ color:lightblue; }
-
 /* ABOUT & CONTACT */
 .about{ background:#222; color:white; position:relative; }
 .contact{ background:#eee; color:#111; position:relative; }
@@ -105,23 +103,25 @@ resizeHeroCanvas();
 const heroWords = document.querySelectorAll('.hero .interactive-word');
 let spotX = heroWidth/2, spotY = heroHeight/2;
 let dx = 1.2, dy = 0.8;
-const SPOT_RADIUS = 120; // spotlight radius
+const SPOT_RADIUS = 100; // smaller radius to stay near letters
 
 function animateHeroSpotlight(){
   hCtx.clearRect(0,0,heroWidth,heroHeight);
 
+  // Move spotlight around
   spotX += dx; spotY += dy;
   if(spotX<0||spotX>heroWidth) dx*=-1;
   if(spotY<0||spotY>heroHeight) dy*=-1;
 
   heroWords.forEach(el=>{
     const rect = el.getBoundingClientRect();
-    const grad = hCtx.createRadialGradient(spotX,spotY,0, spotX,spotY,SPOT_RADIUS);
+    const grad = hCtx.createRadialGradient(spotX,spotY,0,spotX,spotY,SPOT_RADIUS);
     grad.addColorStop(0,'rgba(255,255,255,0.9)');
     grad.addColorStop(0.3,'rgba(255,140,0,0.6)');
     grad.addColorStop(1,'rgba(0,0,0,0)');
 
     hCtx.save();
+    // Clip to element only
     hCtx.beginPath();
     hCtx.rect(rect.left, rect.top, rect.width, rect.height);
     hCtx.clip();
@@ -154,27 +154,26 @@ function resizeCanvas(){
 window.addEventListener('resize',()=>setTimeout(resizeCanvas,0));
 resizeCanvas();
 
-let words = Array.from(aboutSection.querySelectorAll('.interactive-word'));
 const bubbles = [];
 const NUM = 40;
 
 function initBubbles(){
-  bubbles.length=0;
+  bubbles.length = 0;
   for(let i=0;i<NUM;i++){
-    const hue = Math.random()*60 + 180;
+    const hue = Math.random()*60+180;
     bubbles.push({
       x: Math.random()*viewW,
       y: Math.random()*viewH,
       vx: (Math.random()-0.5)*0.2,
-      vy: (Math.random()-0.5)*0.2 -0.2,
+      vy: (Math.random()-0.5)*0.2-0.2,
       size: Math.random()*18+10,
-      color: `hsla(${hue},70%,50%,${Math.random()*0.4 +0.18})`
+      color: `hsla(${hue},70%,50%,${Math.random()*0.4+0.18})`
     });
   }
 }
 initBubbles();
 
-const mouse = { x:viewW/2, y:viewH/2, moving:false };
+const mouse = {x:viewW/2, y:viewH/2, moving:false};
 aboutSection.addEventListener('mousemove',e=>{
   const r = bubbleCanvas.getBoundingClientRect();
   mouse.x = e.clientX - r.left;
@@ -185,17 +184,15 @@ aboutSection.addEventListener('mousemove',e=>{
 });
 
 function clamp(v,a,b){ return Math.max(a, Math.min(b,v)); }
-function resolveBubbleRectCollision(b,left,top,right,bottom){
-  const closestX = clamp(b.x,left,right);
-  const closestY = clamp(b.y,top,bottom);
-  let dx = b.x-closestX, dy = b.y-closestY;
-  const dist = Math.sqrt(dx*dx + dy*dy);
+function resolveCollision(b,left,top,right,bottom){
+  const cx = clamp(b.x,left,right), cy = clamp(b.y,top,bottom);
+  let dx = b.x-cx, dy = b.y-cy;
+  const dist = Math.sqrt(dx*dx+dy*dy);
   if(dist<b.size){
-    const safeDist = dist || 0.0001;
     const overlap = b.size-dist;
-    const nx=dx/safeDist, ny=dy/safeDist;
-    b.x += nx*overlap; b.y += ny*overlap;
-    const PUSH=0.45; b.vx+=nx*PUSH; b.vy+=ny*PUSH;
+    const safeDist = dist||0.0001;
+    b.x += dx/safeDist*overlap; b.y += dy/safeDist*overlap;
+    const PUSH=0.45; b.vx+=dx/safeDist*PUSH; b.vy+=dy/safeDist*PUSH;
   }
 }
 
@@ -203,56 +200,62 @@ function updateBubbles(){
   if(viewW===0||viewH===0){ requestAnimationFrame(updateBubbles); return; }
   ctx.clearRect(0,0,viewW,viewH);
 
-  for(let i=0;i<bubbles.length;i++){
-    const a = bubbles[i];
-    for(let j=i+1;j<bubbles.length;j++){
-      const b = bubbles[j];
-      const dx = b.x-a.x, dy = b.y-a.y;
-      const dist = Math.sqrt(dx*dx + dy*dy)||1;
-      const minD = a.size+b.size;
-      if(dist<minD){
-        const overlap=minD-dist;
-        const nx=dx/dist, ny=dy/dist, push=overlap*0.03;
-        a.vx-=nx*push; a.vy-=ny*push;
-        b.vx+=nx*push; b.vy+=ny*push;
-      }
-    }
-  }
-
-  words = Array.from(aboutSection.querySelectorAll('.interactive-word'));
+  const words = Array.from(aboutSection.querySelectorAll('.interactive-word'));
   const canvasRect = bubbleCanvas.getBoundingClientRect();
 
-  for(const b of bubbles){
+  for(let i=0;i<bubbles.length;i++){
+    const b = bubbles[i];
     if(mouse.moving){ b.vx += (mouse.x-b.x)*0.0012; b.vy += (mouse.y-b.y)*0.0012; }
     else { b.vx += (Math.random()-0.5)*0.01; b.vy -= 0.02; }
 
-    for(const w of words){
-      const r=w.getBoundingClientRect();
-      const left=r.left-canvasRect.left;
-      const top=r.top-canvasRect.top;
-      const right=left+r.width;
-      const bottom=top+r.height;
-      resolveBubbleRectCollision(b,left,top,right,bottom);
+    // Bubble repulsion
+    for(let j=i+1;j<bubbles.length;j++){
+      const b2 = bubbles[j];
+      const dx = b2.x-b.x, dy=b2.y-b.y;
+      const dist = Math.sqrt(dx*dx+dy*dy)||1;
+      const minD = b.size+b2.size;
+      if(dist<minD){
+        const push=(minD-dist)*0.03;
+        b.vx -= dx/dist*push; b.vy -= dy/dist*push;
+        b2.vx += dx/dist*push; b2.vy += dy/dist*push;
+      }
     }
 
-    b.x+=b.vx; b.y+=b.vy;
-    if(b.y+b.size<0)b.y=viewH+b.size;
-    if(b.y-b.size>viewH)b.y=-b.size;
+    // Bounce off words
+    for(const w of words){
+      const r = w.getBoundingClientRect();
+      const left = r.left-canvasRect.left;
+      const top = r.top-canvasRect.top;
+      const right = left+r.width;
+      const bottom = top+r.height;
+      resolveCollision(b,left,top,right,bottom);
+    }
+
+    b.x += b.vx; b.y += b.vy;
+
+    // Wrap vertically
+    if(b.y+b.size<0) b.y=viewH+b.size;
+    if(b.y-b.size>viewH) b.y=-b.size;
+    // Bounce horizontally
     if(b.x-b.size<0){ b.x=b.size; b.vx*=-0.45; }
     if(b.x+b.size>viewW){ b.x=viewW-b.size; b.vx*=-0.45; }
-    b.vx*=0.95; b.vy*=0.95;
-    ctx.beginPath(); ctx.arc(b.x,b.y,b.size,0,Math.PI*2);
-    ctx.fillStyle=b.color; ctx.fill();
+
+    b.vx *= 0.95; b.vy *= 0.95;
+
+    ctx.beginPath();
+    ctx.arc(b.x,b.y,b.size,0,Math.PI*2);
+    ctx.fillStyle=b.color;
+    ctx.fill();
   }
 
   requestAnimationFrame(updateBubbles);
 }
 updateBubbles();
 
-// Reset bubbles when About comes back into view
+// Reset bubbles when About comes back
 const observer = new IntersectionObserver(entries=>{
   entries.forEach(entry=>{
-    if(entry.isIntersecting){ initBubbles(); }
+    if(entry.isIntersecting) initBubbles();
   });
 },{ threshold:0.4 });
 observer.observe(aboutSection);

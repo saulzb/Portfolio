@@ -48,17 +48,6 @@ nav a{
 }
 nav a:hover{ color:lightblue; }
 
-/* Spotlight overlay above letters */
-#letterSpotlight{
-  position:absolute;
-  top:0; left:0;
-  width:100%; height:100%;
-  pointer-events:none;
-  z-index:2;
-  mix-blend-mode: lighten; /* only affects letters */
-  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8) 0%, rgba(255,140,0,0.6) 40%, rgba(0,0,0,0) 80%);
-}
-
 /* ABOUT & CONTACT */
 .about{ background:#222; color:white; position:relative; }
 .contact{ background:#eee; color:#111; position:relative; }
@@ -87,9 +76,6 @@ nav a:hover{ color:lightblue; }
     <a href="photos/photoholder.html" class="interactive-word">PHOTOS</a>
     <a href="drawings.html" class="interactive-word">DRAWINGS</a>
   </nav>
-
-  <!-- Spotlight overlay -->
-  <div id="letterSpotlight"></div>
 </section>
 
 <!-- ABOUT -->
@@ -107,18 +93,26 @@ nav a:hover{ color:lightblue; }
 </section>
 
 <script>
-/* ---------- HERO SPOTLIGHT ---------- */
-const spotlight = document.getElementById('letterSpotlight');
-let spotX=50, spotY=50, dx=0.2, dy=0.15;
+/* ---------- HERO LETTER SPOTLIGHT ---------- */
+const heroWords = document.querySelectorAll('.hero .interactive-word');
+let spotX = 0, spotY = 0;
+let dx = 0.8, dy = 0.5;
 
-function animateSpotlight(){
+function animateLetterSpotlight(){
   spotX += dx; spotY += dy;
-  if(spotX>80||spotX<20) dx*=-1;
-  if(spotY>80||spotY<20) dy*=-1;
-  spotlight.style.background = `radial-gradient(circle at ${spotX}% ${spotY}%, rgba(255,255,255,0.8) 0%, rgba(255,140,0,0.6) 40%, rgba(0,0,0,0) 80%)`;
-  requestAnimationFrame(animateSpotlight);
+  if(spotX>20||spotX<-20) dx*=-1;
+  if(spotY>20||spotY<-20) dy*=-1;
+
+  heroWords.forEach(el=>{
+    el.style.textShadow = `
+      ${spotX}px ${spotY}px 8px rgba(255,255,255,0.8),
+      ${spotX/2}px ${spotY/2}px 20px rgba(255,140,0,0.6)
+    `;
+  });
+
+  requestAnimationFrame(animateLetterSpotlight);
 }
-animateSpotlight();
+animateLetterSpotlight();
 
 /* ---------- ABOUT BUBBLES ---------- */
 const aboutSection = document.getElementById('about-section');

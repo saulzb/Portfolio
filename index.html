@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Saul Zidulka-Bejcek</title>
 <style>
 html,body{
@@ -12,7 +12,6 @@ html,body{
   overflow-y:scroll;
   scroll-snap-type:y mandatory;
 }
-
 section{
   height:100vh;
   display:flex;
@@ -26,65 +25,62 @@ section{
 }
 
 /* HERO */
-.hero{ position:relative; color:black; z-index:0; }
+.hero{ position:relative; color:black; }
 .hero video{
   position:absolute; top:0; left:0;
   width:100%; height:100%;
   object-fit:cover;
   z-index:-2;
 }
-
-/* Canvas on top of hero for letters + spotlight */
 #heroCanvas{
-  position:absolute;
-  top:0; left:0;
+  position:absolute; top:0; left:0;
   width:100%; height:100%;
   pointer-events:none;
   z-index:1;
 }
+.hero h1, nav a{
+  color:black;
+  font-weight:bold;
+  position:relative;
+  z-index:2;
+  margin:0 15px;
+}
+nav a:hover{ color:lightblue; }
 
 /* ABOUT & CONTACT */
 .about{ background:#222; color:white; position:relative; }
 .contact{ background:#eee; color:#111; position:relative; }
-
-/* Canvas for bubbles */
 #bubbleCanvas{
   position:absolute; left:0; top:0;
   width:100%; height:100%;
   z-index:0;
   pointer-events:none;
 }
-
 .interactive-word{ display:inline-block; position:relative; }
 </style>
 </head>
 <body>
 
-<!-- HERO -->
 <section class="hero">
   <video autoplay muted loop playsinline>
     <source src="1757373621.967906.MOV" type="video/mp4">
   </video>
 
-  <!-- Canvas for letters + spotlight -->
-  <canvas id="heroCanvas"></canvas>
-
-  <!-- Hidden accessible text -->
-  <h1 class="interactive-word" style="position:absolute;opacity:0;">SAUL ZIDULKA-BEJCEK</h1>
-  <nav style="position:absolute;opacity:0;">
+  <h1 class="interactive-word">SAUL ZIDULKA-BEJCEK</h1>
+  <nav>
     <a href="photos/photoholder.html" class="interactive-word">PHOTOS</a>
     <a href="drawings.html" class="interactive-word">DRAWINGS</a>
   </nav>
+
+  <canvas id="heroCanvas"></canvas>
 </section>
 
-<!-- ABOUT -->
 <section class="about" id="about-section">
   <h2 class="interactive-word">ABOUT</h2>
   <p class="interactive-word">All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
   <canvas id="bubbleCanvas" aria-hidden="true"></canvas>
 </section>
 
-<!-- CONTACT -->
 <section class="contact">
   <h2 class="interactive-word">CONTACT</h2>
   <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
@@ -92,11 +88,11 @@ section{
 </section>
 
 <script>
-/* ---------- HERO LETTERS + SPOTLIGHT ---------- */
+/* ---------- HERO SPOTLIGHT ---------- */
 const heroCanvas = document.getElementById('heroCanvas');
 const hCtx = heroCanvas.getContext('2d');
-let heroWidth=0, heroHeight=0;
-
+let heroWidth = window.innerWidth;
+let heroHeight = window.innerHeight;
 function resizeHeroCanvas(){
   heroWidth = window.innerWidth;
   heroHeight = window.innerHeight;
@@ -106,65 +102,37 @@ function resizeHeroCanvas(){
 window.addEventListener('resize', resizeHeroCanvas);
 resizeHeroCanvas();
 
-const letters = [
-  "SAUL ZIDULKA-BEJCEK",
-  "PHOTOS",
-  "DRAWINGS"
-];
-const letterPositions = []; // {text, x, y, fontSize}
-
-function setupLetterPositions(){
-  letterPositions.length = 0;
-  const margin = 40;
-  // title
-  let fontSize = heroWidth/12;
-  let x = heroWidth/2;
-  let y = heroHeight/2 - 60;
-  letterPositions.push({text:letters[0], x, y, fontSize});
-
-  fontSize = heroWidth/18;
-  y = heroHeight/2 + 20;
-  letterPositions.push({text:letters[1], x:heroWidth/3, y, fontSize});
-  letterPositions.push({text:letters[2], x:2*heroWidth/3, y, fontSize});
-}
-setupLetterPositions();
-
-/* spotlight position */
-let spotX = heroWidth/2;
-let spotY = heroHeight/2;
+const heroWords = document.querySelectorAll('.hero .interactive-word');
+let spotX = heroWidth/2, spotY = heroHeight/2;
 let dx = 1.2, dy = 0.8;
+const SPOT_RADIUS = 120; // spotlight radius
 
-function animateHero(){
+function animateHeroSpotlight(){
   hCtx.clearRect(0,0,heroWidth,heroHeight);
 
-  // Draw letters in black
-  letterPositions.forEach(l=>{
-    hCtx.font = `bold ${l.fontSize}px Arial`;
-    hCtx.textAlign = "center";
-    hCtx.textBaseline = "middle";
-    hCtx.fillStyle = "black";
-    hCtx.fillText(l.text, l.x, l.y);
+  spotX += dx; spotY += dy;
+  if(spotX<0||spotX>heroWidth) dx*=-1;
+  if(spotY<0||spotY>heroHeight) dy*=-1;
+
+  heroWords.forEach(el=>{
+    const rect = el.getBoundingClientRect();
+    const grad = hCtx.createRadialGradient(spotX,spotY,0, spotX,spotY,SPOT_RADIUS);
+    grad.addColorStop(0,'rgba(255,255,255,0.9)');
+    grad.addColorStop(0.3,'rgba(255,140,0,0.6)');
+    grad.addColorStop(1,'rgba(0,0,0,0)');
+
+    hCtx.save();
+    hCtx.beginPath();
+    hCtx.rect(rect.left, rect.top, rect.width, rect.height);
+    hCtx.clip();
+    hCtx.fillStyle = grad;
+    hCtx.fillRect(rect.left, rect.top, rect.width, rect.height);
+    hCtx.restore();
   });
 
-  // Update spotlight
-  spotX += dx; spotY += dy;
-  if(spotX>heroWidth-100||spotX<100) dx*=-1;
-  if(spotY>100 && spotY>heroHeight-100 || spotY<100) dy*=-1;
-
-  // Draw radial gradient on top of letters
-  hCtx.save();
-  hCtx.globalCompositeOperation = 'source-atop';
-  const grad = hCtx.createRadialGradient(spotX,spotY,0, spotX,spotY,150);
-  grad.addColorStop(0,'rgba(255,255,255,0.9)');
-  grad.addColorStop(0.3,'rgba(255,140,0,0.6)');
-  grad.addColorStop(1,'rgba(0,0,0,0)');
-  hCtx.fillStyle = grad;
-  hCtx.fillRect(0,0,heroWidth,heroHeight);
-  hCtx.restore();
-
-  requestAnimationFrame(animateHero);
+  requestAnimationFrame(animateHeroSpotlight);
 }
-animateHero();
+animateHeroSpotlight();
 
 /* ---------- ABOUT BUBBLES ---------- */
 const aboutSection = document.getElementById('about-section');
@@ -219,8 +187,8 @@ aboutSection.addEventListener('mousemove',e=>{
 function clamp(v,a,b){ return Math.max(a, Math.min(b,v)); }
 function resolveBubbleRectCollision(b,left,top,right,bottom){
   const closestX = clamp(b.x,left,right);
-  const closestY = clamp(b.y,left,bottom);
-  let dx = b.x-closestX, dy=b.y-closestY;
+  const closestY = clamp(b.y,top,bottom);
+  let dx = b.x-closestX, dy = b.y-closestY;
   const dist = Math.sqrt(dx*dx + dy*dy);
   if(dist<b.size){
     const safeDist = dist || 0.0001;
@@ -268,15 +236,11 @@ function updateBubbles(){
     }
 
     b.x+=b.vx; b.y+=b.vy;
-
     if(b.y+b.size<0)b.y=viewH+b.size;
     if(b.y-b.size>viewH)b.y=-b.size;
-
     if(b.x-b.size<0){ b.x=b.size; b.vx*=-0.45; }
     if(b.x+b.size>viewW){ b.x=viewW-b.size; b.vx*=-0.45; }
-
     b.vx*=0.95; b.vy*=0.95;
-
     ctx.beginPath(); ctx.arc(b.x,b.y,b.size,0,Math.PI*2);
     ctx.fillStyle=b.color; ctx.fill();
   }
@@ -285,9 +249,11 @@ function updateBubbles(){
 }
 updateBubbles();
 
-/* Reset bubbles when About section comes back into view */
+// Reset bubbles when About comes back into view
 const observer = new IntersectionObserver(entries=>{
-  entries.forEach(entry=>{ if(entry.isIntersecting){ initBubbles(); } });
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){ initBubbles(); }
+  });
 },{ threshold:0.4 });
 observer.observe(aboutSection);
 </script>

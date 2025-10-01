@@ -43,6 +43,28 @@ section{
   z-index:1;
 }
 
+/* Actual HTML letters (clickable) on top */
+.hero-text {
+  position:absolute;
+  top:0; left:0;
+  width:100%; height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  pointer-events:auto;
+  z-index:2;
+}
+
+.hero-text a, .hero-text h1 {
+  margin:10px;
+  color:black;
+  font-weight:bold;
+  font-family:Arial,sans-serif;
+  text-decoration:none;
+  position:relative;
+}
+
 /* ABOUT & CONTACT */
 .about{ background:#222; color:white; position:relative; }
 .contact{ background:#eee; color:#111; position:relative; }
@@ -68,12 +90,14 @@ section{
 
   <canvas id="heroCanvas"></canvas>
 
-  <!-- Hidden accessible text -->
-  <h1 class="interactive-word" style="position:absolute;opacity:0;">SAUL ZIDULKA-BEJCEK</h1>
-  <nav style="position:absolute;opacity:0;">
-    <a href="photos/photoholder.html" class="interactive-word">PHOTOS</a>
-    <a href="drawings.html" class="interactive-word">DRAWINGS</a>
-  </nav>
+  <!-- Actual clickable text -->
+  <div class="hero-text">
+    <h1 class="interactive-word">SAUL ZIDULKA-BEJCEK</h1>
+    <nav>
+      <a href="photos/photoholder.html" class="interactive-word">PHOTOS</a>
+      <a href="drawings.html" class="interactive-word">DRAWINGS</a>
+    </nav>
+  </div>
 </section>
 
 <!-- ABOUT -->
@@ -106,22 +130,12 @@ function resizeHeroCanvas() {
 window.addEventListener('resize', resizeHeroCanvas);
 resizeHeroCanvas();
 
-const letters = [
-  {text:"SAUL ZIDULKA-BEJCEK", fontSize:heroWidth/18},
-  {text:"PHOTOS", fontSize:heroWidth/28},
-  {text:"DRAWINGS", fontSize:heroWidth/28}
+// Letter positions
+const letterPositions = [
+  {text:"SAUL ZIDULKA-BEJCEK", fontSize: heroWidth/18, x:heroWidth/2, y:heroHeight/2 - 50},
+  {text:"PHOTOS", fontSize: heroWidth/28, x:heroWidth/3, y:heroHeight/2 + 20},
+  {text:"DRAWINGS", fontSize: heroWidth/28, x:2*heroWidth/3, y:heroHeight/2 + 20}
 ];
-
-function computeLetterPositions() {
-  const positions = [];
-  let y = heroHeight/2 - 50;
-  positions.push({text:letters[0].text, x:heroWidth/2, y, fontSize:letters[0].fontSize});
-  y = heroHeight/2 + 20;
-  positions.push({text:letters[1].text, x:heroWidth/3, y, fontSize:letters[1].fontSize});
-  positions.push({text:letters[2].text, x:2*heroWidth/3, y, fontSize:letters[2].fontSize});
-  return positions;
-}
-let letterPositions = computeLetterPositions();
 
 function getLettersBounds() {
   let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
@@ -141,13 +155,15 @@ function getLettersBounds() {
 let bounds = getLettersBounds();
 let spotX = (bounds.minX+bounds.maxX)/2;
 let spotY = (bounds.minY+bounds.maxY)/2;
-let dx = 1, dy = 0.8;
+let dx = 0;
+let dy = 0;
+let targetX = spotX, targetY = spotY;
 const SPOT_RADIUS = 80;
 
 function animateHeroSpotlight() {
   hCtx.clearRect(0,0,heroWidth,heroHeight);
 
-  // Draw letters
+  // Draw black letters
   letterPositions.forEach(l=>{
     hCtx.font = `bold ${l.fontSize}px Arial`;
     hCtx.textAlign = "center";
@@ -156,10 +172,15 @@ function animateHeroSpotlight() {
     hCtx.fillText(l.text, l.x, l.y);
   });
 
-  // Move spotlight within bounds
-  spotX += dx; spotY += dy;
-  if(spotX - SPOT_RADIUS < bounds.minX || spotX + SPOT_RADIUS > bounds.maxX) dx *= -1;
-  if(spotY - SPOT_RADIUS < bounds.minY || spotY + SPOT_RADIUS > bounds.maxY) dy *= -1;
+  // Move spotlight smoothly toward target
+  spotX += (targetX - spotX) * 0.05;
+  spotY += (targetY - spotY) * 0.05;
+
+  // Change target occasionally
+  if(Math.random()<0.01){
+    targetX = bounds.minX + Math.random()*(bounds.maxX-bounds.minX);
+    targetY = bounds.minY + Math.random()*(bounds.maxY-bounds.minY);
+  }
 
   // Draw spotlight only on letters
   hCtx.save();
@@ -237,7 +258,7 @@ function clamp(v,a,b){ return Math.max(a, Math.min(b,v)); }
 function resolveBubbleRectCollision(b,left,top,right,bottom){
   const closestX = clamp(b.x,left,right);
   const closestY = clamp(b.y,top,bottom);
-  let dx = b.x-closestX, dy=b.y-closestY;
+  let dx = b.x-closestX, dy = b.y-closestY;
   const dist = Math.sqrt(dx*dx + dy*dy);
   if(dist<b.size){
     const safeDist = dist || 0.0001;
@@ -302,7 +323,6 @@ function updateBubbles(){
 }
 updateBubbles();
 
-/* Reset bubbles when About section comes back into view */
 const observer = new IntersectionObserver(entries=>{
   entries.forEach(entry=>{ if(entry.isIntersecting){ initBubbles(); } });
 },{ threshold:0.4 });

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
+<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Saul Zidulka-Bejcek</title>
 <style>
@@ -35,37 +35,23 @@
     z-index:-2;
   }
 
-  /* HERO text with orange "submarine light" */
-  @keyframes glowPulse {
-    0%, 100% {
-      text-shadow:
-        0 0 10px rgba(255,140,0,0.6),
-        0 0 20px rgba(255,140,0,0.4),
-        0 0 40px rgba(255,69,0,0.2);
-    }
-    50% {
-      text-shadow:
-        0 0 15px rgba(255,140,0,0.8),
-        0 0 30px rgba(255,140,0,0.5),
-        0 0 60px rgba(255,69,0,0.3);
-    }
-  }
-
-  .hero h1 {
-    font-size: 3rem;
+  /* HERO text with spotlight effect */
+  .hero .interactive-word {
     font-weight: bold;
+    font-size: 3rem;
     color: black;
-    background: radial-gradient(circle at center, orange 20%, transparent 70%);
+    background: radial-gradient(circle at 50% 50%, white 0%, orange 30%, black 80%);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: black;
+    -webkit-text-fill-color: transparent;
     position: relative;
-    animation: glowPulse 2s infinite ease-in-out;
+    z-index:1;
   }
 
   nav a{
-    margin:0 15px; text-decoration:none; color:white;
+    margin:0 15px; text-decoration:none;
     font-weight:bold; z-index:2; position:relative;
   }
+
   nav a:hover{ color:lightblue; }
 
   /* ABOUT */
@@ -81,7 +67,7 @@
     display:block;
   }
 
-  .interactive-word{ position:relative; z-index:2; display:inline-block; }
+  .interactive-word{ position:relative; display:inline-block; }
 
 </style>
 </head>
@@ -116,54 +102,70 @@
 </section>
 
 <script>
-/* ---------- Setup and sizing ---------- */
+/* ---------- HERO SPOTLIGHT ---------- */
+const heroWords = document.querySelectorAll('.hero .interactive-word');
+let spotlightX = 50; // %
+let spotlightY = 50;
+let dx = 0.2;
+let dy = 0.15;
+
+function animateSpotlight() {
+  spotlightX += dx;
+  spotlightY += dy;
+
+  if (spotlightX > 90 || spotlightX < 10) dx *= -1;
+  if (spotlightY > 90 || spotlightY < 10) dy *= -1;
+
+  heroWords.forEach(el=>{
+    el.style.background = `radial-gradient(circle at ${spotlightX}% ${spotlightY}%, white 0%, orange 30%, black 80%)`;
+  });
+
+  requestAnimationFrame(animateSpotlight);
+}
+animateSpotlight();
+
+/* ---------- ABOUT BUBBLES ---------- */
 const aboutSection = document.getElementById('about-section');
 const canvas = document.getElementById('bubbleCanvas');
 const ctx = canvas.getContext('2d');
+let viewW=0, viewH=0, dpr=window.devicePixelRatio||1;
 
-let viewW = 0, viewH = 0, dpr = window.devicePixelRatio || 1;
 function resizeCanvas(){
   const rect = aboutSection.getBoundingClientRect();
   const w = Math.max(100, Math.floor(rect.width));
   const h = Math.max(100, Math.floor(rect.height));
-  viewW = w;
-  viewH = h;
-  canvas.style.width = w + 'px';
-  canvas.style.height = h + 'px';
-  canvas.width = Math.floor(w * dpr);
-  canvas.height = Math.floor(h * dpr);
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  viewW = w; viewH = h;
+  canvas.style.width = w+'px';
+  canvas.style.height = h+'px';
+  canvas.width = Math.floor(w*dpr);
+  canvas.height = Math.floor(h*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
 }
-window.addEventListener('resize', () => setTimeout(resizeCanvas,0));
+window.addEventListener('resize',()=>setTimeout(resizeCanvas,0));
 resizeCanvas();
 
-/* ---------- Words inside About section ---------- */
-function getAboutWords(){ return Array.from(aboutSection.querySelectorAll('.interactive-word')); }
-let words = getAboutWords();
-
-/* ---------- Bubble data ---------- */
+let words = Array.from(aboutSection.querySelectorAll('.interactive-word'));
 const bubbles = [];
 const NUM = 40;
 
 function initBubbles(){
-  bubbles.length = 0;
+  bubbles.length=0;
   for(let i=0;i<NUM;i++){
-    const hue = Math.random()*60 + 180; // turquoise/blue
+    const hue = Math.random()*60 + 180;
     bubbles.push({
       x: Math.random()*viewW,
       y: Math.random()*viewH,
       vx: (Math.random()-0.5)*0.2,
-      vy: (Math.random()-0.5)*0.2 - 0.2,
-      size: Math.random()*18 + 10,
-      color: `hsla(${hue},70%,50%,${Math.random()*0.4 + 0.18})`
+      vy: (Math.random()-0.5)*0.2 -0.2,
+      size: Math.random()*18+10,
+      color: `hsla(${hue},70%,50%,${Math.random()*0.4 +0.18})`
     });
   }
 }
 initBubbles();
 
-/* ---------- Mouse ---------- */
 const mouse = { x:viewW/2, y:viewH/2, moving:false };
-aboutSection.addEventListener('mousemove', e=>{
+aboutSection.addEventListener('mousemove',e=>{
   const r = canvas.getBoundingClientRect();
   mouse.x = e.clientX - r.left;
   mouse.y = e.clientY - r.top;
@@ -172,34 +174,30 @@ aboutSection.addEventListener('mousemove', e=>{
   mouse.timer = setTimeout(()=>{ mouse.moving=false; },700);
 });
 
-/* ---------- Utilities ---------- */
 function clamp(v,a,b){ return Math.max(a, Math.min(b,v)); }
 function resolveBubbleRectCollision(b,left,top,right,bottom){
   const closestX = clamp(b.x,left,right);
   const closestY = clamp(b.y,top,bottom);
-  let dx = b.x - closestX;
-  let dy = b.y - closestY;
+  let dx = b.x-closestX, dy=b.y-closestY;
   const dist = Math.sqrt(dx*dx + dy*dy);
-  if(dist < b.size){
+  if(dist<b.size){
     const safeDist = dist || 0.0001;
-    const overlap = b.size - dist;
-    const nx = dx/safeDist;
-    const ny = dy/safeDist;
+    const overlap = b.size-dist;
+    const nx=dx/safeDist, ny=dy/safeDist;
     b.x += nx*overlap; b.y += ny*overlap;
-    const PUSH=0.45; b.vx += nx*PUSH; b.vy += ny*PUSH;
+    const PUSH=0.45; b.vx+=nx*PUSH; b.vy+=ny*PUSH;
   }
 }
 
-/* ---------- Main loop ---------- */
-function update(){
-  if(viewW===0||viewH===0){ requestAnimationFrame(update); return; }
+function updateBubbles(){
+  if(viewW===0||viewH===0){ requestAnimationFrame(updateBubbles); return; }
   ctx.clearRect(0,0,viewW,viewH);
 
   for(let i=0;i<bubbles.length;i++){
     const a = bubbles[i];
     for(let j=i+1;j<bubbles.length;j++){
       const b = bubbles[j];
-      const dx = b.x - a.x; const dy = b.y - a.y;
+      const dx = b.x-a.x, dy = b.y-a.y;
       const dist = Math.sqrt(dx*dx + dy*dy)||1;
       const minD = a.size+b.size;
       if(dist<minD){
@@ -211,7 +209,7 @@ function update(){
     }
   }
 
-  words = getAboutWords();
+  words = Array.from(aboutSection.querySelectorAll('.interactive-word'));
   const canvasRect = canvas.getBoundingClientRect();
 
   for(const b of bubbles){
@@ -237,18 +235,17 @@ function update(){
 
     b.vx*=0.95; b.vy*=0.95;
 
-    ctx.beginPath(); ctx.arc(b.x,b.y,b.size,0,Math.PI*2); ctx.fillStyle=b.color; ctx.fill();
+    ctx.beginPath(); ctx.arc(b.x,b.y,b.size,0,Math.PI*2);
+    ctx.fillStyle=b.color; ctx.fill();
   }
 
-  requestAnimationFrame(update);
+  requestAnimationFrame(updateBubbles);
 }
-update();
+updateBubbles();
 
-/* --- Reset bubbles when About section re-enters view --- */
-const observer = new IntersectionObserver((entries)=>{
-  entries.forEach(entry=>{
-    if(entry.isIntersecting){ initBubbles(); }
-  });
+/* Reset bubbles when About section comes back into view */
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{ if(entry.isIntersecting){ initBubbles(); } });
 },{ threshold:0.4 });
 observer.observe(aboutSection);
 </script>

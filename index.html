@@ -68,13 +68,9 @@ nav a:hover{ color:orange; }
   pointer-events: none; /* clicks go through */
   z-index: 2;
 
-  /* Spotlight mask */
-  -webkit-mask-image: radial-gradient(circle 120px at center, transparent 0%, black 100%);
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: -9999px -9999px;
-  mask-image: radial-gradient(circle 120px at center, transparent 0%, black 100%);
-  mask-repeat: no-repeat;
-  mask-position: -9999px -9999px;
+  /* Start hidden — spotlight will be drawn dynamically with JS */
+  -webkit-mask-image: none;
+  mask-image: none;
 }
 </style>
 </head>
@@ -321,27 +317,50 @@ const observer = new IntersectionObserver(entries=>{
 },{ threshold:0.4 });
 observer.observe(aboutSection);
 
-/* ---------- CONTACT SPOTLIGHT ---------- */
+/* ---------- CONTACT SPOTLIGHT (FLASHLIGHT WITH SMOOTH FOLLOW) ---------- */
 const contactSection = document.querySelector('.contact');
 const overlay = contactSection.querySelector('.contact-overlay');
 
+// target vs actual positions for easing
+let targetX = 0, targetY = 0;
+let currentX = 0, currentY = 0;
+let spotlightActive = false;
+
 contactSection.addEventListener('mousemove', e => {
   const rect = contactSection.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-
-  // Create a radial gradient centered at the cursor
-  const spotlight = `radial-gradient(circle 120px at ${x}px ${y}px, transparent 0%, black 100%)`;
-
-  overlay.style.webkitMaskImage = spotlight;
-  overlay.style.maskImage = spotlight;
+  targetX = e.clientX - rect.left;
+  targetY = e.clientY - rect.top;
+  spotlightActive = true;
 });
 
 contactSection.addEventListener('mouseleave', () => {
-  // Reset to fully black when leaving
-  overlay.style.webkitMaskImage = `none`;
-  overlay.style.maskImage = `none`;
+  spotlightActive = false;
+  overlay.style.webkitMaskImage = 'none';
+  overlay.style.maskImage = 'none';
 });
+
+function animateSpotlight(){
+  if(spotlightActive){
+    // smooth easing (lerp)
+    currentX += (targetX - currentX) * 0.15;
+    currentY += (targetY - currentY) * 0.15;
+
+    const spotlight = `radial-gradient(
+      circle 180px at ${currentX}px ${currentY}px,
+      rgba(0,0,0,0) 0%,
+      rgba(0,0,0,0.4) 40%,
+      rgba(0,0,0,0.85) 80%,
+      rgba(0,0,0,1) 100%
+    )`;
+
+    overlay.style.webkitMaskImage = spotlight;
+    overlay.style.maskImage = spotlight;
+    overlay.style.webkitMaskRepeat = "no-repeat";
+    overlay.style.maskRepeat = "no-repeat";
+  }
+  requestAnimationFrame(animateSpotlight);
+}
+animateSpotlight();
 </script>
 </body>
 </html>

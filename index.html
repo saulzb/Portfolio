@@ -58,6 +58,24 @@ section{
 .interactive-word{ display:inline-block; position:relative; }
 nav a{ color:black; font-weight:bold; margin:0 15px; text-decoration:none; }
 nav a:hover{ color:orange; }
+
+/* ---------- CONTACT SPOTLIGHT OVERLAY ---------- */
+.contact-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: black;
+  pointer-events: none; /* clicks go through */
+  z-index: 2;
+
+  /* Spotlight mask */
+  -webkit-mask-image: radial-gradient(circle 120px at center, transparent 0%, black 100%);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: -9999px -9999px;
+  mask-image: radial-gradient(circle 120px at center, transparent 0%, black 100%);
+  mask-repeat: no-repeat;
+  mask-position: -9999px -9999px;
+}
 </style>
 </head>
 <body>
@@ -91,6 +109,9 @@ nav a:hover{ color:orange; }
   <h2 class="interactive-word">CONTACT</h2>
   <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
   <p>Instagram: <a href="https://www.instagram.com/saul_5607/" target="_blank">@saul_5607</a></p>
+
+  <!-- Overlay -->
+  <div class="contact-overlay"></div>
 </section>
 
 <script>
@@ -299,6 +320,24 @@ const observer = new IntersectionObserver(entries=>{
   entries.forEach(entry=>{ if(entry.isIntersecting){ initBubbles(); } });
 },{ threshold:0.4 });
 observer.observe(aboutSection);
+
+/* ---------- CONTACT SPOTLIGHT ---------- */
+const contactSection = document.querySelector('.contact');
+const overlay = contactSection.querySelector('.contact-overlay');
+
+contactSection.addEventListener('mousemove', e => {
+  const rect = contactSection.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  overlay.style.webkitMaskPosition = `${x}px ${y}px`;
+  overlay.style.maskPosition = `${x}px ${y}px`;
+});
+
+contactSection.addEventListener('mouseleave', () => {
+  overlay.style.webkitMaskPosition = `-9999px -9999px`;
+  overlay.style.maskPosition = `-9999px -9999px`;
+});
 </script>
 </body>
 </html>

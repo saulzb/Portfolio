@@ -330,13 +330,17 @@ contactSection.addEventListener('mousemove', e => {
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
 
-  overlay.style.webkitMaskPosition = `${x}px ${y}px`;
-  overlay.style.maskPosition = `${x}px ${y}px`;
+  // Create a radial gradient centered at the cursor
+  const spotlight = `radial-gradient(circle 120px at ${x}px ${y}px, transparent 0%, black 100%)`;
+
+  overlay.style.webkitMaskImage = spotlight;
+  overlay.style.maskImage = spotlight;
 });
 
 contactSection.addEventListener('mouseleave', () => {
-  overlay.style.webkitMaskPosition = `-9999px -9999px`;
-  overlay.style.maskPosition = `-9999px -9999px`;
+  // Reset to fully black when leaving
+  overlay.style.webkitMaskImage = `none`;
+  overlay.style.maskImage = `none`;
 });
 </script>
 </body>

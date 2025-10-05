@@ -1,185 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Saul Zidulka-Bejcek</title>
-<style>
-html,body{
-  margin:0; padding:0;
-  font-family:Arial, sans-serif;
-  overflow-x:hidden;
-  background:#111;
-}
-
-/* each section flows naturally */
-section{
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
-  position:relative;
-  overflow:hidden;
-}
-
-/* HERO */
-.hero{ position:relative; color:black; z-index:0; }
-.hero video{
-  position:absolute; top:0; left:0;
-  width:100%; height:100%;
-  object-fit:cover;
-  z-index:-2;
-}
-#heroCanvas{
-  position:absolute;
-  top:0; left:0;
-  width:100%; height:100%;
-  pointer-events:none;
-  z-index:1;
-}
-nav a{ color:black; font-weight:bold; margin:0 15px; text-decoration:none; }
-nav a:hover{ color:orange; }
-
-/* ABOUT */
-.about{ background:#222; color:white; position:relative; }
-#bubbleCanvas{
-  position:absolute; left:0; top:0;
-  width:100%; height:100%;
-  z-index:0;
-  pointer-events:none;
-}
-
-/* PHOTOS SECTION */
-.photos{
-  background:#111;
-  color:white;
-  padding:150px 0 300px;
-  position:relative;
-  overflow:visible;
-}
-
-.photos h2{
-  font-size:2em;
-  margin-bottom:80px;
-  z-index:5;
-  position:relative;
-}
-
-/* collage-style scattered layout */
-.galleries {
-  position:relative;
-  width:100%;
-  max-width:1400px;
-  margin:0 auto;
-  height:1600px; /* gives scroll room */
-}
-
-.subgallery {
-  position:absolute;
-  width:300px;
-  height:220px;
-  overflow:hidden;
-  border-radius:18px;
-  text-decoration:none;
-  color:white;
-  transform:translateY(0) scale(1);
-  transition:transform 0.6s ease, opacity 0.6s ease;
-  box-shadow:0 10px 25px rgba(0,0,0,0.4);
-  opacity:0.9;
-}
-
-.subgallery:hover {
-  transform:scale(1.05);
-  z-index:10;
-}
-
-/* scattered positions (you can tweak these) */
-.subgallery:nth-child(1){ top:100px; left:5%; z-index:3; }
-.subgallery:nth-child(2){ top:220px; left:40%; z-index:2; transform:rotate(2deg); }
-.subgallery:nth-child(3){ top:350px; left:70%; z-index:4; transform:rotate(-2deg); }
-.subgallery:nth-child(4){ top:600px; left:15%; z-index:3; transform:rotate(-3deg); }
-.subgallery:nth-child(5){ top:750px; left:55%; z-index:2; transform:rotate(1.5deg); }
-.subgallery:nth-child(6){ top:1000px; left:75%; z-index:5; transform:rotate(-1deg); }
-
-.slideshow {
-  display:flex;
-  transition:transform 1s ease;
-  width:100%;
-  height:100%;
-}
-.slideshow img {
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  flex-shrink:0;
-}
-.title {
-  position:absolute;
-  bottom:0;
-  left:0;
-  width:100%;
-  background:rgba(0,0,0,0.55);
-  text-align:center;
-  font-weight:bold;
-  padding:10px 0;
-  z-index:2;
-  font-size:18px;
-}
-
-/* CONTACT */
-.contact{ background:#eee; color:#111; position:relative; padding:100px 0; }
-.contact-overlay {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: black;
-  pointer-events: none;
-  z-index: 2;
-  -webkit-mask-image: none;
-  mask-image: none;
-}
-</style>
-</head>
-<body>
-
-<!-- HERO -->
-<section class="hero">
-  <video autoplay muted loop playsinline>
-    <source src="1757373621.967906.MOV" type="video/mp4">
-  </video>
-  <canvas id="heroCanvas"></canvas>
-  <h1 class="interactive-word" id="title">SAUL ZIDULKA-BEJCEK</h1>
-  <nav>
-    <a href="#photos" class="interactive-word" id="photos">PHOTOS</a>
-    <a href="drawings.html" class="interactive-word" id="drawings">DRAWINGS</a>
-  </nav>
-</section>
-
-<!-- ABOUT -->
-<section class="about" id="about-section">
-  <h2 class="interactive-word">ABOUT</h2>
-  <p class="interactive-word">All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
-  <canvas id="bubbleCanvas" aria-hidden="true"></canvas>
-</section>
-
 <!-- PHOTOS COLLAGE PAGE -->
 <section class="photos" id="photos">
   <h2>PHOTO COLLECTIONS</h2>
   <div class="galleries" id="galleries"></div>
 </section>
 
-<!-- CONTACT -->
-<section class="contact">
-  <h2 class="interactive-word">CONTACT</h2>
-  <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
-  <p>Instagram: <a href="https://www.instagram.com/saul_5607/" target="_blank">@saul_5607</a></p>
-  <div class="contact-overlay"></div>
-</section>
-
 <script>
-/* GALLERIES */
 const galleries = [
   { name: "Double Exposures", folder: "photos/double exposures", images: ["IMG_9495.JPG","IMG_9493.jpg","IMG_9495.JPG"], page: "doubleexposurecode.html" },
   { name: "Wildlife", folder: "photos/wildlife", images: ["IMG_8491_4.jpg","IMG_8512_1.jpg","RAW's Jul-Aug478 copy 2.jpg"], page: "wildlifecode.html" },
@@ -197,7 +22,6 @@ galleries.forEach(gallery=>{
 
   const slideshow = document.createElement('div');
   slideshow.className = 'slideshow';
-
   gallery.images.forEach(imgFile=>{
     const img = document.createElement('img');
     img.src = `${gallery.folder}/${imgFile}`;
@@ -216,33 +40,9 @@ galleries.forEach(gallery=>{
   link.appendChild(slideshow);
   link.appendChild(title);
   container.appendChild(link);
-
-  // slideshow loop
-  if(gallery.images.length>1){
-    let index=0;
-    const slideCount=gallery.images.length;
-    const slideWidth=100;
-    const staggerDelay=Math.random()*4000;
-    const slideInterval=6000+Math.random()*2000;
-
-    setTimeout(()=>{
-      setInterval(()=>{
-        index++;
-        slideshow.style.transition="transform 1s ease";
-        slideshow.style.transform=`translateX(-${index*slideWidth}%)`;
-        if(index===slideCount){
-          setTimeout(()=>{
-            slideshow.style.transition="none";
-            slideshow.style.transform="translateX(0)";
-            index=0;
-          },1000);
-        }
-      },slideInterval);
-    },staggerDelay);
-  }
 });
 
-/* ---- SCROLL-BASED RISE EFFECT ---- */
+/* SCROLL-BASED RISE EFFECT */
 const photoSection = document.querySelector('.photos');
 const subgalleries = document.querySelectorAll('.subgallery');
 
@@ -252,12 +52,76 @@ window.addEventListener('scroll', ()=>{
   const progress = Math.min(Math.max(0, 1 - rect.top / viewHeight), 1);
 
   subgalleries.forEach((g,i)=>{
-    const rise = progress * (150 + (i*15)); // varied lift
-    g.style.transform = `translateY(${-rise}px) scale(1)`;
-    g.style.opacity = 0.7 + progress*0.3;
+    const rise = progress * (300 + i*25); // much stronger motion
+    g.style.transform = `translateY(${-rise}px) scale(1.05)`; // slightly zoomed
   });
 });
 </script>
 
-</body>
-</html>
+<style>
+.photos{
+  background:#111;
+  color:white;
+  padding:150px 0 300px;
+  position:relative;
+  overflow:visible;
+}
+.photos h2{
+  font-size:2.2em;
+  margin-bottom:80px;
+  position:relative;
+  z-index:5;
+}
+.galleries {
+  position:relative;
+  width:100%;
+  max-width:1400px;
+  margin:0 auto;
+  height:1600px; /* scroll room */
+}
+.subgallery {
+  position:absolute;
+  width:380px; /* larger */
+  height:260px;
+  overflow:hidden;
+  border-radius:18px;
+  text-decoration:none;
+  color:white;
+  transform:translateY(0) scale(1.05);
+  transition:transform 0.2s linear, opacity 0.2s linear; /* instant feeling */
+  box-shadow:0 10px 25px rgba(0,0,0,0.5);
+  opacity:0.95;
+}
+
+/* tighter collage layout */
+.subgallery:nth-child(1){ top:100px; left:10%; z-index:4; transform:rotate(1deg); }
+.subgallery:nth-child(2){ top:220px; left:38%; z-index:3; transform:rotate(-2deg); }
+.subgallery:nth-child(3){ top:360px; left:62%; z-index:5; transform:rotate(2deg); }
+.subgallery:nth-child(4){ top:580px; left:22%; z-index:4; transform:rotate(-3deg); }
+.subgallery:nth-child(5){ top:740px; left:48%; z-index:3; transform:rotate(1deg); }
+.subgallery:nth-child(6){ top:940px; left:68%; z-index:6; transform:rotate(-1deg); }
+
+.slideshow {
+  display:flex;
+  transition:transform 1s ease;
+  width:100%;
+  height:100%;
+}
+.slideshow img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  flex-shrink:0;
+}
+.title {
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:rgba(0,0,0,0.6);
+  text-align:center;
+  font-weight:bold;
+  padding:10px 0;
+  font-size:18px;
+}
+</style>

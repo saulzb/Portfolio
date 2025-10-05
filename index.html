@@ -1,64 +1,69 @@
-<!-- PHOTOS COLLAGE PAGE -->
-<section class="photos" id="photos">
-  <h2>PHOTO COLLECTIONS</h2>
-  <div class="galleries" id="galleries"></div>
-</section>
-
-<script>
-const galleries = [
-  { name: "Double Exposures", folder: "photos/double exposures", images: ["IMG_9495.JPG","IMG_9493.jpg","IMG_9495.JPG"], page: "doubleexposurecode.html" },
-  { name: "Wildlife", folder: "photos/wildlife", images: ["IMG_8491_4.jpg","IMG_8512_1.jpg","RAW's Jul-Aug478 copy 2.jpg"], page: "wildlifecode.html" },
-  { name: "Landscapes", folder: "photos/landscapes", images: ["DSCN3626.jpg","DSCN3600.jpg","DSCN3626.jpg"], page: "landscapescode.html" },
-  { name: "Colour", folder: "photos/Colour", images: ["col1.jpg"], page: "Colourcode.html" },
-  { name: "Light", folder: "photos/Light", images: ["IMG_1776.jpg","DSCN7048.JPG","DSCN8046.JPG"], page: "Lightcode.html" },
-  { name: "Water", folder: "photos/Water", images: ["DSCN3961.jpg","DSCN5492.jpg","waterfromferry2.jpg"], page: "Watercode.html" }
-];
-
-const container = document.getElementById('galleries');
-galleries.forEach(gallery=>{
-  const link = document.createElement('a');
-  link.href = `${gallery.folder}/${gallery.page}`;
-  link.className = 'subgallery';
-
-  const slideshow = document.createElement('div');
-  slideshow.className = 'slideshow';
-  gallery.images.forEach(imgFile=>{
-    const img = document.createElement('img');
-    img.src = `${gallery.folder}/${imgFile}`;
-    slideshow.appendChild(img);
-  });
-  gallery.images.forEach(imgFile=>{
-    const img = document.createElement('img');
-    img.src = `${gallery.folder}/${imgFile}`;
-    slideshow.appendChild(img);
-  });
-
-  const title = document.createElement('div');
-  title.className = 'title';
-  title.textContent = gallery.name;
-
-  link.appendChild(slideshow);
-  link.appendChild(title);
-  container.appendChild(link);
-});
-
-// --- smooth, varied vertical movement ---
-const subgalleries = document.querySelectorAll('.subgallery');
-const speeds = Array.from(subgalleries).map(() => Math.random() * 0.6 + 0.4); // random speed multiplier
-const offsets = Array.from(subgalleries).map(() => Math.random() * 100 - 50); // slight starting offset
-
-function smoothScroll() {
-  const scrollY = window.scrollY;
-  subgalleries.forEach((el, i) => {
-    const distance = scrollY * speeds[i];
-    el.style.transform = `translateY(${offsets[i] - distance}px)`;
-  });
-  requestAnimationFrame(smoothScroll);
-}
-smoothScroll();
-</script>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Saul Zidulka-Bejcek</title>
 <style>
+html,body{
+  margin:0; padding:0;
+  height:100%;
+  font-family:Arial, sans-serif;
+  overflow-y:scroll;
+}
+
+section{
+  position:relative;
+  width:100%;
+  text-align:center;
+  overflow:hidden;
+}
+
+/* HERO */
+.hero{ position:relative; color:black; z-index:0; height:100vh; }
+.hero video{
+  position:absolute; top:0; left:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  z-index:-2;
+}
+#heroCanvas{
+  position:absolute;
+  top:0; left:0;
+  width:100%; height:100%;
+  pointer-events:none;
+  z-index:1;
+}
+nav a{ color:black; font-weight:bold; margin:0 15px; text-decoration:none; }
+nav a:hover{ color:orange; }
+
+/* ABOUT */
+.about{ background:#222; color:white; position:relative; padding:150px 0; }
+.contact{ background:#eee; color:#111; position:relative; padding:150px 0; }
+
+/* Canvas for bubbles */
+#bubbleCanvas{
+  position:absolute; left:0; top:0;
+  width:100%; height:100%;
+  z-index:0;
+  pointer-events:none;
+}
+
+.interactive-word{ display:inline-block; position:relative; }
+
+/* CONTACT SPOTLIGHT */
+.contact-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: black;
+  pointer-events: none;
+  z-index: 2;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* PHOTOS COLLAGE */
 .photos {
   background: #111;
   color: white;
@@ -69,8 +74,6 @@ smoothScroll();
 .photos h2 {
   font-size: 2.2em;
   margin-bottom: 80px;
-  position: relative;
-  z-index: 5;
   text-align: center;
 }
 .galleries {
@@ -81,48 +84,265 @@ smoothScroll();
   height: 1600px;
 }
 
-/* make them bigger and closer */
+/* gallery cards */
 .subgallery {
   position: absolute;
-  width: 380px;
-  height: 260px;
+  width: 340px;
+  height: 230px;
   overflow: hidden;
   border-radius: 18px;
   text-decoration: none;
   color: white;
-  transition: transform 0.2s ease-out;
   box-shadow: 0 10px 25px rgba(0,0,0,0.5);
   opacity: 0.95;
+  transition: transform 0.3s ease-out;
 }
 
-/* layout positions */
-.subgallery:nth-child(1){ top: 100px; left: 8%; z-index:4; transform: rotate(1deg); }
-.subgallery:nth-child(2){ top: 230px; left: 34%; z-index:3; transform: rotate(-2deg); }
-.subgallery:nth-child(3){ top: 360px; left: 62%; z-index:5; transform: rotate(1.5deg); }
-.subgallery:nth-child(4){ top: 580px; left: 20%; z-index:4; transform: rotate(-2deg); }
-.subgallery:nth-child(5){ top: 740px; left: 48%; z-index:3; transform: rotate(2deg); }
-.subgallery:nth-child(6){ top: 960px; left: 70%; z-index:5; transform: rotate(-1deg); }
+/* collage positions */
+.subgallery:nth-child(1){ top:100px; left:10%; z-index:4; transform:rotate(1deg); }
+.subgallery:nth-child(2){ top:220px; left:38%; z-index:3; transform:rotate(-2deg); }
+.subgallery:nth-child(3){ top:360px; left:62%; z-index:5; transform:rotate(2deg); }
+.subgallery:nth-child(4){ top:580px; left:22%; z-index:4; transform:rotate(-3deg); }
+.subgallery:nth-child(5){ top:740px; left:48%; z-index:3; transform:rotate(1deg); }
+.subgallery:nth-child(6){ top:940px; left:68%; z-index:6; transform:rotate(-1deg); }
 
 .slideshow {
-  display: flex;
-  width: 100%;
-  height: 100%;
+  display:flex;
+  width:100%;
+  height:100%;
 }
 .slideshow img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  flex-shrink: 0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 .title {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: rgba(0,0,0,0.6);
-  text-align: center;
-  font-weight: bold;
-  padding: 10px 0;
-  font-size: 18px;
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:rgba(0,0,0,0.6);
+  text-align:center;
+  font-weight:bold;
+  padding:10px 0;
+  font-size:18px;
 }
 </style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <video autoplay muted loop playsinline>
+    <source src="1757373621.967906.MOV" type="video/mp4">
+  </video>
+  <canvas id="heroCanvas"></canvas>
+  <h1 class="interactive-word" id="title">SAUL ZIDULKA-BEJCEK</h1>
+  <nav>
+    <a href="#photos" class="interactive-word" id="photos-link">PHOTOS</a>
+    <a href="#drawings" class="interactive-word" id="drawings">DRAWINGS</a>
+  </nav>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about-section">
+  <h2 class="interactive-word">ABOUT</h2>
+  <p class="interactive-word">All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
+  <canvas id="bubbleCanvas" aria-hidden="true"></canvas>
+</section>
+
+<!-- PHOTOS COLLAGE -->
+<section class="photos" id="photos">
+  <h2>PHOTO COLLECTIONS</h2>
+  <div class="galleries" id="galleries"></div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact">
+  <h2 class="interactive-word">CONTACT</h2>
+  <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
+  <p>Instagram: <a href="https://www.instagram.com/saul_5607/" target="_blank">@saul_5607</a></p>
+  <div class="contact-overlay"></div>
+</section>
+
+<script>
+/* ---------- HERO LETTERS + SPOTLIGHT ---------- */
+const heroCanvas = document.getElementById('heroCanvas');
+const hCtx = heroCanvas.getContext('2d');
+let heroWidth=0, heroHeight=0;
+function resizeHeroCanvas(){
+  heroWidth = window.innerWidth;
+  heroHeight = window.innerHeight;
+  heroCanvas.width = heroWidth;
+  heroCanvas.height = heroHeight;
+}
+window.addEventListener('resize', resizeHeroCanvas);
+resizeHeroCanvas();
+const elements = [document.getElementById('title'), document.getElementById('photos-link'), document.getElementById('drawings')];
+function getLetterPositions(){
+  return elements.map(el=>{
+    const rect = el.getBoundingClientRect();
+    return { x: rect.left+rect.width/2, y: rect.top+rect.height/2, width: rect.width, height: rect.height, fontSize: parseInt(window.getComputedStyle(el).fontSize) };
+  });
+}
+let letterPositions = getLetterPositions();
+window.addEventListener('resize', ()=>{ letterPositions = getLetterPositions(); });
+let spotX = heroWidth/2, spotY = heroHeight/2, dx=1, dy=0.8, SPOT_RADIUS=120;
+function animateHero(){
+  hCtx.clearRect(0,0,heroWidth,heroHeight);
+  letterPositions.forEach(l=>{
+    hCtx.font = `bold ${l.fontSize}px Arial`;
+    hCtx.textAlign = "center";
+    hCtx.textBaseline = "middle";
+    hCtx.fillStyle="black";
+    hCtx.fillText(" ",l.x,l.y);
+  });
+  spotX+=dx; spotY+=dy;
+  if(spotX<0+SPOT_RADIUS||spotX>heroWidth-SPOT_RADIUS) dx*=-1;
+  if(spotY<0+SPOT_RADIUS||spotY>heroHeight-SPOT_RADIUS) dy*=-1;
+  hCtx.save();
+  hCtx.globalCompositeOperation='source-atop';
+  const grad=hCtx.createRadialGradient(spotX,spotY,0,spotX,spotY,SPOT_RADIUS);
+  grad.addColorStop(0,'rgba(255,255,255,0.9)');
+  grad.addColorStop(0.3,'rgba(255,140,0,0.6)');
+  grad.addColorStop(1,'rgba(0,0,0,0)');
+  hCtx.fillStyle=grad;
+  hCtx.fillRect(0,0,heroWidth,heroHeight);
+  hCtx.restore();
+  requestAnimationFrame(animateHero);
+}
+animateHero();
+
+/* ---------- ABOUT BUBBLES ---------- */
+const aboutSection = document.getElementById('about-section');
+const bubbleCanvas = document.getElementById('bubbleCanvas');
+const ctx = bubbleCanvas.getContext('2d');
+let viewW=0, viewH=0, dpr=window.devicePixelRatio||1;
+function resizeCanvas(){
+  const rect = aboutSection.getBoundingClientRect();
+  viewW = rect.width; viewH = rect.height;
+  bubbleCanvas.style.width=viewW+'px';
+  bubbleCanvas.style.height=viewH+'px';
+  bubbleCanvas.width=Math.floor(viewW*dpr);
+  bubbleCanvas.height=Math.floor(viewH*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+window.addEventListener('resize',()=>setTimeout(resizeCanvas,0));
+resizeCanvas();
+let bubbles=[]; const NUM=40;
+function initBubbles(){
+  bubbles.length=0;
+  for(let i=0;i<NUM;i++){
+    const hue=Math.random()*60+180;
+    bubbles.push({ x:Math.random()*viewW, y:Math.random()*viewH, vx:(Math.random()-0.5)*0.2, vy:(Math.random()-0.5)*0.2-0.2, size:Math.random()*18+10, color:`hsla(${hue},70%,50%,${Math.random()*0.4+0.18})` });
+  }
+}
+initBubbles();
+const mouse={x:viewW/2, y:viewH/2, moving:false};
+aboutSection.addEventListener('mousemove',e=>{
+  const r=bubbleCanvas.getBoundingClientRect();
+  mouse.x=e.clientX-r.left; mouse.y=e.clientY-r.top; mouse.moving=true;
+  clearTimeout(mouse.timer);
+  mouse.timer=setTimeout(()=>{mouse.moving=false;},700);
+});
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function resolveBubbleRectCollision(b,left,top,right,bottom){
+  const closestX=clamp(b.x,left,right); const closestY=clamp(b.y,top,bottom);
+  let dx=b.x-closestX, dy=b.y-closestY, dist=Math.sqrt(dx*dx+dy*dy);
+  if(dist<b.size){
+    const safeDist=dist||0.0001; const overlap=b.size-dist;
+    b.x+=dx/safeDist*overlap*0.45; b.y+=dy/safeDist*overlap*0.45;
+  }
+}
+function updateBubbles(){
+  if(viewW===0||viewH===0){ requestAnimationFrame(updateBubbles); return; }
+  ctx.clearRect(0,0,viewW,viewH);
+  for(const b of bubbles){
+    if(mouse.moving){ b.vx+=(mouse.x-b.x)*0.0012; b.vy+=(mouse.y-b.y)*0.0012; }
+    else { b.vx+=(Math.random()-0.5)*0.01; b.vy-=0.02; }
+    b.x+=b.vx; b.y+=b.vy;
+    if(b.y+b.size<0)b.y=viewH+b.size;
+    if(b.y-b.size>viewH)b.y=-b.size;
+    if(b.x-b.size<0){b.x=b.size; b.vx*=-0.45;}
+    if(b.x+b.size>viewW){b.x=viewW-b.size;b.vx*=-0.45;}
+    b.vx*=0.95; b.vy*=0.95;
+    ctx.beginPath(); ctx.arc(b.x,b.y,b.size,0,Math.PI*2); ctx.fillStyle=b.color; ctx.fill();
+  }
+  requestAnimationFrame(updateBubbles);
+}
+updateBubbles();
+
+/* ---------- CONTACT SPOTLIGHT ---------- */
+const contactSection = document.querySelector('.contact');
+const overlay = contactSection.querySelector('.contact-overlay');
+let targetX=0, targetY=0, currentX=0, currentY=0, spotlightActive=false;
+contactSection.addEventListener('mousemove', e=>{
+  const rect = contactSection.getBoundingClientRect();
+  targetX = e.clientX - rect.left; targetY = e.clientY - rect.top; spotlightActive=true;
+});
+contactSection.addEventListener('mouseleave',()=>{spotlightActive=false; overlay.style.webkitMaskImage='none'; overlay.style.maskImage='none';});
+function animateSpotlight(){
+  if(spotlightActive){
+    currentX+=(targetX-currentX)*0.15; currentY+=(targetY-currentY)*0.15;
+    const spotlight=`radial-gradient(circle 180px at ${currentX}px ${currentY}px, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0.85) 80%, rgba(0,0,0,1) 100%)`;
+    overlay.style.webkitMaskImage=spotlight; overlay.style.maskImage=spotlight;
+    overlay.style.webkitMaskRepeat="no-repeat"; overlay.style.maskRepeat="no-repeat";
+  }
+  requestAnimationFrame(animateSpotlight);
+}
+animateSpotlight();
+
+/* ---------- PHOTOS COLLAGE ---------- */
+const galleryList = [
+  { name: "Double Exposures", folder: "photos/double exposures", images:["IMG_9495.JPG","IMG_9493.jpg","IMG_9495.JPG"], page:"doubleexposurecode.html" },
+  { name: "Wildlife", folder: "photos/wildlife", images:["IMG_8491_4.jpg","IMG_8512_1.jpg","RAW's Jul-Aug478 copy 2.jpg"], page:"wildlifecode.html" },
+  { name: "Landscapes", folder: "photos/landscapes", images:["DSCN3626.jpg","DSCN3600.jpg","DSCN3626.jpg"], page:"landscapescode.html" },
+  { name: "Colour", folder: "photos/Colour", images:["col1.jpg"], page:"Colourcode.html" },
+  { name: "Light", folder: "photos/Light", images:["IMG_1776.jpg","DSCN7048.JPG","DSCN8046.JPG"], page:"Lightcode.html" },
+  { name: "Water", folder: "photos/Water", images:["DSCN3961.jpg","DSCN5492.jpg","waterfromferry2.jpg"], page:"Watercode.html" }
+];
+const container2 = document.getElementById('galleries');
+galleryList.forEach(g=>{
+  const link=document.createElement('a'); link.href=`${g.folder}/${g.page}`; link.className='subgallery';
+  const slideshow=document.createElement('div'); slideshow.className='slideshow';
+  g.images.forEach(img=>{
+    const im=document.createElement('img'); im.src=`${g.folder}/${img}`; slideshow.appendChild(im);
+  });
+  const title=document.createElement('div'); title.className='title'; title.textContent=g.name;
+  link.appendChild(slideshow); link.appendChild(title);
+  container2.appendChild(link);
+});
+
+/* ---------- PHOTOS COLLAGE SMOOTH ---------- */
+const photosSection = document.querySelector('.photos');
+const subgalleries = document.querySelectorAll('.subgallery');
+
+// Assign each gallery a random movement strength and speed factor
+const galleriesData = Array.from(subgalleries).map(g => ({
+  el: g,
+  strength: Math.random() * 0.9 + 0.5, // distance factor
+  offset: Math.random() * 100,         // initial offset variation
+  currentY: 0                           // smooth current position
+}));
+
+function updateGalleries(){
+  const rect = photosSection.getBoundingClientRect();
+  const vh = window.innerHeight;
+  const progress = Math.min(Math.max(0, 1 - rect.top / vh), 1); // 0 to 1 scroll progress
+
+  galleriesData.forEach(data => {
+    const targetY = -(progress * data.strength * 400) + data.offset; // target rise
+    // smooth easing
+    data.currentY += (targetY - data.currentY) * 0.2;
+    data.el.style.transform = `translateY(${data.currentY}px)`;
+  });
+
+  requestAnimationFrame(updateGalleries);
+}
+updateGalleries();
+  });
+});
+</script>
+
+</body>
+</html>

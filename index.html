@@ -281,17 +281,35 @@ galleryList.forEach(g=>{
   container.appendChild(link);
 });
 
-/* smooth rise/fall */
+/* ---------- PHOTOS COLLAGE SMOOTH ---------- */
 const photosSection = document.querySelector('.photos');
 const subgalleries = document.querySelectorAll('.subgallery');
-const movementStrengths = Array.from(subgalleries).map(()=>Math.random()*0.7+0.5);
-window.addEventListener('scroll', ()=>{
+
+// Assign each gallery a random movement strength and offset
+const galleriesData = Array.from(subgalleries).map(g => ({
+  el: g,
+  strength: Math.random() * 0.9 + 0.5,  // how far it moves
+  offset: Math.random() * 80,           // initial variation
+  currentY: 0                            // for smooth easing
+}));
+
+function updateGalleries(){
   const rect = photosSection.getBoundingClientRect();
   const vh = window.innerHeight;
-  const progress = Math.min(Math.max(0,1-rect.top/vh),1);
-  subgalleries.forEach((g,i)=>{
-    const rise = progress*movementStrengths[i]*300;
-    g.style.transform = `translateY(${-rise}px)`;
+
+  // progress: 0 when top is at bottom of viewport, 1 when top reaches top
+  const progress = Math.min(Math.max(0, 1 - rect.top / vh), 1);
+
+  galleriesData.forEach(data => {
+    const targetY = -(progress * data.strength * 400) + data.offset;
+    // smooth easing
+    data.currentY += (targetY - data.currentY) * 0.2;
+    data.el.style.transform = `translateY(${data.currentY}px)`;
+  });
+
+  requestAnimationFrame(updateGalleries);
+}
+updateGalleries();
   });
 });
 </script>

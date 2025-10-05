@@ -134,15 +134,17 @@ const photosSection = document.querySelector('.photos');
 const subgalleries = document.querySelectorAll('.subgallery');
 const movementStrengths = Array.from(subgalleries).map(()=>Math.random()*0.8+0.6);
 
-window.addEventListener('scroll', ()=>{
+function updateFolders(){
   const rect = photosSection.getBoundingClientRect();
   const vh = window.innerHeight;
   const progress = Math.min(Math.max(0,1-rect.top/vh),1);
   subgalleries.forEach((g,i)=>{
-    const rise = progress * movementStrengths[i] * 600; // higher rise
-    g.style.transform = `translateY(${-rise}px)`;
+    const rise = progress * movementStrengths[i] * 600;
+    g.style.transform = `translateY(${-rise}px) rotate(${parseFloat(g.style.transform.replace('rotate(','')||0)}deg)`;
   });
-});
+}
+window.addEventListener('scroll', updateFolders);
+updateFolders();
 
 /* ---------- ABOUT BUBBLES ---------- */
 const aboutSection = document.getElementById('about-section');
@@ -173,8 +175,8 @@ function initBubbles(){
     bubbles.push({
       x: Math.random()*viewW,
       y: Math.random()*viewH,
-      vx: (Math.random()-0.5)*0.2,
-      vy: (Math.random()-0.5)*0.2 -0.2,
+      vx: (Math.random()-0.5)*0.3,
+      vy: (Math.random()-0.5)*0.3 -0.2,
       size: Math.random()*18+10,
       color: `hsla(${hue},70%,50%,${Math.random()*0.4 +0.18})`
     });
@@ -183,10 +185,9 @@ function initBubbles(){
 initBubbles();
 
 function updateBubbles(){
-  if(viewW===0||viewH===0){ requestAnimationFrame(updateBubbles); return; }
   ctx.clearRect(0,0,viewW,viewH);
   for(const b of bubbles){
-    b.x+=b.vx; b.y+=b.vy;
+    b.x += b.vx; b.y += b.vy;
     if(b.y+b.size<0)b.y=viewH+b.size;
     if(b.y-b.size>viewH)b.y=-b.size;
     if(b.x-b.size<0){ b.x=b.size; b.vx*=-0.45; }
@@ -199,7 +200,6 @@ function updateBubbles(){
 }
 updateBubbles();
 
-});
 </script>
 </body>
 </html>

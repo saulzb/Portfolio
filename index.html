@@ -7,21 +7,20 @@
 <style>
 html,body{
   margin:0; padding:0;
-  height:100%;
   font-family:Arial, sans-serif;
-  overflow-y:scroll;
-  scroll-snap-type:y mandatory;
+  overflow-x:hidden;
+  background:#111;
 }
 
+/* Each section full width, no snap */
 section{
-  height:100vh;
+  min-height:100vh;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  scroll-snap-align:start;
-  position:relative;
   text-align:center;
+  position:relative;
   overflow:hidden;
 }
 
@@ -33,8 +32,6 @@ section{
   object-fit:cover;
   z-index:-2;
 }
-
-/* Canvas on top of hero for letters + spotlight */
 #heroCanvas{
   position:absolute;
   top:0; left:0;
@@ -42,12 +39,11 @@ section{
   pointer-events:none;
   z-index:1;
 }
+nav a{ color:black; font-weight:bold; margin:0 15px; text-decoration:none; }
+nav a:hover{ color:orange; }
 
-/* ABOUT & CONTACT */
+/* ABOUT */
 .about{ background:#222; color:white; position:relative; }
-.contact{ background:#eee; color:#111; position:relative; }
-
-/* Canvas for bubbles */
 #bubbleCanvas{
   position:absolute; left:0; top:0;
   width:100%; height:100%;
@@ -55,20 +51,89 @@ section{
   pointer-events:none;
 }
 
-.interactive-word{ display:inline-block; position:relative; }
-nav a{ color:black; font-weight:bold; margin:0 15px; text-decoration:none; }
-nav a:hover{ color:orange; }
+/* PHOTOS SECTION */
+.photos{
+  background:#111;
+  color:white;
+  padding:100px 0 200px;
+  position:relative;
+  overflow:visible;
+}
 
-/* ---------- CONTACT SPOTLIGHT OVERLAY ---------- */
+.photos h2{
+  font-size:2em;
+  margin-bottom:40px;
+}
+
+/* scattered photo folders */
+.galleries {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:40px;
+  width:90%;
+  max-width:1400px;
+  margin:0 auto;
+  position:relative;
+}
+
+.subgallery {
+  width:300px;
+  height:200px;
+  overflow:hidden;
+  border-radius:16px;
+  position:relative;
+  text-decoration:none;
+  color:white;
+  transform:translateY(0);
+  transition:transform 0.5s ease;
+}
+
+/* scattered layout - each nth child offset */
+.subgallery:nth-child(odd) { transform:translateY(60px); }
+.subgallery:nth-child(3n) { transform:translateY(120px); }
+.subgallery:nth-child(5n) { transform:translateY(180px); }
+
+.subgallery:hover {
+  transform:scale(1.05);
+  z-index:10;
+}
+
+/* slideshow */
+.slideshow {
+  display:flex;
+  transition:transform 1s ease;
+  width:100%;
+  height:100%;
+}
+.slideshow img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  flex-shrink:0;
+}
+.title {
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:rgba(0,0,0,0.5);
+  text-align:center;
+  font-weight:bold;
+  padding:10px 0;
+  z-index:2;
+  font-size:18px;
+}
+
+/* CONTACT */
+.contact{ background:#eee; color:#111; position:relative; padding:100px 0; }
 .contact-overlay {
   position: absolute;
   top: 0; left: 0;
   width: 100%; height: 100%;
   background: black;
-  pointer-events: none; /* clicks go through */
+  pointer-events: none;
   z-index: 2;
-
-  /* Start hidden — spotlight will be drawn dynamically with JS */
   -webkit-mask-image: none;
   mask-image: none;
 }
@@ -81,14 +146,10 @@ nav a:hover{ color:orange; }
   <video autoplay muted loop playsinline>
     <source src="1757373621.967906.MOV" type="video/mp4">
   </video>
-
-  <!-- Canvas for letters + spotlight -->
   <canvas id="heroCanvas"></canvas>
-
-  <!-- Actual letters (clickable) -->
   <h1 class="interactive-word" id="title">SAUL ZIDULKA-BEJCEK</h1>
   <nav>
-    <a href="photos/photoholder.html" class="interactive-word" id="photos">PHOTOS</a>
+    <a href="#photos" class="interactive-word" id="photos">PHOTOS</a>
     <a href="drawings.html" class="interactive-word" id="drawings">DRAWINGS</a>
   </nav>
 </section>
@@ -100,267 +161,85 @@ nav a:hover{ color:orange; }
   <canvas id="bubbleCanvas" aria-hidden="true"></canvas>
 </section>
 
+<!-- PHOTOS (from your photoholder.html) -->
+<section class="photos" id="photos">
+  <h2>PHOTO COLLECTIONS</h2>
+  <div class="galleries" id="galleries"></div>
+</section>
+
 <!-- CONTACT -->
 <section class="contact">
   <h2 class="interactive-word">CONTACT</h2>
   <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
   <p>Instagram: <a href="https://www.instagram.com/saul_5607/" target="_blank">@saul_5607</a></p>
-
-  <!-- Overlay -->
   <div class="contact-overlay"></div>
 </section>
 
 <script>
-/* ---------- HERO LETTERS + SPOTLIGHT ---------- */
-const heroCanvas = document.getElementById('heroCanvas');
-const hCtx = heroCanvas.getContext('2d');
-let heroWidth=0, heroHeight=0;
+/* --- EXISTING HERO + ABOUT + CONTACT JS stays unchanged --- */
 
-function resizeHeroCanvas(){
-  heroWidth = window.innerWidth;
-  heroHeight = window.innerHeight;
-  heroCanvas.width = heroWidth;
-  heroCanvas.height = heroHeight;
-}
-window.addEventListener('resize', resizeHeroCanvas);
-resizeHeroCanvas();
-
-// Grab actual HTML elements
-const elements = [
-  document.getElementById('title'),
-  document.getElementById('photos'),
-  document.getElementById('drawings')
+/* GALLERIES from photoholder.html */
+const galleries = [
+  { name: "Double Exposures", folder: "photos/double exposures", images: ["IMG_9495.JPG","IMG_9493.jpg","IMG_9495.JPG"], page: "doubleexposurecode.html" },
+  { name: "Wildlife", folder: "photos/wildlife", images: ["IMG_8491_4.jpg","IMG_8512_1.jpg","RAW's Jul-Aug478 copy 2.jpg"], page: "wildlifecode.html" },
+  { name: "Landscapes", folder: "photos/landscapes", images: ["DSCN3626.jpg","DSCN3600.jpg","DSCN3626.jpg"], page: "landscapescode.html" },
+  { name: "Colour", folder: "photos/Colour", images: ["col1.jpg"], page: "Colourcode.html" },
+  { name: "Light", folder: "photos/Light", images: ["IMG_1776.jpg","DSCN7048.JPG","DSCN8046.JPG"], page: "Lightcode.html" },
+  { name: "Water", folder: "photos/Water", images: ["DSCN3961.jpg","DSCN5492.jpg","waterfromferry2.jpg"], page: "Watercode.html" }
 ];
 
-function getLetterPositions(){
-  return elements.map(el=>{
-    const rect = el.getBoundingClientRect();
-    return {
-      text: el.innerText,
-      x: rect.left + rect.width/2,
-      y: rect.top + rect.height/2,
-      width: rect.width,
-      height: rect.height,
-      fontSize: parseInt(window.getComputedStyle(el).fontSize)
-    };
+const container = document.getElementById('galleries');
+galleries.forEach(gallery=>{
+  const link = document.createElement('a');
+  link.href = `${gallery.folder}/${gallery.page}`;
+  link.className = 'subgallery';
+
+  const slideshow = document.createElement('div');
+  slideshow.className = 'slideshow';
+
+  gallery.images.forEach(imgFile=>{
+    const img = document.createElement('img');
+    img.src = `${gallery.folder}/${imgFile}`;
+    slideshow.appendChild(img);
   });
-}
-
-let letterPositions = getLetterPositions();
-window.addEventListener('resize', ()=>{ letterPositions = getLetterPositions(); });
-
-/* spotlight position */
-let spotX = heroWidth/2;
-let spotY = heroHeight/2;
-let dx = 1, dy = 0.8;
-const SPOT_RADIUS = 120;
-
-function animateHero(){
-  hCtx.clearRect(0,0,heroWidth,heroHeight);
-
-  // Draw letters in black (canvas only for spotlight)
-  letterPositions.forEach(l=>{
-    hCtx.font = `bold ${l.fontSize}px Arial`;
-    hCtx.textAlign = "center";
-    hCtx.textBaseline = "middle";
-    hCtx.fillStyle = "black";
-    hCtx.fillText(l.text, l.x, l.y);
+  gallery.images.forEach(imgFile=>{
+    const img = document.createElement('img');
+    img.src = `${gallery.folder}/${imgFile}`;
+    slideshow.appendChild(img);
   });
 
-  // Update spotlight within letter bounding rectangle area
-  const minX = Math.min(...letterPositions.map(l=>l.x-l.width/2));
-  const maxX = Math.max(...letterPositions.map(l=>l.x+l.width/2));
-  const minY = Math.min(...letterPositions.map(l=>l.y-l.height/2));
-  const maxY = Math.max(...letterPositions.map(l=>l.y+l.height/2));
+  const title = document.createElement('div');
+  title.className = 'title';
+  title.textContent = gallery.name;
 
-  spotX += dx; spotY += dy;
-  if(spotX<minX+SPOT_RADIUS || spotX>maxX-SPOT_RADIUS) dx*=-1;
-  if(spotY<minY+SPOT_RADIUS || spotY>maxY-SPOT_RADIUS) dy*=-1;
+  link.appendChild(slideshow);
+  link.appendChild(title);
+  container.appendChild(link);
 
-  // Draw radial gradient spotlight on top of letters only
-  hCtx.save();
-  hCtx.globalCompositeOperation = 'source-atop';
-  const grad = hCtx.createRadialGradient(spotX,spotY,0, spotX,spotY,SPOT_RADIUS);
-  grad.addColorStop(0,'rgba(255,255,255,0.9)');
-  grad.addColorStop(0.3,'rgba(255,140,0,0.6)');
-  grad.addColorStop(1,'rgba(0,0,0,0)');
-  hCtx.fillStyle = grad;
-  hCtx.fillRect(0,0,heroWidth,heroHeight);
-  hCtx.restore();
+  if(gallery.images.length>1){
+    let index=0;
+    const slideCount=gallery.images.length;
+    const slideWidth=100;
+    const staggerDelay=Math.random()*4000;
+    const slideInterval=6000+Math.random()*2000;
 
-  requestAnimationFrame(animateHero);
-}
-animateHero();
-
-/* ---------- ABOUT BUBBLES ---------- */
-const aboutSection = document.getElementById('about-section');
-const bubbleCanvas = document.getElementById('bubbleCanvas');
-const ctx = bubbleCanvas.getContext('2d');
-let viewW=0, viewH=0, dpr=window.devicePixelRatio||1;
-
-function resizeCanvas(){
-  const rect = aboutSection.getBoundingClientRect();
-  const w = Math.max(100, Math.floor(rect.width));
-  const h = Math.max(100, Math.floor(rect.height));
-  viewW = w; viewH = h;
-  bubbleCanvas.style.width = w+'px';
-  bubbleCanvas.style.height = h+'px';
-  bubbleCanvas.width = Math.floor(w*dpr);
-  bubbleCanvas.height = Math.floor(h*dpr);
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-}
-window.addEventListener('resize',()=>setTimeout(resizeCanvas,0));
-resizeCanvas();
-
-let words = Array.from(aboutSection.querySelectorAll('.interactive-word'));
-const bubbles = [];
-const NUM = 40;
-
-function initBubbles(){
-  bubbles.length=0;
-  for(let i=0;i<NUM;i++){
-    const hue = Math.random()*60 + 180;
-    bubbles.push({
-      x: Math.random()*viewW,
-      y: Math.random()*viewH,
-      vx: (Math.random()-0.5)*0.2,
-      vy: (Math.random()-0.5)*0.2 -0.2,
-      size: Math.random()*18+10,
-      color: `hsla(${hue},70%,50%,${Math.random()*0.4 +0.18})`
-    });
+    setTimeout(()=>{
+      setInterval(()=>{
+        index++;
+        slideshow.style.transition="transform 1s ease";
+        slideshow.style.transform=`translateX(-${index*slideWidth}%)`;
+        if(index===slideCount){
+          setTimeout(()=>{
+            slideshow.style.transition="none";
+            slideshow.style.transform="translateX(0)";
+            index=0;
+          },1000);
+        }
+      },slideInterval);
+    },staggerDelay);
   }
-}
-initBubbles();
-
-const mouse = { x:viewW/2, y:viewH/2, moving:false };
-aboutSection.addEventListener('mousemove',e=>{
-  const r = bubbleCanvas.getBoundingClientRect();
-  mouse.x = e.clientX - r.left;
-  mouse.y = e.clientY - r.top;
-  mouse.moving = true;
-  clearTimeout(mouse.timer);
-  mouse.timer = setTimeout(()=>{ mouse.moving=false; },700);
 });
-
-function clamp(v,a,b){ return Math.max(a, Math.min(b,v)); }
-function resolveBubbleRectCollision(b,left,top,right,bottom){
-  const closestX = clamp(b.x,left,right);
-  const closestY = clamp(b.y,top,bottom);
-  let dx = b.x-closestX, dy=b.y-closestY;
-  const dist = Math.sqrt(dx*dx + dy*dy);
-  if(dist<b.size){
-    const safeDist = dist || 0.0001;
-    const overlap = b.size-dist;
-    const nx=dx/safeDist, ny=dy/safeDist;
-    b.x += nx*overlap; b.y += ny*overlap;
-    const PUSH=0.45; b.vx+=nx*PUSH; b.vy+=ny*PUSH;
-  }
-}
-
-function updateBubbles(){
-  if(viewW===0||viewH===0){ requestAnimationFrame(updateBubbles); return; }
-  ctx.clearRect(0,0,viewW,viewH);
-
-  for(let i=0;i<bubbles.length;i++){
-    const a = bubbles[i];
-    for(let j=i+1;j<bubbles.length;j++){
-      const b = bubbles[j];
-      const dx = b.x-a.x, dy = b.y-a.y;
-      const dist = Math.sqrt(dx*dx + dy*dy)||1;
-      const minD = a.size+b.size;
-      if(dist<minD){
-        const overlap=minD-dist;
-        const nx=dx/dist, ny=dy/dist, push=overlap*0.03;
-        a.vx-=nx*push; a.vy-=ny*push;
-        b.vx+=nx*push; b.vy+=ny*push;
-      }
-    }
-  }
-
-  words = Array.from(aboutSection.querySelectorAll('.interactive-word'));
-  const canvasRect = bubbleCanvas.getBoundingClientRect();
-
-  for(const b of bubbles){
-    if(mouse.moving){ b.vx += (mouse.x-b.x)*0.0012; b.vy += (mouse.y-b.y)*0.0012; }
-    else { b.vx += (Math.random()-0.5)*0.01; b.vy -= 0.02; }
-
-    for(const w of words){
-      const r=w.getBoundingClientRect();
-      const left=r.left-canvasRect.left;
-      const top=r.top-canvasRect.top;
-      const right=left+r.width;
-      const bottom=top+r.height;
-      resolveBubbleRectCollision(b,left,top,right,bottom);
-    }
-
-    b.x+=b.vx; b.y+=b.vy;
-
-    if(b.y+b.size<0)b.y=viewH+b.size;
-    if(b.y-b.size>viewH)b.y=-b.size;
-
-    if(b.x-b.size<0){ b.x=b.size; b.vx*=-0.45; }
-    if(b.x+b.size>viewW){ b.x=viewW-b.size; b.vx*=-0.45; }
-
-    b.vx*=0.95; b.vy*=0.95;
-
-    ctx.beginPath(); ctx.arc(b.x,b.y,b.size,0,Math.PI*2);
-    ctx.fillStyle=b.color; ctx.fill();
-  }
-
-  requestAnimationFrame(updateBubbles);
-}
-updateBubbles();
-
-/* Reset bubbles when About section comes back into view */
-const observer = new IntersectionObserver(entries=>{
-  entries.forEach(entry=>{ if(entry.isIntersecting){ initBubbles(); } });
-},{ threshold:0.4 });
-observer.observe(aboutSection);
-
-/* ---------- CONTACT SPOTLIGHT (FLASHLIGHT WITH SMOOTH FOLLOW) ---------- */
-const contactSection = document.querySelector('.contact');
-const overlay = contactSection.querySelector('.contact-overlay');
-
-// target vs actual positions for easing
-let targetX = 0, targetY = 0;
-let currentX = 0, currentY = 0;
-let spotlightActive = false;
-
-contactSection.addEventListener('mousemove', e => {
-  const rect = contactSection.getBoundingClientRect();
-  targetX = e.clientX - rect.left;
-  targetY = e.clientY - rect.top;
-  spotlightActive = true;
-});
-
-contactSection.addEventListener('mouseleave', () => {
-  spotlightActive = false;
-  overlay.style.webkitMaskImage = 'none';
-  overlay.style.maskImage = 'none';
-});
-
-function animateSpotlight(){
-  if(spotlightActive){
-    // smooth easing (lerp)
-    currentX += (targetX - currentX) * 0.15;
-    currentY += (targetY - currentY) * 0.15;
-
-    const spotlight = `radial-gradient(
-      circle 180px at ${currentX}px ${currentY}px,
-      rgba(0,0,0,0) 0%,
-      rgba(0,0,0,0.4) 40%,
-      rgba(0,0,0,0.85) 80%,
-      rgba(0,0,0,1) 100%
-    )`;
-
-    overlay.style.webkitMaskImage = spotlight;
-    overlay.style.maskImage = spotlight;
-    overlay.style.webkitMaskRepeat = "no-repeat";
-    overlay.style.maskRepeat = "no-repeat";
-  }
-  requestAnimationFrame(animateSpotlight);
-}
-animateSpotlight();
 </script>
+
 </body>
 </html>

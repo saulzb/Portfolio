@@ -87,15 +87,14 @@ nav a:hover{ color:orange; }
 /* gallery cards */
 .subgallery {
   position: absolute;
-  width: 340px;
-  height: 230px;
+  width: 320px;
+  height: 220px;
   overflow: hidden;
   border-radius: 18px;
   text-decoration: none;
   color: white;
   box-shadow: 0 10px 25px rgba(0,0,0,0.5);
   opacity: 0.95;
-  transition: transform 0.3s ease-out;
 }
 
 /* collage positions */
@@ -166,7 +165,7 @@ nav a:hover{ color:orange; }
 </section>
 
 <script>
-/* ---------- HERO LETTERS + SPOTLIGHT ---------- */
+/* ---------- HERO + SPOTLIGHT ---------- */
 const heroCanvas = document.getElementById('heroCanvas');
 const hCtx = heroCanvas.getContext('2d');
 let heroWidth=0, heroHeight=0;
@@ -178,25 +177,9 @@ function resizeHeroCanvas(){
 }
 window.addEventListener('resize', resizeHeroCanvas);
 resizeHeroCanvas();
-const elements = [document.getElementById('title'), document.getElementById('photos-link'), document.getElementById('drawings')];
-function getLetterPositions(){
-  return elements.map(el=>{
-    const rect = el.getBoundingClientRect();
-    return { x: rect.left+rect.width/2, y: rect.top+rect.height/2, width: rect.width, height: rect.height, fontSize: parseInt(window.getComputedStyle(el).fontSize) };
-  });
-}
-let letterPositions = getLetterPositions();
-window.addEventListener('resize', ()=>{ letterPositions = getLetterPositions(); });
-let spotX = heroWidth/2, spotY = heroHeight/2, dx=1, dy=0.8, SPOT_RADIUS=120;
+let spotX=heroWidth/2, spotY=heroHeight/2, dx=1, dy=0.8, SPOT_RADIUS=120;
 function animateHero(){
   hCtx.clearRect(0,0,heroWidth,heroHeight);
-  letterPositions.forEach(l=>{
-    hCtx.font = `bold ${l.fontSize}px Arial`;
-    hCtx.textAlign = "center";
-    hCtx.textBaseline = "middle";
-    hCtx.fillStyle="black";
-    hCtx.fillText(" ",l.x,l.y);
-  });
   spotX+=dx; spotY+=dy;
   if(spotX<0+SPOT_RADIUS||spotX>heroWidth-SPOT_RADIUS) dx*=-1;
   if(spotY<0+SPOT_RADIUS||spotY>heroHeight-SPOT_RADIUS) dy*=-1;
@@ -238,32 +221,15 @@ function initBubbles(){
   }
 }
 initBubbles();
-const mouse={x:viewW/2, y:viewH/2, moving:false};
-aboutSection.addEventListener('mousemove',e=>{
-  const r=bubbleCanvas.getBoundingClientRect();
-  mouse.x=e.clientX-r.left; mouse.y=e.clientY-r.top; mouse.moving=true;
-  clearTimeout(mouse.timer);
-  mouse.timer=setTimeout(()=>{mouse.moving=false;},700);
-});
-function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
-function resolveBubbleRectCollision(b,left,top,right,bottom){
-  const closestX=clamp(b.x,left,right); const closestY=clamp(b.y,top,bottom);
-  let dx=b.x-closestX, dy=b.y-closestY, dist=Math.sqrt(dx*dx+dy*dy);
-  if(dist<b.size){
-    const safeDist=dist||0.0001; const overlap=b.size-dist;
-    b.x+=dx/safeDist*overlap*0.45; b.y+=dy/safeDist*overlap*0.45;
-  }
-}
 function updateBubbles(){
   if(viewW===0||viewH===0){ requestAnimationFrame(updateBubbles); return; }
   ctx.clearRect(0,0,viewW,viewH);
   for(const b of bubbles){
-    if(mouse.moving){ b.vx+=(mouse.x-b.x)*0.0012; b.vy+=(mouse.y-b.y)*0.0012; }
-    else { b.vx+=(Math.random()-0.5)*0.01; b.vy-=0.02; }
+    b.vx+=(Math.random()-0.5)*0.01; b.vy-=0.02;
     b.x+=b.vx; b.y+=b.vy;
     if(b.y+b.size<0)b.y=viewH+b.size;
     if(b.y-b.size>viewH)b.y=-b.size;
-    if(b.x-b.size<0){b.x=b.size; b.vx*=-0.45;}
+    if(b.x-b.size<0){b.x=b.size;b.vx*=-0.45;}
     if(b.x+b.size>viewW){b.x=viewW-b.size;b.vx*=-0.45;}
     b.vx*=0.95; b.vy*=0.95;
     ctx.beginPath(); ctx.arc(b.x,b.y,b.size,0,Math.PI*2); ctx.fillStyle=b.color; ctx.fill();
@@ -280,10 +246,12 @@ contactSection.addEventListener('mousemove', e=>{
   const rect = contactSection.getBoundingClientRect();
   targetX = e.clientX - rect.left; targetY = e.clientY - rect.top; spotlightActive=true;
 });
-contactSection.addEventListener('mouseleave',()=>{spotlightActive=false; overlay.style.webkitMaskImage='none'; overlay.style.maskImage='none';});
+contactSection.addEventListener('mouseleave', ()=>{
+  spotlightActive=false; overlay.style.webkitMaskImage='none'; overlay.style.maskImage='none';
+});
 function animateSpotlight(){
   if(spotlightActive){
-    currentX+=(targetX-currentX)*0.15; currentY+=(targetY-currentY)*0.15;
+    currentX += (targetX-currentX)*0.15; currentY += (targetY-currentY)*0.15;
     const spotlight=`radial-gradient(circle 180px at ${currentX}px ${currentY}px, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0.85) 80%, rgba(0,0,0,1) 100%)`;
     overlay.style.webkitMaskImage=spotlight; overlay.style.maskImage=spotlight;
     overlay.style.webkitMaskRepeat="no-repeat"; overlay.style.maskRepeat="no-repeat";
@@ -301,7 +269,7 @@ const galleryList = [
   { name: "Light", folder: "photos/Light", images:["IMG_1776.jpg","DSCN7048.JPG","DSCN8046.JPG"], page:"Lightcode.html" },
   { name: "Water", folder: "photos/Water", images:["DSCN3961.jpg","DSCN5492.jpg","waterfromferry2.jpg"], page:"Watercode.html" }
 ];
-const container2 = document.getElementById('galleries');
+const container = document.getElementById('galleries');
 galleryList.forEach(g=>{
   const link=document.createElement('a'); link.href=`${g.folder}/${g.page}`; link.className='subgallery';
   const slideshow=document.createElement('div'); slideshow.className='slideshow';
@@ -310,36 +278,20 @@ galleryList.forEach(g=>{
   });
   const title=document.createElement('div'); title.className='title'; title.textContent=g.name;
   link.appendChild(slideshow); link.appendChild(title);
-  container2.appendChild(link);
+  container.appendChild(link);
 });
 
-/* ---------- PHOTOS COLLAGE SMOOTH ---------- */
+/* smooth rise/fall */
 const photosSection = document.querySelector('.photos');
 const subgalleries = document.querySelectorAll('.subgallery');
-
-// Assign each gallery a random movement strength and speed factor
-const galleriesData = Array.from(subgalleries).map(g => ({
-  el: g,
-  strength: Math.random() * 0.9 + 0.5, // distance factor
-  offset: Math.random() * 100,         // initial offset variation
-  currentY: 0                           // smooth current position
-}));
-
-function updateGalleries(){
+const movementStrengths = Array.from(subgalleries).map(()=>Math.random()*0.7+0.5);
+window.addEventListener('scroll', ()=>{
   const rect = photosSection.getBoundingClientRect();
   const vh = window.innerHeight;
-  const progress = Math.min(Math.max(0, 1 - rect.top / vh), 1); // 0 to 1 scroll progress
-
-  galleriesData.forEach(data => {
-    const targetY = -(progress * data.strength * 400) + data.offset; // target rise
-    // smooth easing
-    data.currentY += (targetY - data.currentY) * 0.2;
-    data.el.style.transform = `translateY(${data.currentY}px)`;
-  });
-
-  requestAnimationFrame(updateGalleries);
-}
-updateGalleries();
+  const progress = Math.min(Math.max(0,1-rect.top/vh),1);
+  subgalleries.forEach((g,i)=>{
+    const rise = progress*movementStrengths[i]*300;
+    g.style.transform = `translateY(${-rise}px)`;
   });
 });
 </script>

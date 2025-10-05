@@ -165,100 +165,7 @@ nav a:hover{ color:orange; }
 </section>
 
 <script>
-/* ---------- HERO + SPOTLIGHT ---------- */
-const heroCanvas = document.getElementById('heroCanvas');
-const hCtx = heroCanvas.getContext('2d');
-let heroWidth=0, heroHeight=0;
-function resizeHeroCanvas(){
-  heroWidth = window.innerWidth;
-  heroHeight = window.innerHeight;
-  heroCanvas.width = heroWidth;
-  heroCanvas.height = heroHeight;
-}
-window.addEventListener('resize', resizeHeroCanvas);
-resizeHeroCanvas();
-let spotX=heroWidth/2, spotY=heroHeight/2, dx=1, dy=0.8, SPOT_RADIUS=120;
-function animateHero(){
-  hCtx.clearRect(0,0,heroWidth,heroHeight);
-  spotX+=dx; spotY+=dy;
-  if(spotX<0+SPOT_RADIUS||spotX>heroWidth-SPOT_RADIUS) dx*=-1;
-  if(spotY<0+SPOT_RADIUS||spotY>heroHeight-SPOT_RADIUS) dy*=-1;
-  hCtx.save();
-  hCtx.globalCompositeOperation='source-atop';
-  const grad=hCtx.createRadialGradient(spotX,spotY,0,spotX,spotY,SPOT_RADIUS);
-  grad.addColorStop(0,'rgba(255,255,255,0.9)');
-  grad.addColorStop(0.3,'rgba(255,140,0,0.6)');
-  grad.addColorStop(1,'rgba(0,0,0,0)');
-  hCtx.fillStyle=grad;
-  hCtx.fillRect(0,0,heroWidth,heroHeight);
-  hCtx.restore();
-  requestAnimationFrame(animateHero);
-}
-animateHero();
-
-/* ---------- ABOUT BUBBLES ---------- */
-const aboutSection = document.getElementById('about-section');
-const bubbleCanvas = document.getElementById('bubbleCanvas');
-const ctx = bubbleCanvas.getContext('2d');
-let viewW=0, viewH=0, dpr=window.devicePixelRatio||1;
-function resizeCanvas(){
-  const rect = aboutSection.getBoundingClientRect();
-  viewW = rect.width; viewH = rect.height;
-  bubbleCanvas.style.width=viewW+'px';
-  bubbleCanvas.style.height=viewH+'px';
-  bubbleCanvas.width=Math.floor(viewW*dpr);
-  bubbleCanvas.height=Math.floor(viewH*dpr);
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-}
-window.addEventListener('resize',()=>setTimeout(resizeCanvas,0));
-resizeCanvas();
-let bubbles=[]; const NUM=40;
-function initBubbles(){
-  bubbles.length=0;
-  for(let i=0;i<NUM;i++){
-    const hue=Math.random()*60+180;
-    bubbles.push({ x:Math.random()*viewW, y:Math.random()*viewH, vx:(Math.random()-0.5)*0.2, vy:(Math.random()-0.5)*0.2-0.2, size:Math.random()*18+10, color:`hsla(${hue},70%,50%,${Math.random()*0.4+0.18})` });
-  }
-}
-initBubbles();
-function updateBubbles(){
-  if(viewW===0||viewH===0){ requestAnimationFrame(updateBubbles); return; }
-  ctx.clearRect(0,0,viewW,viewH);
-  for(const b of bubbles){
-    b.vx+=(Math.random()-0.5)*0.01; b.vy-=0.02;
-    b.x+=b.vx; b.y+=b.vy;
-    if(b.y+b.size<0)b.y=viewH+b.size;
-    if(b.y-b.size>viewH)b.y=-b.size;
-    if(b.x-b.size<0){b.x=b.size;b.vx*=-0.45;}
-    if(b.x+b.size>viewW){b.x=viewW-b.size;b.vx*=-0.45;}
-    b.vx*=0.95; b.vy*=0.95;
-    ctx.beginPath(); ctx.arc(b.x,b.y,b.size,0,Math.PI*2); ctx.fillStyle=b.color; ctx.fill();
-  }
-  requestAnimationFrame(updateBubbles);
-}
-updateBubbles();
-
-/* ---------- CONTACT SPOTLIGHT ---------- */
-const contactSection = document.querySelector('.contact');
-const overlay = contactSection.querySelector('.contact-overlay');
-let targetX=0, targetY=0, currentX=0, currentY=0, spotlightActive=false;
-contactSection.addEventListener('mousemove', e=>{
-  const rect = contactSection.getBoundingClientRect();
-  targetX = e.clientX - rect.left; targetY = e.clientY - rect.top; spotlightActive=true;
-});
-contactSection.addEventListener('mouseleave', ()=>{
-  spotlightActive=false; overlay.style.webkitMaskImage='none'; overlay.style.maskImage='none';
-});
-function animateSpotlight(){
-  if(spotlightActive){
-    currentX += (targetX-currentX)*0.15; currentY += (targetY-currentY)*0.15;
-    const spotlight=`radial-gradient(circle 180px at ${currentX}px ${currentY}px, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0.85) 80%, rgba(0,0,0,1) 100%)`;
-    overlay.style.webkitMaskImage=spotlight; overlay.style.maskImage=spotlight;
-    overlay.style.webkitMaskRepeat="no-repeat"; overlay.style.maskRepeat="no-repeat";
-  }
-  requestAnimationFrame(animateSpotlight);
-}
-animateSpotlight();
+document.addEventListener('DOMContentLoaded', ()=>{
 
 /* ---------- PHOTOS COLLAGE ---------- */
 const galleryList = [
@@ -269,6 +176,7 @@ const galleryList = [
   { name: "Light", folder: "photos/Light", images:["IMG_1776.jpg","DSCN7048.JPG","DSCN8046.JPG"], page:"Lightcode.html" },
   { name: "Water", folder: "photos/Water", images:["DSCN3961.jpg","DSCN5492.jpg","waterfromferry2.jpg"], page:"Watercode.html" }
 ];
+
 const container = document.getElementById('galleries');
 galleryList.forEach(g=>{
   const link=document.createElement('a'); link.href=`${g.folder}/${g.page}`; link.className='subgallery';
@@ -281,37 +189,31 @@ galleryList.forEach(g=>{
   container.appendChild(link);
 });
 
-/* ---------- PHOTOS COLLAGE SMOOTH ---------- */
+/* ---------- SMOOTH RISE/FALL ---------- */
 const photosSection = document.querySelector('.photos');
 const subgalleries = document.querySelectorAll('.subgallery');
 
-// Assign each gallery a random movement strength and offset
 const galleriesData = Array.from(subgalleries).map(g => ({
   el: g,
-  strength: Math.random() * 0.9 + 0.5,  // how far it moves
-  offset: Math.random() * 80,           // initial variation
-  currentY: 0                            // for smooth easing
+  strength: Math.random() * 0.9 + 0.5,
+  offset: Math.random() * 80,
+  currentY: 0
 }));
 
 function updateGalleries(){
   const rect = photosSection.getBoundingClientRect();
   const vh = window.innerHeight;
-
-  // progress: 0 when top is at bottom of viewport, 1 when top reaches top
-  const progress = Math.min(Math.max(0, 1 - rect.top / vh), 1);
-
-  galleriesData.forEach(data => {
+  const progress = Math.min(Math.max(0,1 - rect.top/vh),1);
+  galleriesData.forEach(data=>{
     const targetY = -(progress * data.strength * 400) + data.offset;
-    // smooth easing
     data.currentY += (targetY - data.currentY) * 0.2;
     data.el.style.transform = `translateY(${data.currentY}px)`;
   });
-
   requestAnimationFrame(updateGalleries);
 }
 updateGalleries();
-  });
-});
+
+}); // DOMContentLoaded
 </script>
 
 </body>

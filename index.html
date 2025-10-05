@@ -7,11 +7,9 @@
 <style>
 html,body{
   margin:0; padding:0;
-  height:100%;
   font-family:Arial, sans-serif;
   overflow-y:scroll;
 }
-
 section{
   position:relative;
   width:100%;
@@ -27,104 +25,46 @@ section{
   object-fit:cover;
   z-index:-2;
 }
-#heroCanvas{
-  position:absolute;
-  top:0; left:0;
-  width:100%; height:100%;
-  pointer-events:none;
-  z-index:1;
-}
+#heroCanvas{ position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1; }
 nav a{ color:black; font-weight:bold; margin:0 15px; text-decoration:none; }
 nav a:hover{ color:orange; }
 
 /* ABOUT */
 .about{ background:#222; color:white; position:relative; padding:150px 0; }
-.contact{ background:#eee; color:#111; position:relative; padding:150px 0; }
-
-/* Canvas for bubbles */
-#bubbleCanvas{
-  position:absolute; left:0; top:0;
-  width:100%; height:100%;
-  z-index:0;
-  pointer-events:none;
-}
-
+#bubbleCanvas{ position:absolute; left:0; top:0; width:100%; height:100%; z-index:0; pointer-events:none; }
 .interactive-word{ display:inline-block; position:relative; }
 
-/* CONTACT SPOTLIGHT */
-.contact-overlay {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: black;
-  pointer-events: none;
-  z-index: 2;
-  -webkit-mask-image: none;
-  mask-image: none;
-}
+/* CONTACT */
+.contact{ background:#eee; color:#111; position:relative; padding:150px 0; }
+.contact-overlay{ position:absolute; top:0; left:0; width:100%; height:100%; background:black; pointer-events:none; z-index:2; mask-image:none; -webkit-mask-image:none; }
 
 /* PHOTOS COLLAGE */
-.photos {
-  background: #111;
-  color: white;
-  padding: 150px 0 400px;
-  position: relative;
-  overflow: visible;
+.photos{
+  background:#111; color:white; padding:150px 0 400px; position:relative; overflow:visible;
 }
-.photos h2 {
-  font-size: 2.2em;
-  margin-bottom: 80px;
-  text-align: center;
-}
-.galleries {
-  position: relative;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  height: 1600px;
-}
-
-/* gallery cards */
-.subgallery {
-  position: absolute;
-  width: 320px;
-  height: 220px;
-  overflow: hidden;
-  border-radius: 18px;
-  text-decoration: none;
-  color: white;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-  opacity: 0.95;
-}
-
-/* collage positions */
-.subgallery:nth-child(1){ top:100px; left:10%; z-index:4; transform:rotate(1deg); }
-.subgallery:nth-child(2){ top:220px; left:38%; z-index:3; transform:rotate(-2deg); }
-.subgallery:nth-child(3){ top:360px; left:62%; z-index:5; transform:rotate(2deg); }
-.subgallery:nth-child(4){ top:580px; left:22%; z-index:4; transform:rotate(-3deg); }
-.subgallery:nth-child(5){ top:740px; left:48%; z-index:3; transform:rotate(1deg); }
-.subgallery:nth-child(6){ top:940px; left:68%; z-index:6; transform:rotate(-1deg); }
-
-.slideshow {
-  display:flex;
-  width:100%;
-  height:100%;
-}
-.slideshow img {
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-.title {
+.photos h2{ font-size:2.2em; margin-bottom:80px; text-align:center; }
+.galleries{ position:relative; width:100%; max-width:1400px; margin:0 auto; height:1800px; }
+/* Bigger and closer galleries */
+.subgallery{
   position:absolute;
-  bottom:0;
-  left:0;
-  width:100%;
-  background:rgba(0,0,0,0.6);
-  text-align:center;
-  font-weight:bold;
-  padding:10px 0;
-  font-size:18px;
+  width:400px; height:280px; overflow:hidden;
+  border-radius:18px;
+  text-decoration:none; color:white;
+  box-shadow:0 10px 25px rgba(0,0,0,0.5); opacity:0.95;
+}
+.subgallery:nth-child(1){ top:100px; left:5%; z-index:4; transform:rotate(1deg); }
+.subgallery:nth-child(2){ top:200px; left:35%; z-index:3; transform:rotate(-2deg); }
+.subgallery:nth-child(3){ top:340px; left:60%; z-index:5; transform:rotate(2deg); }
+.subgallery:nth-child(4){ top:520px; left:20%; z-index:4; transform:rotate(-3deg); }
+.subgallery:nth-child(5){ top:680px; left:45%; z-index:3; transform:rotate(1deg); }
+.subgallery:nth-child(6){ top:880px; left:65%; z-index:6; transform:rotate(-1deg); }
+
+.slideshow{ display:flex; width:100%; height:100%; }
+.slideshow img{ width:100%; height:100%; object-fit:cover; }
+.title{
+  position:absolute; bottom:0; left:0; width:100%;
+  background:rgba(0,0,0,0.6); text-align:center;
+  font-weight:bold; padding:10px 0; font-size:18px;
 }
 </style>
 </head>
@@ -169,12 +109,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 /* ---------- PHOTOS COLLAGE ---------- */
 const galleryList = [
-  { name: "Double Exposures", folder: "photos/double exposures", images:["IMG_9495.JPG","IMG_9493.jpg","IMG_9495.JPG"], page:"doubleexposurecode.html" },
-  { name: "Wildlife", folder: "photos/wildlife", images:["IMG_8491_4.jpg","IMG_8512_1.jpg","RAW's Jul-Aug478 copy 2.jpg"], page:"wildlifecode.html" },
-  { name: "Landscapes", folder: "photos/landscapes", images:["DSCN3626.jpg","DSCN3600.jpg","DSCN3626.jpg"], page:"landscapescode.html" },
-  { name: "Colour", folder: "photos/Colour", images:["col1.jpg"], page:"Colourcode.html" },
-  { name: "Light", folder: "photos/Light", images:["IMG_1776.jpg","DSCN7048.JPG","DSCN8046.JPG"], page:"Lightcode.html" },
-  { name: "Water", folder: "photos/Water", images:["DSCN3961.jpg","DSCN5492.jpg","waterfromferry2.jpg"], page:"Watercode.html" }
+  { name:"Double Exposures", folder:"photos/double exposures", images:["IMG_9495.JPG","IMG_9493.jpg","IMG_9495.JPG"], page:"doubleexposurecode.html" },
+  { name:"Wildlife", folder:"photos/wildlife", images:["IMG_8491_4.jpg","IMG_8512_1.jpg","RAW's Jul-Aug478 copy 2.jpg"], page:"wildlifecode.html" },
+  { name:"Landscapes", folder:"photos/landscapes", images:["DSCN3626.jpg","DSCN3600.jpg","DSCN3626.jpg"], page:"landscapescode.html" },
+  { name:"Colour", folder:"photos/Colour", images:["col1.jpg"], page:"Colourcode.html" },
+  { name:"Light", folder:"photos/Light", images:["IMG_1776.jpg","DSCN7048.JPG","DSCN8046.JPG"], page:"Lightcode.html" },
+  { name:"Water", folder:"photos/Water", images:["DSCN3961.jpg","DSCN5492.jpg","waterfromferry2.jpg"], page:"Watercode.html" }
 ];
 
 const container = document.getElementById('galleries');
@@ -189,32 +129,77 @@ galleryList.forEach(g=>{
   container.appendChild(link);
 });
 
-/* ---------- SMOOTH RISE/FALL ---------- */
+/* ---------- SCROLL-BASED RISE/FALL ---------- */
 const photosSection = document.querySelector('.photos');
 const subgalleries = document.querySelectorAll('.subgallery');
+const movementStrengths = Array.from(subgalleries).map(()=>Math.random()*0.8+0.6);
 
-const galleriesData = Array.from(subgalleries).map(g => ({
-  el: g,
-  strength: Math.random() * 0.9 + 0.5,
-  offset: Math.random() * 80,
-  currentY: 0
-}));
-
-function updateGalleries(){
+window.addEventListener('scroll', ()=>{
   const rect = photosSection.getBoundingClientRect();
   const vh = window.innerHeight;
-  const progress = Math.min(Math.max(0,1 - rect.top/vh),1);
-  galleriesData.forEach(data=>{
-    const targetY = -(progress * data.strength * 400) + data.offset;
-    data.currentY += (targetY - data.currentY) * 0.2;
-    data.el.style.transform = `translateY(${data.currentY}px)`;
+  const progress = Math.min(Math.max(0,1-rect.top/vh),1);
+  subgalleries.forEach((g,i)=>{
+    const rise = progress * movementStrengths[i] * 600; // higher rise
+    g.style.transform = `translateY(${-rise}px)`;
   });
-  requestAnimationFrame(updateGalleries);
+});
+
+/* ---------- ABOUT BUBBLES ---------- */
+const aboutSection = document.getElementById('about-section');
+const bubbleCanvas = document.getElementById('bubbleCanvas');
+const ctx = bubbleCanvas.getContext('2d');
+let viewW=0, viewH=0, dpr=window.devicePixelRatio||1;
+
+function resizeCanvas(){
+  const rect = aboutSection.getBoundingClientRect();
+  const w = Math.max(100, Math.floor(rect.width));
+  const h = Math.max(100, Math.floor(rect.height));
+  viewW = w; viewH = h;
+  bubbleCanvas.style.width = w+'px';
+  bubbleCanvas.style.height = h+'px';
+  bubbleCanvas.width = Math.floor(w*dpr);
+  bubbleCanvas.height = Math.floor(h*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
 }
-updateGalleries();
+window.addEventListener('resize',()=>setTimeout(resizeCanvas,0));
+resizeCanvas();
 
-}); // DOMContentLoaded
+const NUM_BUBBLES = 40;
+const bubbles = [];
+function initBubbles(){
+  bubbles.length = 0;
+  for(let i=0;i<NUM_BUBBLES;i++){
+    const hue = Math.random()*60+180;
+    bubbles.push({
+      x: Math.random()*viewW,
+      y: Math.random()*viewH,
+      vx: (Math.random()-0.5)*0.2,
+      vy: (Math.random()-0.5)*0.2 -0.2,
+      size: Math.random()*18+10,
+      color: `hsla(${hue},70%,50%,${Math.random()*0.4 +0.18})`
+    });
+  }
+}
+initBubbles();
+
+function updateBubbles(){
+  if(viewW===0||viewH===0){ requestAnimationFrame(updateBubbles); return; }
+  ctx.clearRect(0,0,viewW,viewH);
+  for(const b of bubbles){
+    b.x+=b.vx; b.y+=b.vy;
+    if(b.y+b.size<0)b.y=viewH+b.size;
+    if(b.y-b.size>viewH)b.y=-b.size;
+    if(b.x-b.size<0){ b.x=b.size; b.vx*=-0.45; }
+    if(b.x+b.size>viewW){ b.x=viewW-b.size; b.vx*=-0.45; }
+    b.vx*=0.95; b.vy*=0.95;
+    ctx.beginPath(); ctx.arc(b.x,b.y,b.size,0,Math.PI*2);
+    ctx.fillStyle=b.color; ctx.fill();
+  }
+  requestAnimationFrame(updateBubbles);
+}
+updateBubbles();
+
+});
 </script>
-
 </body>
 </html>

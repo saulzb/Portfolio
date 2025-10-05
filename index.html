@@ -8,8 +8,13 @@
 html,body{
   margin:0; padding:0;
   font-family:Arial, sans-serif;
-  overflow-x:hidden;
-  scroll-behavior:smooth;
+  overflow-y:scroll;
+}
+section{
+  position:relative;
+  width:100%;
+  text-align:center;
+  overflow:hidden;
 }
 
 /* HERO */
@@ -27,6 +32,11 @@ nav a:hover{ color:orange; }
 /* ABOUT */
 .about{ background:#222; color:white; position:relative; padding:150px 0; }
 #bubbleCanvas{ position:absolute; left:0; top:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+.interactive-word{ display:inline-block; position:relative; }
+
+/* CONTACT */
+.contact{ background:#eee; color:#111; position:relative; padding:150px 0; }
+.contact-overlay{ position:absolute; top:0; left:0; width:100%; height:100%; background:black; pointer-events:none; z-index:2; mask-image:none; -webkit-mask-image:none; }
 
 /* PHOTOS COLLAGE */
 .photos{
@@ -34,6 +44,7 @@ nav a:hover{ color:orange; }
 }
 .photos h2{ font-size:2.2em; margin-bottom:80px; text-align:center; }
 .galleries{ position:relative; width:100%; max-width:1400px; margin:0 auto; height:1800px; }
+/* Bigger and closer galleries */
 .subgallery{
   position:absolute;
   width:400px; height:280px; overflow:hidden;
@@ -47,6 +58,7 @@ nav a:hover{ color:orange; }
 .subgallery:nth-child(4){ top:520px; left:20%; z-index:4; transform:rotate(-3deg); }
 .subgallery:nth-child(5){ top:680px; left:45%; z-index:3; transform:rotate(1deg); }
 .subgallery:nth-child(6){ top:880px; left:65%; z-index:6; transform:rotate(-1deg); }
+
 .slideshow{ display:flex; width:100%; height:100%; }
 .slideshow img{ width:100%; height:100%; object-fit:cover; }
 .title{
@@ -54,11 +66,6 @@ nav a:hover{ color:orange; }
   background:rgba(0,0,0,0.6); text-align:center;
   font-weight:bold; padding:10px 0; font-size:18px;
 }
-
-/* CONTACT */
-.contact{ background:#eee; color:#111; position:relative; padding:150px 0; }
-.contact-overlay{ position:absolute; top:0; left:0; width:100%; height:100%; background:black; pointer-events:none; z-index:2; mask-image:none; -webkit-mask-image:none; }
-
 </style>
 </head>
 <body>
@@ -109,6 +116,7 @@ const galleryList = [
   { name:"Light", folder:"photos/Light", images:["IMG_1776.jpg","DSCN7048.JPG","DSCN8046.JPG"], page:"Lightcode.html" },
   { name:"Water", folder:"photos/Water", images:["DSCN3961.jpg","DSCN5492.jpg","waterfromferry2.jpg"], page:"Watercode.html" }
 ];
+
 const container = document.getElementById('galleries');
 galleryList.forEach(g=>{
   const link=document.createElement('a'); link.href=`${g.folder}/${g.page}`; link.className='subgallery';
@@ -124,20 +132,17 @@ galleryList.forEach(g=>{
 /* ---------- SCROLL-BASED RISE/FALL ---------- */
 const photosSection = document.querySelector('.photos');
 const subgalleries = document.querySelectorAll('.subgallery');
-const movementStrengths = Array.from(subgalleries).map(()=>Math.random()*1+0.5);
-function updateFolders(){
+const movementStrengths = Array.from(subgalleries).map(()=>Math.random()*0.8+0.6);
+
+window.addEventListener('scroll', ()=>{
   const rect = photosSection.getBoundingClientRect();
   const vh = window.innerHeight;
   const progress = Math.min(Math.max(0,1-rect.top/vh),1);
   subgalleries.forEach((g,i)=>{
-    const rotateMatch = g.style.transform.match(/rotate\((-?\d+)deg\)/);
-    const rotateVal = rotateMatch ? rotateMatch[1] : 0;
-    const rise = progress * movementStrengths[i] * 600;
-    g.style.transform = `translateY(${-rise}px) rotate(${rotateVal}deg)`;
+    const rise = progress * movementStrengths[i] * 600; // higher rise
+    g.style.transform = `translateY(${-rise}px)`;
   });
-}
-window.addEventListener('scroll', updateFolders);
-updateFolders();
+});
 
 /* ---------- ABOUT BUBBLES ---------- */
 const aboutSection = document.getElementById('about-section');
@@ -168,8 +173,8 @@ function initBubbles(){
     bubbles.push({
       x: Math.random()*viewW,
       y: Math.random()*viewH,
-      vx: (Math.random()-0.5)*0.3,
-      vy: (Math.random()-0.5)*0.3 -0.2,
+      vx: (Math.random()-0.5)*0.2,
+      vy: (Math.random()-0.5)*0.2 -0.2,
       size: Math.random()*18+10,
       color: `hsla(${hue},70%,50%,${Math.random()*0.4 +0.18})`
     });
@@ -178,9 +183,10 @@ function initBubbles(){
 initBubbles();
 
 function updateBubbles(){
+  if(viewW===0||viewH===0){ requestAnimationFrame(updateBubbles); return; }
   ctx.clearRect(0,0,viewW,viewH);
   for(const b of bubbles){
-    b.x += b.vx; b.y += b.vy;
+    b.x+=b.vx; b.y+=b.vy;
     if(b.y+b.size<0)b.y=viewH+b.size;
     if(b.y-b.size>viewH)b.y=-b.size;
     if(b.x-b.size<0){ b.x=b.size; b.vx*=-0.45; }

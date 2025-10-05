@@ -12,7 +12,7 @@ html,body{
   background:#111;
 }
 
-/* Each section full width, no snap */
+/* each section flows naturally */
 section{
   min-height:100vh;
   display:flex;
@@ -55,51 +55,54 @@ nav a:hover{ color:orange; }
 .photos{
   background:#111;
   color:white;
-  padding:100px 0 200px;
+  padding:150px 0 300px;
   position:relative;
   overflow:visible;
 }
 
 .photos h2{
   font-size:2em;
-  margin-bottom:40px;
+  margin-bottom:80px;
+  z-index:5;
+  position:relative;
 }
 
-/* scattered photo folders */
+/* collage-style scattered layout */
 .galleries {
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:40px;
-  width:90%;
+  position:relative;
+  width:100%;
   max-width:1400px;
   margin:0 auto;
-  position:relative;
+  height:1600px; /* gives scroll room */
 }
 
 .subgallery {
+  position:absolute;
   width:300px;
-  height:200px;
+  height:220px;
   overflow:hidden;
-  border-radius:16px;
-  position:relative;
+  border-radius:18px;
   text-decoration:none;
   color:white;
-  transform:translateY(0);
-  transition:transform 0.5s ease;
+  transform:translateY(0) scale(1);
+  transition:transform 0.6s ease, opacity 0.6s ease;
+  box-shadow:0 10px 25px rgba(0,0,0,0.4);
+  opacity:0.9;
 }
-
-/* scattered layout - each nth child offset */
-.subgallery:nth-child(odd) { transform:translateY(60px); }
-.subgallery:nth-child(3n) { transform:translateY(120px); }
-.subgallery:nth-child(5n) { transform:translateY(180px); }
 
 .subgallery:hover {
   transform:scale(1.05);
   z-index:10;
 }
 
-/* slideshow */
+/* scattered positions (you can tweak these) */
+.subgallery:nth-child(1){ top:100px; left:5%; z-index:3; }
+.subgallery:nth-child(2){ top:220px; left:40%; z-index:2; transform:rotate(2deg); }
+.subgallery:nth-child(3){ top:350px; left:70%; z-index:4; transform:rotate(-2deg); }
+.subgallery:nth-child(4){ top:600px; left:15%; z-index:3; transform:rotate(-3deg); }
+.subgallery:nth-child(5){ top:750px; left:55%; z-index:2; transform:rotate(1.5deg); }
+.subgallery:nth-child(6){ top:1000px; left:75%; z-index:5; transform:rotate(-1deg); }
+
 .slideshow {
   display:flex;
   transition:transform 1s ease;
@@ -117,7 +120,7 @@ nav a:hover{ color:orange; }
   bottom:0;
   left:0;
   width:100%;
-  background:rgba(0,0,0,0.5);
+  background:rgba(0,0,0,0.55);
   text-align:center;
   font-weight:bold;
   padding:10px 0;
@@ -161,7 +164,7 @@ nav a:hover{ color:orange; }
   <canvas id="bubbleCanvas" aria-hidden="true"></canvas>
 </section>
 
-<!-- PHOTOS (from your photoholder.html) -->
+<!-- PHOTOS COLLAGE PAGE -->
 <section class="photos" id="photos">
   <h2>PHOTO COLLECTIONS</h2>
   <div class="galleries" id="galleries"></div>
@@ -176,9 +179,7 @@ nav a:hover{ color:orange; }
 </section>
 
 <script>
-/* --- EXISTING HERO + ABOUT + CONTACT JS stays unchanged --- */
-
-/* GALLERIES from photoholder.html */
+/* GALLERIES */
 const galleries = [
   { name: "Double Exposures", folder: "photos/double exposures", images: ["IMG_9495.JPG","IMG_9493.jpg","IMG_9495.JPG"], page: "doubleexposurecode.html" },
   { name: "Wildlife", folder: "photos/wildlife", images: ["IMG_8491_4.jpg","IMG_8512_1.jpg","RAW's Jul-Aug478 copy 2.jpg"], page: "wildlifecode.html" },
@@ -216,6 +217,7 @@ galleries.forEach(gallery=>{
   link.appendChild(title);
   container.appendChild(link);
 
+  // slideshow loop
   if(gallery.images.length>1){
     let index=0;
     const slideCount=gallery.images.length;
@@ -238,6 +240,22 @@ galleries.forEach(gallery=>{
       },slideInterval);
     },staggerDelay);
   }
+});
+
+/* ---- SCROLL-BASED RISE EFFECT ---- */
+const photoSection = document.querySelector('.photos');
+const subgalleries = document.querySelectorAll('.subgallery');
+
+window.addEventListener('scroll', ()=>{
+  const rect = photoSection.getBoundingClientRect();
+  const viewHeight = window.innerHeight;
+  const progress = Math.min(Math.max(0, 1 - rect.top / viewHeight), 1);
+
+  subgalleries.forEach((g,i)=>{
+    const rise = progress * (150 + (i*15)); // varied lift
+    g.style.transform = `translateY(${-rise}px) scale(1)`;
+    g.style.opacity = 0.7 + progress*0.3;
+  });
 });
 </script>
 

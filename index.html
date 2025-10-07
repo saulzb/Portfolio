@@ -1,229 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Saul Zidulka-Bejcek</title>
 <style>
-  *,*::before,*::after{box-sizing:border-box;}
-  html,body{margin:0;padding:0;font-family:Arial,sans-serif;overflow-x:hidden;-webkit-tap-highlight-color:transparent;}
-  body{background:#111;color:#fff;}
-
-  section{position:relative;width:100%;text-align:center;overflow:hidden;}
-
-  /* HERO */
-  .hero{height:100vh;position:relative;overflow:hidden;}
-  .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;}
-  #heroCanvas{position:absolute;inset:0;pointer-events:none;z-index:1;}
-  h1#title{position:relative;z-index:2;margin:0;padding-top:20vh;font-size:3rem;letter-spacing:2px;color:#fff;}
-  nav{position:relative;z-index:3;margin-top:18px;}
-  nav a{color:#fff;text-decoration:none;font-weight:700;margin:0 12px;}
-
-  /* ABOUT */
-  .about{background:#222;padding:60px 18px 40px;color:#fff;z-index:1;position:relative;}
-  .about h2{margin:0 0 10px;font-size:1.8rem;}
-  .about p{max-width:700px;margin:0 auto;line-height:1.6;}
-
-  /* PHOTOS COLLAGE */
-  .photos{
-    background:#111;
-    padding:120px 10px 220px;
-    margin-top:-120px;  /* raises collage into about section */
-    overflow:visible;
-    z-index:2;
-  }
-  .photos h2{font-size:2rem;margin-bottom:48px;}
-  .galleries{position:relative;width:100%;max-width:1400px;margin:0 auto;height:1600px;overflow:hidden;}
-
-  .subgallery{
-    position:absolute;
-    width:min(460px,42vw);
-    height:calc(min(460px,42vw)*0.72);
-    overflow:hidden;
-    border-radius:16px;
-    text-decoration:none;
-    color:white;
-    box-shadow:0 18px 40px rgba(0,0,0,0.55);
-    background:#000;
-    transition:transform 0.35s ease-out;
-    -webkit-backface-visibility:hidden;
-    backface-visibility:hidden;
-    cursor:pointer;
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    font-family: 'Helvetica Neue', sans-serif;
+    scroll-behavior: smooth;
+    background: #fafafa;
   }
 
-  /* scattered layout */
-  .subgallery:nth-child(1){top:80px; left:6%; z-index:6; transform:rotate(1deg);}
-  .subgallery:nth-child(2){top:210px; left:34%; z-index:4; transform:rotate(-2deg);}
-  .subgallery:nth-child(3){top:340px; left:62%; z-index:7; transform:rotate(2deg);}
-  .subgallery:nth-child(4){top:520px; left:18%; z-index:5; transform:rotate(-3deg);}
-  .subgallery:nth-child(5){top:700px; left:46%; z-index:3; transform:rotate(1deg);}
-  .subgallery:nth-child(6){top:920px; left:66%; z-index:8; transform:rotate(-1deg);}
-
-  .slideshow{display:flex;width:100%;height:100%;will-change:transform;}
-  .slideshow img{flex:0 0 100%;display:block;width:100%;height:100%;object-fit:cover;}
-
-  /* title centered & hidden until hover */
-  .title{
-    position:absolute;
-    top:50%; left:50%;
-    transform:translate(-50%,-50%) scale(0.9);
-    background:rgba(0,0,0,0.55);
-    padding:10px 16px;
-    font-weight:700;
-    font-size:1.1rem;
-    border-radius:8px;
-    opacity:0;
-    transition:opacity 0.35s ease, transform 0.35s ease;
-    pointer-events:none;
-  }
-  .subgallery:hover .title{
-    opacity:1;
-    transform:translate(-50%,-50%) scale(1);
+  section {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  /* CONTACT */
-  .contact{background:#eee;color:#111;padding:100px 18px;}
-  .contact a{color:#111;text-decoration:none;}
+  /* Hero */
+  .hero {
+    background: #ececec;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
 
-  /* MOBILE */
-  @media (max-width:768px){
-    h1#title{font-size:2rem;padding-top:14vh;}
-    .photos{padding:80px 10px 160px;margin-top:-60px;}
-    .galleries{height:auto;padding-bottom:40px;display:flex;flex-direction:column;align-items:center;}
-    .subgallery{
-      position:relative!important;
-      left:auto!important;
-      top:auto!important;
-      width:90vw;
-      height:calc(90vw*0.66);
-      margin:18px 0;
-      transform:none!important;
-      z-index:unset!important;
+  .hero h1 {
+    font-size: 3rem;
+    margin: 0;
+    letter-spacing: 1px;
+  }
+
+  /* About */
+  .about {
+    background: #f2f2f2;
+    padding: 80px 20px;
+    z-index: 1;
+    position: relative;
+  }
+
+  .about p {
+    max-width: 700px;
+    text-align: center;
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+
+  /* Photo section */
+  .photos {
+    background: #fff;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 60px;
+    padding: 200px 20px 120px;
+    position: relative;
+    z-index: 10; /* ensures they’re always on top */
+    margin-top: -200px; /* lifts them up into about section */
+  }
+
+  .subgallery {
+    width: 220px;
+    height: 220px;
+    border-radius: 16px;
+    background: #e0e0e0;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    transition: transform 0.4s ease;
+  }
+
+  .subgallery:hover {
+    transform: scale(1.05);
+  }
+
+  .subgallery img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Hover label centered */
+  .subgallery::after {
+    content: attr(data-label);
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: white;
+    font-weight: 600;
+    opacity: 0;
+    background: rgba(0,0,0,0.4);
+    transition: opacity 0.4s ease;
+  }
+
+  .subgallery:hover::after {
+    opacity: 1;
+  }
+
+  /* Contact */
+  .contact {
+    background: #efefef;
+    padding: 100px 20px;
+    text-align: center;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .photos {
+      gap: 30px;
+      margin-top: -120px;
+    }
+
+    .subgallery {
+      width: 160px;
+      height: 160px;
     }
   }
 </style>
 </head>
 <body>
+  <section class="hero">
+    <h1>Saul Zidulka-Bejcek</h1>
+  </section>
 
-<section class="hero">
-  <video autoplay muted loop playsinline>
-    <source src="1757373621.967906.MOV" type="video/mp4">
-  </video>
-  <canvas id="heroCanvas"></canvas>
-  <h1 id="title">SAUL ZIDULKA-BEJCEK</h1>
-  <nav>
-    <a href="#photos">PHOTOS</a>
-    <a href="#drawings">DRAWINGS</a>
-  </nav>
-</section>
+  <section class="about">
+    <p>
+      I’m a photographer exploring natural forms, atmosphere, and the play of light.
+      My work moves between digital and film, capturing what feels both alive and still.
+    </p>
+  </section>
 
-<section class="about" id="about-section">
-  <h2>ABOUT</h2>
-  <p>All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
-</section>
+  <section class="photos">
+    <div class="subgallery" data-label="Light">
+      <img src="https://picsum.photos/id/1015/600/600" alt="Light">
+    </div>
+    <div class="subgallery" data-label="Landscapes">
+      <img src="https://picsum.photos/id/1022/600/600" alt="Landscapes">
+    </div>
+    <div class="subgallery" data-label="Textures">
+      <img src="https://picsum.photos/id/1033/600/600" alt="Textures">
+    </div>
+    <div class="subgallery" data-label="Color">
+      <img src="https://picsum.photos/id/1043/600/600" alt="Color">
+    </div>
+  </section>
 
-<section class="photos" id="photos">
-  <h2>PHOTO COLLECTIONS</h2>
-  <div class="galleries" id="galleries"></div>
-</section>
-
-<section class="contact" id="contact">
-  <h2>CONTACT</h2>
-  <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
-  <p>Instagram: <a href="https://www.instagram.com/saul_5607/" target="_blank">@saul_5607</a></p>
-</section>
+  <section class="contact">
+    <p>Contact: saul.zidulka@example.com</p>
+  </section>
 
 <script>
-document.addEventListener('DOMContentLoaded',()=>{
-  const galleryList=[
-    {name:"Double Exposures",folder:"photos/double exposures",images:["IMG_9495.JPG","IMG_9493.jpg"],page:"doubleexposurecode.html"},
-    {name:"Wildlife",folder:"photos/wildlife",images:["IMG_8491_4.jpg","IMG_8512_1.jpg"],page:"wildlifecode.html"},
-    {name:"Landscapes",folder:"photos/landscapes",images:["DSCN3626.jpg","DSCN3600.jpg"],page:"landscapescode.html"},
-    {name:"Colour",folder:"photos/Colour",images:["col1.jpg"],page:"Colourcode.html"},
-    {name:"Light",folder:"photos/Light",images:["IMG_1776.jpg","DSCN8046.JPG"],page:"Lightcode.html"},
-    {name:"Water",folder:"photos/Water",images:["DSCN3961.jpg","DSCN5492.jpg"],page:"Watercode.html"}
-  ];
+document.addEventListener("DOMContentLoaded", () => {
+  const photosSection = document.querySelector('.photos');
+  const subgalleries = document.querySelectorAll('.subgallery');
+  const movementStrengths = Array.from(subgalleries).map(()=>Math.random()*0.7+0.5);
 
-  const container=document.getElementById('galleries');
-
-  galleryList.forEach(g=>{
-    const link=document.createElement('a');
-    link.className='subgallery';
-    link.href=`${encodeURI(g.folder)}/${encodeURI(g.page)}`;
-
-    const slideshow=document.createElement('div');
-    slideshow.className='slideshow';
-
-    g.images.forEach(src=>{
-      const img=document.createElement('img');
-      img.src=`${encodeURI(g.folder)}/${encodeURI(src)}`;
-      slideshow.appendChild(img);
-    });
-    g.images.forEach(src=>{
-      const img=document.createElement('img');
-      img.src=`${encodeURI(g.folder)}/${encodeURI(src)}`;
-      slideshow.appendChild(img);
-    });
-
-    const title=document.createElement('div');
-    title.className='title';
-    title.textContent=g.name;
-
-    link.appendChild(slideshow);
-    link.appendChild(title);
-    container.appendChild(link);
-
-    if(g.images.length>1){
-      let index=0;
-      const slideWidth=100;
-      const delay=600+Math.random()*2000;
-      const intervalTime=4500+Math.random()*2500;
-      setTimeout(()=>{
-        setInterval(()=>{
-          index++;
-          slideshow.style.transition='transform 1s ease';
-          slideshow.style.transform=`translateX(-${index*slideWidth}%)`;
-          if(index===g.images.length){
-            setTimeout(()=>{
-              slideshow.style.transition='none';
-              slideshow.style.transform='translateX(0%)';
-              index=0;
-            },1000);
-          }
-        },intervalTime);
-      },delay);
-    }
-  });
-
-  /* FOLDER SCROLL MOTION */
-  const photosSection=document.querySelector('.photos');
-  let subgalleries=document.querySelectorAll('.subgallery');
-
-  function getRotationDeg(el){
-    const st=window.getComputedStyle(el).transform||'';
-    if(!st||st==='none')return 0;
-    const m=st.match(/matrix\(([^)]+)\)/);
-    if(!m)return 0;
-    const vals=m[1].split(',').map(parseFloat);
-    return Math.round(Math.atan2(vals[1],vals[0])*(180/Math.PI));
-  }
-  const initialRot=Array.from(subgalleries).map(el=>getRotationDeg(el));
-  const strength=Array.from(subgalleries).map(()=>Math.random()*0.9+0.4);
-  let ticking=false;
-
-  function updateFolders(){
-    const rect=photosSection.getBoundingClientRect();
-    const vh=window.innerHeight;
-    const prog=Math.min(Math.max(0,1-rect.top/vh),1);
+  window.addEventListener('scroll', ()=>{
+    const rect = photosSection.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const progress = Math.min(Math.max(0,1 - rect.top/vh),1);
     subgalleries.forEach((g,i)=>{
-      const rise=prog*strength[i]*600;
-      const rot=initialRot[i]||(i%2?-2:2);
-      g.style.transform=`translateY(${-rise}px) rotate(${rot}deg)`;
+      const rise = progress * movementStrengths[i] * 600;
+      g.style.transform = `translateY(${-rise}px)`;
     });
-    ticking=false;
-  }
-  window.addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(updateFolders);ticking=true;}});
-  updateFolders();
+  });
 });
 </script>
 </body>

@@ -1,71 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Saul Zidulka-Bejcek</title>
 <style>
-html,body{
-  margin:0; padding:0;
-  font-family:Arial, sans-serif;
-  overflow-y:scroll;
-}
-section{
-  position:relative;
-  width:100%;
-  text-align:center;
-  overflow:hidden;
-}
+  /* box sizing + prevent horizontal scroll */
+  *,*::before,*::after{box-sizing:border-box;}
+  html,body{margin:0;padding:0;font-family:Arial, sans-serif;overflow-x:hidden; -webkit-tap-highlight-color: transparent;}
+  body{background:#111;color:#fff;}
 
-/* HERO */
-.hero{ position:relative; color:black; z-index:0; height:100vh; }
-.hero video{
-  position:absolute; top:0; left:0;
-  width:100%; height:100%;
-  object-fit:cover;
-  z-index:-2;
-}
-#heroCanvas{ position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1; }
-nav a{ color:black; font-weight:bold; margin:0 15px; text-decoration:none; }
-nav a:hover{ color:orange; }
+  section{position:relative;width:100%;text-align:center;overflow:hidden;}
 
-/* ABOUT */
-.about{ background:#222; color:white; position:relative; padding:150px 0; }
-#bubbleCanvas{ position:absolute; left:0; top:0; width:100%; height:100%; z-index:0; pointer-events:none; }
-.interactive-word{ display:inline-block; position:relative; }
+  /* HERO */
+  .hero{height:100vh; position:relative; overflow:hidden;}
+  .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;}
+  #heroCanvas{position:absolute;inset:0;pointer-events:none;z-index:1;}
+  h1#title{position:relative;z-index:2;margin:0;padding-top:20vh;font-size:3rem;letter-spacing:2px;color:#fff;}
+  nav{position:relative;z-index:3;margin-top:18px;}
+  nav a{color:#fff;text-decoration:none;font-weight:700;margin:0 12px;}
 
-/* CONTACT */
-.contact{ background:#eee; color:#111; position:relative; padding:150px 0; }
-.contact-overlay{ position:absolute; top:0; left:0; width:100%; height:100%; background:black; pointer-events:none; z-index:2; mask-image:none; -webkit-mask-image:none; }
+  /* ABOUT (no bubbles) */
+  .about{background:#222;padding:80px 18px;color:#fff;}
+  .about h2{margin:0 0 10px;font-size:1.8rem;}
+  .about p{max-width:700px;margin:0 auto;line-height:1.6;}
 
-/* PHOTOS COLLAGE */
-.photos{
-  background:#111; color:white; padding:150px 0 400px; position:relative; overflow:visible;
-}
-.photos h2{ font-size:2.2em; margin-bottom:80px; text-align:center; }
-.galleries{ position:relative; width:100%; max-width:1400px; margin:0 auto; height:1800px; }
-/* Bigger and closer galleries */
-.subgallery{
-  position:absolute;
-  width:400px; height:280px; overflow:hidden;
-  border-radius:18px;
-  text-decoration:none; color:white;
-  box-shadow:0 10px 25px rgba(0,0,0,0.5); opacity:0.95;
-}
-.subgallery:nth-child(1){ top:100px; left:5%; z-index:4; transform:rotate(1deg); }
-.subgallery:nth-child(2){ top:200px; left:35%; z-index:3; transform:rotate(-2deg); }
-.subgallery:nth-child(3){ top:340px; left:60%; z-index:5; transform:rotate(2deg); }
-.subgallery:nth-child(4){ top:520px; left:20%; z-index:4; transform:rotate(-3deg); }
-.subgallery:nth-child(5){ top:680px; left:45%; z-index:3; transform:rotate(1deg); }
-.subgallery:nth-child(6){ top:880px; left:65%; z-index:6; transform:rotate(-1deg); }
+  /* PHOTOS COLLAGE */
+  .photos{background:#111;padding:120px 10px 220px;overflow:visible;}
+  .photos h2{font-size:2rem;margin-bottom:48px;}
+  .galleries{position:relative;width:100%;max-width:1400px;margin:0 auto;height:1600px;overflow:hidden;}
 
-.slideshow{ display:flex; width:100%; height:100%; }
-.slideshow img{ width:100%; height:100%; object-fit:cover; }
-.title{
-  position:absolute; bottom:0; left:0; width:100%;
-  background:rgba(0,0,0,0.6); text-align:center;
-  font-weight:bold; padding:10px 0; font-size:18px;
-}
+  /* ensure no child causes body overflow; responsive width cap */
+  .subgallery{
+    position:absolute;
+    width:min(460px, 42vw);
+    height: calc(min(460px, 42vw) * 0.72);
+    overflow:hidden;
+    border-radius:16px;
+    text-decoration:none;
+    color:white;
+    box-shadow:0 18px 40px rgba(0,0,0,0.55);
+    background:#000;
+    transition:transform 0.35s ease-out;
+    -webkit-backface-visibility:hidden;
+    backface-visibility:hidden;
+  }
+
+  /* scattered / layered positions (desktop) */
+  .subgallery:nth-child(1){ top:80px; left:6%; z-index:6; transform:rotate(1deg); }
+  .subgallery:nth-child(2){ top:210px; left:34%; z-index:4; transform:rotate(-2deg); }
+  .subgallery:nth-child(3){ top:340px; left:62%; z-index:7; transform:rotate(2deg); }
+  .subgallery:nth-child(4){ top:520px; left:18%; z-index:5; transform:rotate(-3deg); }
+  .subgallery:nth-child(5){ top:700px; left:46%; z-index:3; transform:rotate(1deg); }
+  .subgallery:nth-child(6){ top:920px; left:66%; z-index:8; transform:rotate(-1deg); }
+
+  .slideshow{display:flex;width:100%;height:100%;will-change:transform;}
+  .slideshow img{flex:0 0 100%;display:block;width:100%;height:100%;object-fit:cover;}
+
+  .title{
+    position:absolute; bottom:0; left:0; width:100%;
+    background:rgba(0,0,0,0.55); padding:10px 6px; font-weight:700; font-size:1rem; text-align:center;
+  }
+
+  /* CONTACT */
+  .contact{background:#eee;color:#111;padding:100px 18px;}
+  .contact a{color:#111;text-decoration:none;}
+
+  /* Mobile: stack galleries (no absolute overflow); larger thumbs, no side scroll */
+  @media (max-width: 768px){
+    h1#title{font-size:2rem;padding-top:14vh;}
+    .photos{padding:80px 10px 160px;}
+    .galleries{height:auto;padding-bottom:40px;display:flex;flex-direction:column;align-items:center;}
+    .subgallery{
+      position:relative!important;
+      left:auto!important;
+      top:auto!important;
+      width:90vw;
+      height:calc(90vw * 0.66);
+      margin:18px 0;
+      transform:none!important;
+      z-index:unset!important;
+    }
+    nav a{margin:0 8px;}
+  }
 </style>
 </head>
 <body>
@@ -75,19 +92,18 @@ nav a:hover{ color:orange; }
   <video autoplay muted loop playsinline>
     <source src="1757373621.967906.MOV" type="video/mp4">
   </video>
-  <canvas id="heroCanvas"></canvas>
-  <h1 class="interactive-word" id="title">SAUL ZIDULKA-BEJCEK</h1>
+  <canvas id="heroCanvas" aria-hidden="true"></canvas>
+  <h1 id="title">SAUL ZIDULKA-BEJCEK</h1>
   <nav>
-    <a href="#photos" class="interactive-word" id="photos-link">PHOTOS</a>
-    <a href="#drawings" class="interactive-word" id="drawings">DRAWINGS</a>
+    <a href="#photos">PHOTOS</a>
+    <a href="#drawings">DRAWINGS</a>
   </nav>
 </section>
 
-<!-- ABOUT -->
+<!-- ABOUT (no bubbles) -->
 <section class="about" id="about-section">
-  <h2 class="interactive-word">ABOUT</h2>
-  <p class="interactive-word">All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
-  <canvas id="bubbleCanvas" aria-hidden="true"></canvas>
+  <h2>ABOUT</h2>
+  <p>All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
 </section>
 
 <!-- PHOTOS COLLAGE -->
@@ -97,107 +113,144 @@ nav a:hover{ color:orange; }
 </section>
 
 <!-- CONTACT -->
-<section class="contact">
-  <h2 class="interactive-word">CONTACT</h2>
+<section class="contact" id="contact">
+  <h2>CONTACT</h2>
   <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
   <p>Instagram: <a href="https://www.instagram.com/saul_5607/" target="_blank">@saul_5607</a></p>
-  <div class="contact-overlay"></div>
 </section>
 
 <script>
 document.addEventListener('DOMContentLoaded', ()=>{
 
-/* ---------- PHOTOS COLLAGE ---------- */
-const galleryList = [
-  { name:"Double Exposures", folder:"photos/double exposures", images:["IMG_9495.JPG","IMG_9493.jpg","IMG_9495.JPG"], page:"doubleexposurecode.html" },
-  { name:"Wildlife", folder:"photos/wildlife", images:["IMG_8491_4.jpg","IMG_8512_1.jpg","RAW's Jul-Aug478 copy 2.jpg"], page:"wildlifecode.html" },
-  { name:"Landscapes", folder:"photos/landscapes", images:["DSCN3626.jpg","DSCN3600.jpg","DSCN3626.jpg"], page:"landscapescode.html" },
-  { name:"Colour", folder:"photos/Colour", images:["col1.jpg"], page:"Colourcode.html" },
-  { name:"Light", folder:"photos/Light", images:["IMG_1776.jpg","DSCN7048.JPG","DSCN8046.JPG"], page:"Lightcode.html" },
-  { name:"Water", folder:"photos/Water", images:["DSCN3961.jpg","DSCN5492.jpg","waterfromferry2.jpg"], page:"Watercode.html" }
-];
+  /* ---------- GALLERIES DATA ---------- */
+  const galleryList = [
+    { name:"Double Exposures", folder:"photos/double exposures", images:["IMG_9495.JPG","IMG_9493.jpg"], page:"doubleexposurecode.html" },
+    { name:"Wildlife", folder:"photos/wildlife", images:["IMG_8491_4.jpg","IMG_8512_1.jpg"], page:"wildlifecode.html" },
+    { name:"Landscapes", folder:"photos/landscapes", images:["DSCN3626.jpg","DSCN3600.jpg"], page:"landscapescode.html" },
+    { name:"Colour", folder:"photos/Colour", images:["col1.jpg"], page:"Colourcode.html" },
+    { name:"Light", folder:"photos/Light", images:["IMG_1776.jpg","DSCN8046.JPG"], page:"Lightcode.html" },
+    { name:"Water", folder:"photos/Water", images:["DSCN3961.jpg","DSCN5492.jpg"], page:"Watercode.html" }
+  ];
 
-const container = document.getElementById('galleries');
-galleryList.forEach(g=>{
-  const link=document.createElement('a'); link.href=`${g.folder}/${g.page}`; link.className='subgallery';
-  const slideshow=document.createElement('div'); slideshow.className='slideshow';
-  g.images.forEach(img=>{
-    const im=document.createElement('img'); im.src=`${g.folder}/${img}`; slideshow.appendChild(im);
-  });
-  const title=document.createElement('div'); title.className='title'; title.textContent=g.name;
-  link.appendChild(slideshow); link.appendChild(title);
-  container.appendChild(link);
-});
+  const container = document.getElementById('galleries');
 
-/* ---------- SCROLL-BASED RISE/FALL ---------- */
-const photosSection = document.querySelector('.photos');
-const subgalleries = document.querySelectorAll('.subgallery');
-const movementStrengths = Array.from(subgalleries).map(()=>Math.random()*0.8+0.6);
+  /* Create subgallery elements, set up slideshow structure.
+     We create two copies of the images (append twice) so the sliding can loop seamlessly.
+  */
+  galleryList.forEach((g, idx) => {
+    const link = document.createElement('a');
+    link.className = 'subgallery';
+    link.href = `${encodeURI(g.folder)}/${encodeURI(g.page)}`;
 
-window.addEventListener('scroll', ()=>{
-  const rect = photosSection.getBoundingClientRect();
-  const vh = window.innerHeight;
-  const progress = Math.min(Math.max(0,1-rect.top/vh),1);
-  subgalleries.forEach((g,i)=>{
-    const rise = progress * movementStrengths[i] * 600; // higher rise
-    g.style.transform = `translateY(${-rise}px)`;
-  });
-});
+    const slideshow = document.createElement('div');
+    slideshow.className = 'slideshow';
 
-/* ---------- ABOUT BUBBLES ---------- */
-const aboutSection = document.getElementById('about-section');
-const bubbleCanvas = document.getElementById('bubbleCanvas');
-const ctx = bubbleCanvas.getContext('2d');
-let viewW=0, viewH=0, dpr=window.devicePixelRatio||1;
-
-function resizeCanvas(){
-  const rect = aboutSection.getBoundingClientRect();
-  const w = Math.max(100, Math.floor(rect.width));
-  const h = Math.max(100, Math.floor(rect.height));
-  viewW = w; viewH = h;
-  bubbleCanvas.style.width = w+'px';
-  bubbleCanvas.style.height = h+'px';
-  bubbleCanvas.width = Math.floor(w*dpr);
-  bubbleCanvas.height = Math.floor(h*dpr);
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-}
-window.addEventListener('resize',()=>setTimeout(resizeCanvas,0));
-resizeCanvas();
-
-const NUM_BUBBLES = 40;
-const bubbles = [];
-function initBubbles(){
-  bubbles.length = 0;
-  for(let i=0;i<NUM_BUBBLES;i++){
-    const hue = Math.random()*60+180;
-    bubbles.push({
-      x: Math.random()*viewW,
-      y: Math.random()*viewH,
-      vx: (Math.random()-0.5)*0.2,
-      vy: (Math.random()-0.5)*0.2 -0.2,
-      size: Math.random()*18+10,
-      color: `hsla(${hue},70%,50%,${Math.random()*0.4 +0.18})`
+    // append each image twice for seamless reset
+    g.images.forEach(src => {
+      const img = document.createElement('img');
+      img.src = `${encodeURI(g.folder)}/${encodeURI(src)}`;
+      img.alt = g.name + ' image';
+      slideshow.appendChild(img);
     });
-  }
-}
-initBubbles();
+    g.images.forEach(src => {
+      const img = document.createElement('img');
+      img.src = `${encodeURI(g.folder)}/${encodeURI(src)}`;
+      img.alt = g.name + ' image';
+      slideshow.appendChild(img);
+    });
 
-function updateBubbles(){
-  if(viewW===0||viewH===0){ requestAnimationFrame(updateBubbles); return; }
-  ctx.clearRect(0,0,viewW,viewH);
-  for(const b of bubbles){
-    b.x+=b.vx; b.y+=b.vy;
-    if(b.y+b.size<0)b.y=viewH+b.size;
-    if(b.y-b.size>viewH)b.y=-b.size;
-    if(b.x-b.size<0){ b.x=b.size; b.vx*=-0.45; }
-    if(b.x+b.size>viewW){ b.x=viewW-b.size; b.vx*=-0.45; }
-    b.vx*=0.95; b.vy*=0.95;
-    ctx.beginPath(); ctx.arc(b.x,b.y,b.size,0,Math.PI*2);
-    ctx.fillStyle=b.color; ctx.fill();
+    const title = document.createElement('div');
+    title.className = 'title';
+    title.textContent = g.name;
+
+    link.appendChild(slideshow);
+    link.appendChild(title);
+    container.appendChild(link);
+
+    // slideshow animation (if more than 1 slide)
+    const slideCount = g.images.length;
+    if(slideCount > 1){
+      let index = 0;
+      const slideWidthPercent = 100;
+      const staggerDelay = 500 + Math.random() * 2500;
+      const slideInterval = 4500 + Math.random()*3000;
+
+      // give a small timeout to let layout settle on mobile/desktop
+      setTimeout(()=>{
+        const interval = setInterval(()=>{
+          index++;
+          slideshow.style.transition = 'transform 1s ease';
+          slideshow.style.transform = `translateX(-${index * slideWidthPercent}%)`;
+
+          if(index === slideCount){
+            // reset instantly to start (because we duplicated images)
+            setTimeout(()=>{
+              slideshow.style.transition = 'none';
+              slideshow.style.transform = 'translateX(0%)';
+              index = 0;
+            }, 1000);
+          }
+        }, slideInterval);
+        // store interval reference in DOM if you want to clear later:
+        slideshow._interval = interval;
+      }, staggerDelay);
+    }
+  });
+
+  /* ---------- FOLDER SCROLL MOTION ---------- */
+  const photosSection = document.querySelector('.photos');
+  let subgalleries = document.querySelectorAll('.subgallery');
+
+  // gather initial rotation for each element (from computed style) so we preserve rotation
+  function getRotationDeg(el){
+    const st = window.getComputedStyle(el).transform || '';
+    if(!st || st === 'none') return 0;
+    // matrix(a, b, c, d, tx, ty)
+    const values = st.match(/matrix\(([^)]+)\)/);
+    if(!values) return 0;
+    const nums = values[1].split(',').map(n=>parseFloat(n));
+    const a = nums[0], b = nums[1];
+    const angle = Math.round(Math.atan2(b,a) * (180/Math.PI));
+    return angle;
   }
-  requestAnimationFrame(updateBubbles);
-}
-updateBubbles();
+
+  // after DOM created, compute initial rotations
+  const initialRotations = Array.from(subgalleries).map(el => getRotationDeg(el));
+
+  // movement strengths (randomized)
+  const movementStrengths = Array.from(subgalleries).map(()=> (Math.random()*0.9+0.4) );
+
+  // use rAF for a smooth, throttled update
+  let ticking = false;
+  function updateFolders(){
+    const rect = photosSection.getBoundingClientRect();
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    const progress = Math.min(Math.max(0, 1 - rect.top / vh), 1);
+
+    subgalleries.forEach((g,i)=>{
+      const rise = progress * movementStrengths[i] * 600; // tweak multiplier for amount
+      const rot = initialRotations[i] || (i%2? -2:2);
+      // ensure we don't override inline transform from slides - we only set translateY+rotate
+      g.style.transform = `translateY(${-rise}px) rotate(${rot}deg)`;
+    });
+    ticking = false;
+  }
+  window.addEventListener('scroll', ()=>{ if(!ticking){ requestAnimationFrame(updateFolders); ticking=true; }});
+  // call once to set initial positions
+  updateFolders();
+
+  // recalc on resize/orientationchange
+  window.addEventListener('resize', ()=>{
+    // recalc initial rotations and subgalleries NodeList (in case of DOM changes)
+    subgalleries = document.querySelectorAll('.subgallery');
+    // recompute initial rotations
+    initialRotations.length = 0;
+    Array.from(subgalleries).forEach(el => initialRotations.push(getRotationDeg(el)));
+    // recompute movement strengths (keep existing array length)
+    movementStrengths.length = 0;
+    Array.from(subgalleries).forEach(()=> movementStrengths.push((Math.random()*0.9+0.4)));
+    updateFolders();
+  });
 
 });
 </script>

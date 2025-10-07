@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Saul Zidulka-Bejcek</title>
 <style>
-  /* box sizing + prevent horizontal scroll */
   *,*::before,*::after{box-sizing:border-box;}
   html,body{margin:0;padding:0;font-family:Arial, sans-serif;overflow-x:hidden; -webkit-tap-highlight-color: transparent;}
   body{background:#111;color:#fff;}
@@ -69,6 +68,14 @@
     pointer-events:none;
     transition:opacity 0.3s ease;
   }
+
+  /* scattered / layered positions (desktop) */
+  .subgallery:nth-child(1){ top:80px; left:6%; transform:rotate(1deg); }
+  .subgallery:nth-child(2){ top:210px; left:34%; transform:rotate(-2deg); }
+  .subgallery:nth-child(3){ top:340px; left:62%; transform:rotate(2deg); }
+  .subgallery:nth-child(4){ top:520px; left:18%; transform:rotate(-3deg); }
+  .subgallery:nth-child(5){ top:700px; left:46%; transform:rotate(1deg); }
+  .subgallery:nth-child(6){ top:920px; left:66%; transform:rotate(-1deg); }
 
   /* CONTACT */
   .contact{background:#eee;color:#111;padding:100px 18px;}
@@ -143,7 +150,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   const container = document.getElementById('galleries');
 
-  /* Create subgallery elements */
   galleryList.forEach((g) => {
     const link = document.createElement('a');
     link.className = 'subgallery';
@@ -173,7 +179,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     link.appendChild(title);
     container.appendChild(link);
 
-    // slideshow animation
     if(g.images.length>1){
       let index = 0;
       const slideWidthPercent = 100;
@@ -201,7 +206,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const photosSection = document.querySelector('.photos');
   let subgalleries = document.querySelectorAll('.subgallery');
 
-  // gather initial rotation for each element
   function getRotationDeg(el){
     const st = window.getComputedStyle(el).transform || '';
     if(!st || st==='none') return 0;

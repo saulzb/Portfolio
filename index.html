@@ -18,7 +18,7 @@
   /* HERO HEADER POSITION */
   .hero h1#title {
     position: absolute;
-    top: 40vh;
+    top: 36vh;
     left: 50px;
     text-align: left;
     font-size: 3rem;
@@ -256,7 +256,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
     });
     ticking=false;
   }
-window.addEventListener('scroll', () => {
+// smoother scroll handling
+let ticking = false;
+function onScroll() {
   if (!ticking) {
     ticking = true;
     requestAnimationFrame(() => {
@@ -264,8 +266,15 @@ window.addEventListener('scroll', () => {
       ticking = false;
     });
   }
-});
+}
+window.addEventListener('scroll', onScroll, { passive: true });
+
+// force a layout + scroll update after initial load
+requestAnimationFrame(() => {
   updateFolders();
+});
+setTimeout(updateFolders, 300);
+
 
   window.addEventListener('resize', ()=>{
     subgalleries = document.querySelectorAll('.subgallery');

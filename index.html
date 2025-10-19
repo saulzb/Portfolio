@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Saul Zidulka-Bejcek</title>
 <style>
+ html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; /* enables inertial scroll on trackpads and touch */
+}
   *,*::before,*::after{box-sizing:border-box;}
   html,body{margin:0;padding:0;font-family:Arial, sans-serif;overflow-x:hidden; -webkit-tap-highlight-color: transparent;}
   body{background:#111;color:#0a0a0a;}
@@ -14,7 +18,7 @@
   /* HERO HEADER POSITION */
   .hero h1#title {
     position: absolute;
-    top: 23vh;
+    top: 40vh;
     left: 50px;
     text-align: left;
     font-size: 3rem;
@@ -252,7 +256,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
     });
     ticking=false;
   }
-  window.addEventListener('scroll', ()=>{if(!ticking){requestAnimationFrame(updateFolders);ticking=true;}});
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    ticking = true;
+    requestAnimationFrame(() => {
+      updateFolders();
+      ticking = false;
+    });
+  }
+});
   updateFolders();
 
   window.addEventListener('resize', ()=>{

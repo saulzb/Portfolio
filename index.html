@@ -7,124 +7,141 @@
 <style>
  html {
   scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch; /* enables inertial scroll on trackpads and touch */
+  -webkit-overflow-scrolling: touch;
 }
-  *,*::before,*::after{box-sizing:border-box;}
-  html,body{margin:0;padding:0;font-family:Arial, sans-serif;overflow-x:hidden; -webkit-tap-highlight-color: transparent;}
-  body{background:#111;color:#0a0a0a;}
+ *,*::before,*::after{box-sizing:border-box;}
+ html,body{margin:0;padding:0;font-family:Arial, sans-serif;overflow-x:hidden;-webkit-tap-highlight-color: transparent;}
+ body{background:#111;color:#0a0a0a;}
 
-  section{position:relative;width:100%;text-align:center;overflow:hidden;}
+ section{position:relative;width:100%;text-align:center;overflow:hidden;}
 
-  /* HERO HEADER POSITION */
-  .hero h1#title {
-    position: absolute;
-    top: 36vh;
-    left: 50px;
-    text-align: left;
-    font-size: 3rem;
-    color: #d0d6d6;
-    z-index: 2;
-  }
+ /* HERO HEADER POSITION */
+ .hero h1#title {
+   position: absolute;
+   top: 36vh;
+   left: 50px;
+   text-align: left;
+   font-size: 3rem;
+   color: #d0d6d6;
+   z-index: 2;
+ }
 
-  /* HERO */
-  .hero{height:100vh; position:relative; overflow:hidden;}
-  .hero img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:-2;}
-  #heroCanvas{position:absolute;inset:0;pointer-events:none;z-index:1;}
-  nav{position:relative;z-index:3;margin-top:18px;}
-  nav a{color:#d0d6d6;text-decoration:none;font-weight:700;margin:0 12px;}
+ /* HERO */
+ .hero{height:100vh; position:relative; overflow:hidden;}
+ .hero img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:-2;}
+ #heroCanvas{position:absolute;inset:0;pointer-events:none;z-index:1;}
+ nav{position:relative;z-index:3;margin-top:18px;}
+ nav a{color:#d0d6d6;text-decoration:none;font-weight:700;margin:0 12px;}
 
-  /* ABOUT */
-  .about{background:#222;padding:80px 18px;color:#d0d6d6;z-index:1; position:relative;}
-  .about h2{margin:0 0 10px;font-size:1.8rem;}
-  .about p{max-width:700px;margin:0 auto;line-height:1.6;}
+ /* PHOTOS COLLAGE */
+ .photos{
+   background: url('IMG_1964.jpg') no-repeat center center fixed;
+   background-size: cover;
+   padding:120px 10px 220px;
+   overflow:visible;
+   position:relative;
+ }
+ .photos::before {
+   content: "";
+   position: absolute;
+   inset: 0;
+   background: rgba(0,0,0,0.45); /* overlay for readability */
+   z-index: 0;
+ }
+ .photos h2{
+   font-size:2rem;
+   margin-bottom:48px;
+   position:relative;
+   z-index:1;
+ }
+ .galleries{
+   position:relative;
+   width:100%;
+   max-width:1400px;
+   margin:0 auto;
+   height:600px;
+   overflow:visible;
+   z-index:1;
+ }
 
-  /* PHOTOS COLLAGE */
-  .photos{background:#000000;padding:120px 10px 220px;overflow:visible; position:relative;}
-  .photos h2{font-size:2rem;margin-bottom:48px; position:relative; z-index:1;}
-  .galleries{position:relative;width:100%;max-width:1400px;margin:0 auto;height:600px;overflow:visible;}
+ /* subgallery styling */
+ .subgallery{
+   position:absolute;
+   width:min(460px, 42vw);
+   height: calc(min(460px, 42vw) * 0.72);
+   overflow:hidden;
+   border-radius:16px;
+   text-decoration:none;
+   color:white;
+   box-shadow:0 18px 40px rgba(0,0,0,0.55);
+   background:#000;
+   transition: transform 0.35s ease-out;
+   -webkit-backface-visibility:hidden;
+   backface-visibility:hidden;
+   z-index:9999;
+ }
+ .subgallery:hover .title{opacity:1;}
 
-  /* subgallery styling */
-  .subgallery{
-    position:absolute;
-    width:min(460px, 42vw);
-    height: calc(min(460px, 42vw) * 0.72);
-    overflow:hidden;
-    border-radius:16px;
-    text-decoration:none;
-    color:white;
-    box-shadow:0 18px 40px rgba(0,0,0,0.55);
-    background:#000;
-    transition: transform 0.35s ease-out;
-    -webkit-backface-visibility:hidden;
-    backface-visibility:hidden;
-    z-index:9999; /* always on top */
-  }
+ .slideshow{display:flex;width:100%;height:100%;will-change:transform;}
+ .slideshow img{flex:0 0 100%;display:block;width:100%;height:100%;object-fit:cover;}
 
-  .subgallery:hover .title{
-    opacity:1;
-  }
+ .title{
+   position:absolute;
+   top:50%;
+   left:50%;
+   transform:translate(-50%,-50%);
+   background:rgba(0,0,0,0.55);
+   padding:10px 16px;
+   font-weight:700;
+   font-size:1rem;
+   text-align:center;
+   opacity:0;
+   pointer-events:none;
+   transition:opacity 0.3s ease;
+ }
 
-  .slideshow{display:flex;width:100%;height:100%;will-change:transform;}
-  .slideshow img{flex:0 0 100%;display:block;width:100%;height:100%;object-fit:cover;}
+ /* scattered / layered positions (desktop) */
+ .subgallery:nth-child(1){ top:80px; left:6%; transform:rotate(1deg); }
+ .subgallery:nth-child(2){ top:210px; left:34%; transform:rotate(-2deg); }
+ .subgallery:nth-child(3){ top:340px; left:62%; transform:rotate(2deg); }
+ .subgallery:nth-child(4){ top:520px; left:18%; transform:rotate(-3deg); }
+ .subgallery:nth-child(5){ top:700px; left:46%; transform:rotate(1deg); }
+ .subgallery:nth-child(6){ top:920px; left:66%; transform:rotate(-1deg); }
 
-  /* hide titles until hover, center */
-  .title{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    background:rgba(0,0,0,0.55);
-    padding:10px 16px;
-    font-weight:700;
-    font-size:1rem;
-    text-align:center;
-    opacity:0;
-    pointer-events:none;
-    transition:opacity 0.3s ease;
-  }
+ /* CONTACT */
+ .contact{background:#222;color:#111;padding:100px 18px;}
+ .contact a{color:#808080;text-decoration:none;}
 
-  /* scattered / layered positions (desktop) */
-  .subgallery:nth-child(1){ top:80px; left:6%; transform:rotate(1deg); }
-  .subgallery:nth-child(2){ top:210px; left:34%; transform:rotate(-2deg); }
-  .subgallery:nth-child(3){ top:340px; left:62%; transform:rotate(2deg); }
-  .subgallery:nth-child(4){ top:520px; left:18%; transform:rotate(-3deg); }
-  .subgallery:nth-child(5){ top:700px; left:46%; transform:rotate(1deg); }
-  .subgallery:nth-child(6){ top:920px; left:66%; transform:rotate(-1deg); }
+ /* MOBILE */
+ @media (max-width: 768px){
+   h1#title{font-size:2rem;padding-top:14vh;}
+   .photos{padding:80px 10px 160px;}
+   .galleries{height:auto;padding-bottom:40px;display:flex;flex-direction:column;align-items:center;}
+   .subgallery{
+     position:relative!important;
+     left:auto!important;
+     top:auto!important;
+     width:90vw;
+     height:calc(90vw * 0.66);
+     margin:18px 0;
+     transform:none!important;
+     z-index:unset!important;
+   }
+   nav a{margin:0 8px;}
+   .title{opacity:1; top:auto; left:auto; transform:none;}
+ }
 
-  /* CONTACT */
-  .contact{background:#222;color:#111;padding:100px 18px;}
-  .contact a{color:#808080;text-decoration:none;}
-
-  /* MOBILE */
-  @media (max-width: 768px){
-    h1#title{font-size:2rem;padding-top:14vh;}
-    .photos{padding:80px 10px 160px;}
-    .galleries{height:auto;padding-bottom:40px;display:flex;flex-direction:column;align-items:center;}
-    .subgallery{
-      position:relative!important;
-      left:auto!important;
-      top:auto!important;
-      width:90vw;
-      height:calc(90vw * 0.66);
-      margin:18px 0;
-      transform:none!important;
-      z-index:unset!important;
-    }
-    nav a{margin:0 8px;}
-    .title{opacity:1; top:auto; left:auto; transform:none;}
-  }
-
-  /* ---------- GRAINY TEXT EFFECT ---------- */
-  h1, h2, p, nav a {
-    color: #d0d6d6;
-    position: relative;
-    text-shadow:
-      0 0 1px rgba(255,255,255,0.05),
-      1px 1px 1px rgba(255,255,255,0.03),
-      -1px -1px 1px rgba(255,255,255,0.03),
-      2px -1px 1px rgba(255,255,255,0.02),
-      -2px 2px 1px rgba(255,255,255,0.02);
-  }
+ /* GRAINY TEXT EFFECT */
+ h1, h2, p, nav a {
+   color: #d0d6d6;
+   position: relative;
+   text-shadow:
+     0 0 1px rgba(255,255,255,0.05),
+     1px 1px 1px rgba(255,255,255,0.03),
+     -1px -1px 1px rgba(255,255,255,0.03),
+     2px -1px 1px rgba(255,255,255,0.02),
+     -2px 2px 1px rgba(255,255,255,0.02);
+ }
 </style>
 </head>
 <body>
@@ -137,12 +154,6 @@
     <a href="#photos">PHOTOS</a>
     <a href="#drawings">DRAWINGS</a>
   </nav>
-</section>
-
-<!-- ABOUT -->
-<section class="about" id="about-section">
-  <h2>ABOUT</h2>
-  <p>All art by Saul Zidulka-Bejcek. Based in the Pacific Northwest.</p>
 </section>
 
 <!-- PHOTOS COLLAGE -->
@@ -161,7 +172,6 @@
 <script>
 document.addEventListener('DOMContentLoaded', ()=>{
 
-  /* ---------- GALLERIES DATA ---------- */
   const galleryList = [
     { name:"Double Exposures", folder:"photos/double exposures", images:["IMG_9495.JPG","IMG_9493.jpg"], page:"doubleexposurecode.html" },
     { name:"Wildlife", folder:"photos/wildlife", images:["IMG_8491_4.jpg","IMG_8512_1.jpg"], page:"wildlifecode.html" },
@@ -225,7 +235,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
   });
 
-  /* ---------- FOLDER SCROLL MOTION ---------- */
   const photosSection = document.querySelector('.photos');
   let subgalleries = document.querySelectorAll('.subgallery');
 
@@ -242,38 +251,30 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const initialRotations = Array.from(subgalleries).map(el => getRotationDeg(el));
   const movementStrengths = Array.from(subgalleries).map(()=> (Math.random()*0.9+0.4) );
 
-  let ticking = false;
   function updateFolders(){
     const rect = photosSection.getBoundingClientRect();
     const vh = window.innerHeight || document.documentElement.clientHeight;
     const progress = Math.min(Math.max(0,1-rect.top/vh),1);
-
     subgalleries.forEach((g,i)=>{
       const rise = progress * movementStrengths[i] * 600;
       const rot = initialRotations[i] || (i%2? -2:2);
       g.style.transform = `translateY(${-rise}px) rotate(${rot}deg)`;
     });
-    ticking=false;
   }
-// smoother scroll handling
-let ticking = false;
-function onScroll() {
-  if (!ticking) {
-    ticking = true;
-    requestAnimationFrame(() => {
-      updateFolders();
-      ticking = false;
-    });
+
+  let ticking = false;
+  function onScroll() {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(() => {
+        updateFolders();
+        ticking = false;
+      });
+    }
   }
-}
-window.addEventListener('scroll', onScroll, { passive: true });
-
-// force a layout + scroll update after initial load
-requestAnimationFrame(() => {
-  updateFolders();
-});
-setTimeout(updateFolders, 300);
-
+  window.addEventListener('scroll', onScroll, { passive: true });
+  requestAnimationFrame(updateFolders);
+  setTimeout(updateFolders, 300);
 
   window.addEventListener('resize', ()=>{
     subgalleries = document.querySelectorAll('.subgallery');

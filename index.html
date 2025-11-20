@@ -4,154 +4,170 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Saul Zidulka-Bejcek</title>
+
 <style>
- html {
+html {
   scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
 }
- *,*::before,*::after{box-sizing:border-box;}
- html,body{margin:0;padding:0;font-family:Arial, sans-serif;overflow-x:hidden;-webkit-tap-highlight-color: transparent;}
- body{background:#111;color:#0a0a0a;}
 
- section{position:relative;width:100%;text-align:center;overflow:hidden;}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{margin:0;padding:0;font-family:Arial, sans-serif;overflow-x:hidden;-webkit-tap-highlight-color: transparent;}
+body{background:#111;color:#0a0a0a;}
 
- /* HERO HEADER POSITION */
- .hero h1#title {
-   position: absolute;
-   top: 36vh;
-   left: 50px;
-   text-align: left;
-   font-size: 3rem;
-   color: #d0d6d6;
-   z-index: 2;
- }
+section{position:relative;width:100%;text-align:center;overflow:hidden;}
 
- /* HERO */
- .hero{height:100vh; position:relative; overflow:hidden;}
- .hero img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:-2;}
- #heroCanvas{position:absolute;inset:0;pointer-events:none;z-index:1;}
- nav{position:relative;z-index:3;margin-top:18px;}
- nav a{color:#d0d6d6;text-decoration:none;font-weight:700;margin:0 12px;}
+/* HERO */
+.hero{height:100vh; position:relative; overflow:hidden;}
+.hero img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:-2;}
+#heroCanvas{position:absolute;inset:0;pointer-events:none;z-index:1;}
 
- /* PHOTOS COLLAGE */
- .photos{
-   background: url('IMG_1964.jpg') no-repeat center center fixed;
-   background-size: cover;
-   padding:120px 10px 220px;
-   overflow:visible;
-   position:relative;
- }
- .photos::before {
-   content: "";
-   position: absolute;
-   inset: 0;
-   background: rgba(0,0,0,0.45); /* overlay for readability */
-   z-index: 0;
- }
- .photos h2{
-   font-size:2rem;
-   margin-bottom:48px;
-   position:relative;
-   z-index:1;
- }
- .galleries{
-   position:relative;
-   width:100%;
-   max-width:1400px;
-   margin:0 auto;
-   height:600px;
-   overflow:visible;
-   z-index:1;
- }
+.hero h1#title {
+  position:absolute;
+  top:36vh;
+  left:50px;
+  text-align:left;
+  font-size:3rem;
+  color:#d0d6d6;
+  z-index:2;
+}
 
- /* subgallery styling */
- .subgallery{
-   position:absolute;
-   width:min(460px, 42vw);
-   height: calc(min(460px, 42vw) * 0.72);
-   overflow:hidden;
-   border-radius:16px;
-   text-decoration:none;
-   color:white;
-   box-shadow:0 18px 40px rgba(0,0,0,0.55);
-   background:#000;
-   transition: transform 0.35s ease-out;
-   -webkit-backface-visibility:hidden;
-   backface-visibility:hidden;
-   z-index:9999;
- }
- .subgallery:hover .title{opacity:1;}
+nav{position:relative;z-index:3;margin-top:18px;}
+nav a{color:#d0d6d6;text-decoration:none;font-weight:700;margin:0 12px;}
 
- .slideshow{display:flex;width:100%;height:100%;will-change:transform;}
- .slideshow img{flex:0 0 100%;display:block;width:100%;height:100%;object-fit:cover;}
+/* PHOTOS COLLAGE */
+.photos {
+  background:url('IMG_1964.jpg') no-repeat center center fixed;
+  background-size:cover;
+  padding:120px 10px 220px;
+  position:relative;
+}
 
- .title{
-   position:absolute;
-   top:50%;
-   left:50%;
-   transform:translate(-50%,-50%);
-   background:rgba(0,0,0,0.55);
-   padding:10px 16px;
-   font-weight:700;
-   font-size:1rem;
-   text-align:center;
-   opacity:0;
-   pointer-events:none;
-   transition:opacity 0.3s ease;
- }
+.photos::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+  z-index:0;
+}
 
- /* scattered / layered positions (desktop) */
- .subgallery:nth-child(1){ top:80px; left:6%; transform:rotate(1deg); }
- .subgallery:nth-child(2){ top:210px; left:34%; transform:rotate(-2deg); }
- .subgallery:nth-child(3){ top:340px; left:62%; transform:rotate(2deg); }
- .subgallery:nth-child(4){ top:520px; left:18%; transform:rotate(-3deg); }
- .subgallery:nth-child(5){ top:700px; left:46%; transform:rotate(1deg); }
- .subgallery:nth-child(6){ top:920px; left:66%; transform:rotate(-1deg); }
+.photos h2 {
+  font-size:2rem;
+  margin-bottom:48px;
+  position:relative;
+  z-index:1;
+}
 
- /* CONTACT */
- .contact{background:#222;color:#111;padding:100px 18px;}
- .contact a{color:#808080;text-decoration:none;}
+.galleries{
+  width:100%;
+  max-width:1400px;
+  margin:0 auto;
+  height:900px;
+  position:relative;
+  z-index:1;
+}
 
- /* MOBILE */
- @media (max-width: 768px){
-   h1#title{font-size:2rem;padding-top:14vh;}
-   .photos{padding:80px 10px 160px;}
-   .galleries{height:auto;padding-bottom:40px;display:flex;flex-direction:column;align-items:center;}
-   .subgallery{
-     position:relative!important;
-     left:auto!important;
-     top:auto!important;
-     width:90vw;
-     height:calc(90vw * 0.66);
-     margin:18px 0;
-     transform:none!important;
-     z-index:unset!important;
-   }
-   nav a{margin:0 8px;}
-   .title{opacity:1; top:auto; left:auto; transform:none;}
- }
- }
+/* Subgallery card */
+.subgallery {
+  position:absolute;
+  width:min(460px,42vw);
+  height:calc(min(460px,42vw)*0.72);
+  border-radius:16px;
+  overflow:hidden;
+  text-decoration:none;
+  color:white;
+  background:#000;
+  box-shadow:0 18px 40px rgba(0,0,0,0.55);
+  z-index:5;
+  
+  /* GPU acceleration */
+  will-change:transform;
+  transform:translateZ(0);
+}
+
+/* scrolling motion layer */
+.motion {
+  width:100%;
+  height:100%;
+  will-change:transform;
+  transform:translateZ(0);
+}
+
+/* slideshow */
+.slideshow {display:flex;width:100%;height:100%;overflow:hidden;}
+.slideshow img {
+  flex:0 0 100%;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* title overlay */
+.title {
+  position:absolute;
+  inset:50% auto auto 50%;
+  transform:translate(-50%,-50%);
+  background:rgba(0,0,0,0.55);
+  padding:10px16px;
+  font-weight:700;
+  opacity:0;
+  transition:opacity .3s;
+}
+.subgallery:hover .title {opacity:1;}
+
+/* scattered positions desktop */
+.subgallery:nth-child(1){ top:80px; left:6%; rotate:1deg; }
+.subgallery:nth-child(2){ top:240px; left:34%; rotate:-2deg; }
+.subgallery:nth-child(3){ top:400px; left:62%; rotate:2deg; }
+.subgallery:nth-child(4){ top:600px; left:18%; rotate:-3deg; }
+.subgallery:nth-child(5){ top:780px; left:46%; rotate:1deg; }
+.subgallery:nth-child(6){ top:960px; left:66%; rotate:-1deg; }
+
+/* CONTACT */
+.contact{background:#222;color:#111;padding:100px 18px;}
+.contact a{color:#808080;text-decoration:none;}
+
+/* MOBILE */
+@media (max-width: 768px){
+  .hero h1#title{font-size:2rem;padding-top:14vh;}
+  nav a{margin:0 8px;}
+
+  .photos{padding:80px10px160px;}
+  .galleries{
+    height:auto;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .subgallery {
+    position:relative !important;
+    top:auto !important;
+    left:auto !important;
+    transform:none !important;
+    width:90vw;
+    height:calc(90vw*0.66);
+    margin:18px0;
+  }
+  .title {opacity:1;}
+}
 </style>
 </head>
-<body>
 
-<!-- HERO -->
+<body>
 <section class="hero">
-  <img src="SAULZIDULKA-BEJCEK.png" alt="Hero Image" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:-2;">
+  <img src="SAULZIDULKA-BEJCEK.png" alt="Hero Image">
   <canvas id="heroCanvas"></canvas>
   <nav>
     <a href="#photos">PHOTOS</a>
-    <a href="#drawings">DRAWINGS</a>
+    <a href="#contact">CONTACT</a>
   </nav>
 </section>
 
-<!-- PHOTOS COLLAGE -->
 <section class="photos" id="photos">
   <h2>PHOTO COLLECTIONS</h2>
   <div class="galleries" id="galleries"></div>
 </section>
 
-<!-- CONTACT -->
 <section class="contact" id="contact">
   <h2>CONTACT</h2>
   <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
@@ -159,7 +175,7 @@
 </section>
 
 <script>
-document.addEventListener('DOMContentLoaded', ()=>{
+document.addEventListener('DOMContentLoaded', () => {
 
   const galleryList = [
     { name:"Double Exposures", folder:"photos/double exposures", images:["IMG_9495.JPG","IMG_9493.jpg"], page:"doubleexposurecode.html" },
@@ -177,19 +193,17 @@ document.addEventListener('DOMContentLoaded', ()=>{
     link.className = 'subgallery';
     link.href = `${encodeURI(g.folder)}/${encodeURI(g.page)}`;
 
+    const motion = document.createElement('div');
+    motion.className = 'motion';
+
     const slideshow = document.createElement('div');
     slideshow.className = 'slideshow';
 
     g.images.forEach(src => {
       const img = document.createElement('img');
+      img.loading = "lazy";
       img.src = `${encodeURI(g.folder)}/${encodeURI(src)}`;
-      img.alt = g.name + ' image';
-      slideshow.appendChild(img);
-    });
-    g.images.forEach(src => {
-      const img = document.createElement('img');
-      img.src = `${encodeURI(g.folder)}/${encodeURI(src)}`;
-      img.alt = g.name + ' image';
+      slideshow.appendChild(img.cloneNode());
       slideshow.appendChild(img);
     });
 
@@ -197,84 +211,66 @@ document.addEventListener('DOMContentLoaded', ()=>{
     title.className = 'title';
     title.textContent = g.name;
 
-    link.appendChild(slideshow);
-    link.appendChild(title);
+    motion.appendChild(slideshow);
+    motion.appendChild(title);
+    link.appendChild(motion);
     container.appendChild(link);
 
     if(g.images.length>1){
       let index = 0;
-      const slideWidthPercent = 100;
-      const staggerDelay = 500 + Math.random() * 2500;
       const slideInterval = 4500 + Math.random()*3000;
-      setTimeout(()=>{
-        const interval = setInterval(()=>{
-          index++;
-          slideshow.style.transition = 'transform 1s ease';
-          slideshow.style.transform = `translateX(-${index * slideWidthPercent}%)`;
-          if(index === g.images.length){
-            setTimeout(()=>{
-              slideshow.style.transition = 'none';
-              slideshow.style.transform = 'translateX(0%)';
-              index = 0;
-            },1000);
-          }
-        }, slideInterval);
-        slideshow._interval = interval;
-      }, staggerDelay);
+      let interval;
+      const observer = new IntersectionObserver(([entry]) => {
+        if(entry.isIntersecting){
+          interval = setInterval(()=>{
+            index++;
+            slideshow.style.transition = 'transform1s ease';
+            slideshow.style.transform = `translateX(-${index*100}%)`;
+            if(index===g.images.length){
+              setTimeout(()=>{
+                slideshow.style.transition = 'none';
+                slideshow.style.transform='translateX(0%)';
+                index=0;
+              },1000);
+            }
+          },slideInterval);
+        } else {
+          clearInterval(interval);
+        }
+      });
+      observer.observe(link);
     }
   });
 
   const photosSection = document.querySelector('.photos');
-  let subgalleries = document.querySelectorAll('.subgallery');
-
-  function getRotationDeg(el){
-    const st = window.getComputedStyle(el).transform || '';
-    if(!st || st==='none') return 0;
-    const values = st.match(/matrix\(([^)]+)\)/);
-    if(!values) return 0;
-    const nums = values[1].split(',').map(n=>parseFloat(n));
-    const a = nums[0], b = nums[1];
-    return Math.round(Math.atan2(b,a)*(180/Math.PI));
-  }
-
-  const initialRotations = Array.from(subgalleries).map(el => getRotationDeg(el));
-  const movementStrengths = Array.from(subgalleries).map(()=> (Math.random()*0.9+0.4) );
+  const subgalleries = document.querySelectorAll('.subgallery');
+  const movementStrengths = Array.from(subgalleries).map(()=> (Math.random()*0.9+0.4));
 
   function updateFolders(){
     const rect = photosSection.getBoundingClientRect();
-    const vh = window.innerHeight || document.documentElement.clientHeight;
-    const progress = Math.min(Math.max(0,1-rect.top/vh),1);
+    const progress = Math.min(Math.max(0,1 - rect.top / window.innerHeight),1);
+
     subgalleries.forEach((g,i)=>{
-      const rise = progress * movementStrengths[i] * 600;
-      const rot = initialRotations[i] || (i%2? -2:2);
-      g.style.transform = `translateY(${-rise}px) rotate(${rot}deg)`;
+      const motion = g.querySelector('.motion');
+      const offset = progress * movementStrengths[i] * 600;
+      motion.style.transform = `translate3d(0,${-offset}px,0)`;
     });
   }
 
   let ticking = false;
-  function onScroll() {
+  window.addEventListener('scroll', () => {
     if (!ticking) {
-      ticking = true;
       requestAnimationFrame(() => {
         updateFolders();
         ticking = false;
       });
+      ticking = true;
     }
-  }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  requestAnimationFrame(updateFolders);
-  setTimeout(updateFolders, 300);
+  }, { passive:true });
 
-  window.addEventListener('resize', ()=>{
-    subgalleries = document.querySelectorAll('.subgallery');
-    initialRotations.length = 0;
-    Array.from(subgalleries).forEach(el => initialRotations.push(getRotationDeg(el)));
-    movementStrengths.length = 0;
-    Array.from(subgalleries).forEach(()=> movementStrengths.push((Math.random()*0.9+0.4)));
-    updateFolders();
-  });
-
+  updateFolders();
 });
 </script>
+
 </body>
 </html>

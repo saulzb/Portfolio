@@ -15,13 +15,16 @@ html, body {
   color:#eee;
 }
 
+/* Container for all sections */
 #container {
   position:relative;
   width:300vw;  /* left-center-right */
   height:200vh; /* center + down for photos */
-  transform: translate(100vw, 0); /* start at hero center */
+  transform: translate(0,0); /* start on hero */
+  transition: transform 0.8s ease;
 }
 
+/* Sections */
 section {
   position:absolute;
   width:100vw; height:100vh;
@@ -34,17 +37,14 @@ section {
   box-sizing:border-box;
 }
 
-/* HERO in center */
-#hero {
-  top:0; left:100vw;
-  background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
-}
+/* Hero in center */
+#hero { top:0; left:100vw; background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; }
 
-/* MUSIC right */
+/* Music right */
 #music { top:0; left:200vw; background:#222; }
-/* PHOTOS down */
+/* Photos down */
 #photos { top:100vh; left:100vw; background:#333; }
-/* DRAWINGS left */
+/* Drawings left */
 #drawings { top:0; left:0; background:#444; }
 
 /* Arrows */
@@ -60,53 +60,66 @@ section {
 }
 .arrow span { font-size:0.8rem; margin-top:5px; }
 
+/* Hero arrows */
 .arrow-right { top:50%; right:20px; transform:translateY(-50%);}
 .arrow-left  { top:50%; left:20px; transform:translateY(-50%);}
 .arrow-down  { bottom:20px; left:50%; transform:translateX(-50%);}
 
-section h2 {
-  font-size:0.8rem;
-  margin-bottom:10px;
-}
+/* Back arrow on branches */
+.arrow-back { top:20px; left:50%; transform:translateX(-50%); }
+
+section h2 { font-size:0.8rem; margin-bottom:10px; }
+
 </style>
 </head>
 <body>
 
 <div id="container">
+  <!-- Hero -->
   <section id="hero">
     <div class="arrow arrow-right" data-dir="right">→<span>Music</span></div>
     <div class="arrow arrow-left" data-dir="left">←<span>Drawings</span></div>
     <div class="arrow arrow-down" data-dir="down">↓<span>Photos</span></div>
   </section>
 
-  <section id="music"><h2>MUSIC</h2></section>
-  <section id="photos"><h2>PHOTOS</h2></section>
-  <section id="drawings"><h2>DRAWINGS</h2></section>
+  <!-- Music -->
+  <section id="music">
+    <h2>MUSIC</h2>
+    <div class="arrow arrow-back" data-dir="hero">↑<span>Back</span></div>
+  </section>
+
+  <!-- Photos -->
+  <section id="photos">
+    <h2>PHOTOS</h2>
+    <div class="arrow arrow-back" data-dir="hero">↑<span>Back</span></div>
+  </section>
+
+  <!-- Drawings -->
+  <section id="drawings">
+    <h2>DRAWINGS</h2>
+    <div class="arrow arrow-back" data-dir="hero">↑<span>Back</span></div>
+  </section>
 </div>
 
 <script>
 const container = document.getElementById('container');
-let currentX = 100; // start at hero (center)
-let currentY = 0;
+
+// Map of sections to container translate positions
 const sectionsMap = {
-  hero:{x:100, y:0},
-  right:{x:200, y:0},
-  left:{x:0, y:0},
-  down:{x:100, y:100}
+  hero:{x:-100, y:0},
+  right:{x:-200, y:0},   // Music
+  left:{x:0, y:0},       // Drawings
+  down:{x:-100, y:-100}  // Photos
 };
 
 function snapTo(dir){
   const target = sectionsMap[dir];
   if(target){
-    currentX = target.x;
-    currentY = target.y;
-    container.style.transition = "transform 0.8s ease";
-    container.style.transform = `translate(${-currentX}vw, ${-currentY}vh)`;
-    setTimeout(()=>container.style.transition="",900);
+    container.style.transform = `translate(${target.x}vw, ${target.y}vh)`;
   }
 }
 
-// Arrow click
+// Arrow clicks
 document.querySelectorAll('.arrow').forEach(a=>{
   a.addEventListener('click', ()=>snapTo(a.dataset.dir));
 });
@@ -116,8 +129,8 @@ let wheelCooldown=false;
 window.addEventListener('wheel', e=>{
   if(wheelCooldown) return;
   wheelCooldown=true;
-  if(e.deltaY>0) snapTo('down');
-  if(e.deltaY<0) snapTo('hero'); // back to hero if scrolling up
+  if(e.deltaY>0) snapTo('down'); // scroll down to photos
+  if(e.deltaY<0) snapTo('hero'); // scroll up to hero
   setTimeout(()=>wheelCooldown=false,800);
 });
 
@@ -129,7 +142,7 @@ window.addEventListener('keydown', e=>{
   if(e.key==='ArrowUp') snapTo('hero');
 });
 
-// Prevent natural scroll
+// Disable natural scroll
 window.addEventListener('scroll', e=>e.preventDefault());
 </script>
 

@@ -5,20 +5,20 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Saul Zidulka-Bejcek</title>
 
-<!-- Special Elite Font -->
-<link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+<!-- Space Mono Font -->
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
 
 <style>
 html,body{
   margin:0;padding:0;
-  font-family:'Special Elite', monospace;
+  font-family:'Space Mono', monospace;
   overflow-x:hidden;
   background:#111;
   color:#eee;
   scroll-behavior:smooth;
 }
 
-/* ---------- HERO SECTION ---------- */
+/* ---------- HERO ---------- */
 .hero{
   position:relative;
   width:100%;
@@ -51,27 +51,27 @@ section{
   width:100%;
   padding:100px 6vw;
   text-align:center;
-  scroll-margin-top:110px; /* prevents jump under nav */
+  scroll-margin-top:110px;
 }
 section h2{
   font-size:2.4rem;
   margin-bottom:40px;
-  font-family:'Special Elite', monospace;
+  font-family:'Space Mono', monospace;
 }
 
-/* ---------- MASONRY GRID ---------- */
-.masonry{
-  column-count:3;
-  column-gap:22px;
+/* ---------- MASONRY FLEX GRID ---------- */
+.masonry-container{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:22px;
   max-width:1400px;
-  margin:0 auto; /* centers the masonry grid */
+  margin:0 auto;
 }
-
 .card{
   position:relative;
-  width:100%;
+  width:320px; /* fixed card width to stabilize masonry */
   margin-bottom:22px;
-  break-inside:avoid;
   overflow:hidden;
   border-radius:12px;
   background:#000;
@@ -79,7 +79,7 @@ section h2{
   cursor:pointer;
   display:block;
   text-decoration:none;
-  font-family:'Special Elite', monospace;
+  font-family:'Space Mono', monospace;
 }
 
 /* Slideshow container */
@@ -93,10 +93,10 @@ section h2{
   object-fit:cover;
   display:block;
   flex:0 0 100%;
-  aspect-ratio:3/2; /* placeholder ratio */
+  aspect-ratio:3/2;
 }
 
-/* Hover overlay with dark gradient + title */
+/* Hover overlay */
 .card .overlay{
   position:absolute;inset:0;
   background:linear-gradient(0deg,rgba(0,0,0,.7),transparent 70%);
@@ -107,24 +107,17 @@ section h2{
   justify-content:center;
 }
 .card:hover .overlay{opacity:1;}
-
 .overlay span{
   padding:12px 18px;
   color:#fff;
   font-weight:bold;
   font-size:1.1rem;
-  font-family:'Special Elite', monospace;
+  font-family:'Space Mono', monospace;
 }
 
 /* ---------- RESPONSIVE ---------- */
-@media(max-width:1000px){ 
-  .masonry{ column-count:2; margin:0 auto; } 
-}
-@media(max-width:650px){ 
-  .masonry{ column-count:1; margin:0 auto; }
-  .card{margin-left:auto; margin-right:auto;} 
-  nav a{font-size:1rem;}
-}
+@media(max-width:1000px){ .card{width:45%;} }
+@media(max-width:650px){ .card{width:90%;} nav a{font-size:1rem;} }
 </style>
 </head>
 <body>
@@ -143,19 +136,19 @@ section h2{
 <!-- PHOTO COLLECTIONS -->
 <section id="photos">
   <h2>PHOTO COLLECTIONS</h2>
-  <div class="masonry" id="photoGrid"></div>
+  <div class="masonry-container" id="photoGrid"></div>
 </section>
 
 <!-- MUSIC SECTION -->
 <section id="music">
   <h2>MUSIC</h2>
-  <div class="masonry" id="musicGrid"></div>
+  <div class="masonry-container" id="musicGrid"></div>
 </section>
 
 <!-- DRAWINGS -->
 <section id="drawings">
   <h2>DRAWINGS</h2>
-  <div class="masonry" id="drawGrid"></div>
+  <div class="masonry-container" id="drawGrid"></div>
 </section>
 
 <!-- CONTACT -->
@@ -185,7 +178,6 @@ document.addEventListener("DOMContentLoaded",()=>{
     ]
   };
 
-  // Create cards for each gallery
   Object.keys(sections).forEach(gridId=>{
     const grid = document.getElementById(gridId);
     sections[gridId].forEach(g=>{

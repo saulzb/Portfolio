@@ -15,7 +15,6 @@ html, body {
   color:#eee;
 }
 
-/* Container for all sections */
 #container {
   position:relative;
   width:300vw;  /* left-center-right */
@@ -24,7 +23,6 @@ html, body {
   transition: transform 0.8s ease;
 }
 
-/* Sections */
 section {
   position:absolute;
   width:100vw; height:100vh;
@@ -32,20 +30,15 @@ section {
   justify-content:center;
   align-items:center;
   text-align:center;
-  font-family:'Archivo Expanded', sans-serif;
   font-size:1rem;
   box-sizing:border-box;
 }
 
-/* Hero in center */
-#hero { top:0; left:100vw; background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; }
-
-/* Music right */
-#music { top:0; left:200vw; background:#222; }
-/* Photos down */
-#photos { top:100vh; left:100vw; background:#333; }
-/* Drawings left */
-#drawings { top:0; left:0; background:#444; }
+/* Sections positions */
+#hero      { top:0; left:0; background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; }
+#music     { top:0; left:100vw; background:#222; }
+#drawings  { top:0; left:-100vw; background:#444; }
+#photos    { top:100vh; left:0; background:#333; }
 
 /* Arrows */
 .arrow {
@@ -65,7 +58,7 @@ section {
 .arrow-left  { top:50%; left:20px; transform:translateY(-50%);}
 .arrow-down  { bottom:20px; left:50%; transform:translateX(-50%);}
 
-/* Back arrow on branches */
+/* Branch back arrow */
 .arrow-back { top:20px; left:50%; transform:translateX(-50%); }
 
 section h2 { font-size:0.8rem; margin-bottom:10px; }
@@ -88,15 +81,15 @@ section h2 { font-size:0.8rem; margin-bottom:10px; }
     <div class="arrow arrow-back" data-dir="hero">↑<span>Back</span></div>
   </section>
 
-  <!-- Photos -->
-  <section id="photos">
-    <h2>PHOTOS</h2>
-    <div class="arrow arrow-back" data-dir="hero">↑<span>Back</span></div>
-  </section>
-
   <!-- Drawings -->
   <section id="drawings">
     <h2>DRAWINGS</h2>
+    <div class="arrow arrow-back" data-dir="hero">↑<span>Back</span></div>
+  </section>
+
+  <!-- Photos -->
+  <section id="photos">
+    <h2>PHOTOS</h2>
     <div class="arrow arrow-back" data-dir="hero">↑<span>Back</span></div>
   </section>
 </div>
@@ -106,10 +99,10 @@ const container = document.getElementById('container');
 
 // Map of sections to container translate positions
 const sectionsMap = {
-  hero:{x:-100, y:0},
-  right:{x:-200, y:0},   // Music
-  left:{x:0, y:0},       // Drawings
-  down:{x:-100, y:-100}  // Photos
+  hero:{x:0, y:0},
+  right:{x:-100, y:0},   // Music
+  left:{x:100, y:0},     // Drawings
+  down:{x:0, y:-100}     // Photos
 };
 
 function snapTo(dir){

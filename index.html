@@ -1,342 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
+<meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Saul Zidulka-Bejcek — Photos & Work</title>
-<meta name="description" content="Photography collections, music and drawings by Saul Zidulka-Bejcek." />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<meta name="author" content="Saul Zidulka-Bejcek" />
+<title>Saul Zidulka-Bejcek</title>
 
 <style>
-  :root{
-    --bg:#0f0f10;
-    --card-bg:#0b0b0b;
-    --muted:#c8d0d0;
-    --gap:20px;
-    --max-width:1200px;
-  }
-  html{scroll-behavior:smooth;}
-  *{box-sizing:border-box}
-  body{margin:0;font-family:Inter, Arial, sans-serif;background:var(--bg);color:#fff;-webkit-font-smoothing:antialiased;}
-  a{color:inherit;text-decoration:none}
+html,body{
+  margin:0;padding:0;
+  font-family:Arial, sans-serif;
+  overflow-x:hidden;
+  background:#111;
+  color:#eee;
+  scroll-behavior:smooth;
+}
 
-  /* HERO */
-  .hero{
-    position:relative;
-    height:72vh;
-    min-height:380px;
-    display:flex;
-    align-items:flex-end;
-    justify-content:center;
-    overflow:hidden;
-    --parallax-translate:0px;
-  }
-  .hero__img{
-    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:translateY(var(--parallax-translate));will-change:transform;
-    filter:brightness(.55);
-  }
-  .hero__content{
-    position:relative;z-index:2;padding:28px;max-width:var(--max-width);width:100%;display:flex;justify-content:space-between;align-items:center;
-  }
-  .brand{font-weight:700;color:var(--muted);letter-spacing:0.6px}
-  nav{display:flex;gap:18px}
-  nav a{font-weight:700;color:var(--muted);opacity:.95}
+/* ---------- HERO SECTION ---------- */
+.hero{
+  position:relative;
+  width:100%;
+  height:100vh;
+  min-height:500px;
+  overflow:hidden;
+}
+.hero__img{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  opacity:1;
+}
+nav{
+  position:absolute;
+  top:20px;left:50%;
+  transform:translateX(-50%);
+  z-index:10;
+}
+nav a{
+  color:#fff;
+  margin:0 14px;
+  font-weight:bold;
+  text-decoration:none;
+  font-size:1.1rem;
+}
 
-  /* PAGE CONTENT */
-  main{max-width:var(--max-width);margin:36px auto;padding:0 18px 80px}
-  h1.section-title{color:var(--muted);margin:6px 0 18px;font-size:1.1rem;letter-spacing:1px}
+/* Title text */
+.hero-title{
+  position:absolute;
+  bottom:14vh;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:3.4rem;
+  color:#e8ebeb;
+  text-shadow:0 4px 16px #000;
+}
 
-  /* MASONRY (true masonry via CSS columns) */
-  .masonry {
-    column-gap: var(--gap);
-    -webkit-column-gap: var(--gap);
-    width:100%;
-  }
-  /* column counts by viewport */
-  @media (min-width:1024px){ .masonry{ column-count:3; } }
-  @media (min-width:720px) and (max-width:1023px){ .masonry{ column-count:2; } }
-  @media (max-width:719px){ .masonry{ column-count:1; } }
+/* ---------- SECTIONS ---------- */
+section{
+  width:100%;
+  padding:100px 6vw;
+  text-align:center;
+  scroll-margin-top:110px; /* prevents jump under nav */
+}
+section h2{
+  font-size:2.4rem;
+  margin-bottom:40px;
+}
 
-  .card {
-    display:inline-block; /* required for CSS columns masonry */
-    width:100%;
-    margin:0 0 var(--gap);
-    background:var(--card-bg);
-    border-radius:12px;
-    overflow:hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-    position:relative;
-  }
+/* ---------- MASONRY GRID ---------- */
+.masonry{
+  column-count:3;
+  column-gap:22px;
+  max-width:1400px;
+  margin:0 auto;
+}
 
-  /* image (keeps natural aspect ratio) */
-  .card__img {
-    display:block;
-    width:100%;
-    height:auto;
-    transition:opacity .35s ease;
-    vertical-align:middle;
-    background:#0a0a0a;
-  }
+.card{
+  position:relative;
+  width:100%;
+  margin-bottom:22px;
+  break-inside:avoid;
+  overflow:hidden;
+  border-radius:12px;
+  background:#000;
+  box-shadow:0 12px 30px rgba(0,0,0,0.55);
+  cursor:pointer;
+  display:block;
+  text-decoration:none;
+}
 
-  /* overlay / title */
-  .card__overlay{
-    position:absolute;left:0;right:0;bottom:0;
-    padding:18px;
-    pointer-events:none;
-    transition:opacity .28s ease, transform .28s ease;
-    opacity:0;
-    transform:translateY(6px);
-  }
-  .card__title{
-    margin:0;color:#fff;font-weight:700;font-size:1rem;line-height:1;
-  }
-  /* dark gradient behind title */
-  .card__overlay::before{
-    content:"";
-    position:absolute;inset:0;
-    background:linear-gradient(180deg, rgba(0,0,0,0) 20%, rgba(0,0,0,0.65) 100%);
-    z-index:-1;border-radius:0 0 8px 8px;
-  }
+/* Slideshow container */
+.slideshow{
+  width:100%;height:100%;
+  display:flex;
+  will-change:transform;
+}
+.slideshow img{
+  width:100%;height:100%;
+  object-fit:cover;
+  display:block;
+  flex:0 0 100%;
+}
 
-  /* hover reveal for non-touch */
-  .card:hover .card__overlay{ opacity:1; transform:translateY(0); pointer-events:auto; }
+/* 🔥 Prevent layout jump while loading images */
+.slideshow img{
+  aspect-ratio:3/2; /* Placeholder ratio */
+}
 
-  /* always show overlay on touch devices (makes titles readable) */
-  .touch .card__overlay{ opacity:1; transform:none; }
+/* Hover overlay with dark gradient + title */
+.card .overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(0deg,rgba(0,0,0,.7),transparent 70%);
+  opacity:0;
+  transition:opacity .35s;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+}
+.card:hover .overlay{opacity:1;}
 
-  /* card meta / small text */
-  .card__meta{ font-size:.85rem;color:#bfc6c6;padding:10px 16px 16px; }
+.overlay span{
+  padding:12px 18px;
+  color:#fff;
+  font-weight:bold;
+  font-size:1.1rem;
+}
 
-  /* small util */
-  .center{ text-align:center }
 
-  /* CONTACT footer */
-  footer{padding:40px 18px;text-align:center;color:#9aa5a5}
-  footer a{color:#9aa5a5}
-
-  /* responsive fixes */
-  @media (max-width:480px){
-    .hero{height:55vh}
-    .hero__content{align-items:flex-end;gap:12px}
-  }
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:1000px){
+  .masonry{column-count:2;}
+}
+@media(max-width:650px){
+  .masonry{column-count:1;}
+  .hero-title{font-size:2.2rem;}
+  nav a{font-size:1rem;}
+}
 </style>
 </head>
 <body>
 
 <!-- HERO -->
-<header class="hero" id="hero">
-  <!-- hero image is initially low-priority; swapped after load -->
-  <img id="heroImg" class="hero__img" alt="Saul Zidulka-Bejcek — hero" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" aria-hidden="true" />
-  <div class="hero__content">
-    <div class="brand">Saul Zidulka-Bejcek</div>
-    <nav aria-label="Main navigation">
-      <a href="#photos">Photos</a>
-      <a href="music.html">Music</a>
-      <a href="drawings.html">Drawings</a>
-      <a href="#contact">Contact</a>
-    </nav>
-  </div>
-</header>
-
-<main>
-  <section id="photos">
-    <h1 class="section-title">Photo Collections</h1>
-    <div class="masonry" id="masonry">
-      <!-- cards are injected by JS -->
-    </div>
-  </section>
-
-  <section id="music" style="margin-top:48px">
-    <h1 class="section-title">Music</h1>
-    <div class="masonry" id="masonryMusic">
-      <!-- optional music cards injected by JS (links to music.html) -->
-    </div>
-  </section>
-
-  <section id="drawings" style="margin-top:48px">
-    <h1 class="section-title">Drawings</h1>
-    <div class="masonry" id="masonryDrawings">
-      <!-- drawings cards injected by JS (links to drawings.html) -->
-    </div>
-  </section>
-</main>
-
-<section id="contact" style="padding:36px 18px 80px;background:#070707;color:#bfbfbf">
-  <div style="max-width:var(--max-width);margin:0 auto;text-align:center">
-    <h1 class="section-title">Contact</h1>
-    <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a> · Instagram: <a href="https://www.instagram.com/saul_5607/" target="_blank" rel="noopener">@saul_5607</a></p>
-  </div>
+<section class="hero">
+  <img class="hero__img" src="SAULZIDULKA-BEJCEK.png" alt="">
+  <nav>
+    <a href="#photos">Photos</a>
+    <a href="#music">Music</a>
+    <a href="#drawings">Drawings</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <div class="hero-title">Saul Zidulka-Bejcek</div>
 </section>
 
-<footer>
-  © <span id="year"></span> Saul Zidulka-Bejcek
-</footer>
+<!-- PHOTO COLLECTIONS -->
+<section id="photos">
+  <h2>PHOTO COLLECTIONS</h2>
+  <div class="masonry" id="photoGrid"></div>
+</section>
+
+<!-- MUSIC SECTION -->
+<section id="music">
+  <h2>MUSIC</h2>
+  <div class="masonry" id="musicGrid"></div>
+</section>
+
+<!-- DRAWINGS -->
+<section id="drawings">
+  <h2>DRAWINGS</h2>
+  <div class="masonry" id="drawGrid"></div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <h2>CONTACT</h2>
+  <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
+  <p>Instagram: <a href="https://www.instagram.com/saul_5607/" target="_blank">@saul_5607</a></p>
+</section>
 
 <script>
-/*
-  Main script:
-  - Injects cards for Photos / Music / Drawings
-  - Implements simple crossfade slideshow by swapping image src with fade
-  - Pauses slideshows when card is off-screen (IntersectionObserver)
-  - Lazy loads images (loading="lazy")
-  - Parallax hero (lightweight)
-  - Touch detection: toggles "touch" class so overlay is always visible on touch devices
-*/
+document.addEventListener("DOMContentLoaded",()=>{
 
-(function(){
-  // --- Config: Replace paths and filenames with your real folders/files as needed
-  const galleryList = [
-    { name:"Double Exposures", folder:"photos/double exposures", images:["IMG_9495.JPG","IMG_9493.jpg"], page:"doubleexposurecode.html" },
-    { name:"Wildlife", folder:"photos/wildlife", images:["IMG_8491_4.jpg","IMG_8512_1.jpg"], page:"wildlifecode.html" },
-    { name:"Landscapes", folder:"photos/landscapes", images:["DSCN3626.jpg","DSCN3600.jpg"], page:"landscapescode.html" },
-    { name:"Colour", folder:"photos/Colour", images:["col1.jpg"], page:"Colourcode.html" },
-    { name:"Light", folder:"photos/Light", images:["IMG_1776.jpg","DSCN8046.JPG"], page:"Lightcode.html" },
-    { name:"Water", folder:"photos/Water", images:["DSCN3961.jpg","DSCN5492.jpg"], page:"Watercode.html" }
-  ];
+  const sections = {
+    photoGrid: [
+      {name:"Double Exposures", folder:"photos/double exposures", images:["IMG_9495.JPG","IMG_9493.jpg"]},
+      {name:"Wildlife", folder:"photos/wildlife", images:["IMG_8491_4.jpg","IMG_8512_1.jpg"]},
+      {name:"Landscapes", folder:"photos/landscapes", images:["DSCN3626.jpg","DSCN3600.jpg"]},
+      {name:"Colour", folder:"photos/Colour", images:["col1.jpg"]},
+      {name:"Light", folder:"photos/Light", images:["IMG_1776.jpg","DSCN8046.JPG"]},
+      {name:"Water", folder:"photos/Water", images:["DSCN3961.jpg","DSCN5492.jpg"]}
+    ],
+    musicGrid: [
+      {name:"Music Sample", folder:"music", images:["placeholder.jpg"]}
+    ],
+    drawGrid: [
+      {name:"Drawings Example", folder:"drawings", images:["placeholder2.jpg"]}
+    ]
+  };
 
-  const musicList = [
-    { name:"Music (Single)", folder:"music", images:["cover1.jpg"], page:"music.html" }
-  ];
+  // Create cards for each gallery
+  Object.keys(sections).forEach(gridId=>{
+    const grid = document.getElementById(gridId);
+    sections[gridId].forEach(g=>{
+      const card = document.createElement("a");
+      card.className="card";
+      card.href=g.folder; // can change to page later
 
-  const drawingsList = [
-    { name:"Drawings", folder:"drawings", images:["draw1.jpg","draw2.jpg"], page:"drawings.html" }
-  ];
+      const show = document.createElement("div");
+      show.className="slideshow";
 
-  // utilities
-  function encodePath(folder, file){ return folder + '/' + file; }
+      g.images.concat(g.images).forEach(src=>{
+        const img = document.createElement("img");
+        img.loading="lazy";
+        img.src=`${g.folder}/${src}`;
+        show.appendChild(img);
+      });
 
-  // container refs
-  const masonry = document.getElementById('masonry');
-  const masonryMusic = document.getElementById('masonryMusic');
-  const masonryDrawings = document.getElementById('masonryDrawings');
+      const overlay = document.createElement("div");
+      overlay.className="overlay";
+      overlay.innerHTML=`<span>${g.name}</span>`;
 
-  // helper to create a card
-  function createCard(item){
-    const link = document.createElement('a');
-    link.className = 'card';
-    link.href = `${encodeURI(item.page)}`;
-    link.setAttribute('aria-label', item.name);
+      card.append(show,overlay);
+      grid.append(card);
 
-    // main image element (we will swap its src for slideshows)
-    const img = document.createElement('img');
-    img.className = 'card__img';
-    img.loading = 'lazy';
-    // set initial src to first image (if exists), otherwise an empty placeholder
-    img.src = item.images && item.images.length ? encodePath(item.folder, item.images[0]) : 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
-    img.alt = `${item.name} — preview`;
-
-    const overlay = document.createElement('div');
-    overlay.className = 'card__overlay';
-    const title = document.createElement('h3');
-    title.className = 'card__title';
-    title.textContent = item.name;
-    overlay.appendChild(title);
-
-    const meta = document.createElement('div');
-    meta.className = 'card__meta';
-    meta.textContent = 'View collection';
-
-    link.appendChild(img);
-    link.appendChild(overlay);
-    link.appendChild(meta);
-
-    // slideshow logic (fade via opacity when swapping src)
-    if (item.images && item.images.length > 1){
-      let cur = 0;
-      let timer = null;
-      const interval = 3500 + Math.floor(Math.random()*3000);
-
-      // fade swap helper
-      function swapOnce(){
-        img.style.transition = 'opacity .35s ease';
-        img.style.opacity = 0;
-        // after fade out, change src then fade in
-        const onTransitionEnd = () => {
-          img.removeEventListener('transitionend', onTransitionEnd);
-          cur = (cur + 1) % item.images.length;
-          img.src = encodePath(item.folder, item.images[cur]);
-          // ensure the image loads before fading in to avoid flicker
-          img.decode ? img.decode().catch(()=>{}).then(()=>{ img.style.opacity = 1; }) : (img.style.opacity = 1);
-        };
-        img.addEventListener('transitionend', onTransitionEnd);
-        // safety: if transitionend doesn't fire (some browsers), fallback
-        setTimeout(()=>{ try{ img.style.opacity = 1; }catch(e){} }, 800);
+      // Off-screen slideshow performance boost
+      if(g.images.length>1){
+        let i=0;
+        const width=100;
+        const interval=setInterval(()=>{
+          i++;
+          show.style.transform=`translateX(-${i*width}%)`;
+          show.style.transition="transform .9s ease";
+          if(i===g.images.length){
+            setTimeout(()=>{
+              show.style.transition="none";
+              show.style.transform="translateX(0%)";
+              i=0;
+            },900);
+          }
+        },4000);
+        card._interval=interval;
       }
 
-      // IntersectionObserver to start/stop slideshow when visible
-      const obs = new IntersectionObserver((entries)=>{
+      // Pause when off-screen
+      const obs=new IntersectionObserver((entries)=>{
         entries.forEach(entry=>{
-          if(entry.isIntersecting){
-            if(!timer){
-              timer = setInterval(swapOnce, interval);
-            }
-          } else {
-            if(timer){ clearInterval(timer); timer = null; }
-          }
+          if(!entry.isIntersecting && card._interval)
+            clearInterval(card._interval);
         });
-      }, { threshold: 0.4 });
-
-      // start observing the link (card)
-      obs.observe(link);
-
-      // cleanup if link removed from DOM (not strictly necessary here)
-      link._cleanup = () => { if(timer) clearInterval(timer); obs.disconnect(); };
-    }
-
-    return link;
-  }
-
-  // populate the masonry columns
-  function populate(container, list){
-    list.forEach(item=>{
-      const card = createCard(item);
-      container.appendChild(card);
-    });
-  }
-
-  populate(masonry, galleryList);
-  populate(masonryMusic, musicList);
-  populate(masonryDrawings, drawingsList);
-
-  // small runtime niceties:
-  // 1) Detect touch devices to show overlay by default
-  if(('ontouchstart' in window) || navigator.maxTouchPoints > 0){
-    document.documentElement.classList.add('touch');
-  }
-
-  // 2) Parallax hero (lightweight). Only perform small transforms.
-  const hero = document.getElementById('hero');
-  const heroImg = document.getElementById('heroImg');
-  // lazy-load a real hero image (deferred)
-  setTimeout(()=> {
-    // swap in your hero image path here
-    heroImg.src = 'SAULZIDULKA-BEJCEK.png';
-    heroImg.addEventListener('load', ()=> heroImg.style.opacity = 1);
-  }, 200);
-
-  window.addEventListener('scroll', () => {
-    // small parallax effect
-    const rect = hero.getBoundingClientRect();
-    const h = window.innerHeight || document.documentElement.clientHeight;
-    const progress = Math.min(Math.max(0, 1 - rect.top / (h)), 1);
-    // translate up to 6% of height
-    const translate = Math.round((progress - 0.2) * 12);
-    hero.style.setProperty('--parallax-translate', (translate * -1) + 'px');
-  }, { passive: true });
-
-  // 3) set year in footer
-  document.getElementById('year').textContent = new Date().getFullYear();
-
-  // Accessibility: allow keyboard focusing the card anchor to reveal overlay
-  document.querySelectorAll('.card').forEach(c => {
-    c.addEventListener('focusin', () => c.querySelector('.card__overlay').style.opacity = 1);
-    c.addEventListener('focusout', () => {
-      if(!document.documentElement.classList.contains('touch')) c.querySelector('.card__overlay').style.opacity = '';
+      });
+      obs.observe(card);
     });
   });
 
-})();
+});
 </script>
+
 </body>
 </html>

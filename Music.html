@@ -1,47 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Music</title>
-  <style>
-    body {
-      text-align: center;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
-
-    nav {
-      margin: 20px 0;
-    }
-    nav a {
-      margin: 0 10px;
-      text-decoration: none;
-      color: black;
-      font-weight: bold;
-    }
-
-    .content {
-      max-width: 800px;
-      margin: 40px auto;
-      text-align: left;
-      padding: 20px;
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Music — Saul Zidulka-Bejcek</title>
+<meta name="description" content="Music projects by Saul Zidulka-Bejcek." />
+<style>
+  body{margin:0;font-family:Arial, sans-serif;background:#0b0b0b;color:#fff;padding:24px}
+  header{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto}
+  a{color:#9fb0b0}
+  main{max-width:1100px;margin:24px auto}
+</style>
 </head>
 <body>
+<header>
+  <div><strong>Saul Zidulka-Bejcek</strong></div>
+  <nav><a href="index.html">Back to Home</a></nav>
+</header>
+<main>
   <h1>Music</h1>
+  <p>This is a starter page for music. Replace the content below with your tracks, embedded players, or links.</p>
 
-  <nav>
-    <a href="index.html">Home</a> |
-    <a href="photos.html">Photos</a> |
-    <a href="contact.html">Contact</a>
-  </nav>
+  <section>
+    <h2>Featured Release</h2>
+    <p>Upload or embed audio players here (SoundCloud, Bandcamp, or HTML5 &lt;audio&gt;).</p>
+    <!-- Example (commented):
+    <audio controls src="music/track1.mp3"></audio>
+    -->
+  </section>
+</main>
 
-  <div class="content">
-    <p>
-    </p>
-    <p>
-    </p>
-  </div>
+<footer style="max-width:1100px;margin:36px auto;color:#8f9f9f">
+  © <span id="year">2025</span> Saul Zidulka-Bejcek
+</footer>
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>

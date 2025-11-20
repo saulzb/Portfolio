@@ -5,10 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Saul Zidulka-Bejcek</title>
 
+<!-- Special Elite Font -->
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+
 <style>
 html,body{
   margin:0;padding:0;
-  font-family:Arial, sans-serif;
+  font-family:'Special Elite', monospace;
   overflow-x:hidden;
   background:#111;
   color:#eee;
@@ -43,17 +46,6 @@ nav a{
   font-size:1.1rem;
 }
 
-/* Title text */
-.hero-title{
-  position:absolute;
-  bottom:14vh;
-  left:50%;
-  transform:translateX(-50%);
-  font-size:3.4rem;
-  color:#e8ebeb;
-  text-shadow:0 4px 16px #000;
-}
-
 /* ---------- SECTIONS ---------- */
 section{
   width:100%;
@@ -64,6 +56,7 @@ section{
 section h2{
   font-size:2.4rem;
   margin-bottom:40px;
+  font-family:'Special Elite', monospace;
 }
 
 /* ---------- MASONRY GRID ---------- */
@@ -71,7 +64,7 @@ section h2{
   column-count:3;
   column-gap:22px;
   max-width:1400px;
-  margin:0 auto;
+  margin:0 auto; /* centers the masonry grid */
 }
 
 .card{
@@ -86,6 +79,7 @@ section h2{
   cursor:pointer;
   display:block;
   text-decoration:none;
+  font-family:'Special Elite', monospace;
 }
 
 /* Slideshow container */
@@ -99,11 +93,7 @@ section h2{
   object-fit:cover;
   display:block;
   flex:0 0 100%;
-}
-
-/* 🔥 Prevent layout jump while loading images */
-.slideshow img{
-  aspect-ratio:3/2; /* Placeholder ratio */
+  aspect-ratio:3/2; /* placeholder ratio */
 }
 
 /* Hover overlay with dark gradient + title */
@@ -123,16 +113,16 @@ section h2{
   color:#fff;
   font-weight:bold;
   font-size:1.1rem;
+  font-family:'Special Elite', monospace;
 }
-
 
 /* ---------- RESPONSIVE ---------- */
-@media(max-width:1000px){
-  .masonry{column-count:2;}
+@media(max-width:1000px){ 
+  .masonry{ column-count:2; margin:0 auto; } 
 }
-@media(max-width:650px){
-  .masonry{column-count:1;}
-  .hero-title{font-size:2.2rem;}
+@media(max-width:650px){ 
+  .masonry{ column-count:1; margin:0 auto; }
+  .card{margin-left:auto; margin-right:auto;} 
   nav a{font-size:1rem;}
 }
 </style>
@@ -148,7 +138,6 @@ section h2{
     <a href="#drawings">Drawings</a>
     <a href="#contact">Contact</a>
   </nav>
-  <div class="hero-title">Saul Zidulka-Bejcek</div>
 </section>
 
 <!-- PHOTO COLLECTIONS -->
@@ -202,7 +191,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     sections[gridId].forEach(g=>{
       const card = document.createElement("a");
       card.className="card";
-      card.href=g.folder; // can change to page later
+      card.href=g.folder;
 
       const show = document.createElement("div");
       show.className="slideshow";
@@ -221,7 +210,7 @@ document.addEventListener("DOMContentLoaded",()=>{
       card.append(show,overlay);
       grid.append(card);
 
-      // Off-screen slideshow performance boost
+      // Slideshow functionality
       if(g.images.length>1){
         let i=0;
         const width=100;

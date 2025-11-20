@@ -1,237 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Saul Zidulka-Bejcek</title>
-
-<!-- Archivo Expanded Font -->
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded&display=swap" rel="stylesheet">
-
 <style>
-html,body{
-  margin:0;padding:0;
-  font-family:'Archivo Expanded', sans-serif;
-  width:100%;
-  overflow-x:hidden;
-  background:#111;
-  color:#eee;
-  scroll-behavior:smooth;
-}
+  html, body {
+    margin:0; padding:0;
+    width:100%; height:100%;
+    overflow:hidden;
+    font-family:'Archivo Expanded', sans-serif;
+    background:#111;
+    color:#eee;
+  }
 
-/* ---------- HERO ---------- */
-.hero{
-  position:relative;
-  width:100%;
-  height:100vh;
-  min-height:500px;
-  overflow:hidden;
-}
-.hero__img{
-  position:absolute;inset:0;
-  width:100%;height:100%;
-  object-fit:cover;
-}
-nav{
-  position:absolute;
-  top:20px;left:50%;
-  transform:translateX(-50%);
-  z-index:10;
-}
-nav a{
-  color:#fff;
-  margin:0 14px;
-  font-weight:bold;
-  text-decoration:none;
-  font-size:1.1rem;
-}
+  /* Container holding all sections */
+  #container {
+    position:relative;
+    width:300vw; /* enough for left-center-right */
+    height:300vh; /* enough for down-center-up if needed */
+    transform: translate(100vw, 0); /* start at center hero */
+  }
 
-/* ---------- SECTIONS ---------- */
-section{
-  width:100%;
-  padding:60px 0; /* remove horizontal padding to avoid left offset */
-  text-align:center;
-  scroll-margin-top:110px;
-}
-section h2{
-  font-size:0.8rem; /* 3x smaller */
-  margin-bottom:20px;
-  font-family:'Archivo Expanded', sans-serif;
-}
+  section {
+    position:absolute;
+    width:100vw; height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:1rem;
+    text-align:center;
+    box-sizing:border-box;
+  }
 
-/* ---------- MASONRY FLEX GRID ---------- */
-.masonry-container{
-  display:inline-flex; /* centers grid */
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:22px;
-  max-width:1400px;
-  margin:0 auto;
-}
-.card{
-  position:relative;
-  width:280px; /* smaller to fit better */
-  margin-bottom:22px;
-  overflow:hidden;
-  border-radius:12px;
-  background:#000;
-  box-shadow:0 12px 30px rgba(0,0,0,0.55);
-  cursor:pointer;
-  display:block;
-  text-decoration:none;
-  font-family:'Archivo Expanded', sans-serif;
-}
+  /* Hero in center */
+  #hero {
+    top:0; left:100vw;
+    background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
+    overflow:hidden;
+  }
 
-/* Slideshow container */
-.slideshow{
-  width:100%;height:100%;
-  display:flex;
-  will-change:transform;
-}
-.slideshow img{
-  width:100%;height:100%;
-  object-fit:cover;
-  display:block;
-  flex:0 0 100%;
-  aspect-ratio:3/2;
-}
+  /* Music right */
+  #music {
+    top:0; left:200vw;
+    background:#222;
+  }
 
-/* Hover overlay */
-.card .overlay{
-  position:absolute;inset:0;
-  background:linear-gradient(0deg,rgba(0,0,0,.7),transparent 70%);
-  opacity:0;
-  transition:opacity .35s;
-  display:flex;
-  align-items:flex-end;
-  justify-content:center;
-}
-.card:hover .overlay{opacity:1;}
-.overlay span{
-  padding:12px 18px;
-  color:#fff;
-  font-weight:bold;
-  font-size:1rem;
-  font-family:'Archivo Expanded', sans-serif;
-}
+  /* Photos down */
+  #photos {
+    top:100vh; left:100vw;
+    background:#333;
+    flex-direction:column;
+  }
 
-/* ---------- RESPONSIVE ---------- */
-@media(max-width:1000px){ .card{width:45%;} }
-@media(max-width:650px){ .card{width:90%;} nav a{font-size:1rem;} }
+  /* Drawings left */
+  #drawings {
+    top:0; left:0;
+    background:#444;
+  }
+
+  /* Arrows */
+  .arrow {
+    position:absolute;
+    color:#fff;
+    font-size:1.5rem;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    font-family:'Archivo Expanded', sans-serif;
+    cursor:pointer;
+    user-select:none;
+  }
+  .arrow span {
+    font-size:0.8rem;
+    margin-top:5px;
+  }
+
+  .arrow-right { top:50%; right:20px; transform:translateY(-50%) rotate(0deg);}
+  .arrow-left { top:50%; left:20px; transform:translateY(-50%) rotate(180deg);}
+  .arrow-down { bottom:20px; left:50%; transform:translateX(-50%) rotate(90deg);}
+
+  /* Section headings */
+  section h2 {
+    font-size:0.8rem;
+    margin-bottom:10px;
+  }
 </style>
 </head>
 <body>
 
-<!-- HERO -->
-<section class="hero">
-  <img class="hero__img" src="SAULZIDULKA-BEJCEK.png" alt="">
-  <nav>
-    <a href="#photos">Photos</a>
-    <a href="#music">Music</a>
-    <a href="#drawings">Drawings</a>
-    <a href="#contact">Contact</a>
-  </nav>
-</section>
+<div id="container">
+  <section id="hero">
+    <div class="arrow arrow-right" data-dir="right">→<span>Music</span></div>
+    <div class="arrow arrow-left" data-dir="left">←<span>Drawings</span></div>
+    <div class="arrow arrow-down" data-dir="down">↓<span>Photos</span></div>
+  </section>
 
-<!-- PHOTO COLLECTIONS -->
-<section id="photos">
-  <h2>PHOTO COLLECTIONS</h2>
-  <div class="masonry-container" id="photoGrid"></div>
-</section>
-
-<!-- MUSIC SECTION -->
-<section id="music">
-  <h2>MUSIC</h2>
-  <div class="masonry-container" id="musicGrid"></div>
-</section>
-
-<!-- DRAWINGS -->
-<section id="drawings">
-  <h2>DRAWINGS</h2>
-  <div class="masonry-container" id="drawGrid"></div>
-</section>
-
-<!-- CONTACT -->
-<section id="contact">
-  <h2>CONTACT</h2>
-  <p>Email: <a href="mailto:saulzb@hotmail.com">saulzb@hotmail.com</a></p>
-  <p>Instagram: <a href="https://www.instagram.com/saul_5607/" target="_blank">@saul_5607</a></p>
-</section>
+  <section id="music"><h2>MUSIC</h2></section>
+  <section id="photos"><h2>PHOTOS</h2></section>
+  <section id="drawings"><h2>DRAWINGS</h2></section>
+</div>
 
 <script>
-document.addEventListener("DOMContentLoaded",()=>{
+const container = document.getElementById('container');
+let currentX = 100; // starting at center hero (100vw)
+let currentY = 0;
 
-  const sections = {
-    photoGrid: [
-      {name:"Double Exposures", folder:"photos/double exposures", images:["IMG_9495.JPG","IMG_9493.jpg"]},
-      {name:"Wildlife", folder:"photos/wildlife", images:["IMG_8491_4.jpg","IMG_8512_1.jpg"]},
-      {name:"Landscapes", folder:"photos/landscapes", images:["DSCN3626.jpg","DSCN3600.jpg"]},
-      {name:"Colour", folder:"photos/Colour", images:["col1.jpg"]},
-      {name:"Light", folder:"photos/Light", images:["IMG_1776.jpg","DSCN8046.JPG"]},
-      {name:"Water", folder:"photos/Water", images:["DSCN3961.jpg","DSCN5492.jpg"]}
-    ],
-    musicGrid: [
-      {name:"Music Sample", folder:"music", images:["placeholder.jpg"]}
-    ],
-    drawGrid: [
-      {name:"Drawings Example", folder:"drawings", images:["placeholder2.jpg"]}
-    ]
-  };
+const snap = 100; // percentage
 
-  Object.keys(sections).forEach(gridId=>{
-    const grid = document.getElementById(gridId);
-    sections[gridId].forEach(g=>{
-      const card = document.createElement("a");
-      card.className="card";
-      card.href=g.folder;
+// mapping scroll directions to position
+const sectionsMap = {
+  right: {x:200, y:0},
+  left: {x:0, y:0},
+  down: {x:100, y:100},
+};
 
-      const show = document.createElement("div");
-      show.className="slideshow";
+function scrollToSection(dir){
+  const target = sectionsMap[dir];
+  if(target){
+    currentX = target.x;
+    currentY = target.y;
+    container.style.transition = "transform 0.8s ease";
+    container.style.transform = `translate(${-currentX}vw, ${-currentY}vh)`;
+    setTimeout(()=>container.style.transition="",900);
+  }
+}
 
-      g.images.concat(g.images).forEach(src=>{
-        const img = document.createElement("img");
-        img.loading="lazy";
-        img.src=`${g.folder}/${src}`;
-        show.appendChild(img);
-      });
+// arrow click
+document.querySelectorAll('.arrow').forEach(arrow=>{
+  arrow.addEventListener('click', ()=>scrollToSection(arrow.dataset.dir));
+});
 
-      const overlay = document.createElement("div");
-      overlay.className="overlay";
-      overlay.innerHTML=`<span>${g.name}</span>`;
+// mouse wheel (vertical)
+let wheelCooldown=false;
+window.addEventListener('wheel', e=>{
+  if(wheelCooldown) return;
+  wheelCooldown=true;
+  if(e.deltaY > 0) scrollToSection('down');
+  if(e.deltaY < 0) scrollToSection('hero');
+  setTimeout(()=>wheelCooldown=false,800);
+});
 
-      card.append(show,overlay);
-      grid.append(card);
-
-      // Slideshow functionality
-      if(g.images.length>1){
-        let i=0;
-        const width=100;
-        const interval=setInterval(()=>{
-          i++;
-          show.style.transform=`translateX(-${i*width}%)`;
-          show.style.transition="transform .9s ease";
-          if(i===g.images.length){
-            setTimeout(()=>{
-              show.style.transition="none";
-              show.style.transform="translateX(0%)";
-              i=0;
-            },900);
-          }
-        },4000);
-        card._interval=interval;
-      }
-
-      // Pause when off-screen
-      const obs=new IntersectionObserver((entries)=>{
-        entries.forEach(entry=>{
-          if(!entry.isIntersecting && card._interval)
-            clearInterval(card._interval);
-        });
-      });
-      obs.observe(card);
-    });
-  });
-
+// key arrows
+window.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight') scrollToSection('right');
+  if(e.key==='ArrowLeft') scrollToSection('left');
+  if(e.key==='ArrowDown') scrollToSection('down');
+  if(e.key==='ArrowUp') scrollToSection('hero');
 });
 </script>
 

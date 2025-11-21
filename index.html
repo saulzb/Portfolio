@@ -32,13 +32,17 @@ section {
   text-align:center;
   font-size:1rem;
   box-sizing:border-box;
+  flex-direction:column;
 }
 
 /* Sections positions */
 #hero      { top:0; left:0; background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; }
 #music     { top:0; left:100vw; background:#222; }
 #drawings  { top:0; left:-100vw; background:#444; }
-#photos    { top:100vh; left:0; background:#333; }
+#photos    { top:100vh; left:0; background:#333; display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); grid-gap:10px; padding:20px; }
+
+/* Masonry placeholder boxes for photos */
+.photo-box { background:#555; height:150px; border-radius:8px; }
 
 /* Arrows */
 .arrow {
@@ -58,11 +62,12 @@ section {
 .arrow-left  { top:50%; left:20px; transform:translateY(-50%);}
 .arrow-down  { bottom:20px; left:50%; transform:translateX(-50%);}
 
-/* Branch back arrow */
-.arrow-back { top:20px; left:50%; transform:translateX(-50%); }
+/* Branch arrows */
+.arrow-back-left  { top:50%; left:20px; transform:translateY(-50%);} /* Music → Hero */
+.arrow-back-right { top:50%; right:20px; transform:translateY(-50%);} /* Drawings → Hero */
+.arrow-back-up    { top:20px; left:50%; transform:translateX(-50%);}   /* Photos → Hero */
 
-section h2 { font-size:0.8rem; margin-bottom:10px; }
-
+section h2 { font-size:0.8rem; margin-bottom:10px; color:#eee; }
 </style>
 </head>
 <body>
@@ -78,19 +83,27 @@ section h2 { font-size:0.8rem; margin-bottom:10px; }
   <!-- Music -->
   <section id="music">
     <h2>MUSIC</h2>
-    <div class="arrow arrow-back" data-dir="hero">↑<span>Back</span></div>
+    <div class="arrow arrow-back-left" data-dir="hero">←<span>Back</span></div>
   </section>
 
   <!-- Drawings -->
   <section id="drawings">
     <h2>DRAWINGS</h2>
-    <div class="arrow arrow-back" data-dir="hero">↑<span>Back</span></div>
+    <div class="arrow arrow-back-right" data-dir="hero">→<span>Back</span></div>
   </section>
 
   <!-- Photos -->
   <section id="photos">
     <h2>PHOTOS</h2>
-    <div class="arrow arrow-back" data-dir="hero">↑<span>Back</span></div>
+    <div class="arrow arrow-back-up" data-dir="hero">↑<span>Back</span></div>
+    <!-- Masonry placeholder boxes -->
+    <div class="photo-box"></div>
+    <div class="photo-box"></div>
+    <div class="photo-box"></div>
+    <div class="photo-box"></div>
+    <div class="photo-box"></div>
+    <div class="photo-box"></div>
+    <div class="photo-box"></div>
   </section>
 </div>
 
@@ -117,17 +130,22 @@ document.querySelectorAll('.arrow').forEach(a=>{
   a.addEventListener('click', ()=>snapTo(a.dataset.dir));
 });
 
-// Wheel scroll
+// Wheel scroll: vertical for Photos
 let wheelCooldown=false;
 window.addEventListener('wheel', e=>{
   if(wheelCooldown) return;
   wheelCooldown=true;
-  if(e.deltaY>0) snapTo('down'); // scroll down to photos
-  if(e.deltaY<0) snapTo('hero'); // scroll up to hero
+  if(Math.abs(e.deltaY) > Math.abs(e.deltaX)){
+    if(e.deltaY>0) snapTo('down');
+    if(e.deltaY<0) snapTo('hero');
+  } else {
+    if(e.deltaX>0) snapTo('right');
+    if(e.deltaX<0) snapTo('left');
+  }
   setTimeout(()=>wheelCooldown=false,800);
 });
 
-// Keyboard
+// Keyboard arrows
 window.addEventListener('keydown', e=>{
   if(e.key==='ArrowRight') snapTo('right');
   if(e.key==='ArrowLeft') snapTo('left');

@@ -113,127 +113,113 @@ h2 { font-size:0.8rem; margin-bottom:10px; }
   <img id="modal-img" src="" alt="Full photo">
 </div>
 
+<section id="photos">
+  <div class="arrow arrow-back-up" data-dir="hero">↑<span>Back</span></div>
+</section>
+
 <script>
-// 🔑 Contentful API Config — replace with your own values
-const SPACE_ID = "5w319pzc4eiq";
-const ACCESS_TOKEN = "l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg";
-const ENVIRONMENT = "master";
+const SPACE_ID = "YOUR_SPACE_ID";       // Replace with your Contentful Space ID
+const ACCESS_TOKEN = "YOUR_ACCESS_TOKEN"; // Replace with your Delivery API token
+const ENVIRONMENT = "master";           // Usually "master" unless you use a different environment
 
-// Container & navigation
-const container = document.getElementById('container');
-let currentSection = 'hero';
-
-// Section positions map
-const sectionsMap = { hero:{x:0,y:0}, right:{x:-100,y:0}, left:{x:100,y:0}, down:{x:0,y:-100} };
-
-// Snap navigation
-function snapTo(section){
-  const target = sectionsMap[section];
-  if(target){
-    container.style.transform = `translate(${target.x}vw, ${target.y}vh)`;
-    currentSection = section;
-  }
-}
-
-// Arrow clicks
-document.querySelectorAll('.arrow').forEach(a=>{
-  a.addEventListener('click', ()=>snapTo(a.dataset.dir));
-});
-
-// Wheel/keyboard scroll
-let scrollCooldown=false;
-window.addEventListener('wheel', e=>{
-  if(scrollCooldown) return;
-  scrollCooldown=true;
-
-  const absX=Math.abs(e.deltaX);
-  const absY=Math.abs(e.deltaY);
-
-  if(absX>absY){
-    if(e.deltaX>0 && currentSection==='hero') snapTo('right');
-    else if(e.deltaX<0 && currentSection==='hero') snapTo('left');
-  } else {
-    if(e.deltaY>0 && currentSection==='hero') snapTo('down');
-    else if(e.deltaY<0 && currentSection==='down') snapTo('hero');
-  }
-  setTimeout(()=>scrollCooldown=false,800);
-});
-
-window.addEventListener('keydown', e=>{
-  if(e.key==='ArrowRight' && currentSection==='hero') snapTo('right');
-  if(e.key==='ArrowLeft' && currentSection==='hero') snapTo('left');
-  if(e.key==='ArrowDown' && currentSection==='hero') snapTo('down');
-  if(e.key==='ArrowUp') snapTo('hero');
-});
-
-window.addEventListener('scroll', e=>e.preventDefault());
-
-// Modal viewer
-function openModal(url){
-  const modal = document.getElementById('photo-modal');
-  const img = document.getElementById('modal-img');
-  img.src = url;
-  modal.style.display = 'flex';
-}
-document.getElementById('photo-modal').addEventListener('click', () => {
-  document.getElementById('photo-modal').style.display = 'none';
-});
-
-// Load photos from Contentful
-async function loadPhotos(){
+async function loadPhotos() {
   const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?access_token=${ACCESS_TOKEN}&content_type=photo&order=fields.title`;
-  try{
+
+  try {
     const res = await fetch(url);
     const data = await res.json();
 
     const assets = {};
-    data.includes?.Asset?.forEach(a=>assets[a.sys.id]=a.fields.file.url);
+    data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
 
     const photosSection = document.getElementById('photos');
 
-    // Remove existing boxes if any
-    photosSection.querySelectorAll('.photo-box').forEach(el=>el.remove());
+    // Remove existing photo boxes (in case reloading)
+    photosSection.querySelectorAll('.photo-box,h2').forEach(el => el.remove());
 
-    // Build sections
-    const sections = ['Featured','Wildlife','Double Exposures','Travel','Water','Light'];
-
-    sections.forEach(sectionName=>{
-      // Create section title
+    // ----- Featured Photos -----
+    const featuredItems = data.items.filter(item => item.fields.featured === true);
+    if (featuredItems.length > 0) {
       const h2 = document.createElement('h2');
-      h2.textContent = sectionName;
+      h2.textContent = 'Featured';
       photosSection.appendChild(h2);
 
-      // Filter items for this section
-      const filtered = data.items.filter(item => {
-        if(sectionName==='Featured') return item.fields.featured === true;
-        return item.fields.category === sectionName;
-      });
-
-      // Create boxes
-      filtered.forEach(item=>{
+      featuredItems.forEach(item => {
         const thumbId = item.fields.doubleExpo1thumbnail?.sys?.id;
         const fullId = item.fields.DoubleExpoPhoto?.sys?.id;
-        const thumbUrl = thumbId ? assets[thumbId]+'?w=400' : '';
-        const fullUrl = fullId ? assets[fullId]+'?w=2000' : '';
+        const thumbUrl = thumbId ? assets[thumbId] + '?w=600' : '';
+        const fullUrl = fullId ? assets[fullId] + '?w=2000' : '';
 
         const div = document.createElement('div');
-        div.className='photo-box';
-        div.style.background=`url(${thumbUrl}) center/cover no-repeat`;
+        div.className = 'photo-box';
+        div.style.background = `url(${thumbUrl}) center/cover no-repeat`;
+        div.style.height = '300px';
         div.title = item.fields.title || '';
-        div.loading = 'lazy';
-        div.addEventListener('click',()=>openModal(fullUrl));
+        div.addEventListener('click', () => openModal(fullUrl));
+
+        photosSection.appendChild(div);
+      });
+    }
+
+    // ----- Categories -----
+    const categories = ['Wildlife', 'Double Exposures', 'Travel', 'Water', 'Light'];
+    categories.forEach(cat => {
+      const catItems = data.items.filter(item => item.fields.category === cat);
+      if (catItems.length === 0) return;
+
+      const h2 = document.createElement('h2');
+      h2.textContent = cat;
+      photosSection.appendChild(h2);
+
+      catItems.forEach(item => {
+        const thumbId = item.fields.doubleExpo1thumbnail?.sys?.id;
+        const fullId = item.fields.DoubleExpoPhoto?.sys?.id;
+        const thumbUrl = thumbId ? assets[thumbId] + '?w=400' : '';
+        const fullUrl = fullId ? assets[fullId] + '?w=2000' : '';
+
+        const div = document.createElement('div');
+        div.className = 'photo-box';
+        div.style.background = `url(${thumbUrl}) center/cover no-repeat`;
+        div.style.height = '150px';
+        div.title = item.fields.title || '';
+        div.addEventListener('click', () => openModal(fullUrl));
 
         photosSection.appendChild(div);
       });
     });
 
-  } catch(err){
+  } catch (err) {
     console.error("Error loading photos:", err);
   }
 }
 
-// Initialize
+// Call the function to load photos
 loadPhotos();
+
+// Optional: Modal function for full images
+function openModal(url) {
+  const modal = document.createElement('div');
+  modal.style.position = 'fixed';
+  modal.style.top = 0;
+  modal.style.left = 0;
+  modal.style.width = '100vw';
+  modal.style.height = '100vh';
+  modal.style.background = 'rgba(0,0,0,0.9)';
+  modal.style.display = 'flex';
+  modal.style.justifyContent = 'center';
+  modal.style.alignItems = 'center';
+  modal.style.cursor = 'pointer';
+  modal.style.zIndex = 1000;
+
+  const img = document.createElement('img');
+  img.src = url;
+  img.style.maxWidth = '90%';
+  img.style.maxHeight = '90%';
+  modal.appendChild(img);
+
+  modal.addEventListener('click', () => modal.remove());
+  document.body.appendChild(modal);
+}
 </script>
 
 </body>

@@ -15,16 +15,18 @@ html, body {
   overflow-x:hidden; /* allow vertical scrolling */
 }
 
+/* Horizontal container for Hero, Music, Drawings */
 #container {
-  position:relative;
-  width:300vw; /* horizontal scrolling for Hero -> Music/Drawings */
-  height:auto;
   display:flex;
+  width:300vw;
+  height:100vh;
+  transition: transform 0.8s ease;
 }
 
 section {
   width:100vw;
   flex-shrink:0;
+  height:100%;
   display:flex;
   flex-direction:column;
   padding:20px;
@@ -33,18 +35,20 @@ section {
 
 /* Sections positions */
 #hero {
-  height:100vh;
   background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
   background-size:cover;
   position:relative;
 }
-#music { background:#222; height:100vh; }
-#drawings { background:#444; height:100vh; }
+#music { background:#222; }
+#drawings { background:#444; }
+
+/* Photos section (separate, scrollable) */
 #photos {
   background:#111;
-  overflow-y:auto;
   min-height:100vh;
+  overflow-y:auto;
   scroll-behavior:smooth;
+  padding:20px;
 }
 
 /* Category grid */
@@ -53,14 +57,12 @@ section {
   margin-bottom:10px;
   text-align:left;
 }
-
 .category-grid {
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
   grid-gap:10px;
   margin-bottom:30px;
 }
-
 .category-item {
   border-radius:8px;
   overflow:hidden;
@@ -68,12 +70,10 @@ section {
   transform: translateY(20px);
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
-
 .category-item.visible {
   opacity:1;
   transform: translateY(0);
 }
-
 .category-item img {
   width:100%;
   height:auto;
@@ -118,38 +118,34 @@ section {
 </head>
 <body>
 
+<!-- Horizontal scroll container -->
 <div id="container">
-  <!-- Hero -->
   <section id="hero">
     <div class="arrow arrow-right" data-dir="right">→<span>Music</span></div>
     <div class="arrow arrow-left" data-dir="left">←<span>Drawings</span></div>
     <div class="arrow arrow-down" data-dir="down">↓<span>Photos</span></div>
   </section>
 
-  <!-- Music -->
   <section id="music">
     <h2>MUSIC</h2>
     <div class="arrow arrow-back-left" data-dir="hero">←<span>Back</span></div>
   </section>
 
-  <!-- Drawings -->
   <section id="drawings">
     <h2>DRAWINGS</h2>
     <div class="arrow arrow-back-right" data-dir="hero">→<span>Back</span></div>
   </section>
-
-  <!-- Photos -->
-  <section id="photos">
-    <div class="arrow arrow-back-up" data-dir="hero">↑<span>Back</span></div>
-    <div id="categories"></div>
-  </section>
 </div>
 
-<script>
-// ----- ARROWS & HORIZONTAL SCROLL -----
-const containerEl = document.getElementById('container');
-let currentSection = 'hero';
+<!-- Photos section (vertical scroll) -->
+<section id="photos">
+  <div class="arrow arrow-back-up" data-dir="hero">↑<span>Back</span></div>
+  <div id="categories"></div>
+</section>
 
+<script>
+// ----- HORIZONTAL ARROWS -----
+const containerEl = document.getElementById('container');
 document.querySelectorAll('.arrow').forEach(a=>{
   a.addEventListener('click', ()=>{
     const dir = a.dataset.dir;
@@ -157,7 +153,6 @@ document.querySelectorAll('.arrow').forEach(a=>{
     if(dir==='left') containerEl.style.transform = 'translateX(100vw)';
     if(dir==='down') document.getElementById('photos').scrollIntoView({behavior:'smooth'});
     if(dir==='hero') window.scrollTo({top:0, behavior:'smooth'});
-    currentSection = dir;
   });
 });
 

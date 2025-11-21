@@ -43,14 +43,6 @@ section {
   background: url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
 }
 
-/* Mobile hero image */
-@media (max-width: 768px) {
-  #hero {
-    background: url('SAULZIDULKABEJCEKMOBILE.jpg') center/contain no-repeat;
-    background-size: contain; /* ensures full image visible on mobile */
-  }
-}
-
 #music     { top:0; left:100vw; background:#222; }
 #drawings  { top:0; left:-100vw; background:#444; }
 #photos    { top:100vh; left:0; background:#333; display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); grid-auto-rows:minmax(150px,auto); grid-gap:10px; padding:20px; }
@@ -86,6 +78,18 @@ h2 { font-size:0.8rem; margin-bottom:10px; }
 .arrow-back-right { top:50%; right:20px; transform:translateY(-50%);} /* Drawings → Hero */
 .arrow-back-up    { top:20px; left:50%; transform:translateX(-50%);}   /* Photos → Hero */
 
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  #hero {
+    background: url('SAULZIDULKABEJCEKMOBILE.jpg') center/cover no-repeat;
+  }
+
+  /* Pull arrows closer and reduce size */
+  .arrow-right { right: 10px; font-size: 1.2rem; }
+  .arrow-left  { left: 10px; font-size: 1.2rem; }
+  .arrow-down  { bottom: 10px; font-size: 1.2rem; }
+  .arrow span { font-size: 0.7rem; }
+}
 </style>
 </head>
 <body>
@@ -165,19 +169,11 @@ window.addEventListener('wheel', e=>{
   const absY = Math.abs(e.deltaY);
 
   if(absX > absY){
-    // horizontal scroll
-    if(e.deltaX>0){
-      if(currentSection==='hero') snapTo('right');
-    } else {
-      if(currentSection==='hero') snapTo('left');
-    }
+    if(e.deltaX>0){ if(currentSection==='hero') snapTo('right'); }
+    else { if(currentSection==='hero') snapTo('left'); }
   } else {
-    // vertical scroll
-    if(e.deltaY>0){
-      if(currentSection==='hero') snapTo('down');
-    } else {
-      if(currentSection==='down') snapTo('hero');
-    }
+    if(e.deltaY>0){ if(currentSection==='hero') snapTo('down'); }
+    else { if(currentSection==='down') snapTo('hero'); }
   }
 
   setTimeout(()=>scrollCooldown=false,800);

@@ -12,7 +12,7 @@ html, body {
   font-family:'Archivo Expanded', sans-serif;
   background:#111;
   color:#eee;
-  overflow-x:hidden; /* allow vertical scrolling */
+  overflow-x:hidden;
 }
 
 /* Horizontal container for Hero, Music, Drawings */
@@ -49,7 +49,7 @@ section {
   overflow-y: scroll;
   scroll-behavior:smooth;
   padding:20px;
-  scroll-snap-type: y mandatory; /* snap vertically */
+  scroll-snap-type: y mandatory;
 }
 
 /* Category section */
@@ -86,12 +86,11 @@ section {
   object-fit:contain;
   display:block;
   background:none;
-  transition: transform 0.3s ease; /* for parallax */
+  transition: transform 0.3s ease;
 }
 
 /* Arrows */
 .arrow {
-  position:absolute;
   color:#fff;
   font-size:1.5rem;
   display:flex;
@@ -108,10 +107,14 @@ section {
 .arrow-left  { top:50%; left:20px; transform:translateY(-50%);}
 .arrow-down  { bottom:40px; left:50%; transform:translateX(-50%);}
 
-/* Branch arrows */
-.arrow-back-left  { top:50%; left:20px; transform:translateY(-50%);} 
-.arrow-back-right { top:50%; right:20px; transform:translateY(-50%);} 
-.arrow-back-up    { top:20px; left:50%; transform:translateX(-50%);}   
+/* Back arrow for branches and top of photos */
+.arrow-back-up {
+  position: fixed;
+  top:20px;
+  left:50%;
+  transform: translateX(-50%);
+  display:none;
+}
 
 /* Scroll indicator dots */
 #photos .scroll-indicator {
@@ -157,12 +160,10 @@ section {
 
   <section id="music">
     <h2>MUSIC</h2>
-    <div class="arrow arrow-back-left" data-dir="hero">←<span>Back</span></div>
   </section>
 
   <section id="drawings">
     <h2>DRAWINGS</h2>
-    <div class="arrow arrow-back-right" data-dir="hero">→<span>Back</span></div>
   </section>
 </div>
 
@@ -176,15 +177,41 @@ section {
 <script>
 // ----- HORIZONTAL ARROWS -----
 const containerEl = document.getElementById('container');
-document.querySelectorAll('.arrow').forEach(a=>{
-  a.addEventListener('click', ()=>{
-    const dir = a.dataset.dir;
-    if(dir==='right') containerEl.style.transform = 'translateX(-100vw)';
-    if(dir==='left') containerEl.style.transform = 'translateX(100vw)';
-    if(dir==='down') document.getElementById('photos').scrollIntoView({behavior:'smooth'});
-    if(dir==='hero') window.scrollTo({top:0, behavior:'smooth'});
-  });
+const hero = document.getElementById('hero');
+const music = document.getElementById('music');
+const drawings = document.getElementById('drawings');
+const photos = document.getElementById('photos');
+
+const arrowRight = hero.querySelector('.arrow-right');
+const arrowLeft  = hero.querySelector('.arrow-left');
+const arrowDown  = hero.querySelector('.arrow-down');
+const arrowBackUp = document.querySelector('.arrow-back-up');
+
+arrowBackUp.style.display='none'; // initially hidden
+
+arrowRight.addEventListener('click', ()=>{ containerEl.style.transform='translateX(-100vw)'; });
+arrowLeft.addEventListener('click', ()=>{ containerEl.style.transform='translateX(100vw)'; });
+arrowDown.addEventListener('click', ()=>{ photos.scrollIntoView({behavior:'smooth'}); });
+
+arrowBackUp.addEventListener('click', ()=>{
+  window.scrollTo({top:0, behavior:'smooth'});
+  containerEl.style.transform='translateX(0)';
+  arrowBackUp.style.display='none';
 });
+
+// Show back arrow in Music, Drawings, or top of Photos
+function updateBackArrow(){
+  const scrollTop = window.scrollY || document.documentElement.scrollTop;
+  const photosTop = photos.getBoundingClientRect().top + window.scrollY;
+
+  if(scrollTop >= music.offsetTop || scrollTop >= drawings.offsetTop || (scrollTop >= photosTop && scrollTop < photosTop + 100)){
+    arrowBackUp.style.display='flex';
+  } else {
+    arrowBackUp.style.display='none';
+  }
+}
+window.addEventListener('scroll', updateBackArrow);
+updateBackArrow();
 
 // ----- CONTENTFUL DYNAMIC LOAD -----
 const SPACE_ID = '5w319pzc4eiq';
@@ -198,12 +225,10 @@ async function fetchPhotos() {
   const data = await res.json();
 
   const assets = {};
-  data.includes?.Asset?.forEach(a=>{
-    assets[a.sys.id] = a.fields.file.url;
-  });
+  data.includes?.Asset?.forEach(a=>{ assets[a.sys.id]=a.fields.file.url; });
 
-  const photos = data.items.map(item => {
-    const f = item.fields;
+  const photosData = data.items.map(item => {
+    const f=item.fields;
     return {
       title: f.title,
       photo: f.photo ? `https:${assets[f.photo.sys.id]}` : '',
@@ -214,85 +239,64 @@ async function fetchPhotos() {
     };
   });
 
-  displayPhotos(photos);
+  displayPhotos(photosData);
 }
 
-function displayPhotos(photos){
+function displayPhotos(photosData){
   const categoriesContainer = document.getElementById('categories');
   const indicatorContainer = document.querySelector('#photos .scroll-indicator');
   const allCategories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
 
   allCategories.forEach((cat,index)=>{
-    let items;
-    if(cat==="Featured"){
-      items = photos.filter(p=>p.featured);
-    } else {
-      items = photos.filter(p=>p.category===cat);
-    }
+    let items = (cat==="Featured") ? photosData.filter(p=>p.featured) : photosData.filter(p=>p.category===cat);
     if(items.length===0) return;
 
     const section = document.createElement('div');
-    section.className = 'category-section';
+    section.className='category-section';
 
-    const h2 = document.createElement('h2');
-    h2.textContent = cat;
+    const h2 = document.createElement('h2'); h2.textContent=cat;
     section.appendChild(h2);
 
-    const grid = document.createElement('div');
-    grid.className = 'category-grid';
-
+    const grid = document.createElement('div'); grid.className='category-grid';
     items.forEach(p=>{
-      const div = document.createElement('div');
-      div.className = 'category-item';
-      const img = document.createElement('img');
-      img.src = p.thumbnail || p.photo;
-      img.alt = p.title;
-      img.loading='lazy';
+      const div = document.createElement('div'); div.className='category-item';
+      const img = document.createElement('img'); img.src=p.thumbnail||p.photo; img.alt=p.title; img.loading='lazy';
       div.appendChild(img);
       grid.appendChild(div);
     });
-
     section.appendChild(grid);
     categoriesContainer.appendChild(section);
 
-    // Add scroll indicator dot
-    const dot = document.createElement('div');
-    dot.className='dot';
-    dot.dataset.index=index;
+    const dot=document.createElement('div'); dot.className='dot'; dot.dataset.index=index;
     dot.addEventListener('click', ()=>{ section.scrollIntoView({behavior:'smooth'}); });
     indicatorContainer.appendChild(dot);
   });
 
-  // Initialize IntersectionObserver for fade-in and indicator
+  // Fade-in observer
   const categoryItems = document.querySelectorAll('.category-item');
   const observerOptions = { threshold:0.1 };
   categoryItems.forEach(item=>{
     const observer = new IntersectionObserver(entries=>{
       entries.forEach(entry=>{
-        if(entry.isIntersecting){
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
+        if(entry.isIntersecting){ entry.target.classList.add('visible'); observer.unobserve(entry.target); }
       });
     }, observerOptions);
     observer.observe(item);
   });
 
-  // Scroll listener for parallax & indicator
+  // Parallax & scroll indicator
   const photosContainer = document.getElementById('photos');
   const sections = document.querySelectorAll('.category-section');
   const dots = document.querySelectorAll('#photos .scroll-indicator .dot');
 
   photosContainer.addEventListener('scroll', ()=>{
-    // Parallax effect
     document.querySelectorAll('.category-item img').forEach(img=>{
       const parent = img.parentElement;
       const offset = parent.getBoundingClientRect().top;
-      img.style.transform = `translateY(${offset*0.1}px)`; // subtle
+      img.style.transform=`translateY(${offset*0.1}px)`;
     });
-    // Update active dot
     sections.forEach((sec,i)=>{
-      const rect = sec.getBoundingClientRect();
+      const rect=sec.getBoundingClientRect();
       if(rect.top <= window.innerHeight/2 && rect.bottom >= window.innerHeight/2){
         dots.forEach(d=>d.classList.remove('active'));
         if(dots[i]) dots[i].classList.add('active');
@@ -303,26 +307,18 @@ function displayPhotos(photos){
   // Keyboard navigation
   document.addEventListener('keydown', (e)=>{
     if(['ArrowUp','ArrowDown'].includes(e.key)){
-      let currentIndex = 0;
+      let currentIndex=0;
       sections.forEach((sec,i)=>{
-        const rect = sec.getBoundingClientRect();
-        if(rect.top <= window.innerHeight/2 && rect.bottom >= window.innerHeight/2){
-          currentIndex=i;
-        }
+        const rect=sec.getBoundingClientRect();
+        if(rect.top <= window.innerHeight/2 && rect.bottom >= window.innerHeight/2){ currentIndex=i; }
       });
-      if(e.key==='ArrowDown'){
-        const nextIndex = Math.min(currentIndex+1,sections.length-1);
-        sections[nextIndex].scrollIntoView({behavior:'smooth'});
-      } else if(e.key==='ArrowUp'){
-        const prevIndex = Math.max(currentIndex-1,0);
-        sections[prevIndex].scrollIntoView({behavior:'smooth'});
-      }
+      if(e.key==='ArrowDown'){ sections[Math.min(currentIndex+1,sections.length-1)].scrollIntoView({behavior:'smooth'}); }
+      else if(e.key==='ArrowUp'){ sections[Math.max(currentIndex-1,0)].scrollIntoView({behavior:'smooth'}); }
     }
   });
 }
 
 fetchPhotos();
 </script>
-
 </body>
 </html>

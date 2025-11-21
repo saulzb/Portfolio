@@ -16,7 +16,7 @@ html, body {
 
 #container {
   position:relative;
-  width:300vw;
+  width:300vw; /* left-center-right */
   height:auto;
   transform: translate(0,0);
   transition: transform 0.8s ease;
@@ -46,34 +46,31 @@ section {
 #drawings  { top:0; left:-100vw; height:100vh; background:#444; }
 #photos {
   top:100vh; left:0;
-  background:#333;
+  background:#111;
   padding:20px;
   box-sizing:border-box;
   min-height:100vh;
-  overflow-y:auto; /* allow vertical scroll */
+  overflow-y:auto; /* vertical scroll */
 }
 
 /* Featured grid */
 #featured {
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
   grid-gap:15px;
   margin-bottom:30px;
 }
 .featured-item {
-  background:#666;
   border-radius:8px;
   overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
 }
 .featured-item img {
   width:100%;
   height:auto;
-  object-fit:contain; /* keep full image visible */
+  object-fit:contain; 
   display:block;
+  background:none;
+  max-height:250px; /* smaller images */
 }
 
 /* Category sections */
@@ -89,23 +86,20 @@ section {
 }
 .category-grid {
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
   grid-gap:10px;
 }
 .category-item {
-  background:#555;
   border-radius:8px;
   overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
 }
 .category-item img {
   width:100%;
   height:auto;
-  object-fit:contain; /* keep full image visible */
+  object-fit:contain;
   display:block;
+  background:none;
+  max-height:200px; 
 }
 
 /* Arrows */
@@ -137,8 +131,8 @@ section {
   #hero { background:url('SAULZIDULKABEJCEKMOBILE.jpg') center/cover no-repeat; background-size:cover; }
   .arrow-down { bottom:20px; }
   #featured { grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
-  .category-grid { grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
-  .featured-item img, .category-item img { max-height:200px; }
+  .category-grid { grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); }
+  .featured-item img, .category-item img { max-height:150px; }
 }
 </style>
 </head>
@@ -176,44 +170,52 @@ section {
 // ---- ARROWS + SCROLLING ----
 const container = document.getElementById('container');
 let currentSection = 'hero';
+let firstScrollLock = false; // for locking between hero and photos
 const sectionsMap = {
   hero:{x:0, y:0},
   right:{x:-100, y:0},   
   left:{x:100, y:0},     
   down:{x:0, y:-100}     
 };
+
 function snapTo(section){
   const target = sectionsMap[section];
   if(target){
     container.style.transform = `translate(${target.x}vw, ${target.y}vh)`;
     currentSection = section;
+    firstScrollLock = false; // reset scroll lock
   }
 }
+
 document.querySelectorAll('.arrow').forEach(a=>{
   a.addEventListener('click', ()=>snapTo(a.dataset.dir));
 });
 
-// Custom scroll logic for photos section
-let scrollCooldown=false;
+// Wheel scroll with locking logic
 window.addEventListener('wheel', e=>{
-  if(scrollCooldown) return;
-  scrollCooldown=true;
-
   const photosSection = document.getElementById('photos');
-
   if(currentSection === 'hero'){
-    if(e.deltaY > 0) snapTo('down');
+    if(e.deltaY > 0){
+      snapTo('down'); // first scroll down locks at top of photos
+      e.preventDefault();
+    }
   } else if(currentSection === 'down'){
-    // if at top and scroll up, snap back to hero
-    if(e.deltaY < 0 && photosSection.scrollTop === 0){
-      snapTo('hero');
-    } 
-    // otherwise natural scroll inside photos
+    // horizontal scroll ignored
+    // vertical scroll inside photos
+    if(e.deltaY < 0){
+      if(photosSection.scrollTop === 0){
+        if(!firstScrollLock){
+          firstScrollLock = true; // lock at top
+          e.preventDefault();
+        } else {
+          snapTo('hero'); // second scroll returns to hero
+        }
+      }
+    }
   }
-
-  setTimeout(()=>scrollCooldown=false,800);
 });
 
+// Keyboard arrows
 window.addEventListener('keydown', e=>{
   if(e.key==='ArrowRight' && currentSection==='hero') snapTo('right');
   if(e.key==='ArrowLeft' && currentSection==='hero') snapTo('left');
@@ -223,8 +225,8 @@ window.addEventListener('keydown', e=>{
 window.addEventListener('scroll', e=>e.preventDefault());
 
 // ---- CONTENTFUL DYNAMIC LOAD ----
-const SPACE_ID = '5w319pzc4eiq';
-const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
+const SPACE_ID = 'YOUR_SPACE_ID';
+const ACCESS_TOKEN = 'YOUR_CDA_TOKEN';
 const ENVIRONMENT = 'master';
 
 async function fetchPhotos() {
@@ -271,15 +273,10 @@ function displayPhotos(photos){
   });
 
   // Categories
-  const categoryMap = {};
-  photos.forEach(p=>{
-    if(!p.featured){
-      if(!categoryMap[p.category]) categoryMap[p.category] = [];
-      categoryMap[p.category].push(p);
-    }
-  });
-
-  for(const [cat, items] of Object.entries(categoryMap)){
+  const allCategories = ["Wildlife", "Double Exposures", "Travel", "Water", "Light"];
+  allCategories.forEach(cat => {
+    const items = photos.filter(p => p.category === cat && !p.featured);
+    if(items.length === 0) return; // skip empty
     const section = document.createElement('div');
     section.className = 'category-section';
     const h2 = document.createElement('h2');
@@ -298,9 +295,10 @@ function displayPhotos(photos){
       div.appendChild(img);
       grid.appendChild(div);
     });
+
     section.appendChild(grid);
     categoriesContainer.appendChild(section);
-  }
+  });
 }
 
 fetchPhotos();

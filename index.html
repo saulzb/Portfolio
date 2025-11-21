@@ -17,33 +17,35 @@ html, body {
 
 #container {
   position:relative;
-  width:300vw;  /* left-center-right */
-  height:200vh; /* center + down for photos */
-  transform: translate(0,0); /* start on hero */
+  width:300vw;  
+  height:auto; /* allow sections to grow */
+  transform: translate(0,0); 
   transition: transform 0.8s ease;
 }
 
 section {
   position:absolute;
-  width:100vw; height:100vh;
+  width:100vw;
   display:flex;
   justify-content:center;
-  align-items:center;
+  align-items:flex-start; /* start at top for photos */
   text-align:center;
   font-size:1rem;
   box-sizing:border-box;
   flex-direction:column;
-  overflow-y:auto; /* allow scroll inside photos */
+  overflow:visible;
+  padding:20px;
 }
 
 /* Sections positions */
 #hero {
   top:0; left:0;
+  height:100vh;
   background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
 }
-#music     { top:0; left:100vw; background:#222; }
-#drawings  { top:0; left:-100vw; background:#444; }
-#photos    { top:100vh; left:0; background:#333; padding:20px; box-sizing:border-box; }
+#music     { top:0; left:100vw; height:100vh; background:#222; }
+#drawings  { top:0; left:-100vw; height:100vh; background:#444; }
+#photos    { top:100vh; left:0; background:#333; padding:20px; box-sizing:border-box; height:auto; }
 
 /* Featured grid */
 #featured {
@@ -64,17 +66,21 @@ section {
 .featured-item img {
   width:100%;
   height:auto;
+  max-height:250px;
+  object-fit:cover;
   display:block;
 }
 
 /* Category sections */
 .category-section {
   margin-bottom:40px;
+  width:100%;
 }
 .category-section h2 {
   font-size:1rem;
   margin-bottom:15px;
   text-align:left;
+  padding-left:5px;
 }
 .category-grid {
   display:grid;
@@ -93,6 +99,8 @@ section {
 .category-item img {
   width:100%;
   height:auto;
+  max-height:250px;
+  object-fit:cover;
   display:block;
 }
 
@@ -124,6 +132,9 @@ section {
 @media(max-width:768px){
   #hero { background:url('SAULZIDULKABEJCEKMOBILE.jpg') center/cover no-repeat; background-size:cover; }
   .arrow-down { bottom:20px; }
+  #featured { grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
+  .category-grid { grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
+  .featured-item img, .category-item img { max-height:200px; }
 }
 </style>
 </head>
@@ -206,7 +217,7 @@ const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
 const ENVIRONMENT = 'master';
 
 async function fetchPhotos() {
-  const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&order=sys.createdAt`;
+  const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&order=sys.createdAt&include=1`;
   const res = await fetch(url);
   if(!res.ok) { console.error('Contentful fetch failed', res.status); return; }
   const data = await res.json();

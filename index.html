@@ -3,240 +3,207 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saul Zidulka-Bejcek</title>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded&display=swap" rel="stylesheet">
+<title>Photo Scroll Page</title>
 <style>
-html, body {
-  margin:0; padding:0;
-  width:100%; height:100%;
-  font-family:'Archivo Expanded', sans-serif;
-  background:#111;
-  color:#eee;
-  overflow-x:hidden; /* allow vertical scrolling */
-}
+  body {
+    margin: 0;
+    font-family: sans-serif;
+    overflow: hidden; /* prevent body scroll */
+  }
 
-/* Horizontal container for Hero, Music, Drawings */
-#container {
-  display:flex;
-  width:300vw;
-  height:100vh;
-  transition: transform 0.8s ease;
-}
+  .photos-container {
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    position: relative;
+  }
 
-section {
-  width:100vw;
-  flex-shrink:0;
-  height:100%;
-  display:flex;
-  flex-direction:column;
-  padding:20px;
-  box-sizing:border-box;
-}
+  .photo-item {
+    height: 100vh;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
 
-/* Sections positions */
-#hero {
-  background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
-  background-size:cover;
-  position:relative;
-}
-#music { background:#222; }
-#drawings { background:#444; }
+  /* Photo fade-in + parallax */
+  .photo-item img {
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
 
-/* Photos section (separate, scrollable) */
-#photos {
-  background:#111;
-  min-height:100vh;
-  overflow-y:auto;
-  scroll-behavior:smooth;
-  padding:20px;
-}
+  .photo-item.visible img {
+    opacity: 1;
+    transform: translateY(0);
+  }
 
-/* Category grid */
-.category-section h2 {
-  font-size:1rem;
-  margin-bottom:10px;
-  text-align:left;
-}
-.category-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  grid-gap:10px;
-  margin-bottom:30px;
-}
-.category-item {
-  border-radius:8px;
-  overflow:hidden;
-  opacity:0;
-  transform: translateY(20px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-}
-.category-item.visible {
-  opacity:1;
-  transform: translateY(0);
-}
-.category-item img {
-  width:100%;
-  height:auto;
-  max-height:250px;
-  object-fit:contain;
-  display:block;
-  background:none;
-}
+  /* Title fade-in with delay */
+  .photo-item h2 {
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s;
+  }
 
-/* Arrows */
-.arrow {
-  position:absolute;
-  color:#fff;
-  font-size:1.5rem;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  cursor:pointer;
-  user-select:none;
-  z-index:10;
-}
-.arrow span { font-size:0.8rem; margin-top:5px; }
+  .photo-item.visible h2 {
+    opacity: 1;
+    transform: translateY(0);
+  }
 
-/* Hero arrows */
-.arrow-right { top:50%; right:20px; transform:translateY(-50%);}
-.arrow-left  { top:50%; left:20px; transform:translateY(-50%);}
-.arrow-down  { bottom:40px; left:50%; transform:translateX(-50%);}
+  /* In-place arrows */
+  .arrows {
+    position: absolute;
+    bottom: 20px;
+    display: flex;
+    gap: 20px;
+  }
 
-/* Branch arrows */
-.arrow-back-left  { top:50%; left:20px; transform:translateY(-50%);} 
-.arrow-back-right { top:50%; right:20px; transform:translateY(-50%);} 
-.arrow-back-up    { top:20px; left:50%; transform:translateX(-50%);}   
+  .arrows button {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+  }
 
-/* Mobile adjustments */
-@media(max-width:768px){
-  #hero { background:url('SAULZIDULKABEJCEKMOBILE.jpg') center/cover no-repeat; background-size:cover; }
-  .arrow-down { bottom:20px; }
-  .category-grid { grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); }
-  .category-item img { max-height:150px; }
-}
+  /* Scroll indicator dots */
+  .scroll-indicator {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 100;
+  }
+
+  .scroll-indicator .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ccc;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .scroll-indicator .dot.active {
+    background: #333;
+  }
 </style>
 </head>
 <body>
 
-<!-- Horizontal scroll container -->
-<div id="container">
-  <section id="hero">
-    <div class="arrow arrow-right" data-dir="right">→<span>Music</span></div>
-    <div class="arrow arrow-left" data-dir="left">←<span>Drawings</span></div>
-    <div class="arrow arrow-down" data-dir="down">↓<span>Photos</span></div>
-  </section>
+<div class="photos-container">
+  <div class="photo-item" id="photo1">
+    <img src="photo1.jpg" alt="Photo 1">
+    <h2>Title 1</h2>
+    <div class="arrows">
+      <button class="prev" data-target="photo1">⬆</button>
+      <button class="next" data-target="photo2">⬇</button>
+    </div>
+  </div>
 
-  <section id="music">
-    <h2>MUSIC</h2>
-    <div class="arrow arrow-back-left" data-dir="hero">←<span>Back</span></div>
-  </section>
+  <div class="photo-item" id="photo2">
+    <img src="photo2.jpg" alt="Photo 2">
+    <h2>Title 2</h2>
+    <div class="arrows">
+      <button class="prev" data-target="photo1">⬆</button>
+      <button class="next" data-target="photo3">⬇</button>
+    </div>
+  </div>
 
-  <section id="drawings">
-    <h2>DRAWINGS</h2>
-    <div class="arrow arrow-back-right" data-dir="hero">→<span>Back</span></div>
-  </section>
+  <div class="photo-item" id="photo3">
+    <img src="photo3.jpg" alt="Photo 3">
+    <h2>Title 3</h2>
+    <div class="arrows">
+      <button class="prev" data-target="photo2">⬆</button>
+      <button class="next" data-target="photo3">⬇</button>
+    </div>
+  </div>
+  <!-- Add more photo-items here as needed -->
 </div>
 
-<!-- Photos section (vertical scroll) -->
-<section id="photos">
-  <div class="arrow arrow-back-up" data-dir="hero">↑<span>Back</span></div>
-  <div id="categories"></div>
-</section>
+<!-- Scroll Indicator -->
+<div class="scroll-indicator">
+  <div class="dot active" data-target="photo1"></div>
+  <div class="dot" data-target="photo2"></div>
+  <div class="dot" data-target="photo3"></div>
+</div>
 
 <script>
-// ----- HORIZONTAL ARROWS -----
-const containerEl = document.getElementById('container');
-document.querySelectorAll('.arrow').forEach(a=>{
-  a.addEventListener('click', ()=>{
-    const dir = a.dataset.dir;
-    if(dir==='right') containerEl.style.transform = 'translateX(-100vw)';
-    if(dir==='left') containerEl.style.transform = 'translateX(100vw)';
-    if(dir==='down') document.getElementById('photos').scrollIntoView({behavior:'smooth'});
-    if(dir==='hero') window.scrollTo({top:0, behavior:'smooth'});
+const container = document.querySelector('.photos-container');
+const photoItems = document.querySelectorAll('.photo-item');
+const dots = document.querySelectorAll('.scroll-indicator .dot');
+
+function updateVisiblePhotos() {
+  const scrollTop = container.scrollTop;
+
+  photoItems.forEach((item, index) => {
+    const offsetTop = item.offsetTop;
+    const itemHeight = item.clientHeight;
+
+    // Fade-in / title delay logic
+    if (scrollTop >= offsetTop - itemHeight / 2 && scrollTop < offsetTop + itemHeight / 2) {
+      item.classList.add('visible');
+      // Update active dot
+      dots.forEach(dot => dot.classList.remove('active'));
+      dots[index].classList.add('active');
+    } else {
+      item.classList.remove('visible');
+    }
+
+    // Parallax effect (subtle)
+    const img = item.querySelector('img');
+    const relativeY = scrollTop - offsetTop;
+    img.style.transform = `translateY(${relativeY * 0.2}px)`;
+  });
+}
+
+// Initial check
+updateVisiblePhotos();
+
+// Scroll listener
+container.addEventListener('scroll', updateVisiblePhotos);
+
+// Arrow click functionality
+document.querySelectorAll('.arrows button').forEach(button => {
+  button.addEventListener('click', () => {
+    const targetId = button.dataset.target;
+    const targetEl = document.getElementById(targetId);
+    targetEl.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(updateVisiblePhotos, 300);
   });
 });
 
-// ----- CONTENTFUL DYNAMIC LOAD -----
-const SPACE_ID = '5w319pzc4eiq';
-const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
-const ENVIRONMENT = 'master';
-
-async function fetchPhotos() {
-  const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&order=sys.createdAt&include=1`;
-  const res = await fetch(url);
-  if(!res.ok){ console.error('Contentful fetch failed', res.status); return; }
-  const data = await res.json();
-
-  const assets = {};
-  data.includes?.Asset?.forEach(a=>{
-    assets[a.sys.id] = a.fields.file.url;
+// Scroll indicator dot click
+document.querySelectorAll('.scroll-indicator .dot').forEach(dot => {
+  dot.addEventListener('click', () => {
+    const targetId = dot.dataset.target;
+    const targetEl = document.getElementById(targetId);
+    targetEl.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(updateVisiblePhotos, 300);
   });
+});
 
-  const photos = data.items.map(item => {
-    const f = item.fields;
-    return {
-      title: f.title,
-      photo: f.photo ? `https:${assets[f.photo.sys.id]}` : '',
-      thumbnail: f.thumbnail ? `https:${assets[f.thumbnail.sys.id]}` : '',
-      description: f.description || '',
-      category: f.category || '',
-      featured: f.featured || false
-    };
-  });
-
-  displayPhotos(photos);
-}
-
-function displayPhotos(photos){
-  const categoriesContainer = document.getElementById('categories');
-  const allCategories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
-
-  allCategories.forEach(cat=>{
-    let items;
-    if(cat==="Featured"){
-      items = photos.filter(p=>p.featured);
-    } else {
-      items = photos.filter(p=>p.category===cat);
-    }
-    if(items.length===0) return;
-
-    const section = document.createElement('div');
-    section.className = 'category-section';
-
-    const h2 = document.createElement('h2');
-    h2.textContent = cat;
-    section.appendChild(h2);
-
-    const grid = document.createElement('div');
-    grid.className = 'category-grid';
-
-    items.forEach(p=>{
-      const div = document.createElement('div');
-      div.className = 'category-item';
-      const img = document.createElement('img');
-      img.src = p.thumbnail || p.photo;
-      img.alt = p.title;
-      img.loading='lazy';
-      div.appendChild(img);
-      grid.appendChild(div);
-
-      const observer = new IntersectionObserver(entries=>{
-        entries.forEach(entry=>{
-          if(entry.isIntersecting){
-            entry.target.classList.add('visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      }, {threshold:0.1});
-      observer.observe(div);
-    });
-
-    section.appendChild(grid);
-    categoriesContainer.appendChild(section);
-  });
-}
-
-fetchPhotos();
+// Keyboard arrow navigation
+document.addEventListener('keydown', (e) => {
+  const activeIndex = Array.from(photoItems).findIndex(item => item.classList.contains('visible'));
+  if (e.key === 'ArrowDown') {
+    const nextIndex = Math.min(activeIndex + 1, photoItems.length - 1);
+    photoItems[nextIndex].scrollIntoView({ behavior: 'smooth' });
+    setTimeout(updateVisiblePhotos, 300);
+  } else if (e.key === 'ArrowUp') {
+    const prevIndex = Math.max(activeIndex - 1, 0);
+    photoItems[prevIndex].scrollIntoView({ behavior: 'smooth' });
+    setTimeout(updateVisiblePhotos, 300);
+  }
+});
 </script>
 
 </body>

@@ -211,7 +211,7 @@ async function loadPhotos(){
 
       // Create boxes
       filtered.forEach(item=>{
-        const thumbId = item.fields.DoubleExpoPhotoThumbnail?.sys?.id;
+        const thumbId = item.fields.doubleExpo1thumbnail?.sys?.id;
         const fullId = item.fields.DoubleExpoPhoto?.sys?.id;
         const thumbUrl = thumbId ? assets[thumbId]+'?w=400' : '';
         const fullUrl = fullId ? assets[fullId]+'?w=2000' : '';

@@ -143,19 +143,88 @@ h2 { font-size:0.8rem; margin-bottom:10px; }
 </div>
 
 <script>
-const container = document.getElementById('container');
+// 🔑 Contentful API Config — replace with your own values
+const SPACE_ID = "5w319pzc4eiq";
+const ACCESS_TOKEN = "l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg";
+const ENVIRONMENT = "master";
 
-// Track current position
+// Fetch container and track current section
+const container = document.getElementById('container');
 let currentSection = 'hero';
 
-// Map of sections to container translate positions
+// 🔥 Fetch photos dynamically from Contentful
+async function loadPhotos() {
+  const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?access_token=${ACCESS_TOKEN}&content_type=photo`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const assets = {};
+    data.includes?.Asset?.forEach(asset => {
+      assets[asset.sys.id] = asset.fields.file.url;
+    });
+
+    const photosContainer = document.querySelector('#photos');
+    
+    // Remove static boxes & keep H2 + back arrow + featured
+    photosContainer.querySelectorAll('.photo-box').forEach(el => el.remove());
+
+    data.items.forEach(item => {
+      const title = item.fields.title;
+      const thumbId = item.fields.DoubleExpoPhotoThumbnail?.sys?.id;
+      const fullId = item.fields.DoubleExpoPhoto?.sys?.id;
+
+      const thumbUrl = thumbId ? assets[thumbId] + '?w=400' : '';
+      const fullUrl = fullId ? assets[fullId] + '?w=2000' : '';
+
+      const div = document.createElement('div');
+      div.className = 'photo-box';
+      div.style.background = `url(${thumbUrl}) center/cover no-repeat`;
+      div.title = title || "Photo";
+
+      div.addEventListener('click', () => openModal(fullUrl, title));
+
+      photosContainer.appendChild(div);
+    });
+
+  } catch (err) {
+    console.error("❌ Error loading photos:", err);
+  }
+}
+
+// 🖼 Modal viewer
+function openModal(imageUrl, title) {
+  let modal = document.getElementById('photo-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'photo-modal';
+    modal.style.cssText = `
+      position:fixed; inset:0; background:rgba(0,0,0,0.9);
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; z-index:9999;
+    `;
+    modal.innerHTML = `
+      <img id="modal-img" style="max-width:90vw; max-height:90vh; object-fit:contain;">
+    `;
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', () => modal.style.display = 'none');
+  }
+
+  document.getElementById('modal-img').src = imageUrl;
+  modal.style.display = 'flex';
+}
+
+// Navigation map
 const sectionsMap = {
-  hero:{x:0, y:0},
+  hero:{x:0, y:0},       // Hero
   right:{x:-100, y:0},   // Music
   left:{x:100, y:0},     // Drawings
   down:{x:0, y:-100}     // Photos
 };
 
+// Snap navigation
 function snapTo(section){
   const target = sectionsMap[section];
   if(target){
@@ -169,27 +238,26 @@ document.querySelectorAll('.arrow').forEach(a=>{
   a.addEventListener('click', ()=>snapTo(a.dataset.dir));
 });
 
-// Wheel / trackpad scroll: step-wise snapping
-let scrollCooldown=false;
+// Scroll & keyboard (unchanged)
+let scrollCooldown = false;
 window.addEventListener('wheel', e=>{
   if(scrollCooldown) return;
-  scrollCooldown=true;
+  scrollCooldown = true;
 
   const absX = Math.abs(e.deltaX);
   const absY = Math.abs(e.deltaY);
 
   if(absX > absY){
-    if(e.deltaX>0){ if(currentSection==='hero') snapTo('right'); }
-    else { if(currentSection==='hero') snapTo('left'); }
+    if(e.deltaX>0 && currentSection==='hero') snapTo('right');
+    else if(e.deltaX<0 && currentSection==='hero') snapTo('left');
   } else {
-    if(e.deltaY>0){ if(currentSection==='hero') snapTo('down'); }
-    else { if(currentSection==='down') snapTo('hero'); }
+    if(e.deltaY>0 && currentSection==='hero') snapTo('down');
+    else if(e.deltaY<0 && currentSection==='down') snapTo('hero');
   }
 
   setTimeout(()=>scrollCooldown=false,800);
 });
 
-// Keyboard arrows
 window.addEventListener('keydown', e=>{
   if(e.key==='ArrowRight' && currentSection==='hero') snapTo('right');
   if(e.key==='ArrowLeft' && currentSection==='hero') snapTo('left');
@@ -197,9 +265,12 @@ window.addEventListener('keydown', e=>{
   if(e.key==='ArrowUp') snapTo('hero');
 });
 
-// Disable natural scroll
 window.addEventListener('scroll', e=>e.preventDefault());
+
+// Load photos!!!
+loadPhotos();
 </script>
+
 
 </body>
 </html>

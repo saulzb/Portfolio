@@ -42,25 +42,27 @@ section {
 #music { background:#222; }
 #drawings { background:#444; }
 
-/* Photos section (separate, scrollable) */
+/* Photos section */
 #photos {
   background:#111;
   min-height:100vh;
   overflow-y: scroll;
   scroll-behavior:smooth;
-  padding:20px;
+  padding:0;
   scroll-snap-type: y mandatory;
+  position:relative;
 }
 
 /* Category section */
 .category-section {
   scroll-snap-align: start;
-  margin-bottom:30px;
+  margin-bottom:0;
 }
 .category-section h2 {
   font-size:1rem;
-  margin-bottom:10px;
+  margin:10px 0;
   text-align:left;
+  padding:0 20px;
 }
 
 /* Category grid */
@@ -68,6 +70,7 @@ section {
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
   grid-gap:10px;
+  padding:0 20px 40px 20px;
 }
 .category-item {
   border-radius:8px;
@@ -103,9 +106,9 @@ section {
 .arrow span { font-size:0.8rem; margin-top:5px; }
 
 /* Hero arrows */
-.arrow-right { top:50%; right:20px; transform:translateY(-50%);}
-.arrow-left  { top:50%; left:20px; transform:translateY(-50%);}
-.arrow-down  { bottom:40px; left:50%; transform:translateX(-50%);}
+.arrow-right { position:absolute; top:50%; right:20px; transform:translateY(-50%);}
+.arrow-left  { position:absolute; top:50%; left:20px; transform:translateY(-50%);}
+.arrow-down  { position:absolute; bottom:40px; left:50%; transform:translateX(-50%); }
 
 /* Back arrow for branches and top of photos */
 .arrow-back-up {
@@ -114,6 +117,7 @@ section {
   left:50%;
   transform: translateX(-50%);
   display:none;
+  z-index:20;
 }
 
 /* Scroll indicator dots */
@@ -153,29 +157,24 @@ section {
 <!-- Horizontal scroll container -->
 <div id="container">
   <section id="hero">
-    <div class="arrow arrow-right" data-dir="right">→<span>Music</span></div>
-    <div class="arrow arrow-left" data-dir="left">←<span>Drawings</span></div>
-    <div class="arrow arrow-down" data-dir="down">↓<span>Photos</span></div>
+    <div class="arrow arrow-right">→<span>Music</span></div>
+    <div class="arrow arrow-left">←<span>Drawings</span></div>
+    <div class="arrow arrow-down">↓<span>Photos</span></div>
   </section>
 
-  <section id="music">
-    <h2>MUSIC</h2>
-  </section>
-
-  <section id="drawings">
-    <h2>DRAWINGS</h2>
-  </section>
+  <section id="music"><h2>MUSIC</h2></section>
+  <section id="drawings"><h2>DRAWINGS</h2></section>
 </div>
 
-<!-- Photos section (vertical scroll) -->
+<!-- Photos section -->
 <section id="photos">
-  <div class="arrow arrow-back-up" data-dir="hero">↑<span>Back</span></div>
+  <div class="arrow arrow-back-up">↑<span>Back</span></div>
   <div id="categories"></div>
   <div class="scroll-indicator"></div>
 </section>
 
 <script>
-// ----- HORIZONTAL ARROWS -----
+// ----------------- HERO ARROWS -----------------
 const containerEl = document.getElementById('container');
 const hero = document.getElementById('hero');
 const music = document.getElementById('music');
@@ -191,20 +190,25 @@ arrowBackUp.style.display='none'; // initially hidden
 
 arrowRight.addEventListener('click', ()=>{ containerEl.style.transform='translateX(-100vw)'; });
 arrowLeft.addEventListener('click', ()=>{ containerEl.style.transform='translateX(100vw)'; });
-arrowDown.addEventListener('click', ()=>{ photos.scrollIntoView({behavior:'smooth'}); });
 
+// Scroll directly to first featured photo
+arrowDown.addEventListener('click', ()=>{
+  const firstSection = document.querySelector('#categories .category-section');
+  if(firstSection){ firstSection.scrollIntoView({behavior:'smooth'}); }
+});
+
+// Back arrow scrolls to Hero
 arrowBackUp.addEventListener('click', ()=>{
   window.scrollTo({top:0, behavior:'smooth'});
   containerEl.style.transform='translateX(0)';
   arrowBackUp.style.display='none';
 });
 
-// Show back arrow in Music, Drawings, or top of Photos
+// Show back arrow at top of photos
 function updateBackArrow(){
   const scrollTop = window.scrollY || document.documentElement.scrollTop;
   const photosTop = photos.getBoundingClientRect().top + window.scrollY;
-
-  if(scrollTop >= music.offsetTop || scrollTop >= drawings.offsetTop || (scrollTop >= photosTop && scrollTop < photosTop + 100)){
+  if(scrollTop >= photosTop && scrollTop < photosTop + 50){
     arrowBackUp.style.display='flex';
   } else {
     arrowBackUp.style.display='none';
@@ -213,32 +217,30 @@ function updateBackArrow(){
 window.addEventListener('scroll', updateBackArrow);
 updateBackArrow();
 
-// ----- CONTENTFUL DYNAMIC LOAD -----
+// ----------------- CONTENTFUL LOAD -----------------
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
 const ENVIRONMENT = 'master';
 
-async function fetchPhotos() {
+async function fetchPhotos(){
   const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&order=sys.createdAt&include=1`;
   const res = await fetch(url);
   if(!res.ok){ console.error('Contentful fetch failed', res.status); return; }
   const data = await res.json();
 
-  const assets = {};
-  data.includes?.Asset?.forEach(a=>{ assets[a.sys.id]=a.fields.file.url; });
+  const assets={};
+  data.includes?.Asset?.forEach(a=>assets[a.sys.id]=a.fields.file.url);
 
-  const photosData = data.items.map(item => {
+  const photosData = data.items.map(item=>{
     const f=item.fields;
     return {
       title: f.title,
-      photo: f.photo ? `https:${assets[f.photo.sys.id]}` : '',
-      thumbnail: f.thumbnail ? `https:${assets[f.thumbnail.sys.id]}` : '',
-      description: f.description || '',
+      photo: f.photo?`https:${assets[f.photo.sys.id]}`:'',
+      thumbnail: f.thumbnail?`https:${assets[f.thumbnail.sys.id]}`:'',
       category: f.category || '',
       featured: f.featured || false
     };
   });
-
   displayPhotos(photosData);
 }
 
@@ -248,24 +250,21 @@ function displayPhotos(photosData){
   const allCategories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
 
   allCategories.forEach((cat,index)=>{
-    let items = (cat==="Featured") ? photosData.filter(p=>p.featured) : photosData.filter(p=>p.category===cat);
+    let items = (cat==="Featured")?photosData.filter(p=>p.featured):photosData.filter(p=>p.category===cat);
     if(items.length===0) return;
 
-    const section = document.createElement('div');
+    const section=document.createElement('div');
     section.className='category-section';
-
-    const h2 = document.createElement('h2'); h2.textContent=cat;
+    const h2=document.createElement('h2'); h2.textContent=cat;
     section.appendChild(h2);
 
-    const grid = document.createElement('div'); grid.className='category-grid';
+    const grid=document.createElement('div'); grid.className='category-grid';
     items.forEach(p=>{
-      const div = document.createElement('div'); div.className='category-item';
-      const img = document.createElement('img'); img.src=p.thumbnail||p.photo; img.alt=p.title; img.loading='lazy';
-      div.appendChild(img);
-      grid.appendChild(div);
+      const div=document.createElement('div'); div.className='category-item';
+      const img=document.createElement('img'); img.src=p.thumbnail||p.photo; img.alt=p.title; img.loading='lazy';
+      div.appendChild(img); grid.appendChild(div);
     });
-    section.appendChild(grid);
-    categoriesContainer.appendChild(section);
+    section.appendChild(grid); categoriesContainer.appendChild(section);
 
     const dot=document.createElement('div'); dot.className='dot'; dot.dataset.index=index;
     dot.addEventListener('click', ()=>{ section.scrollIntoView({behavior:'smooth'}); });
@@ -273,10 +272,10 @@ function displayPhotos(photosData){
   });
 
   // Fade-in observer
-  const categoryItems = document.querySelectorAll('.category-item');
-  const observerOptions = { threshold:0.1 };
+  const categoryItems=document.querySelectorAll('.category-item');
+  const observerOptions={threshold:0.1};
   categoryItems.forEach(item=>{
-    const observer = new IntersectionObserver(entries=>{
+    const observer=new IntersectionObserver(entries=>{
       entries.forEach(entry=>{
         if(entry.isIntersecting){ entry.target.classList.add('visible'); observer.unobserve(entry.target); }
       });
@@ -284,15 +283,12 @@ function displayPhotos(photosData){
     observer.observe(item);
   });
 
-  // Parallax & scroll indicator
-  const photosContainer = document.getElementById('photos');
-  const sections = document.querySelectorAll('.category-section');
-  const dots = document.querySelectorAll('#photos .scroll-indicator .dot');
-
-  photosContainer.addEventListener('scroll', ()=>{
+  // Parallax & indicator
+  const sections=document.querySelectorAll('.category-section');
+  const dots=document.querySelectorAll('#photos .scroll-indicator .dot');
+  photos.addEventListener('scroll', ()=>{
     document.querySelectorAll('.category-item img').forEach(img=>{
-      const parent = img.parentElement;
-      const offset = parent.getBoundingClientRect().top;
+      const offset = img.parentElement.getBoundingClientRect().top;
       img.style.transform=`translateY(${offset*0.1}px)`;
     });
     sections.forEach((sec,i)=>{
@@ -304,7 +300,7 @@ function displayPhotos(photosData){
     });
   });
 
-  // Keyboard navigation
+  // Keyboard nav
   document.addEventListener('keydown', (e)=>{
     if(['ArrowUp','ArrowDown'].includes(e.key)){
       let currentIndex=0;

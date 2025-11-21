@@ -3,107 +3,182 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Photo Gallery</title>
+<title>Saul Zidulka-Bejcek</title>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded&display=swap" rel="stylesheet">
 <style>
-body {
-</section>
-
-  margin:0;
+html, body {
+  margin:0; padding:0;
+  width:100%; height:100%;
+  overflow:hidden;
   font-family:'Archivo Expanded', sans-serif;
   background:#111;
-  color:#fff;
+  color:#eee;
 }
+
+#container {
+  position:relative;
+  width:300vw;  /* left-center-right */
+  height:200vh; /* center + down for photos */
+  transform: translate(0,0); /* start on hero */
+  transition: transform 0.8s ease;
+}
+
 section {
-  padding:20px;
-}
-h2 {
-  text-align:center;
-  margin-bottom:20px;
-  font-size:1.2rem;
-}
-.photo-section {
+  position:absolute;
+  width:100vw; height:100vh;
   display:flex;
-  flex-wrap:wrap;
-  gap:10px;
   justify-content:center;
+  align-items:center;
+  text-align:center;
+  font-size:1rem;
+  box-sizing:border-box;
+  flex-direction:column;
 }
-.photo-section img {
-  width:200px;
-  height:150px;
-  object-fit:cover;
-  border-radius:6px;
+
+/* Sections positions */
+#hero      { top:0; left:0; background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; }
+#music     { top:0; left:100vw; background:#222; }
+#drawings  { top:0; left:-100vw; background:#444; }
+#photos    { top:100vh; left:0; background:#333; display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); grid-auto-rows:minmax(150px,auto); grid-gap:10px; padding:20px; }
+
+/* Photos: featured row spans full width */
+.featured { grid-column: 1 / -1; height:200px; background:#666; border-radius:8px; display:flex; justify-content:center; align-items:center; font-weight:bold; font-size:1rem; }
+
+/* Section boxes */
+.photo-box { background:#555; border-radius:8px; display:flex; justify-content:center; align-items:center; color:#fff; font-size:0.9rem; }
+
+h2 { font-size:0.8rem; margin-bottom:10px; }
+
+/* Arrows */
+.arrow {
+  position:absolute;
+  color:#fff;
+  font-size:1.5rem;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
   cursor:pointer;
-  transition: transform 0.3s;
+  user-select:none;
 }
-.photo-section img:hover {
-  transform: scale(1.05);
-}
+.arrow span { font-size:0.8rem; margin-top:5px; }
+
+/* Hero arrows */
+.arrow-right { top:50%; right:20px; transform:translateY(-50%);}
+.arrow-left  { top:50%; left:20px; transform:translateY(-50%);}
+.arrow-down  { bottom:20px; left:50%; transform:translateX(-50%);}
+
+/* Branch arrows */
+.arrow-back-left  { top:50%; left:20px; transform:translateY(-50%);} /* Music → Hero */
+.arrow-back-right { top:50%; right:20px; transform:translateY(-50%);} /* Drawings → Hero */
+.arrow-back-up    { top:20px; left:50%; transform:translateX(-50%);}   /* Photos → Hero */
+
 </style>
 </head>
 <body>
 
-<section id="photos">
-  <h2>PHOTOS</h2>
-  <div id="photo-container"></div>
-</section>
+<div id="container">
+  <!-- Hero -->
+  <section id="hero">
+    <div class="arrow arrow-right" data-dir="right">→<span>Music</span></div>
+    <div class="arrow arrow-left" data-dir="left">←<span>Drawings</span></div>
+    <div class="arrow arrow-down" data-dir="down">↓<span>Photos</span></div>
+  </section>
+
+  <!-- Music -->
+  <section id="music">
+    <h2>MUSIC</h2>
+    <div class="arrow arrow-back-left" data-dir="hero">←<span>Back</span></div>
+  </section>
+
+  <!-- Drawings -->
+  <section id="drawings">
+    <h2>DRAWINGS</h2>
+    <div class="arrow arrow-back-right" data-dir="hero">→<span>Back</span></div>
+  </section>
+
+  <!-- Photos -->
+  <section id="photos">
+    <h2>PHOTOS</h2>
+    <div class="arrow arrow-back-up" data-dir="hero">↑<span>Back</span></div>
+
+    <!-- Featured -->
+    <div class="featured">FEATURED</div>
+
+    <!-- Photo sections -->
+    <div class="photo-box">Double Exposures</div>
+    <div class="photo-box">Wildlife</div>
+    <div class="photo-box">Landscapes</div>
+    <div class="photo-box">Colour</div>
+    <div class="photo-box">Light</div>
+    <div class="photo-box">Water</div>
+  </section>
+</div>
 
 <script>
-// ----- STEP 1: Define your photo sections here -----
-const photoSections = [
-  {
-    name: "Featured",
-    folder: "photos/featured",
-    images: ["img1.jpg", "img2.jpg"]
-  },
-  {
-    name: "Double Exposures",
-    folder: "photos/double-exposures",
-    images: ["img1.jpg","img2.jpg"]
-  },
-  {
-    name: "Wildlife",
-    folder: "photos/wildlife",
-    images: ["img1.jpg","img2.jpg"]
+const container = document.getElementById('container');
+
+// Track current position
+let currentSection = 'hero';
+
+// Map of sections to container translate positions
+const sectionsMap = {
+  hero:{x:0, y:0},
+  right:{x:-100, y:0},   // Music
+  left:{x:100, y:0},     // Drawings
+  down:{x:0, y:-100}     // Photos
+};
+
+function snapTo(section){
+  const target = sectionsMap[section];
+  if(target){
+    container.style.transform = `translate(${target.x}vw, ${target.y}vh)`;
+    currentSection = section;
   }
-  // Add more sections here
-];
+}
 
-// ----- STEP 2: Auto-generate the photo grid -----
-const container = document.getElementById('photo-container');
-
-photoSections.forEach(section => {
-  // Section title
-  const title = document.createElement('h3');
-  title.textContent = section.name;
-  title.style.textAlign = "center";
-  title.style.margin = "15px 0";
-  container.appendChild(title);
-
-  // Section images
-  const sectionDiv = document.createElement('div');
-  sectionDiv.className = 'photo-section';
-
-  section.images.forEach(imgName => {
-    const thumbPath = `${section.folder}/thumbs/${imgName}`;
-    const fullPath = `${section.folder}/full/${imgName}`;
-
-    const img = document.createElement('img');
-    img.src = thumbPath;           // load thumbnail first
-    img.dataset.full = fullPath;   // full image path
-    img.alt = section.name;
-
-    // Click to load full image
-    img.addEventListener('click', () => {
-      img.src = fullPath;
-    });
-
-    sectionDiv.appendChild(img);
-  });
-
-  container.appendChild(sectionDiv);
+// Arrow clicks
+document.querySelectorAll('.arrow').forEach(a=>{
+  a.addEventListener('click', ()=>snapTo(a.dataset.dir));
 });
 
+// Wheel / trackpad scroll: step-wise snapping
+let scrollCooldown=false;
+window.addEventListener('wheel', e=>{
+  if(scrollCooldown) return;
+  scrollCooldown=true;
+
+  const absX = Math.abs(e.deltaX);
+  const absY = Math.abs(e.deltaY);
+
+  if(absX > absY){
+    // horizontal scroll
+    if(e.deltaX>0){
+      if(currentSection==='hero') snapTo('right');
+    } else {
+      if(currentSection==='hero') snapTo('left');
+    }
+  } else {
+    // vertical scroll
+    if(e.deltaY>0){
+      if(currentSection==='hero') snapTo('down');
+    } else {
+      if(currentSection==='down') snapTo('hero');
+    }
+  }
+
+  setTimeout(()=>scrollCooldown=false,800);
+});
+
+// Keyboard arrows
+window.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight' && currentSection==='hero') snapTo('right');
+  if(e.key==='ArrowLeft' && currentSection==='hero') snapTo('left');
+  if(e.key==='ArrowDown' && currentSection==='hero') snapTo('down');
+  if(e.key==='ArrowUp') snapTo('hero');
+});
+
+// Disable natural scroll
+window.addEventListener('scroll', e=>e.preventDefault());
 </script>
 
 </body>

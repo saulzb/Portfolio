@@ -72,6 +72,14 @@ section {
 .category-item {
   border-radius:8px;
   overflow:hidden;
+  opacity:0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.category-item.visible {
+  opacity:1;
+  transform: translateY(0);
 }
 
 .category-item img {
@@ -150,7 +158,7 @@ section {
 const container = document.getElementById('container');
 const photosSection = document.getElementById('photos');
 let currentSection = 'hero';
-let photosLock = true; // lock scrolling at top of photos initially
+let photosLock = true; // initially lock top
 
 const sectionsMap = {
   hero:{x:0, y:0},
@@ -166,7 +174,7 @@ function snapTo(section){
     currentSection = section;
     if(section === 'down'){
       photosSection.scrollTop = 0;
-      photosLock = true; // lock at top initially
+      photosLock = true;
     }
   }
 }
@@ -175,22 +183,20 @@ document.querySelectorAll('.arrow').forEach(a=>{
   a.addEventListener('click', ()=>snapTo(a.dataset.dir));
 });
 
-// Wheel scroll with top locking
+// Wheel scroll with first lock only
 window.addEventListener('wheel', e=>{
   if(currentSection === 'hero' && e.deltaY>0){
     snapTo('down');
     e.preventDefault();
   } else if(currentSection === 'down'){
-    // Only prevent horizontal scroll
+    // Block horizontal
     if(Math.abs(e.deltaX)>0) e.preventDefault();
 
     if(photosLock){
-      // Scroll down one "step" unlocks further scrolling
       if(e.deltaY>0){
-        photosLock=false;
+        photosLock=false; // unlock vertical scroll
         photosSection.scrollTop += 10;
       } else {
-        // Scroll up on first lock brings back to title
         snapTo('hero');
         e.preventDefault();
       }
@@ -205,7 +211,6 @@ window.addEventListener('keydown', e=>{
   if(e.key==='ArrowDown' && currentSection==='hero') snapTo('down');
   if(e.key==='ArrowUp') snapTo('hero');
 });
-window.addEventListener('scroll', e=>e.preventDefault());
 
 // ----- CONTENTFUL DYNAMIC LOAD -----
 const SPACE_ID = '5w319pzc4eiq';
@@ -240,7 +245,6 @@ async function fetchPhotos() {
 
 function displayPhotos(photos){
   const categoriesContainer = document.getElementById('categories');
-
   const allCategories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
 
   allCategories.forEach(cat=>{
@@ -271,6 +275,17 @@ function displayPhotos(photos){
       img.loading='lazy';
       div.appendChild(img);
       grid.appendChild(div);
+
+      // fade-in on scroll
+      const observer = new IntersectionObserver(entries=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {threshold:0.1});
+      observer.observe(div);
     });
 
     section.appendChild(grid);

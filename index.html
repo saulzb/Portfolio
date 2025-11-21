@@ -12,13 +12,13 @@ html, body {
   font-family:'Archivo Expanded', sans-serif;
   background:#111;
   color:#eee;
+  overflow:hidden;
 }
 
 #container {
   position:relative;
-  width:300vw; /* left-center-right */
+  width:300vw; /* horizontal for title → music/drawings */
   height:auto;
-  transform: translate(0,0);
   transition: transform 0.8s ease;
 }
 
@@ -26,13 +26,12 @@ section {
   position:absolute;
   width:100vw;
   display:flex;
-  justify-content:center;
+  justify-content:flex-start;
   align-items:flex-start;
   text-align:center;
   font-size:1rem;
   box-sizing:border-box;
   flex-direction:column;
-  overflow:visible;
   padding:20px;
 }
 
@@ -47,59 +46,41 @@ section {
 #photos {
   top:100vh; left:0;
   background:#111;
-  padding:20px;
-  box-sizing:border-box;
   min-height:100vh;
-  overflow-y:auto; /* vertical scroll */
+  overflow-y:auto;
+  scroll-behavior:smooth;
+  overscroll-behavior:contain;
+  width:100vw;
+  padding:20px;
 }
 
 /* Featured grid */
-#featured {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  grid-gap:15px;
-  margin-bottom:30px;
-}
-.featured-item {
-  border-radius:8px;
-  overflow:hidden;
-}
-.featured-item img {
-  width:100%;
-  height:auto;
-  object-fit:contain; 
-  display:block;
-  background:none;
-  max-height:250px; /* smaller images */
-}
-
-/* Category sections */
-.category-section {
-  margin-bottom:40px;
-  width:100%;
-}
 .category-section h2 {
   font-size:1rem;
-  margin-bottom:15px;
+  margin-bottom:10px;
   text-align:left;
   padding-left:5px;
 }
-.category-grid {
+
+.category-grid, #featured {
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
   grid-gap:10px;
+  margin-bottom:30px;
 }
-.category-item {
+
+.featured-item, .category-item {
   border-radius:8px;
   overflow:hidden;
 }
-.category-item img {
+
+.featured-item img, .category-item img {
   width:100%;
   height:auto;
+  max-height:250px;
   object-fit:contain;
   display:block;
   background:none;
-  max-height:200px; 
 }
 
 /* Arrows */
@@ -130,8 +111,7 @@ section {
 @media(max-width:768px){
   #hero { background:url('SAULZIDULKABEJCEKMOBILE.jpg') center/cover no-repeat; background-size:cover; }
   .arrow-down { bottom:20px; }
-  #featured { grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
-  .category-grid { grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); }
+  .category-grid, #featured { grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); }
   .featured-item img, .category-item img { max-height:150px; }
 }
 </style>
@@ -167,10 +147,12 @@ section {
 </div>
 
 <script>
-// ---- ARROWS + SCROLLING ----
+// ----- ARROWS & SCROLLING -----
 const container = document.getElementById('container');
+const photosSection = document.getElementById('photos');
 let currentSection = 'hero';
-let firstScrollLock = false; // for locking between hero and photos
+let firstLock = false;
+
 const sectionsMap = {
   hero:{x:0, y:0},
   right:{x:-100, y:0},   
@@ -183,7 +165,10 @@ function snapTo(section){
   if(target){
     container.style.transform = `translate(${target.x}vw, ${target.y}vh)`;
     currentSection = section;
-    firstScrollLock = false; // reset scroll lock
+    firstLock = false;
+    if(section === 'down'){
+      photosSection.scrollTop = 0;
+    }
   }
 }
 
@@ -191,27 +176,13 @@ document.querySelectorAll('.arrow').forEach(a=>{
   a.addEventListener('click', ()=>snapTo(a.dataset.dir));
 });
 
-// Wheel scroll with locking logic
+// Wheel scroll
 window.addEventListener('wheel', e=>{
-  const photosSection = document.getElementById('photos');
-  if(currentSection === 'hero'){
-    if(e.deltaY > 0){
-      snapTo('down'); // first scroll down locks at top of photos
-      e.preventDefault();
-    }
+  if(currentSection === 'hero' && e.deltaY>0){
+    snapTo('down');
+    e.preventDefault();
   } else if(currentSection === 'down'){
-    // horizontal scroll ignored
-    // vertical scroll inside photos
-    if(e.deltaY < 0){
-      if(photosSection.scrollTop === 0){
-        if(!firstScrollLock){
-          firstScrollLock = true; // lock at top
-          e.preventDefault();
-        } else {
-          snapTo('hero'); // second scroll returns to hero
-        }
-      }
-    }
+    if(Math.abs(e.deltaX) > 0) e.preventDefault(); // prevent horizontal scroll
   }
 });
 
@@ -224,7 +195,7 @@ window.addEventListener('keydown', e=>{
 });
 window.addEventListener('scroll', e=>e.preventDefault());
 
-// ---- CONTENTFUL DYNAMIC LOAD ----
+// ----- CONTENTFUL DYNAMIC LOAD -----
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
 const ENVIRONMENT = 'master';
@@ -232,7 +203,7 @@ const ENVIRONMENT = 'master';
 async function fetchPhotos() {
   const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&order=sys.createdAt&include=1`;
   const res = await fetch(url);
-  if(!res.ok) { console.error('Contentful fetch failed', res.status); return; }
+  if(!res.ok){ console.error('Contentful fetch failed', res.status); return; }
   const data = await res.json();
 
   const assets = {};
@@ -241,14 +212,14 @@ async function fetchPhotos() {
   });
 
   const photos = data.items.map(item => {
-    const fields = item.fields;
+    const f = item.fields;
     return {
-      title: fields.title,
-      photo: fields.photo ? `https:${assets[fields.photo.sys.id]}` : '',
-      thumbnail: fields.thumbnail ? `https:${assets[fields.thumbnail.sys.id]}` : '',
-      description: fields.description || '',
-      category: fields.category || '',
-      featured: fields.featured || false
+      title: f.title,
+      photo: f.photo ? `https:${assets[f.photo.sys.id]}` : '',
+      thumbnail: f.thumbnail ? `https:${assets[f.thumbnail.sys.id]}` : '',
+      description: f.description || '',
+      category: f.category || '',
+      featured: f.featured || false
     };
   });
 
@@ -273,10 +244,10 @@ function displayPhotos(photos){
   });
 
   // Categories
-  const allCategories = ["Wildlife", "Double Exposures", "Travel", "Water", "Light"];
-  allCategories.forEach(cat => {
-    const items = photos.filter(p => p.category === cat && !p.featured);
-    if(items.length === 0) return; // skip empty
+  const allCategories = ["Double Exposures","Wildlife","Travel","Water","Light"];
+  allCategories.forEach(cat=>{
+    const items = photos.filter(p=>p.category===cat && !p.featured);
+    if(items.length===0) return;
     const section = document.createElement('div');
     section.className = 'category-section';
     const h2 = document.createElement('h2');
@@ -291,7 +262,7 @@ function displayPhotos(photos){
       const img = document.createElement('img');
       img.src = p.thumbnail || p.photo;
       img.alt = p.title;
-      img.loading = 'lazy';
+      img.loading='lazy';
       div.appendChild(img);
       grid.appendChild(div);
     });

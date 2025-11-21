@@ -17,7 +17,7 @@ html, body {
 
 #container {
   position:relative;
-  width:300vw; /* horizontal for title → music/drawings */
+  width:300vw;
   height:auto;
   transition: transform 0.8s ease;
 }
@@ -54,7 +54,7 @@ section {
   padding:20px;
 }
 
-/* Featured grid */
+/* Category grid */
 .category-section h2 {
   font-size:1rem;
   margin-bottom:10px;
@@ -62,19 +62,19 @@ section {
   padding-left:5px;
 }
 
-.category-grid, #featured {
+.category-grid {
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
   grid-gap:10px;
   margin-bottom:30px;
 }
 
-.featured-item, .category-item {
+.category-item {
   border-radius:8px;
   overflow:hidden;
 }
 
-.featured-item img, .category-item img {
+.category-item img {
   width:100%;
   height:auto;
   max-height:250px;
@@ -111,8 +111,8 @@ section {
 @media(max-width:768px){
   #hero { background:url('SAULZIDULKABEJCEKMOBILE.jpg') center/cover no-repeat; background-size:cover; }
   .arrow-down { bottom:20px; }
-  .category-grid, #featured { grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); }
-  .featured-item img, .category-item img { max-height:150px; }
+  .category-grid { grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); }
+  .category-item img { max-height:150px; }
 }
 </style>
 </head>
@@ -141,7 +141,6 @@ section {
   <!-- Photos -->
   <section id="photos">
     <div class="arrow arrow-back-up" data-dir="hero">↑<span>Back</span></div>
-    <div id="featured"></div>
     <div id="categories"></div>
   </section>
 </div>
@@ -151,7 +150,7 @@ section {
 const container = document.getElementById('container');
 const photosSection = document.getElementById('photos');
 let currentSection = 'hero';
-let firstLock = false;
+let photosLock = true; // lock scrolling at top of photos initially
 
 const sectionsMap = {
   hero:{x:0, y:0},
@@ -165,9 +164,9 @@ function snapTo(section){
   if(target){
     container.style.transform = `translate(${target.x}vw, ${target.y}vh)`;
     currentSection = section;
-    firstLock = false;
     if(section === 'down'){
       photosSection.scrollTop = 0;
+      photosLock = true; // lock at top initially
     }
   }
 }
@@ -176,13 +175,26 @@ document.querySelectorAll('.arrow').forEach(a=>{
   a.addEventListener('click', ()=>snapTo(a.dataset.dir));
 });
 
-// Wheel scroll
+// Wheel scroll with top locking
 window.addEventListener('wheel', e=>{
   if(currentSection === 'hero' && e.deltaY>0){
     snapTo('down');
     e.preventDefault();
   } else if(currentSection === 'down'){
-    if(Math.abs(e.deltaX) > 0) e.preventDefault(); // prevent horizontal scroll
+    // Only prevent horizontal scroll
+    if(Math.abs(e.deltaX)>0) e.preventDefault();
+
+    if(photosLock){
+      // Scroll down one "step" unlocks further scrolling
+      if(e.deltaY>0){
+        photosLock=false;
+        photosSection.scrollTop += 10;
+      } else {
+        // Scroll up on first lock brings back to title
+        snapTo('hero');
+        e.preventDefault();
+      }
+    }
   }
 });
 
@@ -227,35 +239,29 @@ async function fetchPhotos() {
 }
 
 function displayPhotos(photos){
-  const featuredContainer = document.getElementById('featured');
   const categoriesContainer = document.getElementById('categories');
 
-  // Featured
-  const featuredPhotos = photos.filter(p=>p.featured);
-  featuredPhotos.forEach(p=>{
-    const div = document.createElement('div');
-    div.className = 'featured-item';
-    const img = document.createElement('img');
-    img.src = p.photo;
-    img.alt = p.title;
-    img.loading = 'lazy';
-    div.appendChild(img);
-    featuredContainer.appendChild(div);
-  });
+  const allCategories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
 
-  // Categories
-  const allCategories = ["Double Exposures","Wildlife","Travel","Water","Light"];
   allCategories.forEach(cat=>{
-    const items = photos.filter(p=>p.category===cat && !p.featured);
+    let items;
+    if(cat==="Featured"){
+      items = photos.filter(p=>p.featured);
+    } else {
+      items = photos.filter(p=>p.category===cat);
+    }
     if(items.length===0) return;
+
     const section = document.createElement('div');
     section.className = 'category-section';
+
     const h2 = document.createElement('h2');
     h2.textContent = cat;
     section.appendChild(h2);
 
     const grid = document.createElement('div');
     grid.className = 'category-grid';
+
     items.forEach(p=>{
       const div = document.createElement('div');
       div.className = 'category-item';

@@ -33,21 +33,68 @@ section {
   font-size:1rem;
   box-sizing:border-box;
   flex-direction:column;
+  overflow-y:auto; /* allow scroll inside photos */
 }
 
 /* Sections positions */
-#hero      { top:0; left:0; background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; }
+#hero {
+  top:0; left:0;
+  background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
+}
 #music     { top:0; left:100vw; background:#222; }
 #drawings  { top:0; left:-100vw; background:#444; }
-#photos    { top:100vh; left:0; background:#333; overflow-y:auto; display:flex; flex-direction:column; align-items:center; padding:20px; }
+#photos    { top:100vh; left:0; background:#333; padding:20px; box-sizing:border-box; }
 
-/* Photos: Featured row spans full width */
-.featured { width:90%; max-width:800px; margin-bottom:20px; border-radius:8px; display:flex; justify-content:center; align-items:center; font-weight:bold; font-size:1rem; }
+/* Featured grid */
+#featured {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  grid-gap:15px;
+  margin-bottom:30px;
+}
+.featured-item {
+  background:#666;
+  border-radius:8px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+.featured-item img {
+  width:100%;
+  height:auto;
+  display:block;
+}
 
-/* Section boxes */
-.photo-box { background:#555; border-radius:8px; display:flex; justify-content:center; align-items:center; color:#fff; font-size:0.9rem; width:90%; max-width:400px; margin-bottom:10px; height:150px; cursor:pointer; }
-
-h2 { font-size:1rem; margin:20px 0 10px; color:#fff; }
+/* Category sections */
+.category-section {
+  margin-bottom:40px;
+}
+.category-section h2 {
+  font-size:1rem;
+  margin-bottom:15px;
+  text-align:left;
+}
+.category-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  grid-gap:10px;
+}
+.category-item {
+  background:#555;
+  border-radius:8px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+.category-item img {
+  width:100%;
+  height:auto;
+  display:block;
+}
 
 /* Arrows */
 .arrow {
@@ -59,18 +106,25 @@ h2 { font-size:1rem; margin:20px 0 10px; color:#fff; }
   align-items:center;
   cursor:pointer;
   user-select:none;
+  z-index:10;
 }
 .arrow span { font-size:0.8rem; margin-top:5px; }
 
 /* Hero arrows */
 .arrow-right { top:50%; right:20px; transform:translateY(-50%);}
 .arrow-left  { top:50%; left:20px; transform:translateY(-50%);}
-.arrow-down  { bottom:80px; left:50%; transform:translateX(-50%); } /* pulled up for mobile visibility */
+.arrow-down  { bottom:40px; left:50%; transform:translateX(-50%);}
 
 /* Branch arrows */
-.arrow-back-left  { top:50%; left:20px; transform:translateY(-50%);} /* Music → Hero */
-.arrow-back-right { top:50%; right:20px; transform:translateY(-50%);} /* Drawings → Hero */
-.arrow-back-up    { top:20px; left:50%; transform:translateX(-50%);}   /* Photos → Hero */
+.arrow-back-left  { top:50%; left:20px; transform:translateY(-50%);} 
+.arrow-back-right { top:50%; right:20px; transform:translateY(-50%);} 
+.arrow-back-up    { top:20px; left:50%; transform:translateX(-50%);}   
+
+/* Mobile adjustments */
+@media(max-width:768px){
+  #hero { background:url('SAULZIDULKABEJCEKMOBILE.jpg') center/cover no-repeat; background-size:cover; }
+  .arrow-down { bottom:20px; }
+}
 </style>
 </head>
 <body>
@@ -98,10 +152,13 @@ h2 { font-size:1rem; margin:20px 0 10px; color:#fff; }
   <!-- Photos -->
   <section id="photos">
     <div class="arrow arrow-back-up" data-dir="hero">↑<span>Back</span></div>
+    <div id="featured"></div>
+    <div id="categories"></div>
   </section>
 </div>
 
 <script>
+// ---- ARROWS + SCROLLING ----
 const container = document.getElementById('container');
 let currentSection = 'hero';
 const sectionsMap = {
@@ -110,7 +167,6 @@ const sectionsMap = {
   left:{x:100, y:0},     // Drawings
   down:{x:0, y:-100}     // Photos
 };
-
 function snapTo(section){
   const target = sectionsMap[section];
   if(target){
@@ -118,151 +174,114 @@ function snapTo(section){
     currentSection = section;
   }
 }
-
-// Arrow clicks
 document.querySelectorAll('.arrow').forEach(a=>{
   a.addEventListener('click', ()=>snapTo(a.dataset.dir));
 });
-
-// Wheel / trackpad scroll
 let scrollCooldown=false;
 window.addEventListener('wheel', e=>{
   if(scrollCooldown) return;
   scrollCooldown=true;
-  const absX = Math.abs(e.deltaX), absY = Math.abs(e.deltaY);
-  if(absX>absY){
-    if(e.deltaX>0 && currentSection==='hero') snapTo('right');
-    if(e.deltaX<0 && currentSection==='hero') snapTo('left');
+  const absX = Math.abs(e.deltaX);
+  const absY = Math.abs(e.deltaY);
+  if(absX > absY){
+    if(e.deltaX>0){ if(currentSection==='hero') snapTo('right'); }
+    else { if(currentSection==='hero') snapTo('left'); }
   } else {
-    if(e.deltaY>0 && currentSection==='hero') snapTo('down');
-    if(e.deltaY<0 && currentSection==='down') snapTo('hero');
+    if(e.deltaY>0){ if(currentSection==='hero') snapTo('down'); }
+    else { if(currentSection==='down') snapTo('hero'); }
   }
   setTimeout(()=>scrollCooldown=false,800);
 });
-
-// Keyboard arrows
 window.addEventListener('keydown', e=>{
   if(e.key==='ArrowRight' && currentSection==='hero') snapTo('right');
   if(e.key==='ArrowLeft' && currentSection==='hero') snapTo('left');
   if(e.key==='ArrowDown' && currentSection==='hero') snapTo('down');
   if(e.key==='ArrowUp') snapTo('hero');
 });
-
-// Disable natural scroll
 window.addEventListener('scroll', e=>e.preventDefault());
 
-// ----------------- Contentful Photos -----------------
-const SPACE_ID = "5w319pzc4eiq";       
-const ACCESS_TOKEN = "l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg"; 
-const ENVIRONMENT = "master";           
+// ---- CONTENTFUL DYNAMIC LOAD ----
+const SPACE_ID = 'YOUR_SPACE_ID';
+const ACCESS_TOKEN = 'YOUR_CDA_TOKEN';
+const ENVIRONMENT = 'master';
 
-async function loadPhotos() {
-  const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?access_token=${ACCESS_TOKEN}&content_type=photo&order=fields.title`;
+async function fetchPhotos() {
+  const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&order=sys.createdAt`;
+  const res = await fetch(url);
+  if(!res.ok) { console.error('Contentful fetch failed', res.status); return; }
+  const data = await res.json();
 
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
+  const assets = {};
+  data.includes?.Asset?.forEach(a=>{
+    assets[a.sys.id] = a.fields.file.url;
+  });
 
-    console.log("Contentful API response:", data);
+  const photos = data.items.map(item => {
+    const fields = item.fields;
+    return {
+      title: fields.title,
+      photo: fields.photo ? `https:${assets[fields.photo.sys.id]}` : '',
+      thumbnail: fields.thumbnail ? `https:${assets[fields.thumbnail.sys.id]}` : '',
+      description: fields.description || '',
+      category: fields.category || '',
+      featured: fields.featured || false
+    };
+  });
 
-    if (!data.items || data.items.length === 0) {
-      console.warn("No entries returned. Make sure your photos are published and content type is correct.");
-      return;
+  displayPhotos(photos);
+}
+
+function displayPhotos(photos){
+  const featuredContainer = document.getElementById('featured');
+  const categoriesContainer = document.getElementById('categories');
+
+  // Featured
+  const featuredPhotos = photos.filter(p=>p.featured);
+  featuredPhotos.forEach(p=>{
+    const div = document.createElement('div');
+    div.className = 'featured-item';
+    const img = document.createElement('img');
+    img.src = p.photo;
+    img.alt = p.title;
+    img.loading = 'lazy';
+    div.appendChild(img);
+    featuredContainer.appendChild(div);
+  });
+
+  // Categories
+  const categoryMap = {};
+  photos.forEach(p=>{
+    if(!p.featured){
+      if(!categoryMap[p.category]) categoryMap[p.category] = [];
+      categoryMap[p.category].push(p);
     }
+  });
 
-    // Map assets
-    const assets = {};
-    if (data.includes?.Asset) {
-      data.includes.Asset.forEach(a => {
-        assets[a.sys.id] = a.fields.file.url;
-      });
-      console.log("Mapped assets:", assets);
-    } else {
-      console.warn("No assets included in the response.");
-    }
+  for(const [cat, items] of Object.entries(categoryMap)){
+    const section = document.createElement('div');
+    section.className = 'category-section';
+    const h2 = document.createElement('h2');
+    h2.textContent = cat;
+    section.appendChild(h2);
 
-    const photosSection = document.getElementById('photos');
-
-    // Remove existing photo boxes and headings
-    photosSection.querySelectorAll('.photo-box,h2').forEach(el => el.remove());
-
-    // Featured photos
-    const featuredItems = data.items.filter(item => item.fields.featured === true);
-    console.log("Featured items:", featuredItems);
-    if (featuredItems.length > 0) {
-      const h2 = document.createElement('h2');
-      h2.textContent = 'Featured';
-      photosSection.appendChild(h2);
-
-      featuredItems.forEach(item => {
-        const thumbId = item.fields.doubleExpo1thumbnail?.sys?.id;
-        const fullId = item.fields.DoubleExpoPhoto?.sys?.id;
-        const thumbUrl = thumbId ? assets[thumbId] + '?w=600' : '';
-        const fullUrl = fullId ? assets[fullId] + '?w=2000' : '';
-
-        if (!thumbUrl) console.warn(`Missing thumbnail for: ${item.fields.title}`);
-        if (!fullUrl) console.warn(`Missing full image for: ${item.fields.title}`);
-
-        const div = document.createElement('div');
-        div.className = 'photo-box';
-        div.style.background = `url(${thumbUrl}) center/cover no-repeat`;
-        div.style.height = '300px';
-        div.title = item.fields.title || '';
-        div.addEventListener('click', () => openModal(fullUrl));
-
-        photosSection.appendChild(div);
-      });
-    }
-
-    // Categories
-    const categories = ['Wildlife', 'Double Exposures', 'Travel', 'Water', 'Light'];
-    categories.forEach(cat => {
-      const catItems = data.items.filter(item => item.fields.category === cat);
-      console.log(`Category "${cat}" items:`, catItems);
-      if (catItems.length === 0) return;
-
-      const h2 = document.createElement('h2');
-      h2.textContent = cat;
-      photosSection.appendChild(h2);
-
-      catItems.forEach(item => {
-        const thumbId = item.fields.doubleExpo1thumbnail?.sys?.id;
-        const fullId = item.fields.DoubleExpoPhoto?.sys?.id;
-        const thumbUrl = thumbId ? assets[thumbId] + '?w=400' : '';
-        const fullUrl = fullId ? assets[fullId] + '?w=2000' : '';
-
-        if (!thumbUrl) console.warn(`Missing thumbnail for: ${item.fields.title}`);
-        if (!fullUrl) console.warn(`Missing full image for: ${item.fields.title}`);
-
-        const div = document.createElement('div');
-        div.className = 'photo-box';
-        div.style.background = `url(${thumbUrl}) center/cover no-repeat`;
-        div.style.height = '150px';
-        div.title = item.fields.title || '';
-        div.addEventListener('click', () => openModal(fullUrl));
-
-        photosSection.appendChild(div);
-      });
+    const grid = document.createElement('div');
+    grid.className = 'category-grid';
+    items.forEach(p=>{
+      const div = document.createElement('div');
+      div.className = 'category-item';
+      const img = document.createElement('img');
+      img.src = p.thumbnail || p.photo;
+      img.alt = p.title;
+      img.loading = 'lazy';
+      div.appendChild(img);
+      grid.appendChild(div);
     });
-
-  } catch (err) {
-    console.error("Error fetching photos from Contentful:", err);
+    section.appendChild(grid);
+    categoriesContainer.appendChild(section);
   }
 }
 
-loadPhotos();
-
-// Modal for full-size images
-function openModal(url){
-  const modal = document.createElement('div');
-  modal.style.position='fixed'; modal.style.top=0; modal.style.left=0; modal.style.width='100vw'; modal.style.height='100vh';
-  modal.style.background='rgba(0,0,0,0.9)'; modal.style.display='flex'; modal.style.justifyContent='center';
-  modal.style.alignItems='center'; modal.style.cursor='pointer'; modal.style.zIndex=1000;
-
-  const img=document.createElement('img'); img.src=url; img.style.maxWidth='90%'; img.style.maxHeight='90%';
-  modal.appendChild(img); modal.addEventListener('click',()=>modal.remove());
-  document.body.appendChild(modal);
-}
+fetchPhotos();
 </script>
 
 </body>

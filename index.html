@@ -36,23 +36,13 @@ section {
 }
 
 /* Sections positions */
-
-/* Default desktop hero image */
-#hero {
-  top:0; left:0;
-  background: url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
-}
-
+#hero      { top:0; left:0; background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; }
 #music     { top:0; left:100vw; background:#222; }
 #drawings  { top:0; left:-100vw; background:#444; }
 #photos    { top:100vh; left:0; background:#333; display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); grid-auto-rows:minmax(150px,auto); grid-gap:10px; padding:20px; }
 
-/* Photos: featured row spans full width */
-.featured { grid-column: 1 / -1; height:200px; background:#666; border-radius:8px; display:flex; justify-content:center; align-items:center; font-weight:bold; font-size:1rem; }
-
 /* Section boxes */
-.photo-box { background:#555; border-radius:8px; display:flex; justify-content:center; align-items:center; color:#fff; font-size:0.9rem; }
-
+.photo-box { background:#555; border-radius:8px; display:flex; justify-content:center; align-items:center; color:#fff; font-size:0.9rem; cursor:pointer; }
 h2 { font-size:0.8rem; margin-bottom:10px; }
 
 /* Arrows */
@@ -71,34 +61,21 @@ h2 { font-size:0.8rem; margin-bottom:10px; }
 /* Hero arrows */
 .arrow-right { top:50%; right:20px; transform:translateY(-50%);}
 .arrow-left  { top:50%; left:20px; transform:translateY(-50%);}
-.arrow-down  { bottom:20px; left:50%; transform:translateX(-50%);}
+.arrow-down  { bottom:50px; left:50%; transform:translateX(-50%);} /* moved up for mobile */
 
 /* Branch arrows */
-.arrow-back-left  { top:50%; left:20px; transform:translateY(-50%);} /* Music → Hero */
-.arrow-back-right { top:50%; right:20px; transform:translateY(-50%);} /* Drawings → Hero */
-.arrow-back-up    { top:20px; left:50%; transform:translateX(-50%);}   /* Photos → Hero */
+.arrow-back-left  { top:50%; left:20px; transform:translateY(-50%);}
+.arrow-back-right { top:50%; right:20px; transform:translateY(-50%);}
+.arrow-back-up    { top:20px; left:50%; transform:translateX(-50%);}  
 
-/* Mobile adjustments */
-@media (max-width: 768px) {
-  #hero {
-    background: url('SAULZIDULKABEJCEKMOBILE.jpg') center/cover no-repeat;
-    height: 100vh; /* ensure hero fills viewport */
-  }
-
-  /* Pull arrows closer and adjust font size */
-  .arrow-right { right: 10px; font-size: 1.2rem; }
-  .arrow-left  { left: 10px; font-size: 1.2rem; }
-
-  /* Fix down arrow higher so it's always visible */
-  .arrow-down {
-    position: fixed;
-    bottom: 60px; /* pull it up from bottom */
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 1.2rem;
-  }
-
-  .arrow span { font-size: 0.7rem; }
+/* Modal styles */
+#photo-modal {
+  position:fixed; inset:0; background:rgba(0,0,0,0.9);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; z-index:9999; display:none;
+}
+#photo-modal img {
+  max-width:90vw; max-height:90vh; object-fit:contain;
 }
 </style>
 </head>
@@ -128,18 +105,12 @@ h2 { font-size:0.8rem; margin-bottom:10px; }
   <section id="photos">
     <h2>PHOTOS</h2>
     <div class="arrow arrow-back-up" data-dir="hero">↑<span>Back</span></div>
-
-    <!-- Featured -->
-    <div class="featured">FEATURED</div>
-
-    <!-- Photo sections -->
-    <div class="photo-box">Double Exposures</div>
-    <div class="photo-box">Wildlife</div>
-    <div class="photo-box">Landscapes</div>
-    <div class="photo-box">Colour</div>
-    <div class="photo-box">Light</div>
-    <div class="photo-box">Water</div>
+    <!-- Featured + categories will populate here dynamically -->
   </section>
+</div>
+
+<div id="photo-modal">
+  <img id="modal-img" src="" alt="Full photo">
 </div>
 
 <script>
@@ -148,81 +119,12 @@ const SPACE_ID = "5w319pzc4eiq";
 const ACCESS_TOKEN = "l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg";
 const ENVIRONMENT = "master";
 
-// Fetch container and track current section
+// Container & navigation
 const container = document.getElementById('container');
 let currentSection = 'hero';
 
-// 🔥 Fetch photos dynamically from Contentful
-async function loadPhotos() {
-  const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?access_token=${ACCESS_TOKEN}&content_type=photo`;
-
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-
-    const assets = {};
-    data.includes?.Asset?.forEach(asset => {
-      assets[asset.sys.id] = asset.fields.file.url;
-    });
-
-    const photosContainer = document.querySelector('#photos');
-    
-    // Remove static boxes & keep H2 + back arrow + featured
-    photosContainer.querySelectorAll('.photo-box').forEach(el => el.remove());
-
-    data.items.forEach(item => {
-      const title = item.fields.title;
-      const thumbId = item.fields.DoubleExpoPhotoThumbnail?.sys?.id;
-      const fullId = item.fields.DoubleExpoPhoto?.sys?.id;
-
-      const thumbUrl = thumbId ? assets[thumbId] + '?w=400' : '';
-      const fullUrl = fullId ? assets[fullId] + '?w=2000' : '';
-
-      const div = document.createElement('div');
-      div.className = 'photo-box';
-      div.style.background = `url(${thumbUrl}) center/cover no-repeat`;
-      div.title = title || "Photo";
-
-      div.addEventListener('click', () => openModal(fullUrl, title));
-
-      photosContainer.appendChild(div);
-    });
-
-  } catch (err) {
-    console.error("❌ Error loading photos:", err);
-  }
-}
-
-// 🖼 Modal viewer
-function openModal(imageUrl, title) {
-  let modal = document.getElementById('photo-modal');
-  if (!modal) {
-    modal = document.createElement('div');
-    modal.id = 'photo-modal';
-    modal.style.cssText = `
-      position:fixed; inset:0; background:rgba(0,0,0,0.9);
-      display:flex; align-items:center; justify-content:center;
-      cursor:pointer; z-index:9999;
-    `;
-    modal.innerHTML = `
-      <img id="modal-img" style="max-width:90vw; max-height:90vh; object-fit:contain;">
-    `;
-    document.body.appendChild(modal);
-
-    modal.addEventListener('click', () => modal.style.display = 'none');
-  }
-
-  document.getElementById('modal-img').src = imageUrl;
-  modal.style.display = 'flex';
-}
-
-// Navigation map
-const sectionsMap = {
-  hero:{x:0, y:0},       // Hero
-  right:{x:-100, y:0},   // Music
-  left:{x:100, y:0},     // Drawings
-  down:{x:0, y:-100}     // Photos
-};
+// Section positions map
+const sectionsMap = { hero:{x:0,y:0}, right:{x:-100,y:0}, left:{x:100,y:0}, down:{x:0,y:-100} };
 
 // Snap navigation
 function snapTo(section){
@@ -238,23 +140,22 @@ document.querySelectorAll('.arrow').forEach(a=>{
   a.addEventListener('click', ()=>snapTo(a.dataset.dir));
 });
 
-// Scroll & keyboard (unchanged)
-let scrollCooldown = false;
+// Wheel/keyboard scroll
+let scrollCooldown=false;
 window.addEventListener('wheel', e=>{
   if(scrollCooldown) return;
-  scrollCooldown = true;
+  scrollCooldown=true;
 
-  const absX = Math.abs(e.deltaX);
-  const absY = Math.abs(e.deltaY);
+  const absX=Math.abs(e.deltaX);
+  const absY=Math.abs(e.deltaY);
 
-  if(absX > absY){
+  if(absX>absY){
     if(e.deltaX>0 && currentSection==='hero') snapTo('right');
     else if(e.deltaX<0 && currentSection==='hero') snapTo('left');
   } else {
     if(e.deltaY>0 && currentSection==='hero') snapTo('down');
     else if(e.deltaY<0 && currentSection==='down') snapTo('hero');
   }
-
   setTimeout(()=>scrollCooldown=false,800);
 });
 
@@ -267,10 +168,73 @@ window.addEventListener('keydown', e=>{
 
 window.addEventListener('scroll', e=>e.preventDefault());
 
-// Load photos!!!
+// Modal viewer
+function openModal(url){
+  const modal = document.getElementById('photo-modal');
+  const img = document.getElementById('modal-img');
+  img.src = url;
+  modal.style.display = 'flex';
+}
+document.getElementById('photo-modal').addEventListener('click', () => {
+  document.getElementById('photo-modal').style.display = 'none';
+});
+
+// Load photos from Contentful
+async function loadPhotos(){
+  const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?access_token=${ACCESS_TOKEN}&content_type=photo&order=fields.title`;
+  try{
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const assets = {};
+    data.includes?.Asset?.forEach(a=>assets[a.sys.id]=a.fields.file.url);
+
+    const photosSection = document.getElementById('photos');
+
+    // Remove existing boxes if any
+    photosSection.querySelectorAll('.photo-box').forEach(el=>el.remove());
+
+    // Build sections
+    const sections = ['Featured','Wildlife','Double Exposures','Travel','Water','Light'];
+
+    sections.forEach(sectionName=>{
+      // Create section title
+      const h2 = document.createElement('h2');
+      h2.textContent = sectionName;
+      photosSection.appendChild(h2);
+
+      // Filter items for this section
+      const filtered = data.items.filter(item => {
+        if(sectionName==='Featured') return item.fields.featured === true;
+        return item.fields.category === sectionName;
+      });
+
+      // Create boxes
+      filtered.forEach(item=>{
+        const thumbId = item.fields.DoubleExpoPhotoThumbnail?.sys?.id;
+        const fullId = item.fields.DoubleExpoPhoto?.sys?.id;
+        const thumbUrl = thumbId ? assets[thumbId]+'?w=400' : '';
+        const fullUrl = fullId ? assets[fullId]+'?w=2000' : '';
+
+        const div = document.createElement('div');
+        div.className='photo-box';
+        div.style.background=`url(${thumbUrl}) center/cover no-repeat`;
+        div.title = item.fields.title || '';
+        div.loading = 'lazy';
+        div.addEventListener('click',()=>openModal(fullUrl));
+
+        photosSection.appendChild(div);
+      });
+    });
+
+  } catch(err){
+    console.error("Error loading photos:", err);
+  }
+}
+
+// Initialize
 loadPhotos();
 </script>
-
 
 </body>
 </html>

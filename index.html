@@ -7,108 +7,71 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded&display=swap" rel="stylesheet">
 <style>
 html, body {
-  margin: 0; padding: 0;
-  width: 100%; height: 100%;
-  overflow: hidden;
-  font-family: 'Archivo Expanded', sans-serif;
-  background: #111;
-  color: #eee;
+  margin:0; padding:0;
+  width:100%; height:100%;
+  overflow:hidden;
+  font-family:'Archivo Expanded', sans-serif;
+  background:#111;
+  color:#eee;
 }
 
-/* Container for snapping sections */
 #container {
-  position: relative;
-  width: 300vw;  /* left-center-right */
-  height: 200vh; /* center + down for photos */
+  position:relative;
+  width:300vw;  /* left-center-right */
+  height:200vh; /* center + down for photos */
   transform: translate(0,0); /* start on hero */
   transition: transform 0.8s ease;
 }
 
-/* Sections */
 section {
-  position: absolute;
-  width: 100vw; height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  font-size: 1rem;
-  box-sizing: border-box;
-  flex-direction: column;
+  position:absolute;
+  width:100vw; height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  font-size:1rem;
+  box-sizing:border-box;
+  flex-direction:column;
 }
 
-/* Hero section */
-#hero {
-  position: relative;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #111; /* fallback */
-  overflow: hidden;
-}
-
-/* Title image */
-.title-image {
-  max-width: 80%;
-  height: auto;
-  display: block;
-  border-radius: 8px; /* optional style */
-}
-
-/* Hero arrows */
-#hero .arrow {
-  position: absolute;
-  color: #fff;
-  font-size: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  user-select: none;
-}
-#hero .arrow span { font-size: 0.8rem; margin-top: 5px; }
-
-.arrow-right { top: 50%; right: 20px; transform: translateY(-50%);}
-.arrow-left  { top: 50%; left: 20px; transform: translateY(-50%);}
-.arrow-down  { bottom: 20px; left: 50%; transform: translateX(-50%);}
-
-/* Other sections */
+/* Sections positions */
+#hero      { top:0; left:0; background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; }
 #music     { top:0; left:100vw; background:#222; }
 #drawings  { top:0; left:-100vw; background:#444; }
-#photos    { top:100vh; left:0; background:#333; 
-             display: grid; 
-             grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); 
-             grid-auto-rows: minmax(150px, auto); 
-             grid-gap: 10px; 
-             padding: 20px; }
+#photos    { top:100vh; left:0; background:#333; display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); grid-auto-rows:minmax(150px,auto); grid-gap:10px; padding:20px; }
 
 /* Photos: featured row spans full width */
-.featured { grid-column: 1 / -1; height: 200px; background: #666; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1rem; }
+.featured { grid-column: 1 / -1; height:200px; background:#666; border-radius:8px; display:flex; justify-content:center; align-items:center; font-weight:bold; font-size:1rem; }
 
 /* Section boxes */
-.photo-box { background: #555; border-radius: 8px; display: flex; justify-content: center; align-items: center; color: #fff; font-size: 0.9rem; }
+.photo-box { background:#555; border-radius:8px; display:flex; justify-content:center; align-items:center; color:#fff; font-size:0.9rem; }
 
-h2 { font-size: 0.8rem; margin-bottom: 10px; }
+h2 { font-size:0.8rem; margin-bottom:10px; }
+
+/* Arrows */
+.arrow {
+  position:absolute;
+  color:#fff;
+  font-size:1.5rem;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  cursor:pointer;
+  user-select:none;
+}
+.arrow span { font-size:0.8rem; margin-top:5px; }
+
+/* Hero arrows */
+.arrow-right { top:50%; right:20px; transform:translateY(-50%);}
+.arrow-left  { top:50%; left:20px; transform:translateY(-50%);}
+.arrow-down  { bottom:20px; left:50%; transform:translateX(-50%);}
 
 /* Branch arrows */
-.arrow-back-left  { top: 50%; left: 20px; transform: translateY(-50%);}  /* Music → Hero */
-.arrow-back-right { top: 50%; right: 20px; transform: translateY(-50%);} /* Drawings → Hero */
-.arrow-back-up    { top: 20px; left: 50%; transform: translateX(-50%);}   /* Photos → Hero */
+.arrow-back-left  { top:50%; left:20px; transform:translateY(-50%);} /* Music → Hero */
+.arrow-back-right { top:50%; right:20px; transform:translateY(-50%);} /* Drawings → Hero */
+.arrow-back-up    { top:20px; left:50%; transform:translateX(-50%);}   /* Photos → Hero */
 
-/* Responsive adjustments */
-@media (max-width: 1024px) {
-  .title-image { max-width: 60%; }
-}
-@media (max-width: 768px) {
-  .title-image { max-width: 50%; }
-  #hero .arrow { font-size: 1.2rem; }
-  #hero .arrow span { font-size: 0.7rem; }
-}
-@media (max-width: 480px) {
-  .title-image { max-width: 40%; }
-}
 </style>
 </head>
 <body>
@@ -116,8 +79,6 @@ h2 { font-size: 0.8rem; margin-bottom: 10px; }
 <div id="container">
   <!-- Hero -->
   <section id="hero">
-    <img src="SAULZIDULKA-BEJCEK.png" alt="Title Screen" class="title-image">
-
     <div class="arrow arrow-right" data-dir="right">→<span>Music</span></div>
     <div class="arrow arrow-left" data-dir="left">←<span>Drawings</span></div>
     <div class="arrow arrow-down" data-dir="down">↓<span>Photos</span></div>
@@ -161,10 +122,10 @@ let currentSection = 'hero';
 
 // Map of sections to container translate positions
 const sectionsMap = {
-  hero: {x:0, y:0},
-  right: {x:-100, y:0},   // Music
-  left: {x:100, y:0},     // Drawings
-  down: {x:0, y:-100}     // Photos
+  hero:{x:0, y:0},
+  right:{x:-100, y:0},   // Music
+  left:{x:100, y:0},     // Drawings
+  down:{x:0, y:-100}     // Photos
 };
 
 function snapTo(section){
@@ -190,11 +151,19 @@ window.addEventListener('wheel', e=>{
   const absY = Math.abs(e.deltaY);
 
   if(absX > absY){
-    if(e.deltaX>0){ if(currentSection==='hero') snapTo('right'); }
-    else { if(currentSection==='hero') snapTo('left'); }
+    // horizontal scroll
+    if(e.deltaX>0){
+      if(currentSection==='hero') snapTo('right');
+    } else {
+      if(currentSection==='hero') snapTo('left');
+    }
   } else {
-    if(e.deltaY>0){ if(currentSection==='hero') snapTo('down'); }
-    else { if(currentSection==='down') snapTo('hero'); }
+    // vertical scroll
+    if(e.deltaY>0){
+      if(currentSection==='hero') snapTo('down');
+    } else {
+      if(currentSection==='down') snapTo('hero');
+    }
   }
 
   setTimeout(()=>scrollCooldown=false,800);

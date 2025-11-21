@@ -39,11 +39,15 @@ section {
 #hero      { top:0; left:0; background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; }
 #music     { top:0; left:100vw; background:#222; }
 #drawings  { top:0; left:-100vw; background:#444; }
-#photos    { top:100vh; left:0; background:#333; display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); grid-auto-rows:minmax(150px,auto); grid-gap:10px; padding:20px; }
+#photos    { top:100vh; left:0; background:#333; overflow-y:auto; display:flex; flex-direction:column; align-items:center; padding:20px; }
+
+/* Photos: Featured row spans full width */
+.featured { width:90%; max-width:800px; margin-bottom:20px; border-radius:8px; display:flex; justify-content:center; align-items:center; font-weight:bold; font-size:1rem; }
 
 /* Section boxes */
-.photo-box { background:#555; border-radius:8px; display:flex; justify-content:center; align-items:center; color:#fff; font-size:0.9rem; cursor:pointer; }
-h2 { font-size:0.8rem; margin-bottom:10px; }
+.photo-box { background:#555; border-radius:8px; display:flex; justify-content:center; align-items:center; color:#fff; font-size:0.9rem; width:90%; max-width:400px; margin-bottom:10px; height:150px; cursor:pointer; }
+
+h2 { font-size:1rem; margin:20px 0 10px; color:#fff; }
 
 /* Arrows */
 .arrow {
@@ -61,22 +65,12 @@ h2 { font-size:0.8rem; margin-bottom:10px; }
 /* Hero arrows */
 .arrow-right { top:50%; right:20px; transform:translateY(-50%);}
 .arrow-left  { top:50%; left:20px; transform:translateY(-50%);}
-.arrow-down  { bottom:50px; left:50%; transform:translateX(-50%);} /* moved up for mobile */
+.arrow-down  { bottom:80px; left:50%; transform:translateX(-50%); } /* pulled up for mobile visibility */
 
 /* Branch arrows */
-.arrow-back-left  { top:50%; left:20px; transform:translateY(-50%);}
-.arrow-back-right { top:50%; right:20px; transform:translateY(-50%);}
-.arrow-back-up    { top:20px; left:50%; transform:translateX(-50%);}  
-
-/* Modal styles */
-#photo-modal {
-  position:fixed; inset:0; background:rgba(0,0,0,0.9);
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; z-index:9999; display:none;
-}
-#photo-modal img {
-  max-width:90vw; max-height:90vh; object-fit:contain;
-}
+.arrow-back-left  { top:50%; left:20px; transform:translateY(-50%);} /* Music → Hero */
+.arrow-back-right { top:50%; right:20px; transform:translateY(-50%);} /* Drawings → Hero */
+.arrow-back-up    { top:20px; left:50%; transform:translateX(-50%);}   /* Photos → Hero */
 </style>
 </head>
 <body>
@@ -103,24 +97,64 @@ h2 { font-size:0.8rem; margin-bottom:10px; }
 
   <!-- Photos -->
   <section id="photos">
-    <h2>PHOTOS</h2>
     <div class="arrow arrow-back-up" data-dir="hero">↑<span>Back</span></div>
-    <!-- Featured + categories will populate here dynamically -->
   </section>
 </div>
 
-<div id="photo-modal">
-  <img id="modal-img" src="" alt="Full photo">
-</div>
-
-<section id="photos">
-  <div class="arrow arrow-back-up" data-dir="hero">↑<span>Back</span></div>
-</section>
-
 <script>
-const SPACE_ID = "5w319pzc4eiq";       // Replace with your Contentful Space ID
-const ACCESS_TOKEN = "l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg"; // Replace with your Delivery API token
-const ENVIRONMENT = "master";           // Usually "master" unless you use a different environment
+const container = document.getElementById('container');
+let currentSection = 'hero';
+const sectionsMap = {
+  hero:{x:0, y:0},
+  right:{x:-100, y:0},   // Music
+  left:{x:100, y:0},     // Drawings
+  down:{x:0, y:-100}     // Photos
+};
+
+function snapTo(section){
+  const target = sectionsMap[section];
+  if(target){
+    container.style.transform = `translate(${target.x}vw, ${target.y}vh)`;
+    currentSection = section;
+  }
+}
+
+// Arrow clicks
+document.querySelectorAll('.arrow').forEach(a=>{
+  a.addEventListener('click', ()=>snapTo(a.dataset.dir));
+});
+
+// Wheel / trackpad scroll
+let scrollCooldown=false;
+window.addEventListener('wheel', e=>{
+  if(scrollCooldown) return;
+  scrollCooldown=true;
+  const absX = Math.abs(e.deltaX), absY = Math.abs(e.deltaY);
+  if(absX>absY){
+    if(e.deltaX>0 && currentSection==='hero') snapTo('right');
+    if(e.deltaX<0 && currentSection==='hero') snapTo('left');
+  } else {
+    if(e.deltaY>0 && currentSection==='hero') snapTo('down');
+    if(e.deltaY<0 && currentSection==='down') snapTo('hero');
+  }
+  setTimeout(()=>scrollCooldown=false,800);
+});
+
+// Keyboard arrows
+window.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight' && currentSection==='hero') snapTo('right');
+  if(e.key==='ArrowLeft' && currentSection==='hero') snapTo('left');
+  if(e.key==='ArrowDown' && currentSection==='hero') snapTo('down');
+  if(e.key==='ArrowUp') snapTo('hero');
+});
+
+// Disable natural scroll
+window.addEventListener('scroll', e=>e.preventDefault());
+
+// ----------------- Contentful Photos -----------------
+const SPACE_ID = "5w319pzc4eiq";       
+const ACCESS_TOKEN = "l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg"; 
+const ENVIRONMENT = "master";           
 
 async function loadPhotos() {
   const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?access_token=${ACCESS_TOKEN}&content_type=photo&order=fields.title`;
@@ -134,56 +168,43 @@ async function loadPhotos() {
 
     const photosSection = document.getElementById('photos');
 
-    // Remove existing photo boxes (in case reloading)
+    // Remove existing boxes
     photosSection.querySelectorAll('.photo-box,h2').forEach(el => el.remove());
 
-    // ----- Featured Photos -----
+    // Featured Photos
     const featuredItems = data.items.filter(item => item.fields.featured === true);
     if (featuredItems.length > 0) {
-      const h2 = document.createElement('h2');
-      h2.textContent = 'Featured';
-      photosSection.appendChild(h2);
-
-      featuredItems.forEach(item => {
+      const h2 = document.createElement('h2'); h2.textContent='Featured'; photosSection.appendChild(h2);
+      featuredItems.forEach(item=>{
         const thumbId = item.fields.doubleExpo1thumbnail?.sys?.id;
         const fullId = item.fields.DoubleExpoPhoto?.sys?.id;
-        const thumbUrl = thumbId ? assets[thumbId] + '?w=600' : '';
-        const fullUrl = fullId ? assets[fullId] + '?w=2000' : '';
+        const thumbUrl = thumbId ? assets[thumbId]+'?w=600':'';
+        const fullUrl = fullId ? assets[fullId]+'?w=2000':'';
 
         const div = document.createElement('div');
-        div.className = 'photo-box';
-        div.style.background = `url(${thumbUrl}) center/cover no-repeat`;
-        div.style.height = '300px';
-        div.title = item.fields.title || '';
-        div.addEventListener('click', () => openModal(fullUrl));
-
+        div.className='photo-box'; div.style.background=`url(${thumbUrl}) center/cover no-repeat`; div.style.height='300px';
+        div.title=item.fields.title||'';
+        div.addEventListener('click',()=>openModal(fullUrl));
         photosSection.appendChild(div);
       });
     }
 
-    // ----- Categories -----
-    const categories = ['Wildlife', 'Double Exposures', 'Travel', 'Water', 'Light'];
-    categories.forEach(cat => {
+    // Category Photos
+    const categories = ['Wildlife','Double Exposures','Travel','Water','Light'];
+    categories.forEach(cat=>{
       const catItems = data.items.filter(item => item.fields.category === cat);
-      if (catItems.length === 0) return;
+      if(catItems.length===0) return;
+      const h2=document.createElement('h2'); h2.textContent=cat; photosSection.appendChild(h2);
 
-      const h2 = document.createElement('h2');
-      h2.textContent = cat;
-      photosSection.appendChild(h2);
-
-      catItems.forEach(item => {
+      catItems.forEach(item=>{
         const thumbId = item.fields.doubleExpo1thumbnail?.sys?.id;
         const fullId = item.fields.DoubleExpoPhoto?.sys?.id;
-        const thumbUrl = thumbId ? assets[thumbId] + '?w=400' : '';
-        const fullUrl = fullId ? assets[fullId] + '?w=2000' : '';
+        const thumbUrl = thumbId ? assets[thumbId]+'?w=400':'';
+        const fullUrl = fullId ? assets[fullId]+'?w=2000':'';
 
-        const div = document.createElement('div');
-        div.className = 'photo-box';
-        div.style.background = `url(${thumbUrl}) center/cover no-repeat`;
-        div.style.height = '150px';
-        div.title = item.fields.title || '';
-        div.addEventListener('click', () => openModal(fullUrl));
-
+        const div=document.createElement('div');
+        div.className='photo-box'; div.style.background=`url(${thumbUrl}) center/cover no-repeat`;
+        div.title=item.fields.title||''; div.addEventListener('click',()=>openModal(fullUrl));
         photosSection.appendChild(div);
       });
     });
@@ -193,31 +214,17 @@ async function loadPhotos() {
   }
 }
 
-// Call the function to load photos
 loadPhotos();
 
-// Optional: Modal function for full images
-function openModal(url) {
+// Modal for full-size images
+function openModal(url){
   const modal = document.createElement('div');
-  modal.style.position = 'fixed';
-  modal.style.top = 0;
-  modal.style.left = 0;
-  modal.style.width = '100vw';
-  modal.style.height = '100vh';
-  modal.style.background = 'rgba(0,0,0,0.9)';
-  modal.style.display = 'flex';
-  modal.style.justifyContent = 'center';
-  modal.style.alignItems = 'center';
-  modal.style.cursor = 'pointer';
-  modal.style.zIndex = 1000;
+  modal.style.position='fixed'; modal.style.top=0; modal.style.left=0; modal.style.width='100vw'; modal.style.height='100vh';
+  modal.style.background='rgba(0,0,0,0.9)'; modal.style.display='flex'; modal.style.justifyContent='center';
+  modal.style.alignItems='center'; modal.style.cursor='pointer'; modal.style.zIndex=1000;
 
-  const img = document.createElement('img');
-  img.src = url;
-  img.style.maxWidth = '90%';
-  img.style.maxHeight = '90%';
-  modal.appendChild(img);
-
-  modal.addEventListener('click', () => modal.remove());
+  const img=document.createElement('img'); img.src=url; img.style.maxWidth='90%'; img.style.maxHeight='90%';
+  modal.appendChild(img); modal.addEventListener('click',()=>modal.remove());
   document.body.appendChild(modal);
 }
 </script>

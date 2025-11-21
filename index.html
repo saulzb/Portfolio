@@ -12,46 +12,39 @@ html, body {
   font-family:'Archivo Expanded', sans-serif;
   background:#111;
   color:#eee;
-  overflow:hidden;
+  overflow-x:hidden; /* allow vertical scrolling */
 }
 
 #container {
   position:relative;
-  width:300vw;
+  width:300vw; /* horizontal scrolling for Hero -> Music/Drawings */
   height:auto;
-  transition: transform 0.8s ease;
+  display:flex;
 }
 
 section {
-  position:absolute;
   width:100vw;
+  flex-shrink:0;
   display:flex;
-  justify-content:flex-start;
-  align-items:flex-start;
-  text-align:center;
-  font-size:1rem;
-  box-sizing:border-box;
   flex-direction:column;
   padding:20px;
+  box-sizing:border-box;
 }
 
 /* Sections positions */
 #hero {
-  top:0; left:0;
   height:100vh;
   background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
+  background-size:cover;
+  position:relative;
 }
-#music     { top:0; left:100vw; height:100vh; background:#222; }
-#drawings  { top:0; left:-100vw; height:100vh; background:#444; }
+#music { background:#222; height:100vh; }
+#drawings { background:#444; height:100vh; }
 #photos {
-  top:100vh; left:0;
   background:#111;
-  min-height:100vh;
   overflow-y:auto;
+  min-height:100vh;
   scroll-behavior:smooth;
-  overscroll-behavior:contain;
-  width:100vw;
-  padding:20px;
 }
 
 /* Category grid */
@@ -59,7 +52,6 @@ section {
   font-size:1rem;
   margin-bottom:10px;
   text-align:left;
-  padding-left:5px;
 }
 
 .category-grid {
@@ -154,67 +146,24 @@ section {
 </div>
 
 <script>
-// ----- ARROWS & SCROLLING -----
-const container = document.getElementById('container');
-const photosSection = document.getElementById('photos');
+// ----- ARROWS & HORIZONTAL SCROLL -----
+const containerEl = document.getElementById('container');
 let currentSection = 'hero';
-let photosLock = true; // initially lock top
-
-const sectionsMap = {
-  hero:{x:0, y:0},
-  right:{x:-100, y:0},   
-  left:{x:100, y:0},     
-  down:{x:0, y:-100}     
-};
-
-function snapTo(section){
-  const target = sectionsMap[section];
-  if(target){
-    container.style.transform = `translate(${target.x}vw, ${target.y}vh)`;
-    currentSection = section;
-    if(section === 'down'){
-      photosSection.scrollTop = 0;
-      photosLock = true;
-    }
-  }
-}
 
 document.querySelectorAll('.arrow').forEach(a=>{
-  a.addEventListener('click', ()=>snapTo(a.dataset.dir));
-});
-
-// Wheel scroll with first lock only
-window.addEventListener('wheel', e=>{
-  if(currentSection === 'hero' && e.deltaY>0){
-    snapTo('down');
-    e.preventDefault();
-  } else if(currentSection === 'down'){
-    // Block horizontal
-    if(Math.abs(e.deltaX)>0) e.preventDefault();
-
-    if(photosLock){
-      if(e.deltaY>0){
-        photosLock=false; // unlock vertical scroll
-        photosSection.scrollTop += 10;
-      } else {
-        snapTo('hero');
-        e.preventDefault();
-      }
-    }
-  }
-});
-
-// Keyboard arrows
-window.addEventListener('keydown', e=>{
-  if(e.key==='ArrowRight' && currentSection==='hero') snapTo('right');
-  if(e.key==='ArrowLeft' && currentSection==='hero') snapTo('left');
-  if(e.key==='ArrowDown' && currentSection==='hero') snapTo('down');
-  if(e.key==='ArrowUp') snapTo('hero');
+  a.addEventListener('click', ()=>{
+    const dir = a.dataset.dir;
+    if(dir==='right') containerEl.style.transform = 'translateX(-100vw)';
+    if(dir==='left') containerEl.style.transform = 'translateX(100vw)';
+    if(dir==='down') document.getElementById('photos').scrollIntoView({behavior:'smooth'});
+    if(dir==='hero') window.scrollTo({top:0, behavior:'smooth'});
+    currentSection = dir;
+  });
 });
 
 // ----- CONTENTFUL DYNAMIC LOAD -----
-const SPACE_ID = '5w319pzc4eiq';
-const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
+const SPACE_ID = 'YOUR_SPACE_ID';
+const ACCESS_TOKEN = 'YOUR_CDA_TOKEN';
 const ENVIRONMENT = 'master';
 
 async function fetchPhotos() {
@@ -276,7 +225,6 @@ function displayPhotos(photos){
       div.appendChild(img);
       grid.appendChild(div);
 
-      // fade-in on scroll
       const observer = new IntersectionObserver(entries=>{
         entries.forEach(entry=>{
           if(entry.isIntersecting){

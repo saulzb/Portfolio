@@ -163,54 +163,90 @@ async function loadPhotos() {
     const res = await fetch(url);
     const data = await res.json();
 
+    console.log("Contentful API response:", data);
+
+    if (!data.items || data.items.length === 0) {
+      console.warn("No entries returned. Make sure your photos are published and content type is correct.");
+      return;
+    }
+
+    // Map assets
     const assets = {};
-    data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
+    if (data.includes?.Asset) {
+      data.includes.Asset.forEach(a => {
+        assets[a.sys.id] = a.fields.file.url;
+      });
+      console.log("Mapped assets:", assets);
+    } else {
+      console.warn("No assets included in the response.");
+    }
 
     const photosSection = document.getElementById('photos');
 
-    // Remove existing boxes
+    // Remove existing photo boxes and headings
     photosSection.querySelectorAll('.photo-box,h2').forEach(el => el.remove());
 
-    // Featured Photos
+    // Featured photos
     const featuredItems = data.items.filter(item => item.fields.featured === true);
+    console.log("Featured items:", featuredItems);
     if (featuredItems.length > 0) {
-      const h2 = document.createElement('h2'); h2.textContent='Featured'; photosSection.appendChild(h2);
-      featuredItems.forEach(item=>{
+      const h2 = document.createElement('h2');
+      h2.textContent = 'Featured';
+      photosSection.appendChild(h2);
+
+      featuredItems.forEach(item => {
         const thumbId = item.fields.doubleExpo1thumbnail?.sys?.id;
         const fullId = item.fields.DoubleExpoPhoto?.sys?.id;
-        const thumbUrl = thumbId ? assets[thumbId]+'?w=600':'';
-        const fullUrl = fullId ? assets[fullId]+'?w=2000':'';
+        const thumbUrl = thumbId ? assets[thumbId] + '?w=600' : '';
+        const fullUrl = fullId ? assets[fullId] + '?w=2000' : '';
+
+        if (!thumbUrl) console.warn(`Missing thumbnail for: ${item.fields.title}`);
+        if (!fullUrl) console.warn(`Missing full image for: ${item.fields.title}`);
 
         const div = document.createElement('div');
-        div.className='photo-box'; div.style.background=`url(${thumbUrl}) center/cover no-repeat`; div.style.height='300px';
-        div.title=item.fields.title||'';
-        div.addEventListener('click',()=>openModal(fullUrl));
+        div.className = 'photo-box';
+        div.style.background = `url(${thumbUrl}) center/cover no-repeat`;
+        div.style.height = '300px';
+        div.title = item.fields.title || '';
+        div.addEventListener('click', () => openModal(fullUrl));
+
         photosSection.appendChild(div);
       });
     }
 
-    // Category Photos
-    const categories = ['Wildlife','Double Exposures','Travel','Water','Light'];
-    categories.forEach(cat=>{
+    // Categories
+    const categories = ['Wildlife', 'Double Exposures', 'Travel', 'Water', 'Light'];
+    categories.forEach(cat => {
       const catItems = data.items.filter(item => item.fields.category === cat);
-      if(catItems.length===0) return;
-      const h2=document.createElement('h2'); h2.textContent=cat; photosSection.appendChild(h2);
+      console.log(`Category "${cat}" items:`, catItems);
+      if (catItems.length === 0) return;
 
-      catItems.forEach(item=>{
+      const h2 = document.createElement('h2');
+      h2.textContent = cat;
+      photosSection.appendChild(h2);
+
+      catItems.forEach(item => {
         const thumbId = item.fields.doubleExpo1thumbnail?.sys?.id;
         const fullId = item.fields.DoubleExpoPhoto?.sys?.id;
-        const thumbUrl = thumbId ? assets[thumbId]+'?w=400':'';
-        const fullUrl = fullId ? assets[fullId]+'?w=2000':'';
+        const thumbUrl = thumbId ? assets[thumbId] + '?w=400' : '';
+        const fullUrl = fullId ? assets[fullId] + '?w=2000' : '';
 
-        const div=document.createElement('div');
-        div.className='photo-box'; div.style.background=`url(${thumbUrl}) center/cover no-repeat`;
-        div.title=item.fields.title||''; div.addEventListener('click',()=>openModal(fullUrl));
+        if (!thumbUrl) console.warn(`Missing thumbnail for: ${item.fields.title}`);
+        if (!fullUrl) console.warn(`Missing full image for: ${item.fields.title}`);
+
+        const div = document.createElement('div');
+        div.className = 'photo-box';
+        div.style.background = `url(${thumbUrl}) center/cover no-repeat`;
+        div.style.height = '150px';
+        div.title = item.fields.title || '';
+        div.addEventListener('click', () => openModal(fullUrl));
+
         photosSection.appendChild(div);
       });
     });
 
   } catch (err) {
-    console.error("Error loading photos:", err);
+    console.error("Error fetching photos from Contentful:", err);
   }
 }
 

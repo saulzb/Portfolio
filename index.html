@@ -146,22 +146,30 @@ const arrowBackUp    = document.querySelector('.arrow-back-up');
 
 // ---------- ARROW CLICK LOGIC ----------
 
-// Horizontal navigation: Hero → Music → Drawings
-arrowRight.addEventListener('click', () => container.scrollTo({left: window.innerWidth, behavior:'smooth'})); // → Music
-arrowLeft.addEventListener('click', () => container.scrollTo({left: 2 * window.innerWidth, behavior:'smooth'})); // ← Drawings
+// Use offsetLeft to scroll exactly to the section
+arrowRight.addEventListener('click', () => {
+  container.scrollTo({ left: music.offsetLeft, behavior: 'smooth' });
+});
 
-// Vertical navigation to Photos
+arrowLeft.addEventListener('click', () => {
+  container.scrollTo({ left: drawings.offsetLeft, behavior: 'smooth' });
+});
+
 arrowDown.addEventListener('click', () => {
   const firstSection = document.querySelector('#categories .category-section');
-  if(firstSection) firstSection.scrollIntoView({behavior:'smooth'});
+  if(firstSection) firstSection.scrollIntoView({ behavior: 'smooth' });
 });
 
 // Back arrows
-arrowBackLeft.addEventListener('click', () => container.scrollTo({left:0, behavior:'smooth'})); // Music → Hero
-arrowBackRight.addEventListener('click', () => container.scrollTo({left:0, behavior:'smooth'})); // Drawings → Hero
+arrowBackLeft.addEventListener('click', () => {
+  container.scrollTo({ left: hero.offsetLeft, behavior: 'smooth' });
+});
+arrowBackRight.addEventListener('click', () => {
+  container.scrollTo({ left: hero.offsetLeft, behavior: 'smooth' });
+});
 arrowBackUp.addEventListener('click', () => {
-  photos.scrollTo({top:0, behavior:'smooth'}); // scroll vertical content to top
-  container.scrollTo({left:0, behavior:'smooth'}); // scroll back to Hero horizontally
+  photos.scrollTo({ top:0, behavior: 'smooth' });
+  container.scrollTo({ left: hero.offsetLeft, behavior: 'smooth' });
 });
 
 // ---------- CONTENTFUL LOAD ----------
@@ -175,15 +183,15 @@ async function fetchPhotos(){
   if(!res.ok){ console.error('Contentful fetch failed', res.status); return; }
   const data = await res.json();
 
-  const assets={};
-  data.includes?.Asset?.forEach(a=>assets[a.sys.id]=a.fields.file.url);
+  const assets = {};
+  data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
 
   const photosData = data.items.map(item=>{
-    const f=item.fields;
+    const f = item.fields;
     return {
       title: f.title,
-      photo: f.photo?`https:${assets[f.photo.sys.id]}`:'',
-      thumbnail: f.thumbnail?`https:${assets[f.thumbnail.sys.id]}`:'',
+      photo: f.photo ? `https:${assets[f.photo.sys.id]}` : '',
+      thumbnail: f.thumbnail ? `https:${assets[f.thumbnail.sys.id]}` : '',
       category: f.category || '',
       featured: f.featured || false
     };
@@ -198,11 +206,11 @@ function displayPhotos(photosData){
     const items = (cat==="Featured")?photosData.filter(p=>p.featured):photosData.filter(p=>p.category===cat);
     if(items.length===0) return;
     const section = document.createElement('div'); section.className='category-section';
-    const h2 = document.createElement('h2'); h2.textContent=cat; section.appendChild(h2);
-    const grid = document.createElement('div'); grid.className='category-grid';
+    const h2 = document.createElement('h2'); h2.textContent = cat; section.appendChild(h2);
+    const grid = document.createElement('div'); grid.className = 'category-grid';
     items.forEach(p=>{
-      const div = document.createElement('div'); div.className='category-item';
-      const img = document.createElement('img'); img.src=p.thumbnail||p.photo; img.alt=p.title;
+      const div = document.createElement('div'); div.className = 'category-item';
+      const img = document.createElement('img'); img.src = p.thumbnail||p.photo; img.alt = p.title;
       div.appendChild(img); grid.appendChild(div);
     });
     section.appendChild(grid); categoriesContainer.appendChild(section);
@@ -212,8 +220,8 @@ function displayPhotos(photosData){
       entries.forEach(entry=>{
         if(entry.isIntersecting){ entry.target.classList.add('visible'); observer.unobserve(entry.target); }
       });
-    }, {threshold:0.1});
-    section.querySelectorAll('.category-item').forEach(item=>observer.observe(item));
+    }, { threshold:0.1 });
+    section.querySelectorAll('.category-item').forEach(item => observer.observe(item));
   });
 }
 

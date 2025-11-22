@@ -123,24 +123,42 @@ section {
   padding-top:60px;
 }
 
-.category-section h2 { 
+/* Headings with lines */
+.category-section h2 {
   margin-bottom:20px; 
   width:100%;
+  color:white;
+  font-weight:bold;
+  text-align:center;
+  position:relative;
 }
 
+.category-section h2::before,
+.category-section h2::after {
+  content:"";
+  display:inline-block;
+  width:30%;
+  height:1px;
+  background:white;
+  vertical-align:middle;
+  margin:0 10px;
+}
+
+/* Category grid: make images half screen width like featured */
 .category-grid { 
   width:100%;
   max-width:1200px;
   display:grid; 
-  grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); 
-  justify-items:center; /* center each photo */
+  grid-template-columns: repeat(auto-fill,minmax(50vw,1fr)); /* half screen width */
+  justify-items:center; 
   gap:20px; 
   flex:1;
 }
 
 .category-item img { 
   width:100%; 
-  max-width:260px;
+  height:50vh; /* match featured row height */
+  object-fit:cover;
   display:block; 
   border-radius:6px; 
 }

@@ -13,49 +13,56 @@ html, body {
   background:#111;
   color:#eee;
   scroll-behavior: smooth;
+  overflow-x: hidden;
   scroll-snap-type: y mandatory;
 }
 
-/* Each main section snaps */
+/* Each main section snaps vertically */
 section {
   width:100%;
   height:100vh;
   scroll-snap-align: start;
   position: relative;
-  display: flex;
+  display:flex;
   flex-direction: column;
-  padding: 20px;
-  box-sizing: border-box;
+  padding:20px;
+  box-sizing:border-box;
 }
 
-/* Horizontal container for Hero + Art */
+/* Horizontal container for hero + art */
 #hero-row {
   display: grid;
   grid-auto-flow: column;
   grid-template-columns: 100vw 100vw;
   width: 200vw;
   height: 100%;
-  scroll-snap-type: x mandatory;
   overflow-x: auto;
+  scroll-snap-type: x mandatory;
 }
 
 /* Horizontal sections */
 section.horizontal {
   width:100vw;
-  height:100vh;
-  scroll-snap-align: start;
+  height:100%;
+  scroll-snap-align:start;
+  position:relative;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  position:relative;
 }
 
 /* Individual horizontal sections */
-#art { background:#333; }
-#hero { background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; background-size:cover; }
+#hero { 
+  background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; 
+  background-size:cover;
+}
+#art { 
+  background:#333; 
+  transform: translateX(-100vw); /* visually left of Hero */
+}
 
-/* Photos section */
+/* Vertical photos section */
 #photos {
   background:#111;
   padding:20px;
@@ -86,34 +93,32 @@ section.horizontal {
   .arrow-down { bottom:20px; }
 }
 
-/* Photos category styling */
+/* Photos styling */
 .category-section { 
   height:100vh; 
-  scroll-snap-align: start;
+  scroll-snap-align:start;
   display:flex;
   flex-direction:column;
   justify-content:flex-start;
-  margin:0;
-  padding:20px;
+  margin:0; padding:20px;
 }
 .category-section h2 { margin-bottom:20px; }
-
 .category-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap:10px; flex:1; }
 .category-item img { width:100%; display:block; border-radius:5px; }
 </style>
 </head>
 <body>
 
-<!-- Horizontal row: Art - Hero -->
+<!-- Horizontal row -->
 <section id="hero-row">
-  <section id="art" class="horizontal">
-    <h1>Art</h1>
-    <div class="arrow arrow-right">→<span>Hero</span></div>
-  </section>
-
   <section id="hero" class="horizontal">
     <div class="arrow arrow-left">←<span>Art</span></div>
     <div class="arrow arrow-down">↓<span>Photos</span></div>
+  </section>
+
+  <section id="art" class="horizontal">
+    <h1>Art</h1>
+    <div class="arrow arrow-right">→<span>Hero</span></div>
   </section>
 </section>
 
@@ -124,12 +129,12 @@ section.horizontal {
 </section>
 
 <script>
-// Horizontal sections
+// Horizontal snapping
 const heroRow = document.getElementById('hero-row');
-const art = document.getElementById('art');
 const hero = document.getElementById('hero');
-const horizontalSections = [art, hero];
-let currentIndex = 1; // start at Hero
+const art = document.getElementById('art');
+const horizontalSections = [hero, art];
+let currentIndex = 0;
 
 function snapHorizontal(i){
   currentIndex = Math.max(0, Math.min(horizontalSections.length-1, i));
@@ -137,75 +142,14 @@ function snapHorizontal(i){
 }
 
 // Horizontal arrows
-hero.querySelector('.arrow-left').onclick = () => snapHorizontal(currentIndex-1);
-art.querySelector('.arrow-right').onclick = () => snapHorizontal(1);
+hero.querySelector('.arrow-left').onclick = () => snapHorizontal(1);
+art.querySelector('.arrow-right').onclick = () => snapHorizontal(0);
 
-// Vertical scrolling from Hero → Photos
+// Vertical scrolling arrows
 const photos = document.getElementById('photos');
 hero.querySelector('.arrow-down').onclick = () => photos.scrollIntoView({behavior:'smooth'});
 document.querySelector('.arrow-back-up').onclick = () => hero.scrollIntoView({behavior:'smooth'});
-
-// Force starting view at Hero
-window.addEventListener('load', () => {
-  snapHorizontal(1);
-});
-
-// ---------- CONTENTFUL LOAD ----------
-const categories = document.getElementById('categories');
-const SPACE_ID = '5w319pzc4eiq';
-const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
-const ENVIRONMENT = 'master';
-
-async function fetchPhotos(){
-  const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&order=sys.createdAt&include=1`;
-  const res = await fetch(url);
-  if(!res.ok){ console.error('Contentful fetch failed', res.status); return; }
-  const data = await res.json();
-  const assets = {};
-  data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
-  const photosData = data.items.map(item=>{
-    const f = item.fields;
-    return {
-      title: f.title,
-      photo: f.photo ? `https:${assets[f.photo.sys.id]}` : '',
-      thumbnail: f.thumbnail ? `https:${assets[f.thumbnail.sys.id]}` : '',
-      category: f.category || '',
-      featured: f.featured || false
-    };
-  });
-  displayPhotos(photosData);
-}
-
-function displayPhotos(photosData){
-  const allCategories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
-  allCategories.forEach(cat=>{
-    const items = (cat==="Featured") ? photosData.filter(p=>p.featured) : photosData.filter(p=>p.category===cat);
-    if(items.length===0) return;
-
-    const section = document.createElement('div'); 
-    section.className='category-section';
-    const h2 = document.createElement('h2'); 
-    h2.textContent = cat; 
-    section.appendChild(h2);
-
-    const grid = document.createElement('div'); 
-    grid.className = 'category-grid';
-    items.forEach(p=>{
-      const div = document.createElement('div'); 
-      div.className = 'category-item';
-      const img = document.createElement('img'); 
-      img.src = p.thumbnail || p.photo; 
-      img.alt = p.title;
-      div.appendChild(img); 
-      grid.appendChild(div);
-    });
-
-    section.appendChild(grid); 
-    categories.appendChild(section);
-  });
-}
-
-fetchPhotos();
 </script>
+
 </body>
 </html>

@@ -66,13 +66,11 @@ section.horizontal {
 .arrow span { font-size:0.8rem; margin-top:5px; }
 
 .arrow-down { bottom:40px; left:50%; transform:translateX(-50%);} 
-.arrow-back-up { top:20px; left:50%; transform:translateX(-50%);} 
+.arrow-back-up { top:40px; left:50%; transform:translateX(-50%);} 
 
 @media(max-width:768px){
   #hero { background:url('SAULZIDLKABEJCEKMOBILE.jpg') center/cover no-repeat; background-size:cover; }
   .arrow-down { bottom:20px; }
-  .category-grid { grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); }
-  .category-item img { max-height: 150px; }
 }
 
 /* Photos grid */
@@ -91,7 +89,7 @@ section.horizontal {
 
 <!-- Photos section -->
 <section id="photos">
-  <div class="arrow arrow-back-up">↑<span>Back</span></div>
+  <div class="arrow arrow-back-up">↑<span>Hero</span></div>
   <div id="categories"></div>
 </section>
 
@@ -100,11 +98,9 @@ const hero = document.getElementById('hero');
 const photos = document.getElementById('photos');
 const categories = document.getElementById('categories');
 
-// Hero arrow to photos
-hero.querySelector('.arrow-down').onclick = () => photos.scrollIntoView({behavior:'smooth'});
-
-// Back arrow to hero
-document.querySelector('.arrow-back-up').onclick = () => hero.scrollIntoView({behavior:'smooth'});
+// Arrow functionality
+hero.querySelector('.arrow-down').onclick = () => smoothScrollTo(photos);
+document.querySelector('.arrow-back-up').onclick = () => smoothScrollTo(hero);
 
 // ---------- CONTENTFUL LOAD ----------
 const SPACE_ID = '5w319pzc4eiq';
@@ -151,38 +147,47 @@ function displayPhotos(photosData){
 
 fetchPhotos();
 
-// ---------- SCROLL SNAP FROM HERO TO PHOTOS ----------
-let heroScrolled = false;
+// ---------- SMOOTH SCROLL FUNCTION ----------
+function smoothScrollTo(target){
+  const top = target.getBoundingClientRect().top + window.pageYOffset;
+  window.scrollTo({top, behavior:'smooth'});
+}
 
+// ---------- SCROLL SNAP BETWEEN HERO AND PHOTOS ----------
+let isScrolling = false;
 window.addEventListener('wheel', e => {
-  if(heroScrolled) return; // only trigger once
-  if(e.deltaY > 0){
-    const heroRect = hero.getBoundingClientRect();
-    if(heroRect.bottom > window.innerHeight/2){
-      heroScrolled = true;
-      photos.scrollIntoView({behavior:'smooth'});
-      e.preventDefault();
-    }
+  if(isScrolling) return;
+
+  const heroRect = hero.getBoundingClientRect();
+  const photosRect = photos.getBoundingClientRect();
+
+  if(heroRect.top >= -10 && heroRect.bottom > 0 && e.deltaY > 0){
+    // Scroll down from hero → photos
+    isScrolling = true;
+    smoothScrollTo(photos);
+    setTimeout(()=>{isScrolling=false;}, 600);
+    e.preventDefault();
+  } else if(heroRect.top < 0 && e.deltaY < 0){
+    // Scroll up from photos → hero
+    isScrolling = true;
+    smoothScrollTo(hero);
+    setTimeout(()=>{isScrolling=false;}, 600);
+    e.preventDefault();
   }
 }, {passive:false});
 
-// Optional: allow mousewheel on photos to snap between categories
-let isScrolling = false;
-function snapToCategory(delta){
-  const categorySections = Array.from(document.querySelectorAll('.category-section'));
-  const currentScroll = photos.scrollTop;
+// ---------- OPTIONAL: SNAP BETWEEN PHOTO CATEGORIES ----------
+function snapPhotos(delta){
+  const sections = Array.from(document.querySelectorAll('.category-section'));
+  const scrollTop = photos.scrollTop;
   let target = null;
   if(delta > 0){
-    for(let sec of categorySections){
-      if(sec.offsetTop > currentScroll + 10){
-        target = sec; break;
-      }
+    for(let sec of sections){
+      if(sec.offsetTop > scrollTop + 10){ target = sec; break; }
     }
   } else {
-    for(let i = categorySections.length-1; i>=0; i--){
-      if(categorySections[i].offsetTop < currentScroll - 10){
-        target = categorySections[i]; break;
-      }
+    for(let i=sections.length-1;i>=0;i--){
+      if(sections[i].offsetTop < scrollTop - 10){ target = sections[i]; break; }
     }
   }
   if(target){
@@ -193,11 +198,14 @@ function snapToCategory(delta){
 }
 
 photos.addEventListener('wheel', e => {
-  if(!heroScrolled) return; // don't interfere with initial hero scroll
-  if(isScrolling) return;
-  snapToCategory(e.deltaY);
-  e.preventDefault();
+  // Only snap within photos if we are past hero
+  const heroBottom = hero.getBoundingClientRect().bottom;
+  if(heroBottom <= 0 && !isScrolling){
+    snapPhotos(e.deltaY);
+    e.preventDefault();
+  }
 }, {passive:false});
+
 </script>
 </body>
 </html>

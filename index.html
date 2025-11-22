@@ -145,18 +145,23 @@ const arrowBackRight = drawings.querySelector('.arrow-back-right');
 const arrowBackUp    = document.querySelector('.arrow-back-up');
 
 // ---------- ARROW CLICK LOGIC ----------
-arrowRight.addEventListener('click', () => container.scrollTo({left: window.innerWidth, behavior:'smooth'}));
-arrowLeft.addEventListener('click', () => container.scrollTo({left: 2*window.innerWidth, behavior:'smooth'}));
+
+// Horizontal navigation: Hero → Music → Drawings
+arrowRight.addEventListener('click', () => container.scrollTo({left: window.innerWidth, behavior:'smooth'})); // → Music
+arrowLeft.addEventListener('click', () => container.scrollTo({left: 2 * window.innerWidth, behavior:'smooth'})); // ← Drawings
+
+// Vertical navigation to Photos
 arrowDown.addEventListener('click', () => {
   const firstSection = document.querySelector('#categories .category-section');
   if(firstSection) firstSection.scrollIntoView({behavior:'smooth'});
 });
 
-arrowBackLeft.addEventListener('click', () => container.scrollTo({left:0, behavior:'smooth'}));
-arrowBackRight.addEventListener('click', () => container.scrollTo({left:0, behavior:'smooth'}));
+// Back arrows
+arrowBackLeft.addEventListener('click', () => container.scrollTo({left:0, behavior:'smooth'})); // Music → Hero
+arrowBackRight.addEventListener('click', () => container.scrollTo({left:0, behavior:'smooth'})); // Drawings → Hero
 arrowBackUp.addEventListener('click', () => {
-  photos.scrollTo({top:0, behavior:'smooth'});
-  container.scrollTo({left:0, behavior:'smooth'});
+  photos.scrollTo({top:0, behavior:'smooth'}); // scroll vertical content to top
+  container.scrollTo({left:0, behavior:'smooth'}); // scroll back to Hero horizontally
 });
 
 // ---------- CONTENTFUL LOAD ----------

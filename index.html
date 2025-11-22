@@ -8,8 +8,7 @@
 <style>
 html, body {
   margin:0; padding:0;
-  width:100%; 
-  height:100%;
+  width:100%; height:100%;
   font-family:'Archivo Expanded', sans-serif;
   background:#111;
   color:#eee;
@@ -17,7 +16,7 @@ html, body {
   scroll-snap-type: y mandatory;
 }
 
-/* Each main section snaps */
+/* Sections */
 section {
   width:100%;
   height:100vh;
@@ -25,22 +24,15 @@ section {
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 20px;
   box-sizing: border-box;
+  padding:20px;
 }
 
+/* HERO */
 #hero { 
   background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; 
 }
 
-/* Photos section */
-#photos {
-  background:#111;
-  padding:20px;
-  box-sizing:border-box;
-}
-
-/* Arrows */
 .arrow {
   color:#fff;
   font-size:1.5rem;
@@ -62,20 +54,44 @@ section {
   .arrow-down { bottom:20px; }
 }
 
-/* Photos category styling */
+/* PHOTOS SECTION */
+#photos { background:#111; }
+
+/* ⭐ Centered category styling */
 .category-section { 
-  height:100vh; /* full screen height */
+  height:100vh;
   scroll-snap-align: start;
   display:flex;
   flex-direction:column;
+  align-items:center;
   justify-content:flex-start;
-  margin:0;
-  padding:20px;
+  text-align:center;
+  padding-top:60px;
 }
-.category-section h2 { margin-bottom:20px; }
 
-.category-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap:10px; flex:1; }
-.category-item img { width:100%; display:block; border-radius:5px; }
+.category-section h2 { 
+  margin-bottom:20px; 
+  width:100%;
+}
+
+/* ⭐ Center grid and limit max width */
+.category-grid { 
+  width:100%;
+  max-width:1200px;
+  display:grid; 
+  grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); 
+  justify-items:center; /* center each photo */
+  gap:20px; 
+  flex:1;
+}
+
+.category-item img { 
+  width:100%; 
+  max-width:260px;
+  display:block; 
+  border-radius:6px; 
+}
+
 </style>
 </head>
 <body>
@@ -90,14 +106,14 @@ section {
 </section>
 
 <script>
-// Arrow functionality
+// Arrows
 const hero = document.getElementById('hero');
 const photos = document.getElementById('photos');
 
 hero.querySelector('.arrow-down').onclick = () => photos.scrollIntoView({behavior:'smooth'});
 document.querySelector('.arrow-back-up').onclick = () => hero.scrollIntoView({behavior:'smooth'});
 
-// ---------- CONTENTFUL LOAD ----------
+// Contentful
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
 const ENVIRONMENT = 'master';
@@ -105,11 +121,13 @@ const ENVIRONMENT = 'master';
 async function fetchPhotos(){
   const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&order=sys.createdAt&include=1`;
   const res = await fetch(url);
-  if(!res.ok){ console.error('Contentful fetch failed', res.status); return; }
+  if(!res.ok) return console.error('Contentful fetch failed', res.status);
   const data = await res.json();
+
   const assets = {};
   data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
-  const photosData = data.items.map(item=>{
+
+  displayPhotos(data.items.map(item => {
     const f = item.fields;
     return {
       title: f.title,
@@ -118,41 +136,49 @@ async function fetchPhotos(){
       category: f.category || '',
       featured: f.featured || false
     };
-  });
-  displayPhotos(photosData);
+  }));
 }
 
 function displayPhotos(photosData){
   const categoriesContainer = document.getElementById('categories');
   const allCategories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
+
   allCategories.forEach(cat=>{
-    const items = (cat==="Featured") ? photosData.filter(p=>p.featured) : photosData.filter(p=>p.category===cat);
+    const items = cat==="Featured" 
+      ? photosData.filter(p=>p.featured) 
+      : photosData.filter(p=>p.category===cat);
+
     if(items.length===0) return;
 
-    const section = document.createElement('div'); 
+    const section = document.createElement('div');
     section.className='category-section';
-    const h2 = document.createElement('h2'); 
-    h2.textContent = cat; 
+
+    const h2 = document.createElement('h2');
+    h2.textContent = cat;
     section.appendChild(h2);
 
-    const grid = document.createElement('div'); 
-    grid.className = 'category-grid';
+    const grid = document.createElement('div');
+    grid.className='category-grid';
+
     items.forEach(p=>{
-      const div = document.createElement('div'); 
-      div.className = 'category-item';
-      const img = document.createElement('img'); 
-      img.src = p.thumbnail || p.photo; 
+      const div = document.createElement('div');
+      div.className='category-item';
+
+      const img = document.createElement('img');
+      img.src = p.thumbnail || p.photo;
       img.alt = p.title;
-      div.appendChild(img); 
+
+      div.appendChild(img);
       grid.appendChild(div);
     });
 
-    section.appendChild(grid); 
+    section.appendChild(grid);
     categoriesContainer.appendChild(section);
   });
 }
 
 fetchPhotos();
 </script>
+
 </body>
 </html>

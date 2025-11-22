@@ -26,6 +26,7 @@ section {
   flex-direction: column;
   box-sizing: border-box;
   padding:20px;
+  position:relative;
 }
 
 /* HERO */
@@ -46,8 +47,9 @@ section {
   position:absolute;
 }
 .arrow span { font-size:0.8rem; margin-top:5px; }
+
 .arrow-down { bottom:40px; left:50%; transform:translateX(-50%);} 
-.arrow-back-up { top:40px; left:50%; transform:translateX(-50%);} 
+.arrow-back-up { top:20px; left:50%; transform:translateX(-50%); position:absolute;} 
 
 @media(max-width:768px){
   #hero { background:url('SAULZIDLKABEJCEKMOBILE.jpg') center/cover no-repeat; background-size:cover; }
@@ -55,7 +57,10 @@ section {
 }
 
 /* PHOTOS SECTION */
-#photos { background:#111; padding-top:40px; }
+#photos { 
+  background:#111; 
+  padding-top:60px;
+}
 
 /* Headings with lines */
 section h2 {
@@ -64,7 +69,6 @@ section h2 {
   color:white;
   font-weight:bold;
   text-align:center;
-  position:relative;
 }
 section h2::before,
 section h2::after {
@@ -81,7 +85,7 @@ section h2::after {
 .featured-section {
   height:100vh;
   display:flex;
-  flex-direction: column;
+  flex-direction:column;
   text-align:center;
   justify-content:center;
   overflow:hidden;
@@ -90,29 +94,26 @@ section h2::after {
 .featured-rows {
   position:relative;
   height:100%;
+  overflow:hidden;
 }
 
 .featured-row {
   display:flex;
   position:absolute;
-  width: max-content;
+  width:max-content;
   height:50%; /* half screen */
   top:0;
   left:0;
 }
 
-.featured-row.second {
-  top:50%;
-}
+.featured-row.second { top:50%; }
 
 @keyframes scroll-right {
   0% { transform: translateX(-50%); }
   100% { transform: translateX(0); }
 }
 
-.featured-row div {
-  flex:0 0 auto;
-}
+.featured-row div { flex:0 0 auto; }
 
 .featured-row img {
   height:100%;
@@ -122,7 +123,7 @@ section h2::after {
   border-radius:6px;
 }
 
-/* Category sections (static, two rows like carousel) */
+/* Category sections (static, same layout as carousel) */
 .category-section {
   height:100vh;
   display:flex;
@@ -173,7 +174,7 @@ const photos = document.getElementById('photos');
 hero.querySelector('.arrow-down').onclick = () => photos.scrollIntoView({behavior:'smooth'});
 document.querySelector('.arrow-back-up').onclick = () => hero.scrollIntoView({behavior:'smooth'});
 
-// Contentful
+// Contentful fetch
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
 const ENVIRONMENT = 'master';
@@ -200,80 +201,62 @@ async function fetchPhotos(){
 }
 
 function displayPhotos(photosData){
-  const categoriesContainer = document.getElementById('categories');
+  const container = document.getElementById('categories');
   const allCategories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
 
   allCategories.forEach(cat=>{
-    const items = cat==="Featured" 
-      ? photosData.filter(p=>p.featured) 
-      : photosData.filter(p=>p.category===cat);
-
-    if(items.length===0) return;
+    const items = cat==="Featured" ? photosData.filter(p=>p.featured) : photosData.filter(p=>p.category===cat);
+    if(!items.length) return;
 
     if(cat==="Featured"){
       const section = document.createElement('div');
       section.className='featured-section';
-      const h2 = document.createElement('h2');
-      h2.textContent = cat;
+      const h2 = document.createElement('h2'); h2.textContent = cat;
       section.appendChild(h2);
 
       const rowsContainer = document.createElement('div');
       rowsContainer.className='featured-rows';
-
       const mid = Math.ceil(items.length/2);
-      const row1Items = items.slice(0, mid);
-      const row2Items = items.slice(mid);
+      const row1 = items.slice(0,mid), row2 = items.slice(mid);
 
       function createRow(rowItems,isSecond){
         const row = document.createElement('div');
-        row.className = 'featured-row' + (isSecond?' second':'');
-        const allItems = [...rowItems,...rowItems];
-        allItems.forEach(p=>{
+        row.className='featured-row' + (isSecond?' second':'');
+        [...rowItems,...rowItems].forEach(p=>{
           const div = document.createElement('div');
           const img = document.createElement('img');
-          img.src = p.thumbnail || p.photo;
-          img.alt = p.title;
-          div.appendChild(img);
-          row.appendChild(div);
+          img.src = p.thumbnail || p.photo; img.alt=p.title;
+          div.appendChild(img); row.appendChild(div);
         });
-        row.style.animation = `scroll-right ${30 + rowItems.length*5}s linear infinite`;
+        row.style.animation=`scroll-right ${30 + rowItems.length*5}s linear infinite`;
         return row;
       }
 
-      rowsContainer.appendChild(createRow(row1Items,false));
-      rowsContainer.appendChild(createRow(row2Items,true));
+      rowsContainer.appendChild(createRow(row1,false));
+      rowsContainer.appendChild(createRow(row2,true));
       section.appendChild(rowsContainer);
-      categoriesContainer.appendChild(section);
+      container.appendChild(section);
 
     } else {
-      // Other categories (static)
-      const section = document.createElement('div');
-      section.className='category-section';
-      const h2 = document.createElement('h2');
-      h2.textContent = cat;
-      section.appendChild(h2);
+      const section = document.createElement('div'); section.className='category-section';
+      const h2 = document.createElement('h2'); h2.textContent=cat; section.appendChild(h2);
 
       const mid = Math.ceil(items.length/2);
-      const row1Items = items.slice(0, mid);
-      const row2Items = items.slice(mid);
+      const row1 = items.slice(0,mid), row2 = items.slice(mid);
 
       function createStaticRow(rowItems){
-        const row = document.createElement('div');
-        row.className='category-row';
+        const row = document.createElement('div'); row.className='category-row';
         rowItems.forEach(p=>{
-          const div = document.createElement('div');
-          const img = document.createElement('img');
-          img.src = p.thumbnail || p.photo;
-          img.alt = p.title;
-          div.appendChild(img);
-          row.appendChild(div);
+          const div=document.createElement('div');
+          const img=document.createElement('img'); img.src=p.thumbnail||p.photo; img.alt=p.title;
+          div.appendChild(img); row.appendChild(div);
         });
         return row;
       }
 
-      section.appendChild(createStaticRow(row1Items));
-      section.appendChild(createStaticRow(row2Items));
-      categoriesContainer.appendChild(section);
+      section.appendChild(createStaticRow(row1));
+      section.appendChild(createStaticRow(row2));
+      container.appendChild(section);
     }
   });
 }

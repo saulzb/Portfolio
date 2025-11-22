@@ -22,7 +22,6 @@ section {
   width:100%;
   height:100vh;
   scroll-snap-align: start;
-  position: relative;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -47,7 +46,6 @@ section {
   position:absolute;
 }
 .arrow span { font-size:0.8rem; margin-top:5px; }
-
 .arrow-down { bottom:40px; left:50%; transform:translateX(-50%);} 
 .arrow-back-up { top:40px; left:50%; transform:translateX(-50%);} 
 
@@ -60,7 +58,7 @@ section {
 #photos { background:#111; padding-top:40px; }
 
 /* Headings with lines */
-.category-section h2, .featured-section h2 {
+section h2 {
   margin-bottom:20px; 
   width:100%;
   color:white;
@@ -68,11 +66,8 @@ section {
   text-align:center;
   position:relative;
 }
-
-.category-section h2::before,
-.category-section h2::after,
-.featured-section h2::before,
-.featured-section h2::after {
+section h2::before,
+section h2::after {
   content:"";
   display:inline-block;
   width:30%;
@@ -95,29 +90,28 @@ section {
 .featured-rows {
   position:relative;
   height:100%;
-  overflow:hidden;
 }
 
 .featured-row {
   display:flex;
   position:absolute;
+  width: max-content;
+  height:50%; /* half screen */
   top:0;
   left:0;
-  height:50%; /* half screen */
 }
 
 .featured-row.second {
   top:50%;
 }
 
-/* Horizontal animation (rightwards, slow) */
 @keyframes scroll-right {
   0% { transform: translateX(-50%); }
   100% { transform: translateX(0); }
 }
 
 .featured-row div {
-  flex: 0 0 auto;
+  flex:0 0 auto;
 }
 
 .featured-row img {
@@ -125,9 +119,10 @@ section {
   width:auto;
   display:block;
   object-fit:cover;
+  border-radius:6px;
 }
 
-/* Category sections (static, same layout as carousel) */
+/* Category sections (static, two rows like carousel) */
 .category-section {
   height:100vh;
   display:flex;
@@ -136,7 +131,6 @@ section {
   justify-content:flex-start;
   text-align:center;
   padding-top:60px;
-  overflow:hidden;
 }
 
 .category-row {
@@ -148,7 +142,7 @@ section {
 }
 
 .category-row div {
-  flex: 0 0 auto;
+  flex:0 0 auto;
   height:100%;
 }
 
@@ -176,7 +170,6 @@ section {
 // Arrows
 const hero = document.getElementById('hero');
 const photos = document.getElementById('photos');
-
 hero.querySelector('.arrow-down').onclick = () => photos.scrollIntoView({behavior:'smooth'});
 document.querySelector('.arrow-back-up').onclick = () => hero.scrollIntoView({behavior:'smooth'});
 
@@ -220,7 +213,6 @@ function displayPhotos(photosData){
     if(cat==="Featured"){
       const section = document.createElement('div');
       section.className='featured-section';
-
       const h2 = document.createElement('h2');
       h2.textContent = cat;
       section.appendChild(h2);
@@ -232,10 +224,10 @@ function displayPhotos(photosData){
       const row1Items = items.slice(0, mid);
       const row2Items = items.slice(mid);
 
-      function createRow(rowItems, isSecond){
+      function createRow(rowItems,isSecond){
         const row = document.createElement('div');
-        row.className = 'featured-row' + (isSecond ? ' second' : '');
-        const allItems = [...rowItems, ...rowItems]; // duplicate for seamless scroll
+        row.className = 'featured-row' + (isSecond?' second':'');
+        const allItems = [...rowItems,...rowItems];
         allItems.forEach(p=>{
           const div = document.createElement('div');
           const img = document.createElement('img');
@@ -244,21 +236,19 @@ function displayPhotos(photosData){
           div.appendChild(img);
           row.appendChild(div);
         });
-        row.style.animation = `scroll-right ${30 + rowItems.length*5}s linear infinite`; // slower, rightwards
+        row.style.animation = `scroll-right ${30 + rowItems.length*5}s linear infinite`;
         return row;
       }
 
-      rowsContainer.appendChild(createRow(row1Items, false));
-      rowsContainer.appendChild(createRow(row2Items, true));
+      rowsContainer.appendChild(createRow(row1Items,false));
+      rowsContainer.appendChild(createRow(row2Items,true));
       section.appendChild(rowsContainer);
-
       categoriesContainer.appendChild(section);
 
     } else {
-      // Other categories: same layout, static
+      // Other categories (static)
       const section = document.createElement('div');
       section.className='category-section';
-
       const h2 = document.createElement('h2');
       h2.textContent = cat;
       section.appendChild(h2);
@@ -283,7 +273,6 @@ function displayPhotos(photosData){
 
       section.appendChild(createStaticRow(row1Items));
       section.appendChild(createStaticRow(row2Items));
-
       categoriesContainer.appendChild(section);
     }
   });

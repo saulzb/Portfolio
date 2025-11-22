@@ -13,25 +13,18 @@ html, body {
   background:#111;
   color:#eee;
   scroll-behavior: smooth;
-}
-
-/* New wrapper for snap scrolling */
-.snap-wrapper {
-  height:100vh;
-  width:100%;
-  overflow-y: scroll;
   scroll-snap-type: y mandatory;
 }
 
-/* Each main section snaps */
+/* Sections */
 section {
   width:100%;
   height:100vh;
   scroll-snap-align: start;
   position: relative;
-  display:flex;
-  flex-direction:column;
-  box-sizing:border-box;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
   padding:20px;
 }
 
@@ -57,17 +50,14 @@ section {
 .arrow-back-up { top:40px; left:50%; transform:translateX(-50%);} 
 
 @media(max-width:768px){
-  #hero { 
-    background:url('SAULZIDLKABEJCEKMOBILE.jpg') center/cover no-repeat;
-    background-size:cover;
-  }
+  #hero { background:url('SAULZIDLKABEJCEKMOBILE.jpg') center/cover no-repeat; background-size:cover; }
   .arrow-down { bottom:20px; }
 }
 
 /* PHOTOS SECTION */
 #photos { background:#111; }
 
-/* ⭐ Centered category styling */
+/* ⭐ Category Sections */
 .category-section { 
   height:100vh;
   scroll-snap-align: start;
@@ -84,29 +74,35 @@ section {
   width:100%;
 }
 
-/* ⭐ Center grid and limit max width */
-.category-grid { 
+/* ⭐ NEW: Horizontal scrolling large images */
+.category-gallery {
+  display:flex;
+  flex-direction:row;
+  gap:15px;
   width:100%;
-  max-width:1200px;
-  display:grid; 
-  grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); 
-  justify-items:center; 
-  gap:20px; 
-  flex:1;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  padding-bottom:20px;
+}
+
+.category-item {
+  scroll-snap-align:center;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
 .category-item img { 
-  width:100%; 
-  max-width:260px;
-  display:block; 
-  border-radius:6px; 
+  height:45vh; /* about half of section height */
+  width:auto;
+  object-fit:cover;
+  border-radius:0; /* no borders */
 }
+
+.category-gallery::-webkit-scrollbar { display:none; } /* hide scrollbar on mobile */
 </style>
 </head>
-
 <body>
-
-<div class="snap-wrapper">
 
 <section id="hero">
   <div class="arrow arrow-down">↓<span>Photos</span></div>
@@ -116,8 +112,6 @@ section {
   <div class="arrow arrow-back-up">↑<span>Hero</span></div>
   <div id="categories"></div>
 </section>
-
-</div> <!-- end wrapper -->
 
 <script>
 // Arrows
@@ -171,22 +165,22 @@ function displayPhotos(photosData){
     h2.textContent = cat;
     section.appendChild(h2);
 
-    const grid = document.createElement('div');
-    grid.className='category-grid';
+    const gallery = document.createElement('div');
+    gallery.className='category-gallery';
 
     items.forEach(p=>{
       const div = document.createElement('div');
       div.className='category-item';
 
       const img = document.createElement('img');
-      img.src = p.thumbnail || p.photo;
+      img.src = p.photo;
       img.alt = p.title;
 
       div.appendChild(img);
-      grid.appendChild(div);
+      gallery.appendChild(div);
     });
 
-    section.appendChild(grid);
+    section.appendChild(gallery);
     categoriesContainer.appendChild(section);
   });
 }

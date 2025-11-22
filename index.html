@@ -159,6 +159,47 @@ function displayPhotos(photosData){
 }
 
 fetchPhotos();
+
+// ---------- VERTICAL SCROLL SNAP ----------
+let isScrolling = false;
+let categorySections = [];
+
+function updateSections(){
+  categorySections = Array.from(document.querySelectorAll('.category-section'));
+}
+
+photos.addEventListener('wheel', e => {
+  if(isScrolling) return;
+  if(categorySections.length === 0) updateSections();
+  const delta = e.deltaY;
+  const currentScroll = photos.scrollTop;
+  let target = null;
+
+  if(delta > 0){
+    // Scroll down: next section
+    for(let sec of categorySections){
+      if(sec.offsetTop > currentScroll + 10){
+        target = sec;
+        break;
+      }
+    }
+  } else if(delta < 0){
+    // Scroll up: previous section
+    for(let i = categorySections.length-1; i >=0; i--){
+      if(categorySections[i].offsetTop < currentScroll - 10){
+        target = categorySections[i];
+        break;
+      }
+    }
+  }
+
+  if(target){
+    isScrolling = true;
+    photos.scrollTo({top: target.offsetTop, behavior:'smooth'});
+    setTimeout(()=>{ isScrolling=false; }, 400);
+    e.preventDefault();
+  }
+}, {passive:false});
 </script>
 </body>
 </html>

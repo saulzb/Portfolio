@@ -3,123 +3,156 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hero Horizontal Example</title>
+<title>Saul Zidulka-Bejcek</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded&display=swap" rel="stylesheet">
 <style>
 html, body {
   margin:0; padding:0;
-  width:100%; height:100%;
+  width:100%; 
+  height:100%;
+  font-family:'Archivo Expanded', sans-serif;
   background:#111;
   color:#eee;
-  font-family:sans-serif;
-  scroll-behavior:smooth;
+  scroll-behavior: smooth;
   scroll-snap-type: y mandatory;
-  overflow-x:hidden;
 }
 
-/* Vertical sections */
+/* Each main section snaps */
 section {
-  width:100%; height:100vh;
-  scroll-snap-align:start;
-  position:relative;
+  width:100%;
+  height:100vh;
+  scroll-snap-align: start;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-/* Horizontal container inside Hero */
-#hero-container {
-  display:flex;
-  width:300vw; /* 3 horizontal sections */
-  height:100%;
-  overflow-x:auto;
-  scroll-snap-type:x mandatory;
+#hero { 
+  background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; 
 }
-
-/* Horizontal sections */
-.horizontal-section {
-  width:100vw;
-  height:100%;
-  flex-shrink:0;
-  scroll-snap-align:start;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  position:relative;
-}
-
-/* Colors for demo */
-#hero-main { background:red; }
-#art { background:green; }
-#music { background:blue; }
 
 /* Photos section */
-#photos { background:#111; padding:20px; box-sizing:border-box; }
+#photos {
+  background:#111;
+  padding:20px;
+  box-sizing:border-box;
+}
 
 /* Arrows */
 .arrow {
-  position:absolute;
   color:#fff;
   font-size:1.5rem;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
   cursor:pointer;
-  display:flex; flex-direction:column; align-items:center;
+  user-select:none;
+  z-index:10;
+  position:absolute;
 }
-.arrow span { font-size:0.8rem; margin-top:3px; }
-.arrow-left { top:50%; left:20px; transform:translateY(-50%); }
-.arrow-right { top:50%; right:20px; transform:translateY(-50%); }
-.arrow-down { bottom:40px; left:50%; transform:translateX(-50%); }
-.arrow-back-up { top:40px; left:50%; transform:translateX(-50%); }
+.arrow span { font-size:0.8rem; margin-top:5px; }
+
+.arrow-down { bottom:40px; left:50%; transform:translateX(-50%);} 
+.arrow-back-up { top:40px; left:50%; transform:translateX(-50%);} 
+
+@media(max-width:768px){
+  #hero { background:url('SAULZIDLKABEJCEKMOBILE.jpg') center/cover no-repeat; background-size:cover; }
+  .arrow-down { bottom:20px; }
+}
+
+/* Photos category styling */
+.category-section { 
+  height:100vh; /* full screen height */
+  scroll-snap-align: start;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  margin:0;
+  padding:20px;
+}
+.category-section h2 { margin-bottom:20px; }
+
+.category-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap:10px; flex:1; }
+.category-item img { width:100%; display:block; border-radius:5px; }
 </style>
 </head>
 <body>
 
-<!-- Hero horizontal container -->
 <section id="hero">
-  <div id="hero-container">
-    <div id="hero-main" class="horizontal-section">
-      <h1>Hero</h1>
-      <div class="arrow arrow-right">→<span>Art</span></div>
-      <div class="arrow arrow-down">↓<span>Photos</span></div>
-    </div>
-    <div id="art" class="horizontal-section">
-      <h1>Art</h1>
-      <div class="arrow arrow-left">←<span>Hero</span></div>
-      <div class="arrow arrow-right">→<span>Music</span></div>
-    </div>
-    <div id="music" class="horizontal-section">
-      <h1>Music</h1>
-      <div class="arrow arrow-left">←<span>Art</span></div>
-    </div>
-  </div>
+  <div class="arrow arrow-down">↓<span>Photos</span></div>
 </section>
 
-<!-- Vertical Photos section -->
 <section id="photos">
-  <h1>Photos</h1>
   <div class="arrow arrow-back-up">↑<span>Hero</span></div>
+  <div id="categories"></div>
 </section>
 
 <script>
-const heroContainer = document.getElementById('hero-container');
-const heroMain = document.getElementById('hero-main');
-const art = document.getElementById('art');
-const music = document.getElementById('music');
+// Arrow functionality
+const hero = document.getElementById('hero');
 const photos = document.getElementById('photos');
 
-// Horizontal snapping
-function snapTo(section){
-  heroContainer.scrollTo({ left: section.offsetLeft, behavior:'smooth' });
-}
-
-// Horizontal arrows
-heroMain.querySelector('.arrow-right').onclick = () => snapTo(art);
-art.querySelector('.arrow-left').onclick = () => snapTo(heroMain);
-art.querySelector('.arrow-right').onclick = () => snapTo(music);
-music.querySelector('.arrow-left').onclick = () => snapTo(art);
-
-// Vertical arrows
-heroMain.querySelector('.arrow-down').onclick = () => photos.scrollIntoView({behavior:'smooth'});
+hero.querySelector('.arrow-down').onclick = () => photos.scrollIntoView({behavior:'smooth'});
 document.querySelector('.arrow-back-up').onclick = () => hero.scrollIntoView({behavior:'smooth'});
 
-// Start on hero
-window.onload = () => snapTo(heroMain);
-</script>
+// ---------- CONTENTFUL LOAD ----------
+const SPACE_ID = '5w319pzc4eiq';
+const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
+const ENVIRONMENT = 'master';
 
+async function fetchPhotos(){
+  const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&order=sys.createdAt&include=1`;
+  const res = await fetch(url);
+  if(!res.ok){ console.error('Contentful fetch failed', res.status); return; }
+  const data = await res.json();
+  const assets = {};
+  data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
+  const photosData = data.items.map(item=>{
+    const f = item.fields;
+    return {
+      title: f.title,
+      photo: f.photo ? `https:${assets[f.photo.sys.id]}` : '',
+      thumbnail: f.thumbnail ? `https:${assets[f.thumbnail.sys.id]}` : '',
+      category: f.category || '',
+      featured: f.featured || false
+    };
+  });
+  displayPhotos(photosData);
+}
+
+function displayPhotos(photosData){
+  const categoriesContainer = document.getElementById('categories');
+  const allCategories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
+  allCategories.forEach(cat=>{
+    const items = (cat==="Featured") ? photosData.filter(p=>p.featured) : photosData.filter(p=>p.category===cat);
+    if(items.length===0) return;
+
+    const section = document.createElement('div'); 
+    section.className='category-section';
+    const h2 = document.createElement('h2'); 
+    h2.textContent = cat; 
+    section.appendChild(h2);
+
+    const grid = document.createElement('div'); 
+    grid.className = 'category-grid';
+    items.forEach(p=>{
+      const div = document.createElement('div'); 
+      div.className = 'category-item';
+      const img = document.createElement('img'); 
+      img.src = p.thumbnail || p.photo; 
+      img.alt = p.title;
+      div.appendChild(img); 
+      grid.appendChild(div);
+    });
+
+    section.appendChild(grid); 
+    categoriesContainer.appendChild(section);
+  });
+}
+
+fetchPhotos();
+</script>
 </body>
 </html>

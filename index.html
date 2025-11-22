@@ -56,6 +56,20 @@ section {
   box-sizing: border-box;
 }
 
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-gap: 10px;
+}
+
+.category-item img {
+  width: 100%;
+  height: auto;
+  max-height: 250px;
+  object-fit: contain;
+  display: block;
+}
+
 .arrow {
   color:#fff;
   font-size:1.5rem;
@@ -76,6 +90,8 @@ section {
 @media(max-width:768px){
   #hero { background:url('SAULZIDLKABEJCEKMOBILE.jpg') center/cover no-repeat; background-size:cover; }
   .arrow-down { bottom:20px; }
+  .category-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+  .category-item img { max-height: 150px; }
 }
 </style>
 </head>

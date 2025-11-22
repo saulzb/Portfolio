@@ -20,6 +20,7 @@ html, body {
 #container {
   width: 100vw;
   height: 100vh;
+  position: relative;
 }
 
 section.horizontal {
@@ -29,6 +30,7 @@ section.horizontal {
   flex-direction:column;
   padding:20px;
   box-sizing:border-box;
+  position: relative;
 }
 
 #hero { 
@@ -58,7 +60,7 @@ section.horizontal {
 }
 .arrow span { font-size:0.8rem; margin-top:5px; }
 
-/* Specific position for hero arrow to photos */
+/* Down arrow in Hero (stuck at bottom center of Hero) */
 .arrow-down {
   position:absolute;
   bottom:40px;
@@ -66,9 +68,12 @@ section.horizontal {
   transform:translateX(-50%);
 }
 
-/* Photos top arrow (inline, not following scroll) */
+/* Up arrow in Photos (inline at top, centered) */
 .arrow-up {
-  margin:0 auto 20px auto; /* center in flow */
+  margin:0 auto 20px auto;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
 
 /* Photos grid */
@@ -102,7 +107,7 @@ section.horizontal {
 const hero = document.getElementById('hero');
 const photos = document.getElementById('photos');
 
-// Hero scroll down arrow (kept at bottom center of hero)
+// Hero scroll down arrow
 hero.querySelector('.arrow-down').onclick  = () => photos.scrollIntoView({behavior:'smooth'});
 
 // Back to hero from photos

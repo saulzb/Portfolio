@@ -1,184 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Saul Zidulka-Bejcek</title>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded&display=swap" rel="stylesheet">
 <style>
-html, body {
-  margin:0; padding:0;
-  width:100%; height:100%;
-  font-family:'Archivo Expanded', sans-serif;
-  background:#111;
-  color:#eee;
+/* GLOBAL */
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
   scroll-behavior: smooth;
-  scroll-snap-type: y mandatory;
+  font-family: Arial, sans-serif;
 }
 
-/* Sections */
-section {
-  width:100%;
-  height:100vh;
+/* SNAP SCROLL */
+.snap-container {
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+  height: 100vh;
+  width: 100%;
+}
+
+.snap-section {
+  height: 100vh;
+  width: 100%;
   scroll-snap-align: start;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  padding:20px;
 }
 
 /* HERO */
-#hero { 
-  background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; 
+.hero {
+  background: url('hero.jpg') center/cover no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+/* Make sure hero image always displays on mobile */
+@media (max-width: 900px) {
+  .hero {
+    background-attachment: scroll !important;
+  }
+}
+
+/* ARROWS */
 .arrow {
-  color:#fff;
-  font-size:1.5rem;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  cursor:pointer;
-  user-select:none;
-  z-index:10;
-  position:absolute;
+  position: absolute;
+  text-decoration: none;
+  color: white;
+  font-size: 3rem;
+  opacity: 0.8;
 }
-.arrow span { font-size:0.8rem; margin-top:5px; }
 
-.arrow-down { bottom:40px; left:50%; transform:translateX(-50%);} 
-.arrow-back-up { top:40px; left:50%; transform:translateX(-50%);} 
+.arrow:hover {
+  opacity: 1;
+}
 
-@media(max-width:768px){
-  #hero { background:url('SAULZIDLKABEJCEKMOBILE.jpg') center/cover no-repeat; background-size:cover; }
-  .arrow-down { bottom:20px; }
+/* Down arrow on HERO */
+.down-arrow {
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Up arrow on PHOTOS */
+.up-arrow {
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /* PHOTOS SECTION */
-#photos { background:#111; }
-
-/* ⭐ Centered category styling */
-.category-section { 
-  height:100vh;
-  scroll-snap-align: start;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-  text-align:center;
-  padding-top:60px;
+.photos-wrapper {
+  padding-top: 100px;
+  box-sizing: border-box;
 }
 
-.category-section h2 { 
-  margin-bottom:20px; 
-  width:100%;
+.photo-category-title {
+  text-align: center;
+  width: 100%;
+  font-size: 2rem;
+  margin: 60px 0 20px;
 }
 
-/* ⭐ Center grid and limit max width */
-.category-grid { 
-  width:100%;
-  max-width:1200px;
-  display:grid; 
-  grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); 
-  justify-items:center; /* center each photo */
-  gap:20px; 
-  flex:1;
+/* Center image groups */
+.photo-group {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
-.category-item img { 
-  width:100%; 
-  max-width:260px;
-  display:block; 
-  border-radius:6px; 
+.photo-group img {
+  width: 300px;
+  height: auto;
+  border-radius: 12px;
 }
-
 </style>
 </head>
 <body>
 
-<section id="hero">
-  <div class="arrow arrow-down">↓<span>Photos</span></div>
-</section>
+<div class="snap-container">
 
-<section id="photos">
-  <div class="arrow arrow-back-up">↑<span>Hero</span></div>
-  <div id="categories"></div>
-</section>
+  <!-- HERO SECTION -->
+  <section id="hero" class="snap-section hero">
+    <a href="#photos" class="arrow down-arrow">⌄</a>
+  </section>
 
-<script>
-// Arrows
-const hero = document.getElementById('hero');
-const photos = document.getElementById('photos');
+  <!-- PHOTOS SECTION -->
+  <section id="photos" class="snap-section photos-wrapper">
+    <a href="#hero" class="arrow up-arrow">⌃</a>
 
-hero.querySelector('.arrow-down').onclick = () => photos.scrollIntoView({behavior:'smooth'});
-document.querySelector('.arrow-back-up').onclick = () => hero.scrollIntoView({behavior:'smooth'});
+    <h2 class="photo-category-title">Featured</h2>
+    <div class="photo-group">
+      <img src="photo1.jpg">
+      <img src="photo2.jpg">
+    </div>
 
-// Contentful
-const SPACE_ID = '5w319pzc4eiq';
-const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
-const ENVIRONMENT = 'master';
+    <h2 class="photo-category-title">Double Exposures</h2>
+    <div class="photo-group">
+      <img src="photo3.jpg">
+    </div>
 
-async function fetchPhotos(){
-  const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&order=sys.createdAt&include=1`;
-  const res = await fetch(url);
-  if(!res.ok) return console.error('Contentful fetch failed', res.status);
-  const data = await res.json();
+    <h2 class="photo-category-title">Other</h2>
+    <div class="photo-group">
+      <img src="photo4.jpg">
+      <img src="photo5.jpg">
+      <img src="photo6.jpg">
+    </div>
 
-  const assets = {};
-  data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
+  </section>
 
-  displayPhotos(data.items.map(item => {
-    const f = item.fields;
-    return {
-      title: f.title,
-      photo: f.photo ? `https:${assets[f.photo.sys.id]}` : '',
-      thumbnail: f.thumbnail ? `https:${assets[f.thumbnail.sys.id]}` : '',
-      category: f.category || '',
-      featured: f.featured || false
-    };
-  }));
-}
-
-function displayPhotos(photosData){
-  const categoriesContainer = document.getElementById('categories');
-  const allCategories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
-
-  allCategories.forEach(cat=>{
-    const items = cat==="Featured" 
-      ? photosData.filter(p=>p.featured) 
-      : photosData.filter(p=>p.category===cat);
-
-    if(items.length===0) return;
-
-    const section = document.createElement('div');
-    section.className='category-section';
-
-    const h2 = document.createElement('h2');
-    h2.textContent = cat;
-    section.appendChild(h2);
-
-    const grid = document.createElement('div');
-    grid.className='category-grid';
-
-    items.forEach(p=>{
-      const div = document.createElement('div');
-      div.className='category-item';
-
-      const img = document.createElement('img');
-      img.src = p.thumbnail || p.photo;
-      img.alt = p.title;
-
-      div.appendChild(img);
-      grid.appendChild(div);
-    });
-
-    section.appendChild(grid);
-    categoriesContainer.appendChild(section);
-  });
-}
-
-fetchPhotos();
-</script>
+</div>
 
 </body>
 </html>

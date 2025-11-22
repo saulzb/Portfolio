@@ -10,23 +10,19 @@ html, body {
   margin:0; padding:0;
   width:100%; height:100%;
   font-family:'Archivo Expanded', sans-serif;
-  background:#111;
-  color:#eee;
-  overflow-x:hidden;
+  background:#111; color:#eee;
   scroll-behavior: smooth;
   scroll-snap-type: y mandatory;
+  overflow-x:hidden;
 }
 
 /* Vertical sections */
 section {
-  width:100%;
-  height:100vh;
+  width:100%; height:100vh;
   scroll-snap-align:start;
-  position: relative;
-  display:flex;
-  flex-direction:column;
-  padding:20px;
-  box-sizing:border-box;
+  position:relative;
+  display:flex; flex-direction:column;
+  padding:20px; box-sizing:border-box;
 }
 
 /* Horizontal container inside Hero */
@@ -40,28 +36,23 @@ section {
 
 /* Horizontal sections */
 .horizontal-section {
-  width:100vw;
-  height:100%;
+  width:100vw; height:100%;
   flex-shrink:0;
   scroll-snap-align:start;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  display:flex; justify-content:center; align-items:center;
   position:relative;
 }
 
 /* Hero + Art styling */
-#hero { 
+#hero-main { 
   background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
   background-size:cover;
 }
-#art { background:#333; }
+#art { background:#333; color:#fff; }
 
 /* Photos section */
 #photos {
-  background:#111;
-  padding:20px;
-  box-sizing:border-box;
+  background:#111; padding:20px;
 }
 
 /* Arrows */
@@ -82,24 +73,6 @@ section {
 .arrow-down { bottom:40px; left:50%; transform:translateX(-50%);} 
 .arrow-back-up { top:40px; left:50%; transform:translateX(-50%);} 
 
-@media(max-width:768px){
-  #hero { background:url('SAULZIDLKABEJCEKMOBILE.jpg') center/cover no-repeat; background-size:cover; }
-  .arrow-down { bottom:20px; }
-}
-
-/* Photos category styling */
-.category-section { 
-  height:100vh; 
-  scroll-snap-align:start;
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-start;
-  margin:0; padding:20px;
-}
-.category-section h2 { margin-bottom:20px; }
-
-.category-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap:10px; flex:1; }
-.category-item img { width:100%; display:block; border-radius:5px; }
 </style>
 </head>
 <body>
@@ -112,7 +85,7 @@ section {
       <div class="arrow arrow-down">↓<span>Photos</span></div>
     </div>
     <div id="art" class="horizontal-section">
-      <h1>Art</h1>
+      <h1>Art Section</h1>
       <div class="arrow arrow-left">←<span>Hero</span></div>
     </div>
   </div>
@@ -143,7 +116,7 @@ const photos = document.getElementById('photos');
 heroMain.querySelector('.arrow-down').onclick = () => photos.scrollIntoView({behavior:'smooth'});
 document.querySelector('.arrow-back-up').onclick = () => hero.scrollIntoView({behavior:'smooth'});
 
-// Start at Hero
+// Start on Hero
 window.onload = () => { snapToSection(heroMain); };
 </script>
 

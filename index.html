@@ -10,28 +10,53 @@ html, body {
   margin:0; padding:0;
   width:100%; height:100%;
   font-family:'Archivo Expanded', sans-serif;
-  background:#111; color:#eee;
+  background:#111;
+  color:#eee;
   scroll-behavior: smooth;
   scroll-snap-type: y mandatory;
-  overflow-x: hidden;
 }
 
-/* Vertical sections */
+/* Each main section snaps */
 section {
   width:100%;
   height:100vh;
   scroll-snap-align: start;
   position: relative;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  box-sizing:border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-/* Hero section */
-#hero {
-  background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
+#hero { 
+  background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; 
+  background-size:cover;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+}
+
+/* Horizontal scroll container */
+.hero-scroll {
+  display:flex;
+  overflow-x:auto;
+  scroll-snap-type: x mandatory;
+  gap:20px;
+  width:100%;
+  padding:20px 0;
+}
+
+.hero-item {
+  min-width:80vw; 
+  height:70vh;
+  background:#222;
+  border-radius:10px;
+  flex:0 0 auto;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:2rem;
+  scroll-snap-align:start;
 }
 
 /* Photos section */
@@ -39,75 +64,97 @@ section {
   background:#111;
   padding:20px;
   box-sizing:border-box;
-  overflow-y:auto;
 }
 
 /* Arrows */
 .arrow {
   color:#fff;
   font-size:1.5rem;
-  display:flex; flex-direction:column; align-items:center;
-  cursor:pointer;
-  user-select:none;
-  position:absolute;
-  z-index:10;
-}
-.arrow span { font-size:0.8rem; margin-top:5px; }
-.arrow-down { bottom:40px; left:50%; transform:translateX(-50%); }
-.arrow-back-up { top:40px; left:50%; transform:translateX(-50%); }
-
-/* Photos categories */
-.category-section {
   display:flex;
   flex-direction:column;
-  margin-bottom:40px;
+  align-items:center;
+  cursor:pointer;
+  user-select:none;
+  z-index:10;
+  position:absolute;
 }
-.category-section h2 { margin-bottom:10px; }
-.category-grid {
-  display:grid;
-  grid-template-columns: repeat(auto-fill,minmax(150px,1fr));
-  gap:10px;
+.arrow span { font-size:0.8rem; margin-top:5px; }
+
+.arrow-down { bottom:40px; left:50%; transform:translateX(-50%);} 
+.arrow-back-up { top:40px; left:50%; transform:translateX(-50%);} 
+.arrow-left { top:50%; left:20px; transform:translateY(-50%);} 
+.arrow-right { top:50%; right:20px; transform:translateY(-50%);} 
+
+@media(max-width:768px){
+  #hero { background:url('SAULZIDLKABEJCEKMOBILE.jpg') center/cover no-repeat; background-size:cover; }
+  .arrow-down { bottom:20px; }
 }
-.category-item img {
-  width:100%; display:block; border-radius:5px;
+
+/* Photos category styling */
+.category-section { 
+  height:100vh; 
+  scroll-snap-align: start;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  margin:0;
+  padding:20px;
 }
+.category-section h2 { margin-bottom:20px; }
+
+.category-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap:10px; flex:1; }
+.category-item img { width:100%; display:block; border-radius:5px; }
+
 </style>
 </head>
 <body>
 
-<!-- Hero -->
 <section id="hero">
   <div class="arrow arrow-down">↓<span>Photos</span></div>
+  <div class="arrow arrow-left">←</div>
+  <div class="arrow arrow-right">→</div>
+
+  <div class="hero-scroll">
+    <div class="hero-item">Art</div>
+    <div class="hero-item">Music</div>
+    <div class="hero-item">Other</div>
+  </div>
 </section>
 
-<!-- Photos -->
 <section id="photos">
   <div class="arrow arrow-back-up">↑<span>Hero</span></div>
   <div id="categories"></div>
 </section>
 
 <script>
-// Arrow scrolling
+// Arrow functionality
 const hero = document.getElementById('hero');
 const photos = document.getElementById('photos');
+const heroScroll = document.querySelector('.hero-scroll');
 
 hero.querySelector('.arrow-down').onclick = () => photos.scrollIntoView({behavior:'smooth'});
-photos.querySelector('.arrow-back-up').onclick = () => hero.scrollIntoView({behavior:'smooth'});
+document.querySelector('.arrow-back-up').onclick = () => hero.scrollIntoView({behavior:'smooth'});
 
-// Contentful fetch
+// Horizontal arrows
+hero.querySelector('.arrow-left').onclick = () => {
+  heroScroll.scrollBy({left:-window.innerWidth, behavior:'smooth'});
+};
+hero.querySelector('.arrow-right').onclick = () => {
+  heroScroll.scrollBy({left:window.innerWidth, behavior:'smooth'});
+};
+
+// ---------- CONTENTFUL LOAD ----------
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
 const ENVIRONMENT = 'master';
 
-async function fetchPhotos() {
+async function fetchPhotos(){
   const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&order=sys.createdAt&include=1`;
   const res = await fetch(url);
-  if(!res.ok){ console.error('Fetch failed', res.status); return; }
+  if(!res.ok){ console.error('Contentful fetch failed', res.status); return; }
   const data = await res.json();
-
   const assets = {};
   data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
-
   const photosData = data.items.map(item=>{
     const f = item.fields;
     return {
@@ -118,39 +165,36 @@ async function fetchPhotos() {
       featured: f.featured || false
     };
   });
-
   displayPhotos(photosData);
 }
 
-function displayPhotos(photosData) {
-  const container = document.getElementById('categories');
-  const categories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
-
-  categories.forEach(cat=>{
+function displayPhotos(photosData){
+  const categoriesContainer = document.getElementById('categories');
+  const allCategories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
+  allCategories.forEach(cat=>{
     const items = (cat==="Featured") ? photosData.filter(p=>p.featured) : photosData.filter(p=>p.category===cat);
     if(items.length===0) return;
 
-    const section = document.createElement('div');
-    section.className = 'category-section';
-    const h2 = document.createElement('h2');
-    h2.textContent = cat;
+    const section = document.createElement('div'); 
+    section.className='category-section';
+    const h2 = document.createElement('h2'); 
+    h2.textContent = cat; 
     section.appendChild(h2);
 
-    const grid = document.createElement('div');
+    const grid = document.createElement('div'); 
     grid.className = 'category-grid';
-
     items.forEach(p=>{
-      const div = document.createElement('div');
+      const div = document.createElement('div'); 
       div.className = 'category-item';
-      const img = document.createElement('img');
-      img.src = p.thumbnail || p.photo;
+      const img = document.createElement('img'); 
+      img.src = p.thumbnail || p.photo; 
       img.alt = p.title;
-      div.appendChild(img);
+      div.appendChild(img); 
       grid.appendChild(div);
     });
 
-    section.appendChild(grid);
-    container.appendChild(section);
+    section.appendChild(grid); 
+    categoriesContainer.appendChild(section);
   });
 }
 

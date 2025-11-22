@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saul Zidulka-Bejcek - Working Scroll</title>
+<title>Saul Zidulka-Bejcek - Working Carousel</title>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded&display=swap" rel="stylesheet">
 <style>
 html, body {
@@ -64,25 +64,21 @@ section h2::after {
   margin:0 10px;
 }
 
-/* Featured carousel */
+/* Featured carousel (inline-flex) */
 .featured-section {
   height:100vh;
   display:flex;
   flex-direction:column;
   justify-content:center;
-  gap:10px;
-}
-
-.featured-row-wrapper {
-  width:100%;
-  height:50%;
   overflow:hidden;
 }
 
 .featured-row {
-  display:flex;
+  display:inline-flex;
+  width: max-content;
+  height:50%;
+  overflow:hidden;
   gap:10px;
-  width:max-content;
 }
 
 .featured-row img {
@@ -92,7 +88,7 @@ section h2::after {
   border-radius:6px;
 }
 
-/* Animation */
+/* Animation for rightward scroll */
 @keyframes scroll-right {
   0% { transform: translateX(-50%); }
   100% { transform: translateX(0); }
@@ -106,7 +102,7 @@ section h2::after {
   align-items:center;
   justify-content:flex-start;
   padding-top:60px;
-  gap:10px;
+  overflow:hidden;
 }
 
 .category-row {
@@ -143,7 +139,7 @@ section h2::after {
 document.querySelector('.arrow-down').onclick = () => document.getElementById('photos').scrollIntoView({behavior:'smooth'});
 document.querySelector('.arrow-back-up').onclick = () => document.getElementById('hero').scrollIntoView({behavior:'smooth'});
 
-// Contentful
+// Contentful fetch
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
 const ENVIRONMENT = 'master';
@@ -172,26 +168,21 @@ function displayPhotos(photosData){
 
     if(cat==="Featured"){
       const section=document.createElement('div'); section.className='featured-section';
-      const h2=document.createElement('h2'); h2.textContent=cat; section.appendChild(h2);
-
+      section.innerHTML=`<h2>${cat}</h2>`;
       const mid=Math.ceil(items.length/2);
       [items.slice(0,mid), items.slice(mid)].forEach(rowItems=>{
-        const wrapper=document.createElement('div'); wrapper.className='featured-row-wrapper';
         const row=document.createElement('div'); row.className='featured-row';
-        [...rowItems, ...rowItems].forEach(p=>{
+        [...rowItems,...rowItems].forEach(p=>{
           const img=document.createElement('img'); img.src=p.thumbnail||p.photo; img.alt=p.title;
           row.appendChild(img);
         });
         row.style.animation=`scroll-right ${30+rowItems.length*5}s linear infinite`;
-        wrapper.appendChild(row);
-        section.appendChild(wrapper);
+        section.appendChild(row);
       });
-
       container.appendChild(section);
     } else {
       const section=document.createElement('div'); section.className='category-section';
-      const h2=document.createElement('h2'); h2.textContent=cat; section.appendChild(h2);
-
+      section.innerHTML=`<h2>${cat}</h2>`;
       const mid=Math.ceil(items.length/2);
       [items.slice(0,mid), items.slice(mid)].forEach(rowItems=>{
         const row=document.createElement('div'); row.className='category-row';
@@ -201,7 +192,6 @@ function displayPhotos(photosData){
         });
         section.appendChild(row);
       });
-
       container.appendChild(section);
     }
   });

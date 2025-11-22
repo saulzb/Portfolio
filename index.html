@@ -55,14 +55,31 @@ section.horizontal {
   align-items:center;
   cursor:pointer;
   user-select:none;
-  margin:0 auto 20px auto; /* center in flow */
 }
 .arrow span { font-size:0.8rem; margin-top:5px; }
+
+/* Specific position for hero arrow to photos */
+.arrow-down {
+  position:absolute;
+  bottom:40px;
+  left:50%;
+  transform:translateX(-50%);
+}
+
+/* Photos top arrow (inline, not following scroll) */
+.arrow-up {
+  margin:0 auto 20px auto; /* center in flow */
+}
 
 /* Photos grid */
 .category-section { margin-bottom:40px; }
 .category-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
 .category-item img { width:100%; display:block; border-radius:5px; }
+
+@media(max-width:768px){
+  #hero { background:url('SAULZIDLKABEJCEKMOBILE.jpg') center/cover no-repeat; }
+  .arrow-down { bottom:20px; }
+}
 </style>
 </head>
 <body>
@@ -76,7 +93,7 @@ section.horizontal {
 
 <!-- Vertical photos section -->
 <section id="photos">
-  <!-- Back arrow at top, inline in flow -->
+  <!-- Back arrow at top, inline -->
   <div class="arrow arrow-up">↑<span>Back</span></div>
   <div id="categories"></div>
 </section>
@@ -85,7 +102,7 @@ section.horizontal {
 const hero = document.getElementById('hero');
 const photos = document.getElementById('photos');
 
-// Hero scroll down arrow
+// Hero scroll down arrow (kept at bottom center of hero)
 hero.querySelector('.arrow-down').onclick  = () => photos.scrollIntoView({behavior:'smooth'});
 
 // Back to hero from photos

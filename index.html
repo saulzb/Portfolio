@@ -59,23 +59,39 @@ section {
 /* PHOTOS SECTION */
 #photos { background:#111; padding-top:40px; }
 
-/* Featured category horizontal scroll */
+/* Headings with lines */
+.category-section h2, .featured-section h2 {
+  margin-bottom:20px; 
+  width:100%;
+  color:white;
+  font-weight:bold;
+  text-align:center;
+  position:relative;
+}
+
+.category-section h2::before,
+.category-section h2::after,
+.featured-section h2::before,
+.featured-section h2::after {
+  content:"";
+  display:inline-block;
+  width:30%;
+  height:1px;
+  background:white;
+  vertical-align:middle;
+  margin:0 10px;
+}
+
+/* Featured carousel */
 .featured-section {
   height:100vh;
-  scroll-snap-align: start;
   display:flex;
   flex-direction: column;
-  overflow:hidden;
-  position:relative;
   text-align:center;
   justify-content:center;
+  overflow:hidden;
 }
 
-.featured-section h2 {
-  margin-bottom:10px;
-}
-
-/* Horizontal rows container */
 .featured-rows {
   position:relative;
   height:100%;
@@ -87,17 +103,17 @@ section {
   position:absolute;
   top:0;
   left:0;
-  height:50%; /* half of section */
+  height:50%; /* half screen */
 }
 
 .featured-row.second {
   top:50%;
 }
 
-/* Horizontal animation */
+/* Horizontal animation (rightwards, slow) */
 @keyframes scroll-right {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
 }
 
 .featured-row div {
@@ -111,56 +127,37 @@ section {
   object-fit:cover;
 }
 
-/* Other categories */
-.category-section { 
+/* Category sections (static, same layout as carousel) */
+.category-section {
   height:100vh;
-  scroll-snap-align: start;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:flex-start;
   text-align:center;
   padding-top:60px;
+  overflow:hidden;
 }
 
-/* Headings with lines */
-.category-section h2 {
-  margin-bottom:20px; 
+.category-row {
+  display:flex;
   width:100%;
-  color:white;
-  font-weight:bold;
-  text-align:center;
-  position:relative;
+  height:50%; /* half screen */
+  justify-content:center;
+  gap:10px;
 }
 
-.category-section h2::before,
-.category-section h2::after {
-  content:"";
-  display:inline-block;
-  width:30%;
-  height:1px;
-  background:white;
-  vertical-align:middle;
-  margin:0 10px;
+.category-row div {
+  flex: 0 0 auto;
+  height:100%;
 }
 
-/* Category grid: make images half screen width like featured */
-.category-grid { 
-  width:100%;
-  max-width:1200px;
-  display:grid; 
-  grid-template-columns: repeat(auto-fill,minmax(50vw,1fr)); /* half screen width */
-  justify-items:center; 
-  gap:20px; 
-  flex:1;
-}
-
-.category-item img { 
-  width:100%; 
-  height:50vh; /* match featured row height */
+.category-row img {
+  height:100%;
+  width:auto;
   object-fit:cover;
-  display:block; 
-  border-radius:6px; 
+  border-radius:6px;
+  display:block;
 }
 </style>
 </head>
@@ -231,17 +228,14 @@ function displayPhotos(photosData){
       const rowsContainer = document.createElement('div');
       rowsContainer.className='featured-rows';
 
-      // Split items for two rows
       const mid = Math.ceil(items.length/2);
       const row1Items = items.slice(0, mid);
       const row2Items = items.slice(mid);
 
-      // function to create scrolling row
       function createRow(rowItems, isSecond){
         const row = document.createElement('div');
         row.className = 'featured-row' + (isSecond ? ' second' : '');
-        // duplicate for seamless scroll
-        const allItems = [...rowItems, ...rowItems];
+        const allItems = [...rowItems, ...rowItems]; // duplicate for seamless scroll
         allItems.forEach(p=>{
           const div = document.createElement('div');
           const img = document.createElement('img');
@@ -250,8 +244,7 @@ function displayPhotos(photosData){
           div.appendChild(img);
           row.appendChild(div);
         });
-        // Apply animation
-        row.style.animation = `scroll-right ${10 + rowItems.length*2}s linear infinite`;
+        row.style.animation = `scroll-right ${30 + rowItems.length*5}s linear infinite`; // slower, rightwards
         return row;
       }
 
@@ -262,6 +255,7 @@ function displayPhotos(photosData){
       categoriesContainer.appendChild(section);
 
     } else {
+      // Other categories: same layout, static
       const section = document.createElement('div');
       section.className='category-section';
 
@@ -269,22 +263,27 @@ function displayPhotos(photosData){
       h2.textContent = cat;
       section.appendChild(h2);
 
-      const grid = document.createElement('div');
-      grid.className='category-grid';
+      const mid = Math.ceil(items.length/2);
+      const row1Items = items.slice(0, mid);
+      const row2Items = items.slice(mid);
 
-      items.forEach(p=>{
-        const div = document.createElement('div');
-        div.className='category-item';
+      function createStaticRow(rowItems){
+        const row = document.createElement('div');
+        row.className='category-row';
+        rowItems.forEach(p=>{
+          const div = document.createElement('div');
+          const img = document.createElement('img');
+          img.src = p.thumbnail || p.photo;
+          img.alt = p.title;
+          div.appendChild(img);
+          row.appendChild(div);
+        });
+        return row;
+      }
 
-        const img = document.createElement('img');
-        img.src = p.thumbnail || p.photo;
-        img.alt = p.title;
+      section.appendChild(createStaticRow(row1Items));
+      section.appendChild(createStaticRow(row2Items));
 
-        div.appendChild(img);
-        grid.appendChild(div);
-      });
-
-      section.appendChild(grid);
       categoriesContainer.appendChild(section);
     }
   });

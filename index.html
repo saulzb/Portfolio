@@ -45,15 +45,10 @@ section {
 
 #photos {
   background:#111;
-  height:100vh;
-  overflow-y:hidden;
-  scroll-snap-type: y mandatory;
-  position:relative;
-}
-
-#categories {
-  height:100%;
+  height:100vh; /* keep full screen */
   overflow-y:auto;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
   padding:20px;
   box-sizing:border-box;
 }
@@ -85,11 +80,6 @@ section {
 <body>
 
 <div id="container">
-  <section id="drawings">
-    <h2>DRAWINGS</h2>
-    <div class="arrow arrow-back-right">→<span>Hero</span></div>
-  </section>
-
   <section id="hero">
     <div class="arrow arrow-left">←<span>Drawings</span></div>
     <div class="arrow arrow-right">→<span>Music</span></div>
@@ -98,7 +88,12 @@ section {
 
   <section id="music">
     <h2>MUSIC</h2>
-    <div class="arrow arrow-back-left">←<span>Hero</span></div>
+    <div class="arrow arrow-back-left">←<span>Back</span></div>
+  </section>
+
+  <section id="drawings">
+    <h2>DRAWINGS</h2>
+    <div class="arrow arrow-back-right">→<span>Back</span></div>
   </section>
 </div>
 
@@ -113,37 +108,39 @@ const hero = document.getElementById('hero');
 const music = document.getElementById('music');
 const drawings = document.getElementById('drawings');
 const photos = document.getElementById('photos');
-const categories = document.getElementById('categories');
 
-const sections = [drawings, hero, music];
-let currentIndex = 1; // start at Hero
+const sections=[hero,music,drawings];
+let currentIndex=0;
 
-function snapTo(i){
-  currentIndex = Math.max(0, Math.min(sections.length-1, i));
-  container.scrollTo({ left: sections[currentIndex].offsetLeft, behavior: 'smooth' });
+function updateIndex(){
+  const pos=container.scrollLeft;
+  currentIndex=sections.reduce((closest,sec,i)=>
+    Math.abs(pos-sec.offsetLeft)<Math.abs(pos-sections[closest].offsetLeft)?i:closest,0);
 }
 
-// Arrow clicks
-hero.querySelector('.arrow-left').onclick  = ()=>snapTo(currentIndex-1);
-hero.querySelector('.arrow-right').onclick = ()=>snapTo(currentIndex+1);
-hero.querySelector('.arrow-down').onclick  = ()=>photos.scrollIntoView({behavior:'smooth'});
+function snapTo(i){
+  currentIndex=Math.max(0,Math.min(sections.length-1,i));
+  container.scrollTo({ left:sections[currentIndex].offsetLeft, behavior:'smooth' });
+}
 
-music.querySelector('.arrow-back-left').onclick    = ()=>snapTo(1);
-drawings.querySelector('.arrow-back-right').onclick = ()=>snapTo(1);
-document.querySelector('.arrow-back-up').onclick    = ()=>{
-  snapTo(1);
-  hero.scrollIntoView({behavior:'smooth'});
+// ARROWS
+hero.querySelector('.arrow-right').onclick=()=>snapTo(currentIndex+1);
+hero.querySelector('.arrow-left').onclick =()=>snapTo(currentIndex-1);
+hero.querySelector('.arrow-down').onclick =()=>{
+  photos.scrollIntoView({behavior:'smooth'});
 };
 
-// Update index on scroll
-container.addEventListener('scroll', ()=>{
+music.querySelector('.arrow-back-left').onclick =()=>snapTo(0);
+drawings.querySelector('.arrow-back-right').onclick =()=>snapTo(0);
+
+document.querySelector('.arrow-back-up').onclick =()=>{
+  hero.scrollIntoView({behavior:'smooth'});
+  snapTo(0);
+};
+
+container.addEventListener('scroll',()=>{
   clearTimeout(container._snapTimeout);
-  container._snapTimeout = setTimeout(()=>{
-    const pos = container.scrollLeft;
-    currentIndex = sections.reduce((closest, sec, i) =>
-      Math.abs(pos - sec.offsetLeft) < Math.abs(pos - sections[closest].offsetLeft) ? i : closest
-    ,0);
-  }, 120);
+  container._snapTimeout=setTimeout(updateIndex,120);
 });
 
 // ---------- CONTENTFUL LOAD ----------
@@ -154,7 +151,6 @@ const ENVIRONMENT = 'master';
 async function fetchPhotos(){
   const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&order=sys.createdAt&include=1`;
   const res = await fetch(url);
-  if(!res.ok){ console.error('Contentful fetch failed', res.status); return; }
   const data = await res.json();
   const assets = {};
   data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
@@ -172,6 +168,7 @@ async function fetchPhotos(){
 }
 
 function displayPhotos(photosData){
+  const categoriesContainer = document.getElementById('categories');
   const allCategories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
   allCategories.forEach(cat=>{
     const items = (cat==="Featured")?photosData.filter(p=>p.featured):photosData.filter(p=>p.category===cat);
@@ -184,15 +181,7 @@ function displayPhotos(photosData){
       const img = document.createElement('img'); img.src = p.thumbnail||p.photo; img.alt = p.title;
       div.appendChild(img); grid.appendChild(div);
     });
-    section.appendChild(grid);
-    categories.appendChild(section);
-
-    const observer = new IntersectionObserver(entries=>{
-      entries.forEach(entry=>{
-        if(entry.isIntersecting){ entry.target.classList.add('visible'); observer.unobserve(entry.target); }
-      });
-    }, { threshold:0.1 });
-    section.querySelectorAll('.category-item').forEach(item => observer.observe(item));
+    section.appendChild(grid); categoriesContainer.appendChild(section);
   });
 }
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saul Zidulka-Bejcek</title>
+<title>Saul Zidulka-Bejcek - Option A</title>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded&display=swap" rel="stylesheet">
 <style>
 html, body {
@@ -22,9 +22,9 @@ section {
   width:100%;
   height:100vh;
   scroll-snap-align: start;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+  display:flex;
+  flex-direction:column;
+  box-sizing:border-box;
   padding:20px;
   position:relative;
 }
@@ -47,20 +47,11 @@ section {
   position:absolute;
 }
 .arrow span { font-size:0.8rem; margin-top:5px; }
-
 .arrow-down { bottom:40px; left:50%; transform:translateX(-50%);} 
-.arrow-back-up { top:20px; left:50%; transform:translateX(-50%); position:absolute;} 
-
-@media(max-width:768px){
-  #hero { background:url('SAULZIDLKABEJCEKMOBILE.jpg') center/cover no-repeat; background-size:cover; }
-  .arrow-down { bottom:20px; }
-}
+.arrow-back-up { top:20px; left:50%; transform:translateX(-50%);}
 
 /* PHOTOS SECTION */
-#photos { 
-  background:#111; 
-  padding-top:60px;
-}
+#photos { padding-top:60px; }
 
 /* Headings with lines */
 section h2 {
@@ -81,79 +72,49 @@ section h2::after {
   margin:0 10px;
 }
 
-/* Featured carousel */
+/* Featured carousel — dummy container method */
 .featured-section {
   height:100vh;
   display:flex;
   flex-direction:column;
-  text-align:center;
-  justify-content:center;
-  overflow:hidden;
-}
-
-.featured-rows {
-  position:relative;
-  height:100%;
   overflow:hidden;
 }
 
 .featured-row {
   display:flex;
-  position:absolute;
+  position:relative; /* now relative */
+  height:50%;
   width:max-content;
-  height:50%; /* half screen */
-  top:0;
-  left:0;
 }
 
-.featured-row.second { top:50%; }
+.featured-row div { flex:0 0 auto; }
+.featured-row img { height:100%; width:auto; object-fit:cover; border-radius:6px; }
 
+/* Animation */
 @keyframes scroll-right {
   0% { transform: translateX(-50%); }
   100% { transform: translateX(0); }
 }
 
-.featured-row div { flex:0 0 auto; }
-
-.featured-row img {
-  height:100%;
-  width:auto;
-  display:block;
-  object-fit:cover;
-  border-radius:6px;
-}
-
-/* Category sections (static, same layout as carousel) */
+/* Category sections (static) */
 .category-section {
   height:100vh;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:flex-start;
-  text-align:center;
   padding-top:60px;
 }
-
 .category-row {
   display:flex;
   width:100%;
-  height:50%; /* half screen */
+  height:50%;
   justify-content:center;
   gap:10px;
 }
+.category-row div { flex:0 0 auto; height:100%; }
+.category-row img { height:100%; width:auto; object-fit:cover; border-radius:6px; }
 
-.category-row div {
-  flex:0 0 auto;
-  height:100%;
-}
-
-.category-row img {
-  height:100%;
-  width:auto;
-  object-fit:cover;
-  border-radius:6px;
-  display:block;
-}
 </style>
 </head>
 <body>
@@ -169,10 +130,8 @@ section h2::after {
 
 <script>
 // Arrows
-const hero = document.getElementById('hero');
-const photos = document.getElementById('photos');
-hero.querySelector('.arrow-down').onclick = () => photos.scrollIntoView({behavior:'smooth'});
-document.querySelector('.arrow-back-up').onclick = () => hero.scrollIntoView({behavior:'smooth'});
+document.querySelector('.arrow-down').onclick = () => document.getElementById('photos').scrollIntoView({behavior:'smooth'});
+document.querySelector('.arrow-back-up').onclick = () => document.getElementById('hero').scrollIntoView({behavior:'smooth'});
 
 // Contentful fetch
 const SPACE_ID = '5w319pzc4eiq';
@@ -184,7 +143,6 @@ async function fetchPhotos(){
   const res = await fetch(url);
   if(!res.ok) return console.error('Contentful fetch failed', res.status);
   const data = await res.json();
-
   const assets = {};
   data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
 
@@ -202,60 +160,41 @@ async function fetchPhotos(){
 
 function displayPhotos(photosData){
   const container = document.getElementById('categories');
-  const allCategories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
+  const categories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
 
-  allCategories.forEach(cat=>{
-    const items = cat==="Featured" ? photosData.filter(p=>p.featured) : photosData.filter(p=>p.category===cat);
+  categories.forEach(cat=>{
+    const items = cat==="Featured"?photosData.filter(p=>p.featured):photosData.filter(p=>p.category===cat);
     if(!items.length) return;
 
     if(cat==="Featured"){
-      const section = document.createElement('div');
-      section.className='featured-section';
-      const h2 = document.createElement('h2'); h2.textContent = cat;
-      section.appendChild(h2);
-
-      const rowsContainer = document.createElement('div');
-      rowsContainer.className='featured-rows';
-      const mid = Math.ceil(items.length/2);
-      const row1 = items.slice(0,mid), row2 = items.slice(mid);
-
-      function createRow(rowItems,isSecond){
-        const row = document.createElement('div');
-        row.className='featured-row' + (isSecond?' second':'');
+      const section = document.createElement('div'); section.className='featured-section';
+      section.innerHTML=`<h2>${cat}</h2>`;
+      const mid=Math.ceil(items.length/2);
+      [items.slice(0,mid), items.slice(mid)].forEach((rowItems,i)=>{
+        const row = document.createElement('div'); row.className='featured-row';
         [...rowItems,...rowItems].forEach(p=>{
-          const div = document.createElement('div');
-          const img = document.createElement('img');
-          img.src = p.thumbnail || p.photo; img.alt=p.title;
+          const div=document.createElement('div'); 
+          const img=document.createElement('img'); img.src=p.thumbnail||p.photo; img.alt=p.title;
           div.appendChild(img); row.appendChild(div);
         });
-        row.style.animation=`scroll-right ${30 + rowItems.length*5}s linear infinite`;
-        return row;
-      }
-
-      rowsContainer.appendChild(createRow(row1,false));
-      rowsContainer.appendChild(createRow(row2,true));
-      section.appendChild(rowsContainer);
+        row.style.animation=`scroll-right ${30+rowItems.length*5}s linear infinite`;
+        section.appendChild(row);
+      });
       container.appendChild(section);
 
     } else {
       const section = document.createElement('div'); section.className='category-section';
-      const h2 = document.createElement('h2'); h2.textContent=cat; section.appendChild(h2);
-
-      const mid = Math.ceil(items.length/2);
-      const row1 = items.slice(0,mid), row2 = items.slice(mid);
-
-      function createStaticRow(rowItems){
-        const row = document.createElement('div'); row.className='category-row';
+      section.innerHTML=`<h2>${cat}</h2>`;
+      const mid=Math.ceil(items.length/2);
+      [items.slice(0,mid), items.slice(mid)].forEach(rowItems=>{
+        const row=document.createElement('div'); row.className='category-row';
         rowItems.forEach(p=>{
-          const div=document.createElement('div');
+          const div=document.createElement('div'); 
           const img=document.createElement('img'); img.src=p.thumbnail||p.photo; img.alt=p.title;
           div.appendChild(img); row.appendChild(div);
         });
-        return row;
-      }
-
-      section.appendChild(createStaticRow(row1));
-      section.appendChild(createStaticRow(row2));
+        section.appendChild(row);
+      });
       container.appendChild(section);
     }
   });
@@ -263,6 +202,5 @@ function displayPhotos(photosData){
 
 fetchPhotos();
 </script>
-
 </body>
 </html>

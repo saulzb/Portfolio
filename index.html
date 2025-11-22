@@ -16,27 +16,19 @@ html, body {
   scroll-behavior: smooth;
 }
 
-/* Horizontal container for hero */
+/* Horizontal hero container */
 #container {
-  display: grid;
-  grid-auto-flow: column;
-  grid-template-columns: 100vw;
   width: 100vw;
   height: 100vh;
-  scroll-snap-type: x mandatory;
-  overflow-x: hidden;
-  overflow-y: hidden;
 }
 
 section.horizontal {
   width:100vw;
-  height:100%;
-  flex-shrink:0;
+  height:100vh;
   display:flex;
   flex-direction:column;
   padding:20px;
   box-sizing:border-box;
-  scroll-snap-align:start;
   position:relative;
 }
 
@@ -49,12 +41,11 @@ section.horizontal {
   overflow-y:auto;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
-  padding:60px 20px 20px 20px; /* top padding for arrow */
+  padding:60px 20px 20px 20px;
   box-sizing:border-box;
   position: relative;
 }
 
-/* Snap align for each category */
 .category-section {
   margin-bottom:40px;
   scroll-snap-align: start;
@@ -80,7 +71,7 @@ section.horizontal {
 @media(max-width:768px){
   #hero { background:url('SAULZIDLKABEJCEKMOBILE.jpg') center/cover no-repeat; background-size:cover; }
   .arrow-down { bottom:20px; }
-  .category-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+  .category-grid { grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); }
   .category-item img { max-height: 150px; }
 }
 
@@ -91,14 +82,14 @@ section.horizontal {
 </head>
 <body>
 
-<!-- Horizontal hero container -->
+<!-- Hero -->
 <div id="container">
   <section id="hero" class="horizontal">
     <div class="arrow arrow-down">↓<span>Photos</span></div>
   </section>
 </div>
 
-<!-- Vertical photos section -->
+<!-- Photos section -->
 <section id="photos">
   <div class="arrow arrow-back-up">↑<span>Back</span></div>
   <div id="categories"></div>
@@ -160,45 +151,52 @@ function displayPhotos(photosData){
 
 fetchPhotos();
 
-// ---------- VERTICAL SCROLL SNAP ----------
+// ---------- SCROLL SNAP FROM HERO TO PHOTOS ----------
+let heroScrolled = false;
+
+window.addEventListener('wheel', e => {
+  if(heroScrolled) return; // only trigger once
+  if(e.deltaY > 0){
+    const heroRect = hero.getBoundingClientRect();
+    if(heroRect.bottom > window.innerHeight/2){
+      heroScrolled = true;
+      photos.scrollIntoView({behavior:'smooth'});
+      e.preventDefault();
+    }
+  }
+}, {passive:false});
+
+// Optional: allow mousewheel on photos to snap between categories
 let isScrolling = false;
-let categorySections = [];
-
-function updateSections(){
-  categorySections = Array.from(document.querySelectorAll('.category-section'));
-}
-
-photos.addEventListener('wheel', e => {
-  if(isScrolling) return;
-  if(categorySections.length === 0) updateSections();
-  const delta = e.deltaY;
+function snapToCategory(delta){
+  const categorySections = Array.from(document.querySelectorAll('.category-section'));
   const currentScroll = photos.scrollTop;
   let target = null;
-
   if(delta > 0){
-    // Scroll down: next section
     for(let sec of categorySections){
       if(sec.offsetTop > currentScroll + 10){
-        target = sec;
-        break;
+        target = sec; break;
       }
     }
-  } else if(delta < 0){
-    // Scroll up: previous section
-    for(let i = categorySections.length-1; i >=0; i--){
+  } else {
+    for(let i = categorySections.length-1; i>=0; i--){
       if(categorySections[i].offsetTop < currentScroll - 10){
-        target = categorySections[i];
-        break;
+        target = categorySections[i]; break;
       }
     }
   }
-
   if(target){
     isScrolling = true;
     photos.scrollTo({top: target.offsetTop, behavior:'smooth'});
-    setTimeout(()=>{ isScrolling=false; }, 400);
-    e.preventDefault();
+    setTimeout(()=>{isScrolling=false;}, 400);
   }
+}
+
+photos.addEventListener('wheel', e => {
+  if(!heroScrolled) return; // don't interfere with initial hero scroll
+  if(isScrolling) return;
+  snapToCategory(e.deltaY);
+  e.preventDefault();
 }, {passive:false});
 </script>
 </body>

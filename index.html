@@ -21,7 +21,7 @@ html, body {
   display:flex;
   width:300vw;
   height:100vh;
-  transition: transform 0.8s ease;
+  scroll-snap-type: x mandatory; /* horizontal snap */
 }
 
 section {
@@ -32,10 +32,15 @@ section {
   flex-direction:column;
   padding:20px;
   box-sizing:border-box;
+  scroll-snap-align: start; /* snap horizontal sections */
 }
 
 /* Sections */
-#hero { background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; background-size:cover; position:relative; }
+#hero { 
+  background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; 
+  background-size:cover; 
+  position:relative; 
+}
 #music { background:#222; }
 #drawings { background:#444; }
 
@@ -44,7 +49,7 @@ section {
   background:#111;
   min-height:100vh;
   overflow-y:auto;
-  scroll-snap-type: y mandatory;
+  scroll-snap-type: y mandatory; /* vertical snap */
   scroll-behavior: smooth;
   padding:20px;
 }
@@ -140,44 +145,18 @@ const arrowBackRight = drawings.querySelector('.arrow-back-right');
 const arrowBackUp    = document.querySelector('.arrow-back-up');
 
 // ---------- ARROW CLICK LOGIC ----------
-arrowRight.addEventListener('click', ()=>container.scrollTo({left: window.innerWidth, behavior:'smooth'}));
-arrowLeft.addEventListener('click', ()=>container.scrollTo({left: -window.innerWidth, behavior:'smooth'}));
-arrowDown.addEventListener('click', ()=>{
+arrowRight.addEventListener('click', () => container.scrollTo({left: window.innerWidth, behavior:'smooth'}));
+arrowLeft.addEventListener('click', () => container.scrollTo({left: 2*window.innerWidth, behavior:'smooth'}));
+arrowDown.addEventListener('click', () => {
   const firstSection = document.querySelector('#categories .category-section');
   if(firstSection) firstSection.scrollIntoView({behavior:'smooth'});
 });
 
-arrowBackLeft.addEventListener('click', ()=>container.scrollTo({left:0, behavior:'smooth'}));
-arrowBackRight.addEventListener('click', ()=>container.scrollTo({left:0, behavior:'smooth'}));
-arrowBackUp.addEventListener('click', ()=>window.scrollTo({top:0, behavior:'smooth'}));
-
-// ---------- HORIZONTAL SNAP ----------
-container.addEventListener('scroll', ()=>{
-  const scrollLeft = container.scrollLeft;
-  const width = window.innerWidth;
-  if(scrollLeft < width/2){
-    container.scrollTo({left:0, behavior:'smooth'});
-  } else if(scrollLeft < width + width/2){
-    container.scrollTo({left:width, behavior:'smooth'});
-  } else {
-    container.scrollTo({left:2*width, behavior:'smooth'});
-  }
-});
-
-// ---------- VERTICAL SNAP ----------
-let verticalTimeout;
-window.addEventListener('scroll', ()=>{
-  clearTimeout(verticalTimeout);
-  verticalTimeout = setTimeout(()=>{
-    const scrollY = window.scrollY;
-    const photosTop = photos.offsetTop;
-    if(scrollY < photosTop/2){
-      window.scrollTo({top:0, behavior:'smooth'});
-    } else {
-      const firstSection = document.querySelector('#categories .category-section');
-      if(firstSection) firstSection.scrollIntoView({behavior:'smooth'});
-    }
-  }, 80);
+arrowBackLeft.addEventListener('click', () => container.scrollTo({left:0, behavior:'smooth'}));
+arrowBackRight.addEventListener('click', () => container.scrollTo({left:0, behavior:'smooth'}));
+arrowBackUp.addEventListener('click', () => {
+  photos.scrollTo({top:0, behavior:'smooth'});
+  container.scrollTo({left:0, behavior:'smooth'});
 });
 
 // ---------- CONTENTFUL LOAD ----------

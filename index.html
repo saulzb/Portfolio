@@ -3,122 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saul Zidulka-Bejcek - Option A</title>
+<title>Saul Zidulka-Bejcek - Option B</title>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded&display=swap" rel="stylesheet">
 <style>
-html, body {
-  margin:0; padding:0;
-  width:100%; height:100%;
-  font-family:'Archivo Expanded', sans-serif;
-  background:#111;
-  color:#eee;
-  scroll-behavior: smooth;
-  scroll-snap-type: y mandatory;
-  overflow-x: hidden;
-}
+html, body { margin:0; padding:0; width:100%; height:100%; font-family:'Archivo Expanded', sans-serif; background:#111; color:#eee; scroll-behavior:smooth; scroll-snap-type:y mandatory; overflow-x:hidden; }
 
-/* Sections */
-section {
-  width:100%;
-  height:100vh;
-  scroll-snap-align: start;
-  display:flex;
-  flex-direction:column;
-  box-sizing:border-box;
-  padding:20px;
-  position:relative;
-}
+section { width:100%; height:100vh; scroll-snap-align:start; display:flex; flex-direction:column; padding:20px; position:relative; box-sizing:border-box; }
 
-/* HERO */
-#hero { 
-  background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; 
-  background-size:cover;
-}
-
-.arrow {
-  color:#fff;
-  font-size:1.5rem;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  cursor:pointer;
-  user-select:none;
-  z-index:10;
-  position:absolute;
-}
-.arrow span { font-size:0.8rem; margin-top:5px; }
-.arrow-down { bottom:40px; left:50%; transform:translateX(-50%);} 
-.arrow-back-up { top:20px; left:50%; transform:translateX(-50%);}
-
-/* PHOTOS SECTION */
-#photos { padding-top:60px; }
+#hero { background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; background-size:cover; }
+.arrow { color:#fff; font-size:1.5rem; display:flex; flex-direction:column; align-items:center; cursor:pointer; user-select:none; z-index:10; position:absolute; }
+.arrow span{font-size:0.8rem; margin-top:5px;}
+.arrow-down{bottom:40px; left:50%; transform:translateX(-50%);}
+.arrow-back-up{top:20px; left:50%; transform:translateX(-50%);}
 
 /* Headings with lines */
-section h2 {
-  margin-bottom:20px; 
-  width:100%;
-  color:white;
-  font-weight:bold;
-  text-align:center;
-}
-section h2::before,
-section h2::after {
-  content:"";
-  display:inline-block;
-  width:30%;
-  height:1px;
-  background:white;
-  vertical-align:middle;
-  margin:0 10px;
-}
+section h2 { margin-bottom:20px; width:100%; color:white; font-weight:bold; text-align:center; }
+section h2::before, section h2::after { content:""; display:inline-block; width:30%; height:1px; background:white; vertical-align:middle; margin:0 10px; }
 
-/* Featured carousel — dummy container method */
-.featured-section {
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-}
-
-.featured-row {
-  display:flex;
-  position:relative; /* now relative */
-  height:50%;
-  width:max-content;
-}
-
+/* Featured wrapper method */
+.featured-section { height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+.featured-wrapper { height:50%; position:relative; width:100%; overflow:hidden; }
+.featured-row { position:absolute; display:flex; width:max-content; height:100%; top:0; left:0; }
 .featured-row div { flex:0 0 auto; }
 .featured-row img { height:100%; width:auto; object-fit:cover; border-radius:6px; }
 
 /* Animation */
-@keyframes scroll-right {
-  0% { transform: translateX(-50%); }
-  100% { transform: translateX(0); }
-}
+@keyframes scroll-right {0%{transform:translateX(-50%);}100%{transform:translateX(0);}}
 
-/* Category sections (static) */
-.category-section {
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-  padding-top:60px;
-}
-.category-row {
-  display:flex;
-  width:100%;
-  height:50%;
-  justify-content:center;
-  gap:10px;
-}
-.category-row div { flex:0 0 auto; height:100%; }
-.category-row img { height:100%; width:auto; object-fit:cover; border-radius:6px; }
-
+.category-section { height:100vh; display:flex; flex-direction:column; align-items:center; padding-top:60px; }
+.category-row { display:flex; width:100%; height:50%; justify-content:center; gap:10px; }
+.category-row div{flex:0 0 auto;height:100%; }
+.category-row img{height:100%; width:auto; object-fit:cover; border-radius:6px; display:block;}
 </style>
 </head>
 <body>
-
 <section id="hero">
   <div class="arrow arrow-down">↓<span>Photos</span></div>
 </section>
@@ -139,60 +57,48 @@ const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
 const ENVIRONMENT = 'master';
 
 async function fetchPhotos(){
-  const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&order=sys.createdAt&include=1`;
-  const res = await fetch(url);
-  if(!res.ok) return console.error('Contentful fetch failed', res.status);
-  const data = await res.json();
-  const assets = {};
-  data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
+  const url=`https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&order=sys.createdAt&include=1`;
+  const res=await fetch(url); if(!res.ok) return console.error('Contentful fetch failed',res.status);
+  const data=await res.json();
+  const assets={}; data.includes?.Asset?.forEach(a=>assets[a.sys.id]=a.fields.file.url);
 
-  displayPhotos(data.items.map(item => {
-    const f = item.fields;
-    return {
-      title: f.title,
-      photo: f.photo ? `https:${assets[f.photo.sys.id]}` : '',
-      thumbnail: f.thumbnail ? `https:${assets[f.thumbnail.sys.id]}` : '',
-      category: f.category || '',
-      featured: f.featured || false
-    };
+  displayPhotos(data.items.map(item=>{
+    const f=item.fields;
+    return {title:f.title, photo:f.photo?`https:${assets[f.photo.sys.id]}`:'', thumbnail:f.thumbnail?`https:${assets[f.thumbnail.sys.id]}`:'', category:f.category||'', featured:f.featured||false};
   }));
 }
 
 function displayPhotos(photosData){
-  const container = document.getElementById('categories');
-  const categories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
+  const container=document.getElementById('categories');
+  const categories=["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
 
   categories.forEach(cat=>{
-    const items = cat==="Featured"?photosData.filter(p=>p.featured):photosData.filter(p=>p.category===cat);
+    const items=cat==="Featured"?photosData.filter(p=>p.featured):photosData.filter(p=>p.category===cat);
     if(!items.length) return;
 
     if(cat==="Featured"){
-      const section = document.createElement('div'); section.className='featured-section';
+      const section=document.createElement('div'); section.className='featured-section';
       section.innerHTML=`<h2>${cat}</h2>`;
       const mid=Math.ceil(items.length/2);
-      [items.slice(0,mid), items.slice(mid)].forEach((rowItems,i)=>{
-        const row = document.createElement('div'); row.className='featured-row';
+      [items.slice(0,mid), items.slice(mid)].forEach(rowItems=>{
+        const wrapper=document.createElement('div'); wrapper.className='featured-wrapper';
+        const row=document.createElement('div'); row.className='featured-row';
         [...rowItems,...rowItems].forEach(p=>{
-          const div=document.createElement('div'); 
-          const img=document.createElement('img'); img.src=p.thumbnail||p.photo; img.alt=p.title;
-          div.appendChild(img); row.appendChild(div);
+          const div=document.createElement('div'); const img=document.createElement('img'); img.src=p.thumbnail||p.photo; img.alt=p.title; div.appendChild(img); row.appendChild(div);
         });
         row.style.animation=`scroll-right ${30+rowItems.length*5}s linear infinite`;
-        section.appendChild(row);
+        wrapper.appendChild(row);
+        section.appendChild(wrapper);
       });
       container.appendChild(section);
 
     } else {
-      const section = document.createElement('div'); section.className='category-section';
+      const section=document.createElement('div'); section.className='category-section';
       section.innerHTML=`<h2>${cat}</h2>`;
       const mid=Math.ceil(items.length/2);
       [items.slice(0,mid), items.slice(mid)].forEach(rowItems=>{
         const row=document.createElement('div'); row.className='category-row';
-        rowItems.forEach(p=>{
-          const div=document.createElement('div'); 
-          const img=document.createElement('img'); img.src=p.thumbnail||p.photo; img.alt=p.title;
-          div.appendChild(img); row.appendChild(div);
-        });
+        rowItems.forEach(p=>{ const div=document.createElement('div'); const img=document.createElement('img'); img.src=p.thumbnail||p.photo; img.alt=p.title; div.appendChild(img); row.appendChild(div); });
         section.appendChild(row);
       });
       container.appendChild(section);

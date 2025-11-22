@@ -12,46 +12,34 @@ html, body {
   font-family:'Archivo Expanded', sans-serif;
   background:#111;
   color:#eee;
-  overflow-x:hidden;
+  overflow-y: scroll;
   scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
 }
 
-/* Horizontal hero container */
-#container {
-  width: 100vw;
-  height: 100vh;
-}
-
-section.horizontal {
-  width:100vw;
+/* Each section snaps */
+section {
+  width:100%;
   height:100vh;
-  display:flex;
-  flex-direction:column;
-  padding:20px;
-  box-sizing:border-box;
-  position:relative;
+  scroll-snap-align: start;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-#hero { background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; }
-
-/* Vertical photos section */
+#hero { 
+  background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; 
+}
 #photos {
   background:#111;
-  min-height:100vh;
   overflow-y:auto;
-  scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
-  padding:60px 20px 20px 20px;
+  padding-top:60px; /* leave space for arrow */
   box-sizing:border-box;
-  position: relative;
 }
 
-.category-section {
-  margin-bottom:40px;
-  scroll-snap-align: start;
-}
-
-/* Arrows styling */
+/* Arrows */
 .arrow {
   color:#fff;
   font-size:1.5rem;
@@ -74,33 +62,29 @@ section.horizontal {
 }
 
 /* Photos grid */
+.category-section { margin-bottom:40px; scroll-snap-align: start; }
 .category-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
 .category-item img { width:100%; display:block; border-radius:5px; }
 </style>
 </head>
 <body>
 
-<!-- Hero -->
-<div id="container">
-  <section id="hero" class="horizontal">
-    <div class="arrow arrow-down">↓<span>Photos</span></div>
-  </section>
-</div>
+<section id="hero">
+  <div class="arrow arrow-down">↓<span>Photos</span></div>
+</section>
 
-<!-- Photos section -->
 <section id="photos">
   <div class="arrow arrow-back-up">↑<span>Hero</span></div>
   <div id="categories"></div>
 </section>
 
 <script>
+// Arrow functionality
 const hero = document.getElementById('hero');
 const photos = document.getElementById('photos');
-const categories = document.getElementById('categories');
 
-// Arrow functionality
-hero.querySelector('.arrow-down').onclick = () => smoothScrollTo(photos);
-document.querySelector('.arrow-back-up').onclick = () => smoothScrollTo(hero);
+hero.querySelector('.arrow-down').onclick = () => photos.scrollIntoView({behavior:'smooth'});
+document.querySelector('.arrow-back-up').onclick = () => hero.scrollIntoView({behavior:'smooth'});
 
 // ---------- CONTENTFUL LOAD ----------
 const SPACE_ID = '5w319pzc4eiq';
@@ -128,6 +112,7 @@ async function fetchPhotos(){
 }
 
 function displayPhotos(photosData){
+  const categoriesContainer = document.getElementById('categories');
   const allCategories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
   allCategories.forEach(cat=>{
     const items = (cat==="Featured") ? photosData.filter(p=>p.featured) : photosData.filter(p=>p.category===cat);
@@ -140,72 +125,11 @@ function displayPhotos(photosData){
       const img = document.createElement('img'); img.src = p.thumbnail || p.photo; img.alt = p.title;
       div.appendChild(img); grid.appendChild(div);
     });
-    section.appendChild(grid);
-    categories.appendChild(section);
+    section.appendChild(grid); categoriesContainer.appendChild(section);
   });
 }
 
 fetchPhotos();
-
-// ---------- SMOOTH SCROLL FUNCTION ----------
-function smoothScrollTo(target){
-  const top = target.getBoundingClientRect().top + window.pageYOffset;
-  window.scrollTo({top, behavior:'smooth'});
-}
-
-// ---------- SCROLL SNAP BETWEEN HERO AND PHOTOS ----------
-let isScrolling = false;
-window.addEventListener('wheel', e => {
-  if(isScrolling) return;
-
-  const heroRect = hero.getBoundingClientRect();
-  const photosRect = photos.getBoundingClientRect();
-
-  if(heroRect.top >= -10 && heroRect.bottom > 0 && e.deltaY > 0){
-    // Scroll down from hero → photos
-    isScrolling = true;
-    smoothScrollTo(photos);
-    setTimeout(()=>{isScrolling=false;}, 600);
-    e.preventDefault();
-  } else if(heroRect.top < 0 && e.deltaY < 0){
-    // Scroll up from photos → hero
-    isScrolling = true;
-    smoothScrollTo(hero);
-    setTimeout(()=>{isScrolling=false;}, 600);
-    e.preventDefault();
-  }
-}, {passive:false});
-
-// ---------- OPTIONAL: SNAP BETWEEN PHOTO CATEGORIES ----------
-function snapPhotos(delta){
-  const sections = Array.from(document.querySelectorAll('.category-section'));
-  const scrollTop = photos.scrollTop;
-  let target = null;
-  if(delta > 0){
-    for(let sec of sections){
-      if(sec.offsetTop > scrollTop + 10){ target = sec; break; }
-    }
-  } else {
-    for(let i=sections.length-1;i>=0;i--){
-      if(sections[i].offsetTop < scrollTop - 10){ target = sections[i]; break; }
-    }
-  }
-  if(target){
-    isScrolling = true;
-    photos.scrollTo({top: target.offsetTop, behavior:'smooth'});
-    setTimeout(()=>{isScrolling=false;}, 400);
-  }
-}
-
-photos.addEventListener('wheel', e => {
-  // Only snap within photos if we are past hero
-  const heroBottom = hero.getBoundingClientRect().bottom;
-  if(heroBottom <= 0 && !isScrolling){
-    snapPhotos(e.deltaY);
-    e.preventDefault();
-  }
-}, {passive:false});
-
 </script>
 </body>
 </html>

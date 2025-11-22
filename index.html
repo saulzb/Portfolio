@@ -89,6 +89,11 @@ section.horizontal {
 
 <!-- Horizontal scroll container -->
 <div id="container">
+  <section id="drawings" class="horizontal">
+    <h2>DRAWINGS</h2>
+    <div class="arrow arrow-back-right">→<span>Hero</span></div>
+  </section>
+
   <section id="hero" class="horizontal">
     <div class="arrow arrow-left">←<span>Drawings</span></div>
     <div class="arrow arrow-right">→<span>Music</span></div>
@@ -97,12 +102,7 @@ section.horizontal {
 
   <section id="music" class="horizontal">
     <h2>MUSIC</h2>
-    <div class="arrow arrow-back-left">←<span>Back</span></div>
-  </section>
-
-  <section id="drawings" class="horizontal">
-    <h2>DRAWINGS</h2>
-    <div class="arrow arrow-back-right">→<span>Back</span></div>
+    <div class="arrow arrow-back-left">←<span>Hero</span></div>
   </section>
 </div>
 
@@ -119,8 +119,9 @@ const music = document.getElementById('music');
 const drawings = document.getElementById('drawings');
 const photos = document.getElementById('photos');
 
-const sections = [hero, music, drawings];
-let currentIndex = 0;
+// Hero is center
+const sections = [drawings, hero, music];
+let currentIndex = 1;
 
 // Horizontal snap functions
 function updateIndex(){
@@ -135,16 +136,15 @@ function snapTo(i){
   container.scrollTo({ left: sections[currentIndex].offsetLeft, behavior:'smooth' });
 }
 
-// Horizontal arrows
-hero.querySelector('.arrow-right').onclick = () => snapTo(currentIndex+1);
-hero.querySelector('.arrow-left').onclick  = () => snapTo(currentIndex-1);
+// Hero arrows
+hero.querySelector('.arrow-left').onclick  = () => snapTo(currentIndex - 1); // Drawings
+hero.querySelector('.arrow-right').onclick = () => snapTo(currentIndex + 1); // Music
 hero.querySelector('.arrow-down').onclick  = () => photos.scrollIntoView({behavior:'smooth'});
 
-music.querySelector('.arrow-back-left').onclick = () => snapTo(0);
-drawings.querySelector('.arrow-back-right').onclick = () => snapTo(0);
-
-// Vertical arrow back from photos
-document.querySelector('.arrow-back-up').onclick = () => hero.scrollIntoView({behavior:'smooth'});
+// Back arrows
+music.querySelector('.arrow-back-left').onclick    = () => snapTo(1); // Hero
+drawings.querySelector('.arrow-back-right').onclick = () => snapTo(1); // Hero
+document.querySelector('.arrow-back-up').onclick    = () => hero.scrollIntoView({behavior:'smooth'});
 
 // Snap update
 container.addEventListener('scroll', () => {

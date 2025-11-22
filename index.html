@@ -17,7 +17,7 @@ html, body {
   scroll-snap-type: y mandatory;
 }
 
-/* Each section snaps */
+/* Each main section snaps */
 section {
   width:100%;
   height:100vh;
@@ -32,11 +32,13 @@ section {
 #hero { 
   background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; 
 }
+
+/* Photos section */
 #photos {
   background:#111;
-  overflow-y:auto;
-  padding-top:60px; /* leave space for arrow */
+  overflow-y: auto;
   box-sizing:border-box;
+  scroll-snap-type: y mandatory; /* snap inside photos */
 }
 
 /* Arrows */
@@ -61,9 +63,19 @@ section {
   .arrow-down { bottom:20px; }
 }
 
-/* Photos grid */
-.category-section { margin-bottom:40px; scroll-snap-align: start; }
-.category-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+/* Photos category styling */
+.category-section { 
+  height:100vh; /* full screen height */
+  scroll-snap-align: start;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  margin:0;
+  padding:20px;
+}
+.category-section h2 { margin-bottom:20px; }
+
+.category-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap:10px; flex:1; overflow-y:auto; }
 .category-item img { width:100%; display:block; border-radius:5px; }
 </style>
 </head>
@@ -117,15 +129,27 @@ function displayPhotos(photosData){
   allCategories.forEach(cat=>{
     const items = (cat==="Featured") ? photosData.filter(p=>p.featured) : photosData.filter(p=>p.category===cat);
     if(items.length===0) return;
-    const section = document.createElement('div'); section.className='category-section';
-    const h2 = document.createElement('h2'); h2.textContent = cat; section.appendChild(h2);
-    const grid = document.createElement('div'); grid.className = 'category-grid';
+
+    const section = document.createElement('div'); 
+    section.className='category-section';
+    const h2 = document.createElement('h2'); 
+    h2.textContent = cat; 
+    section.appendChild(h2);
+
+    const grid = document.createElement('div'); 
+    grid.className = 'category-grid';
     items.forEach(p=>{
-      const div = document.createElement('div'); div.className = 'category-item';
-      const img = document.createElement('img'); img.src = p.thumbnail || p.photo; img.alt = p.title;
-      div.appendChild(img); grid.appendChild(div);
+      const div = document.createElement('div'); 
+      div.className = 'category-item';
+      const img = document.createElement('img'); 
+      img.src = p.thumbnail || p.photo; 
+      img.alt = p.title;
+      div.appendChild(img); 
+      grid.appendChild(div);
     });
-    section.appendChild(grid); categoriesContainer.appendChild(section);
+
+    section.appendChild(grid); 
+    categoriesContainer.appendChild(section);
   });
 }
 

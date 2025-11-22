@@ -16,6 +16,7 @@ html, body {
   scroll-behavior: smooth;
 }
 
+/* Horizontal container for hero/music/drawings */
 #container {
   display: grid;
   grid-auto-flow: column;
@@ -27,7 +28,7 @@ html, body {
   overflow-y: hidden;
 }
 
-section {
+section.horizontal {
   width:100vw;
   height:100%;
   flex-shrink:0;
@@ -43,9 +44,10 @@ section {
 #music { background:#222; }
 #drawings { background:#444; }
 
+/* Vertical photos section */
 #photos {
   background:#111;
-  height:100vh; /* keep full screen */
+  min-height:100vh;
   overflow-y:auto;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
@@ -53,6 +55,7 @@ section {
   box-sizing:border-box;
 }
 
+/* Arrows styling */
 .arrow {
   color:#fff;
   font-size:1.5rem;
@@ -75,28 +78,35 @@ section {
   #hero { background:url('SAULZIDLKABEJCEKMOBILE.jpg') center/cover no-repeat; }
   .arrow-down { bottom:20px; }
 }
+
+/* Photos grid */
+.category-section { margin-bottom:40px; }
+.category-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+.category-item img { width:100%; display:block; border-radius:5px; }
 </style>
 </head>
 <body>
 
+<!-- Horizontal scroll container -->
 <div id="container">
-  <section id="hero">
+  <section id="hero" class="horizontal">
     <div class="arrow arrow-left">←<span>Drawings</span></div>
     <div class="arrow arrow-right">→<span>Music</span></div>
     <div class="arrow arrow-down">↓<span>Photos</span></div>
   </section>
 
-  <section id="music">
+  <section id="music" class="horizontal">
     <h2>MUSIC</h2>
     <div class="arrow arrow-back-left">←<span>Back</span></div>
   </section>
 
-  <section id="drawings">
+  <section id="drawings" class="horizontal">
     <h2>DRAWINGS</h2>
     <div class="arrow arrow-back-right">→<span>Back</span></div>
   </section>
 </div>
 
+<!-- Vertical photos section -->
 <section id="photos">
   <div class="arrow arrow-back-up">↑<span>Back</span></div>
   <div id="categories"></div>
@@ -109,38 +119,37 @@ const music = document.getElementById('music');
 const drawings = document.getElementById('drawings');
 const photos = document.getElementById('photos');
 
-const sections=[hero,music,drawings];
-let currentIndex=0;
+const sections = [hero, music, drawings];
+let currentIndex = 0;
 
+// Horizontal snap functions
 function updateIndex(){
-  const pos=container.scrollLeft;
-  currentIndex=sections.reduce((closest,sec,i)=>
-    Math.abs(pos-sec.offsetLeft)<Math.abs(pos-sections[closest].offsetLeft)?i:closest,0);
+  const pos = container.scrollLeft;
+  currentIndex = sections.reduce((closest, sec, i) =>
+    Math.abs(pos - sec.offsetLeft) < Math.abs(pos - sections[closest].offsetLeft) ? i : closest, 0
+  );
 }
 
 function snapTo(i){
-  currentIndex=Math.max(0,Math.min(sections.length-1,i));
-  container.scrollTo({ left:sections[currentIndex].offsetLeft, behavior:'smooth' });
+  currentIndex = Math.max(0, Math.min(sections.length-1, i));
+  container.scrollTo({ left: sections[currentIndex].offsetLeft, behavior:'smooth' });
 }
 
-// ARROWS
-hero.querySelector('.arrow-right').onclick=()=>snapTo(currentIndex+1);
-hero.querySelector('.arrow-left').onclick =()=>snapTo(currentIndex-1);
-hero.querySelector('.arrow-down').onclick =()=>{
-  photos.scrollIntoView({behavior:'smooth'});
-};
+// Horizontal arrows
+hero.querySelector('.arrow-right').onclick = () => snapTo(currentIndex+1);
+hero.querySelector('.arrow-left').onclick  = () => snapTo(currentIndex-1);
+hero.querySelector('.arrow-down').onclick  = () => photos.scrollIntoView({behavior:'smooth'});
 
-music.querySelector('.arrow-back-left').onclick =()=>snapTo(0);
-drawings.querySelector('.arrow-back-right').onclick =()=>snapTo(0);
+music.querySelector('.arrow-back-left').onclick = () => snapTo(0);
+drawings.querySelector('.arrow-back-right').onclick = () => snapTo(0);
 
-document.querySelector('.arrow-back-up').onclick =()=>{
-  hero.scrollIntoView({behavior:'smooth'});
-  snapTo(0);
-};
+// Vertical arrow back from photos
+document.querySelector('.arrow-back-up').onclick = () => hero.scrollIntoView({behavior:'smooth'});
 
-container.addEventListener('scroll',()=>{
+// Snap update
+container.addEventListener('scroll', () => {
   clearTimeout(container._snapTimeout);
-  container._snapTimeout=setTimeout(updateIndex,120);
+  container._snapTimeout = setTimeout(updateIndex, 120);
 });
 
 // ---------- CONTENTFUL LOAD ----------
@@ -171,14 +180,14 @@ function displayPhotos(photosData){
   const categoriesContainer = document.getElementById('categories');
   const allCategories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
   allCategories.forEach(cat=>{
-    const items = (cat==="Featured")?photosData.filter(p=>p.featured):photosData.filter(p=>p.category===cat);
-    if(items.length===0) return;
+    const items = (cat==="Featured") ? photosData.filter(p=>p.featured) : photosData.filter(p=>p.category===cat);
+    if(items.length === 0) return;
     const section = document.createElement('div'); section.className='category-section';
     const h2 = document.createElement('h2'); h2.textContent = cat; section.appendChild(h2);
     const grid = document.createElement('div'); grid.className = 'category-grid';
     items.forEach(p=>{
       const div = document.createElement('div'); div.className = 'category-item';
-      const img = document.createElement('img'); img.src = p.thumbnail||p.photo; img.alt = p.title;
+      const img = document.createElement('img'); img.src = p.thumbnail || p.photo; img.alt = p.title;
       div.appendChild(img); grid.appendChild(div);
     });
     section.appendChild(grid); categoriesContainer.appendChild(section);

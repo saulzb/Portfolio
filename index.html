@@ -14,6 +14,7 @@ html, body {
   color:#eee;
   scroll-behavior: smooth;
   scroll-snap-type: y mandatory;
+  overflow-x: hidden;
 }
 
 /* Sections */
@@ -31,6 +32,7 @@ section {
 /* HERO */
 #hero { 
   background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; 
+  background-size:cover;
 }
 
 .arrow {
@@ -55,9 +57,61 @@ section {
 }
 
 /* PHOTOS SECTION */
-#photos { background:#111; }
+#photos { background:#111; padding-top:40px; }
 
-/* ⭐ Category Sections */
+/* Featured category horizontal scroll */
+.featured-section {
+  height:100vh;
+  scroll-snap-align: start;
+  display:flex;
+  flex-direction: column;
+  overflow:hidden;
+  position:relative;
+  text-align:center;
+  justify-content:center;
+}
+
+.featured-section h2 {
+  margin-bottom:10px;
+}
+
+/* Horizontal rows container */
+.featured-rows {
+  position:relative;
+  height:100%;
+  overflow:hidden;
+}
+
+.featured-row {
+  display:flex;
+  position:absolute;
+  top:0;
+  left:0;
+  height:50%; /* half of section */
+}
+
+.featured-row.second {
+  top:50%;
+}
+
+/* Horizontal animation */
+@keyframes scroll-right {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.featured-row div {
+  flex: 0 0 auto;
+}
+
+.featured-row img {
+  height:100%;
+  width:auto;
+  display:block;
+  object-fit:cover;
+}
+
+/* Other categories */
 .category-section { 
   height:100vh;
   scroll-snap-align: start;
@@ -74,32 +128,22 @@ section {
   width:100%;
 }
 
-/* ⭐ NEW: Horizontal scrolling large images */
-.category-gallery {
-  display:flex;
-  flex-direction:row;
-  gap:15px;
+.category-grid { 
   width:100%;
-  overflow-x:auto;
-  scroll-snap-type:x mandatory;
-  padding-bottom:20px;
-}
-
-.category-item {
-  scroll-snap-align:center;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  max-width:1200px;
+  display:grid; 
+  grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); 
+  justify-items:center; /* center each photo */
+  gap:20px; 
+  flex:1;
 }
 
 .category-item img { 
-  height:45vh; /* about half of section height */
-  width:auto;
-  object-fit:cover;
-  border-radius:0; /* no borders */
+  width:100%; 
+  max-width:260px;
+  display:block; 
+  border-radius:6px; 
 }
-
-.category-gallery::-webkit-scrollbar { display:none; } /* hide scrollbar on mobile */
 </style>
 </head>
 <body>
@@ -158,30 +202,73 @@ function displayPhotos(photosData){
 
     if(items.length===0) return;
 
-    const section = document.createElement('div');
-    section.className='category-section';
+    if(cat==="Featured"){
+      const section = document.createElement('div');
+      section.className='featured-section';
 
-    const h2 = document.createElement('h2');
-    h2.textContent = cat;
-    section.appendChild(h2);
+      const h2 = document.createElement('h2');
+      h2.textContent = cat;
+      section.appendChild(h2);
 
-    const gallery = document.createElement('div');
-    gallery.className='category-gallery';
+      const rowsContainer = document.createElement('div');
+      rowsContainer.className='featured-rows';
 
-    items.forEach(p=>{
-      const div = document.createElement('div');
-      div.className='category-item';
+      // Split items for two rows
+      const mid = Math.ceil(items.length/2);
+      const row1Items = items.slice(0, mid);
+      const row2Items = items.slice(mid);
 
-      const img = document.createElement('img');
-      img.src = p.photo;
-      img.alt = p.title;
+      // function to create scrolling row
+      function createRow(rowItems, isSecond){
+        const row = document.createElement('div');
+        row.className = 'featured-row' + (isSecond ? ' second' : '');
+        // duplicate for seamless scroll
+        const allItems = [...rowItems, ...rowItems];
+        allItems.forEach(p=>{
+          const div = document.createElement('div');
+          const img = document.createElement('img');
+          img.src = p.thumbnail || p.photo;
+          img.alt = p.title;
+          div.appendChild(img);
+          row.appendChild(div);
+        });
+        // Apply animation
+        row.style.animation = `scroll-right ${10 + rowItems.length*2}s linear infinite`;
+        return row;
+      }
 
-      div.appendChild(img);
-      gallery.appendChild(div);
-    });
+      rowsContainer.appendChild(createRow(row1Items, false));
+      rowsContainer.appendChild(createRow(row2Items, true));
+      section.appendChild(rowsContainer);
 
-    section.appendChild(gallery);
-    categoriesContainer.appendChild(section);
+      categoriesContainer.appendChild(section);
+
+    } else {
+      const section = document.createElement('div');
+      section.className='category-section';
+
+      const h2 = document.createElement('h2');
+      h2.textContent = cat;
+      section.appendChild(h2);
+
+      const grid = document.createElement('div');
+      grid.className='category-grid';
+
+      items.forEach(p=>{
+        const div = document.createElement('div');
+        div.className='category-item';
+
+        const img = document.createElement('img');
+        img.src = p.thumbnail || p.photo;
+        img.alt = p.title;
+
+        div.appendChild(img);
+        grid.appendChild(div);
+      });
+
+      section.appendChild(grid);
+      categoriesContainer.appendChild(section);
+    }
   });
 }
 

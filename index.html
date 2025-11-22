@@ -20,8 +20,8 @@ html, body {
 #container {
   display: grid;
   grid-auto-flow: column;
-  grid-template-columns: 100vw;
-  width: 100vw;
+  grid-template-columns: 100vw 100vw 100vw;
+  width: 300vw;
   height: 100vh;
   scroll-snap-type: x mandatory;
   overflow-x: auto;
@@ -40,7 +40,7 @@ section.horizontal {
   position:relative;
 }
 
-#hero { background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; }
+#hero { background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; background-size:cover; }
 
 /* Vertical photos section */
 #photos {
@@ -51,6 +51,12 @@ section.horizontal {
   scroll-behavior: smooth;
   padding:20px;
   box-sizing:border-box;
+}
+
+#categories {
+  height:100%;
+  overflow-y: auto;
+  padding-top:10px;
 }
 
 /* Arrows styling */
@@ -67,11 +73,10 @@ section.horizontal {
 }
 .arrow span { font-size:0.8rem; margin-top:5px; }
 
-.arrow-down  { bottom:40px; left:50%; transform:translateX(-50%);} 
-.arrow-back-up { top:20px; }
+.arrow-down { bottom:40px; left:50%; transform:translateX(-50%);} 
 
 @media(max-width:768px){
-  #hero { background:url('SAULZIDLKABEJCEKMOBILE.jpg') center/cover no-repeat; }
+  #hero { background:url('SAULZIDLKABEJCEKMOBILE.jpg') center/cover no-repeat; background-size:cover; }
   .arrow-down { bottom:20px; }
 }
 
@@ -92,20 +97,21 @@ section.horizontal {
 
 <!-- Vertical photos section -->
 <section id="photos">
-  <div class="arrow arrow-back-up">↑<span>Back</span></div>
+  <!-- Back arrow moved inside section -->
+  <div id="back-to-hero" style="margin-bottom:20px; cursor:pointer; color:#fff; font-size:1.2rem;">↑ Back</div>
   <div id="categories"></div>
 </section>
 
 <script>
+const container = document.getElementById('container');
 const hero = document.getElementById('hero');
 const photos = document.getElementById('photos');
-const categories = document.getElementById('categories');
 
-// Scroll down to photos
-hero.querySelector('.arrow-down').onclick = () => photos.scrollIntoView({behavior:'smooth'});
+// Hero scroll down arrow
+hero.querySelector('.arrow-down').onclick  = () => photos.scrollIntoView({behavior:'smooth'});
 
-// Scroll back up to hero
-document.querySelector('.arrow-back-up').onclick = () => hero.scrollIntoView({behavior:'smooth'});
+// Back to hero from photos
+document.getElementById('back-to-hero').onclick = () => hero.scrollIntoView({behavior:'smooth'});
 
 // ---------- CONTENTFUL LOAD ----------
 const SPACE_ID = '5w319pzc4eiq';
@@ -115,6 +121,7 @@ const ENVIRONMENT = 'master';
 async function fetchPhotos(){
   const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&order=sys.createdAt&include=1`;
   const res = await fetch(url);
+  if(!res.ok){ console.error('Contentful fetch failed', res.status); return; }
   const data = await res.json();
   const assets = {};
   data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
@@ -132,6 +139,7 @@ async function fetchPhotos(){
 }
 
 function displayPhotos(photosData){
+  const categoriesContainer = document.getElementById('categories');
   const allCategories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
   allCategories.forEach(cat=>{
     const items = (cat==="Featured") ? photosData.filter(p=>p.featured) : photosData.filter(p=>p.category===cat);
@@ -144,7 +152,7 @@ function displayPhotos(photosData){
       const img = document.createElement('img'); img.src = p.thumbnail || p.photo; img.alt = p.title;
       div.appendChild(img); grid.appendChild(div);
     });
-    section.appendChild(grid); categories.appendChild(section);
+    section.appendChild(grid); categoriesContainer.appendChild(section);
   });
 }
 

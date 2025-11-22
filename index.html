@@ -16,18 +16,18 @@ html, body {
   scroll-behavior: smooth;
 }
 
-/* Horizontal container for Hero / Music / Drawings */
+/* Horizontal container for hero/music/drawings */
 #container {
-  display: flex;
-  flex-direction: row;
-  width: 300vw; /* 3 sections */
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: 100vw 100vw 100vw;
+  width: 300vw;
   height: 100vh;
+  scroll-snap-type: x mandatory;
   overflow-x: auto;
   overflow-y: hidden;
-  scroll-snap-type: x mandatory;
 }
 
-/* Horizontal sections */
 section.horizontal {
   width:100vw;
   height:100%;
@@ -40,20 +40,19 @@ section.horizontal {
   position:relative;
 }
 
-#drawings { background:#444; }
-#hero { background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; background-size:cover; }
+#hero { background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; }
 #music { background:#222; }
+#drawings { background:#444; }
 
-/* Vertical Photos section */
+/* Vertical photos section */
 #photos {
   background:#111;
-  height:100vh;
+  min-height:100vh;
   overflow-y:auto;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
   padding:20px;
   box-sizing:border-box;
-  position:relative;
 }
 
 /* Arrows styling */
@@ -70,13 +69,13 @@ section.horizontal {
 }
 .arrow span { font-size:0.8rem; margin-top:5px; }
 
-.arrow-left { top:50%; left:20px; transform:translateY(-50%);}
 .arrow-right { top:50%; right:20px; transform:translateY(-50%);}
-.arrow-down { bottom:40px; left:50%; transform:translateX(-50%);}
+.arrow-left  { top:50%; left:20px; transform:translateY(-50%);} 
+.arrow-down  { bottom:40px; left:50%; transform:translateX(-50%);} 
 .arrow-back-left, .arrow-back-right, .arrow-back-up { top:20px; }
 
 @media(max-width:768px){
-  #hero { background:url('SAULZIDLKABEJCEKMOBILE.jpg') center/cover no-repeat; background-size:cover; }
+  #hero { background:url('SAULZIDLKABEJCEKMOBILE.jpg') center/cover no-repeat; }
   .arrow-down { bottom:20px; }
 }
 
@@ -90,11 +89,6 @@ section.horizontal {
 
 <!-- Horizontal scroll container -->
 <div id="container">
-  <section id="drawings" class="horizontal">
-    <h2>DRAWINGS</h2>
-    <div class="arrow arrow-back-right">→<span>Hero</span></div>
-  </section>
-
   <section id="hero" class="horizontal">
     <div class="arrow arrow-left">←<span>Drawings</span></div>
     <div class="arrow arrow-right">→<span>Music</span></div>
@@ -103,7 +97,12 @@ section.horizontal {
 
   <section id="music" class="horizontal">
     <h2>MUSIC</h2>
-    <div class="arrow arrow-back-left">←<span>Hero</span></div>
+    <div class="arrow arrow-back-left">←<span>Back</span></div>
+  </section>
+
+  <section id="drawings" class="horizontal">
+    <h2>DRAWINGS</h2>
+    <div class="arrow arrow-back-right">→<span>Back</span></div>
   </section>
 </div>
 
@@ -120,16 +119,10 @@ const music = document.getElementById('music');
 const drawings = document.getElementById('drawings');
 const photos = document.getElementById('photos');
 
-// Flex order: Drawings | Hero | Music
-const sections = [drawings, hero, music];
-let currentIndex = 1; // start at Hero
+const sections = [hero, music, drawings];
+let currentIndex = 0;
 
-function snapTo(i){
-  currentIndex = Math.max(0, Math.min(sections.length-1, i));
-  container.scrollTo({ left: sections[currentIndex].offsetLeft, behavior:'smooth' });
-}
-
-// Update current index on scroll
+// Horizontal snap functions
 function updateIndex(){
   const pos = container.scrollLeft;
   currentIndex = sections.reduce((closest, sec, i) =>
@@ -137,17 +130,23 @@ function updateIndex(){
   );
 }
 
-// Hero arrows
-hero.querySelector('.arrow-left').onclick  = () => snapTo(currentIndex-1); // Drawings
-hero.querySelector('.arrow-right').onclick = () => snapTo(currentIndex+1); // Music
+function snapTo(i){
+  currentIndex = Math.max(0, Math.min(sections.length-1, i));
+  container.scrollTo({ left: sections[currentIndex].offsetLeft, behavior:'smooth' });
+}
+
+// Horizontal arrows
+hero.querySelector('.arrow-right').onclick = () => snapTo(currentIndex+1);
+hero.querySelector('.arrow-left').onclick  = () => snapTo(currentIndex-1);
 hero.querySelector('.arrow-down').onclick  = () => photos.scrollIntoView({behavior:'smooth'});
 
-// Back arrows
-music.querySelector('.arrow-back-left').onclick    = () => snapTo(1); // Hero
-drawings.querySelector('.arrow-back-right').onclick = () => snapTo(1); // Hero
-document.querySelector('.arrow-back-up').onclick    = () => hero.scrollIntoView({behavior:'smooth'});
+music.querySelector('.arrow-back-left').onclick = () => snapTo(0);
+drawings.querySelector('.arrow-back-right').onclick = () => snapTo(0);
 
-// Scroll event to update index
+// Vertical arrow back from photos
+document.querySelector('.arrow-back-up').onclick = () => hero.scrollIntoView({behavior:'smooth'});
+
+// Snap update
 container.addEventListener('scroll', () => {
   clearTimeout(container._snapTimeout);
   container._snapTimeout = setTimeout(updateIndex, 120);

@@ -40,7 +40,6 @@ section {
   overflow-x: auto;
 }
 
-/* Horizontal sections */
 section.horizontal {
   width:100vw;
   height:100vh;
@@ -52,7 +51,7 @@ section.horizontal {
   align-items:center;
 }
 
-/* Individual horizontal sections */
+/* Individual sections */
 #art { background:#333; }
 #hero { background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; background-size:cover; }
 #musicblog { background:#222; }
@@ -163,13 +162,8 @@ heroRow.addEventListener('scroll', () => {
     const pos = heroRow.scrollLeft;
     currentIndex = horizontalSections.reduce((closest, sec, i) =>
       Math.abs(pos - sec.offsetLeft) < Math.abs(pos - horizontalSections[closest].offsetLeft) ? i : closest
-    , 1); // default to hero if unclear
+    , 0);
   }, 100);
-});
-
-// Force starting view at Hero
-window.addEventListener('load', () => {
-  snapHorizontal(1);
 });
 
 // ---------- CONTENTFUL LOAD ----------

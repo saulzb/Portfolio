@@ -20,7 +20,7 @@ html, body {
 /* Sections */
 section {
   width:100%;
-  min-height:100vh; /* allow section to grow with content */
+  height:100vh;
   scroll-snap-align: start;
   position: relative;
   display: flex;
@@ -57,11 +57,7 @@ section {
 }
 
 /* PHOTOS SECTION */
-#photos { 
-  background:#111; 
-  padding-top:40px; 
-  overflow: visible; /* allow scrolling */
-}
+#photos { background:#111; padding-top:40px; }
 
 /* Headings with lines */
 .category-section h2, .featured-section h2 {
@@ -88,6 +84,7 @@ section {
 
 /* Featured carousel */
 .featured-section {
+  height:100vh;
   display:flex;
   flex-direction: column;
   text-align:center;
@@ -128,11 +125,11 @@ section {
   width:auto;
   display:block;
   object-fit:cover;
-  border-radius:6px;
 }
 
 /* Category sections (static, same layout as carousel) */
 .category-section {
+  height:100vh;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -247,7 +244,7 @@ function displayPhotos(photosData){
           div.appendChild(img);
           row.appendChild(div);
         });
-        row.style.animation = `scroll-right ${30 + rowItems.length*5}s linear infinite`; // slow rightwards
+        row.style.animation = `scroll-right ${30 + rowItems.length*5}s linear infinite`; // slower, rightwards
         return row;
       }
 
@@ -258,6 +255,7 @@ function displayPhotos(photosData){
       categoriesContainer.appendChild(section);
 
     } else {
+      // Other categories: same layout, static
       const section = document.createElement('div');
       section.className='category-section';
 

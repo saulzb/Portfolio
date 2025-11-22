@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saul Zidulka-Bejcek</title>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded&display=swap" rel="stylesheet">
+<title>Hero Horizontal Example</title>
 <style>
 html, body {
   margin:0; padding:0;
   width:100%; height:100%;
-  font-family:'Archivo Expanded', sans-serif;
-  background:#111; color:#eee;
-  scroll-behavior: smooth;
+  background:#111;
+  color:#eee;
+  font-family:sans-serif;
+  scroll-behavior:smooth;
   scroll-snap-type: y mandatory;
   overflow-x:hidden;
 }
@@ -21,14 +21,12 @@ section {
   width:100%; height:100vh;
   scroll-snap-align:start;
   position:relative;
-  display:flex; flex-direction:column;
-  padding:20px; box-sizing:border-box;
 }
 
 /* Horizontal container inside Hero */
 #hero-container {
   display:flex;
-  width:200vw; /* Hero + Art */
+  width:300vw; /* 3 horizontal sections */
   height:100%;
   overflow-x:auto;
   scroll-snap-type:x mandatory;
@@ -36,43 +34,37 @@ section {
 
 /* Horizontal sections */
 .horizontal-section {
-  width:100vw; height:100%;
+  width:100vw;
+  height:100%;
   flex-shrink:0;
   scroll-snap-align:start;
-  display:flex; justify-content:center; align-items:center;
+  display:flex;
+  justify-content:center;
+  align-items:center;
   position:relative;
 }
 
-/* Hero + Art styling */
-#hero-main { 
-  background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
-  background-size:cover;
-}
-#art { background:#333; color:#fff; }
+/* Colors for demo */
+#hero-main { background:red; }
+#art { background:green; }
+#music { background:blue; }
 
 /* Photos section */
-#photos {
-  background:#111; padding:20px;
-}
+#photos { background:#111; padding:20px; box-sizing:border-box; }
 
 /* Arrows */
 .arrow {
+  position:absolute;
   color:#fff;
   font-size:1.5rem;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
   cursor:pointer;
-  user-select:none;
-  position:absolute;
+  display:flex; flex-direction:column; align-items:center;
 }
-.arrow span { font-size:0.8rem; margin-top:5px; }
-
-.arrow-left { top:50%; left:20px; transform:translateY(-50%);} 
-.arrow-right { top:50%; right:20px; transform:translateY(-50%);} 
-.arrow-down { bottom:40px; left:50%; transform:translateX(-50%);} 
-.arrow-back-up { top:40px; left:50%; transform:translateX(-50%);} 
-
+.arrow span { font-size:0.8rem; margin-top:3px; }
+.arrow-left { top:50%; left:20px; transform:translateY(-50%); }
+.arrow-right { top:50%; right:20px; transform:translateY(-50%); }
+.arrow-down { bottom:40px; left:50%; transform:translateX(-50%); }
+.arrow-back-up { top:40px; left:50%; transform:translateX(-50%); }
 </style>
 </head>
 <body>
@@ -81,43 +73,52 @@ section {
 <section id="hero">
   <div id="hero-container">
     <div id="hero-main" class="horizontal-section">
+      <h1>Hero</h1>
       <div class="arrow arrow-right">→<span>Art</span></div>
       <div class="arrow arrow-down">↓<span>Photos</span></div>
     </div>
     <div id="art" class="horizontal-section">
-      <h1>Art Section</h1>
+      <h1>Art</h1>
       <div class="arrow arrow-left">←<span>Hero</span></div>
+      <div class="arrow arrow-right">→<span>Music</span></div>
+    </div>
+    <div id="music" class="horizontal-section">
+      <h1>Music</h1>
+      <div class="arrow arrow-left">←<span>Art</span></div>
     </div>
   </div>
 </section>
 
-<!-- Photos section -->
+<!-- Vertical Photos section -->
 <section id="photos">
+  <h1>Photos</h1>
   <div class="arrow arrow-back-up">↑<span>Hero</span></div>
-  <div id="categories"></div>
 </section>
 
 <script>
-// Horizontal snapping inside Hero
 const heroContainer = document.getElementById('hero-container');
 const heroMain = document.getElementById('hero-main');
 const art = document.getElementById('art');
+const music = document.getElementById('music');
+const photos = document.getElementById('photos');
 
-function snapToSection(section){
+// Horizontal snapping
+function snapTo(section){
   heroContainer.scrollTo({ left: section.offsetLeft, behavior:'smooth' });
 }
 
 // Horizontal arrows
-heroMain.querySelector('.arrow-right').onclick = () => snapToSection(art);
-art.querySelector('.arrow-left').onclick = () => snapToSection(heroMain);
+heroMain.querySelector('.arrow-right').onclick = () => snapTo(art);
+art.querySelector('.arrow-left').onclick = () => snapTo(heroMain);
+art.querySelector('.arrow-right').onclick = () => snapTo(music);
+music.querySelector('.arrow-left').onclick = () => snapTo(art);
 
 // Vertical arrows
-const photos = document.getElementById('photos');
 heroMain.querySelector('.arrow-down').onclick = () => photos.scrollIntoView({behavior:'smooth'});
 document.querySelector('.arrow-back-up').onclick = () => hero.scrollIntoView({behavior:'smooth'});
 
-// Start on Hero
-window.onload = () => { snapToSection(heroMain); };
+// Start on hero
+window.onload = () => snapTo(heroMain);
 </script>
 
 </body>

@@ -29,32 +29,9 @@ section {
   box-sizing: border-box;
 }
 
-/* Horizontal hero row */
-#hero-row {
-  display: grid;
-  grid-auto-flow: column;
-  grid-template-columns: 100vw 100vw 100vw;
-  width: 300vw;
-  height: 100%;
-  scroll-snap-type: x mandatory;
-  overflow-x: auto;
+#hero { 
+  background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; 
 }
-
-section.horizontal {
-  width:100vw;
-  height:100vh;
-  scroll-snap-align: start;
-  position:relative;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-}
-
-/* Individual sections */
-#art { background:#333; }
-#hero { background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; background-size:cover; }
-#musicblog { background:#222; }
 
 /* Photos section */
 #photos {
@@ -77,8 +54,6 @@ section.horizontal {
 }
 .arrow span { font-size:0.8rem; margin-top:5px; }
 
-.arrow-left { top:50%; left:20px; transform:translateY(-50%);} 
-.arrow-right { top:50%; right:20px; transform:translateY(-50%);} 
 .arrow-down { bottom:40px; left:50%; transform:translateX(-50%);} 
 .arrow-back-up { top:40px; left:50%; transform:translateX(-50%);} 
 
@@ -89,7 +64,7 @@ section.horizontal {
 
 /* Photos category styling */
 .category-section { 
-  height:100vh; 
+  height:100vh; /* full screen height */
   scroll-snap-align: start;
   display:flex;
   flex-direction:column;
@@ -105,69 +80,24 @@ section.horizontal {
 </head>
 <body>
 
-<!-- Horizontal hero row -->
-<section id="hero-row">
-  <section id="art" class="horizontal">
-    <h1>Art</h1>
-    <div class="arrow arrow-right">→<span>Hero</span></div>
-  </section>
-
-  <section id="hero" class="horizontal">
-    <div class="arrow arrow-left">←<span>Art</span></div>
-    <div class="arrow arrow-right">→<span>Music blog</span></div>
-    <div class="arrow arrow-down">↓<span>Photos</span></div>
-  </section>
-
-  <section id="musicblog" class="horizontal">
-    <h1>Music blog</h1>
-    <div class="arrow arrow-left">←<span>Hero</span></div>
-  </section>
+<section id="hero">
+  <div class="arrow arrow-down">↓<span>Photos</span></div>
 </section>
 
-<!-- Vertical photos section -->
 <section id="photos">
   <div class="arrow arrow-back-up">↑<span>Hero</span></div>
   <div id="categories"></div>
 </section>
 
 <script>
-// Horizontal sections
-const heroRow = document.getElementById('hero-row');
-const art = document.getElementById('art');
+// Arrow functionality
 const hero = document.getElementById('hero');
-const musicblog = document.getElementById('musicblog');
-const horizontalSections = [art, hero, musicblog];
-let currentIndex = 1; // start at hero
-
-function snapHorizontal(i){
-  currentIndex = Math.max(0, Math.min(horizontalSections.length-1, i));
-  heroRow.scrollTo({ left: horizontalSections[currentIndex].offsetLeft, behavior:'smooth' });
-}
-
-// Horizontal arrows
-hero.querySelector('.arrow-left').onclick = () => snapHorizontal(currentIndex-1);
-hero.querySelector('.arrow-right').onclick = () => snapHorizontal(currentIndex+1);
-art.querySelector('.arrow-right').onclick = () => snapHorizontal(1);
-musicblog.querySelector('.arrow-left').onclick = () => snapHorizontal(1);
-
-// Vertical scrolling from hero → photos
 const photos = document.getElementById('photos');
+
 hero.querySelector('.arrow-down').onclick = () => photos.scrollIntoView({behavior:'smooth'});
 document.querySelector('.arrow-back-up').onclick = () => hero.scrollIntoView({behavior:'smooth'});
 
-// Snap horizontal on scroll
-heroRow.addEventListener('scroll', () => {
-  clearTimeout(heroRow._snapTimeout);
-  heroRow._snapTimeout = setTimeout(() => {
-    const pos = heroRow.scrollLeft;
-    currentIndex = horizontalSections.reduce((closest, sec, i) =>
-      Math.abs(pos - sec.offsetLeft) < Math.abs(pos - horizontalSections[closest].offsetLeft) ? i : closest
-    , 0);
-  }, 100);
-});
-
 // ---------- CONTENTFUL LOAD ----------
-const categories = document.getElementById('categories');
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
 const ENVIRONMENT = 'master';
@@ -193,6 +123,7 @@ async function fetchPhotos(){
 }
 
 function displayPhotos(photosData){
+  const categoriesContainer = document.getElementById('categories');
   const allCategories = ["Featured","Double Exposures","Wildlife","Travel","Water","Light"];
   allCategories.forEach(cat=>{
     const items = (cat==="Featured") ? photosData.filter(p=>p.featured) : photosData.filter(p=>p.category===cat);
@@ -217,7 +148,7 @@ function displayPhotos(photosData){
     });
 
     section.appendChild(grid); 
-    categories.appendChild(section);
+    categoriesContainer.appendChild(section);
   });
 }
 

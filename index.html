@@ -1,3 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saul Zidulka-Bejcek</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded&display=swap" rel="stylesheet">
+<style>
+html, body {
+  margin:0; padding:0;
+  width:100%; height:100%;
+  font-family:'Archivo Expanded', sans-serif;
+  background:#111;
+  color:#eee;
+  overflow-x:hidden;
+  scroll-behavior: smooth;
+}
+
+/* Horizontal container for Hero, Music, Drawings */
+#container {
+  display:flex;
+  width:300vw;
+  height:100vh;
+  transition: transform 0.8s ease;
+}
+
+section {
+  width:100vw;
+  flex-shrink:0;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  padding:20px;
+  box-sizing:border-box;
+}
+
+/* Sections */
+#hero { background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; background-size:cover; position:relative; }
+#music { background:#222; }
+#drawings { background:#444; }
+
+/* Photos */
+#photos {
+  background:#111;
+  min-height:100vh;
+  overflow-y:auto;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  padding:20px;
+}
+
+/* Category section */
+.category-section { scroll-snap-align:start; margin-bottom:30px; }
+.category-section h2 { font-size:1rem; margin-bottom:10px; text-align:left; }
+.category-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  grid-gap:10px;
+  margin-bottom:30px;
+}
+.category-item {
+  border-radius:8px;
+  overflow:hidden;
+  opacity:0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.category-item.visible { opacity:1; transform:translateY(0); }
+.category-item img { width:100%; max-height:250px; object-fit:contain; display:block; }
+
+/* Arrows */
+.arrow {
+  color:#fff;
+  font-size:1.5rem;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  cursor:pointer;
+  user-select:none;
+  z-index:10;
+}
+.arrow span { font-size:0.8rem; margin-top:5px; }
+
+/* Hero arrows */
+.arrow-right { position:absolute; top:50%; right:20px; transform:translateY(-50%);}
+.arrow-left  { position:absolute; top:50%; left:20px; transform:translateY(-50%);}
+.arrow-down  { position:absolute; bottom:40px; left:50%; transform:translateX(-50%); }
+
+/* Branch arrows */
+.arrow-back-left, .arrow-back-right, .arrow-back-up { position:absolute; top:20px; display:flex; }
+
+/* Mobile */
+@media(max-width:768px){
+  #hero { background:url('SAULZIDLKABEJCEKMOBILE.jpg') center/cover no-repeat; background-size:cover; }
+  .arrow-down { bottom:20px; }
+  .category-grid { grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); }
+  .category-item img { max-height:150px; }
+}
+</style>
+</head>
+<body>
+
+<div id="container">
+  <section id="hero">
+    <div class="arrow arrow-right">→<span>Music</span></div>
+    <div class="arrow arrow-left">←<span>Drawings</span></div>
+    <div class="arrow arrow-down">↓<span>Photos</span></div>
+  </section>
+
+  <section id="music">
+    <h2>MUSIC</h2>
+    <div class="arrow arrow-back-left">←<span>Back</span></div>
+  </section>
+
+  <section id="drawings">
+    <h2>DRAWINGS</h2>
+    <div class="arrow arrow-back-right">→<span>Back</span></div>
+  </section>
+</div>
+
+<section id="photos">
+  <div class="arrow arrow-back-up">↑<span>Back</span></div>
+  <div id="categories"></div>
+</section>
+
 <script>
 // ---------- ELEMENTS ----------
 const container = document.getElementById('container');
@@ -15,22 +140,18 @@ const arrowBackRight = drawings.querySelector('.arrow-back-right');
 const arrowBackUp    = document.querySelector('.arrow-back-up');
 
 // ---------- ARROW CLICK LOGIC ----------
-// Horizontal arrows (Hero → Music/Drawings)
 arrowRight.addEventListener('click', ()=>container.scrollTo({left: window.innerWidth, behavior:'smooth'}));
 arrowLeft.addEventListener('click', ()=>container.scrollTo({left: -window.innerWidth, behavior:'smooth'}));
-
-// Down arrow (Hero → Photos)
 arrowDown.addEventListener('click', ()=>{
   const firstSection = document.querySelector('#categories .category-section');
   if(firstSection) firstSection.scrollIntoView({behavior:'smooth'});
 });
 
-// Back arrows (Branches → Hero)
 arrowBackLeft.addEventListener('click', ()=>container.scrollTo({left:0, behavior:'smooth'}));
 arrowBackRight.addEventListener('click', ()=>container.scrollTo({left:0, behavior:'smooth'}));
 arrowBackUp.addEventListener('click', ()=>window.scrollTo({top:0, behavior:'smooth'}));
 
-// ---------- HORIZONTAL SNAP ON SCROLL ----------
+// ---------- HORIZONTAL SNAP ----------
 container.addEventListener('scroll', ()=>{
   const scrollLeft = container.scrollLeft;
   const width = window.innerWidth;
@@ -43,24 +164,23 @@ container.addEventListener('scroll', ()=>{
   }
 });
 
-// ---------- VERTICAL SNAP FROM HERO TO PHOTOS ----------
+// ---------- VERTICAL SNAP ----------
 let verticalTimeout;
 window.addEventListener('scroll', ()=>{
-  if(window.scrollY < photos.offsetTop - 10 || window.scrollY > photos.offsetTop + 10){
-    clearTimeout(verticalTimeout);
-    verticalTimeout = setTimeout(()=>{
-      const scrollY = window.scrollY;
-      if(scrollY < photos.offsetTop/2){
-        window.scrollTo({top:0, behavior:'smooth'});
-      } else {
-        const firstSection = document.querySelector('#categories .category-section');
-        if(firstSection) firstSection.scrollIntoView({behavior:'smooth'});
-      }
-    }, 80);
-  }
+  clearTimeout(verticalTimeout);
+  verticalTimeout = setTimeout(()=>{
+    const scrollY = window.scrollY;
+    const photosTop = photos.offsetTop;
+    if(scrollY < photosTop/2){
+      window.scrollTo({top:0, behavior:'smooth'});
+    } else {
+      const firstSection = document.querySelector('#categories .category-section');
+      if(firstSection) firstSection.scrollIntoView({behavior:'smooth'});
+    }
+  }, 80);
 });
 
-// ---------- CONTENTFUL LOAD (unchanged) ----------
+// ---------- CONTENTFUL LOAD ----------
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
 const ENVIRONMENT = 'master';
@@ -115,3 +235,5 @@ function displayPhotos(photosData){
 
 fetchPhotos();
 </script>
+</body>
+</html>

@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Saul Zidulka-Bejcek - Snapping Sections</title>
+
+<!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Balgin+Expanded:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
 /* Global page behavior */
@@ -52,23 +55,26 @@ section {
 .arrow span { font-size:0.8rem; margin-top:5px; }
 .arrow-down { bottom:40px; left:50%; transform:translateX(-50%); }
 
-/* Headings with lines */
+/* Headings with lines — UPDATED */
 section h2 {
-  margin:20px 0 10px 0;
+  margin:12px 0 5px 0;
   width:100%;
   text-align:center;
   color:white;
-  font-weight:bold;
+  font-family: 'Balgin Expanded', sans-serif;
+  font-size:1rem;        /* ★ Smaller size you requested */
+  font-weight:600;
+  letter-spacing:0.5px;
 }
 section h2::before,
 section h2::after {
   content:"";
   display:inline-block;
-  width:30%;
+  width:18%;            /* shorter lines to match smaller text */
   height:1px;
   background:white;
   vertical-align:middle;
-  margin:0 10px;
+  margin:0 8px;
 }
 
 /* Featured */
@@ -110,7 +116,6 @@ section h2::after {
   justify-content:flex-start;
   overflow:hidden;
 }
-
 </style>
 </head>
 
@@ -183,10 +188,8 @@ function displayPhotos(photosData){
     const section = document.createElement("section");
     section.className = cat === "Featured" ? "featured-section" : "category-section";
 
-    /* ❌ NO BACK-TO-HERO ARROW HERE */
-    section.innerHTML = `
-      <h2>${cat}</h2>
-    `;
+    /* Header only — NO arrow */
+    section.innerHTML = `<h2>${cat}</h2>`;
 
     /* Featured rows (looping animation) */
     if (cat === "Featured") {
@@ -202,14 +205,12 @@ function displayPhotos(photosData){
           row.appendChild(img);
         });
 
-        row.style.animation =
-          `scroll-right ${30 + rowItems.length * 5}s linear infinite`;
-
+        row.style.animation = `scroll-right ${30 + rowItems.length * 5}s linear infinite`;
         section.appendChild(row);
       });
     }
 
-    /* Standard categories */
+    /* Normal category rows */
     else {
       const mid = Math.ceil(items.length / 2);
       [items.slice(0, mid), items.slice(mid)].forEach(rowItems => {

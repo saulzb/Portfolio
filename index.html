@@ -7,7 +7,6 @@
 
 <!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Balgin+Expanded:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
 /* Global page behavior */
@@ -55,14 +54,14 @@ section {
 .arrow span { font-size:0.8rem; margin-top:5px; }
 .arrow-down { bottom:40px; left:50%; transform:translateX(-50%); }
 
-/* Headings with lines — UPDATED */
+/* Headings with lines — updated font and size */
 section h2 {
-  margin:12px 0 5px 0;
+  margin: 15px 0 10px 0;
   width:100%;
   text-align:center;
   color:white;
-  font-family: 'Balgin Expanded', sans-serif;
-  font-size:1rem;        /* ★ Smaller size you requested */
+  font-family: 'Archivo Expanded', sans-serif;  /* Works in Google Fonts */
+  font-size:1rem;
   font-weight:600;
   letter-spacing:0.5px;
 }
@@ -70,7 +69,7 @@ section h2::before,
 section h2::after {
   content:"";
   display:inline-block;
-  width:18%;            /* shorter lines to match smaller text */
+  width:18%;            /* shorter lines for small text */
   height:1px;
   background:white;
   vertical-align:middle;
@@ -86,11 +85,11 @@ section h2::after {
   padding-top:35px;
 }
 
-/* Two rows fit perfectly */
+/* Two rows fit with spacing */
 .featured-row,
 .category-row {
-  height:42vh;
-  max-height:42vh;
+  height:38vh;   /* reduced from 42vh */
+  max-height:38vh;
   display:flex;
   width:max-content;
   gap:10px;

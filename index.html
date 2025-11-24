@@ -18,8 +18,6 @@ html, body {
   color:#eee;
   scroll-behavior: smooth;
   overflow-x: hidden;
-
-  /* 👇 page scroll snapping enabled */
   scroll-snap-type: y mandatory;
 }
 
@@ -31,7 +29,8 @@ section {
   position:relative;
   display:flex;
   flex-direction:column;
-  scroll-snap-align: start;   /* 👈 snap each section cleanly */
+  scroll-snap-align: start;
+  overflow:hidden;
 }
 
 /* HERO */
@@ -56,7 +55,7 @@ section {
 
 /* Headings with lines */
 section h2 {
-  margin:20px 0 20px 0;
+  margin:20px 0 10px 0;
   width:100%;
   text-align:center;
   color:white;
@@ -77,18 +76,23 @@ section h2::after {
 .featured-section {
   display:flex;
   flex-direction:column;
-  justify-content:center;
+  justify-content:flex-start;
   overflow:hidden;
+  padding-top:35px;
 }
 
-.featured-row {
-  display:inline-flex;
+/* NEW: shrink rows so two fit perfectly inside 100vh */
+.featured-row,
+.category-row {
+  height:42vh;
+  max-height:42vh;
+  display:flex;
   width:max-content;
-  height:50%;
   gap:10px;
 }
 
-.featured-row img {
+.featured-row img,
+.category-row img {
   height:100%;
   width:auto;
   object-fit:cover;
@@ -102,24 +106,10 @@ section h2::after {
 
 /* Category Sections */
 .category-section {
-  padding-top:60px;
+  padding-top:35px;
   align-items:center;
   justify-content:flex-start;
-}
-
-.category-row {
-  display:flex;
-  width:100%;
-  height:50%;
-  justify-content:center;
-  gap:10px;
-}
-
-.category-row img {
-  height:100%;
-  width:auto;
-  object-fit:cover;
-  border-radius:6px;
+  overflow:hidden;
 }
 </style>
 </head>
@@ -131,11 +121,10 @@ section h2::after {
   <div class="arrow arrow-down">↓<span>Photos</span></div>
 </section>
 
-<!-- Photos will be injected as full sections -->
+<!-- Photos dynamically inserted -->
 <div id="photoSections"></div>
 
 <script>
-/* HERO arrows */
 document.querySelector('.arrow-down').onclick = () =>
   document.querySelector('#photoSections section')?.scrollIntoView({ behavior:'smooth' });
 
@@ -189,11 +178,11 @@ function displayPhotos(photosData){
 
     if (!items.length) return;
 
-    /* NEW: Create a REAL full-height section */
+    /* New full-height section */
     const section = document.createElement("section");
     section.className = cat === "Featured" ? "featured-section" : "category-section";
 
-    /* Up-arrow back to hero */
+    /* Up-arrow */
     section.innerHTML = `
       <div class="arrow arrow-back-up">↑<span>Hero</span></div>
       <h2>${cat}</h2>
@@ -202,7 +191,7 @@ function displayPhotos(photosData){
     section.querySelector(".arrow-back-up").onclick =
       () => document.getElementById("hero").scrollIntoView({ behavior:'smooth' });
 
-    /* Featured uses animated rows */
+    /* Featured rows (animated) */
     if (cat === "Featured") {
       const mid = Math.ceil(items.length / 2);
       [items.slice(0, mid), items.slice(mid)].forEach(rowItems => {
@@ -223,7 +212,7 @@ function displayPhotos(photosData){
       });
     }
 
-    /* Normal categories */
+    /* Standard categories */
     else {
       const mid = Math.ceil(items.length / 2);
       [items.slice(0, mid), items.slice(mid)].forEach(rowItems => {
@@ -241,7 +230,6 @@ function displayPhotos(photosData){
       });
     }
 
-    /* Append snap section */
     container.appendChild(section);
   });
 }

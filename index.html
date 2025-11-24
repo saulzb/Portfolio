@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Saul Zidulka-Bejcek - Snapping Sections</title>
 
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded&display=swap" rel="stylesheet">
+<!-- Google Font: Michroma -->
+<link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
 
 <style>
 /* Global page behavior */
@@ -54,22 +54,21 @@ section {
 .arrow span { font-size:0.8rem; margin-top:5px; }
 .arrow-down { bottom:40px; left:50%; transform:translateX(-50%); }
 
-/* Headings with lines — updated font and size */
+/* Headings with lines — Michroma */
 section h2 {
-  margin: 15px 0 10px 0;
+  margin: 30px 0 15px 0;       /* space above photos */
   width:100%;
   text-align:center;
   color:white;
-  font-family: 'Archivo Expanded', sans-serif;  /* Works in Google Fonts */
+  font-family:'Michroma', sans-serif; /* Google Font */
   font-size:1rem;
-  font-weight:600;
   letter-spacing:0.5px;
 }
 section h2::before,
 section h2::after {
   content:"";
   display:inline-block;
-  width:18%;            /* shorter lines for small text */
+  width:18%;            
   height:1px;
   background:white;
   vertical-align:middle;
@@ -85,10 +84,10 @@ section h2::after {
   padding-top:35px;
 }
 
-/* Two rows fit with spacing */
+/* Photo rows */
 .featured-row,
 .category-row {
-  height:38vh;   /* reduced from 42vh */
+  height:38vh;
   max-height:38vh;
   display:flex;
   width:max-content;

@@ -3,73 +3,114 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Photography Portfolio</title>
+<title>Saul Zidulka-Bejcek - Snapping Sections</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded&display=swap" rel="stylesheet">
 
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+/* Global page behavior */
+html, body {
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  font-family:'Archivo Expanded', sans-serif;
+  background:#111;
+  color:#eee;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+}
 
-    html, body {
-        height: 100%;
-        scroll-snap-type: y mandatory;
-        scroll-behavior: smooth;
-        overflow-y: scroll;
-        background-color: #000;
-        font-family: Arial, sans-serif;
-    }
+/* Every snap section */
+section {
+  width:100%;
+  height:100vh;
+  box-sizing:border-box;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  scroll-snap-align: start;
+  overflow:hidden;
+}
 
-    section {
-        scroll-snap-align: start;
-        height: 100vh;
-        width: 100%;
-        position: relative;
-    }
+/* HERO */
+#hero {
+  background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
+}
 
-    /* HERO */
-    #hero {
-        background: url('images/hero.jpg') center/cover no-repeat;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: white;
-        text-shadow: 1px 1px 4px black;
-        font-size: 3rem;
-        font-weight: bold;
-    }
+.arrow {
+  color:#fff;
+  font-size:1.5rem;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  cursor:pointer;
+  user-select:none;
+  z-index:10;
+  position:absolute;
+}
+.arrow span { font-size:0.8rem; margin-top:5px; }
+.arrow-down { bottom:40px; left:50%; transform:translateX(-50%); }
+.arrow-back-up { top:20px; left:50%; transform:translateX(-50%); }
 
-    /* SECTION TITLES */
-    h2 {
-        color: white;
-        text-align: center;
-        font-size: 2rem;
-        margin-bottom: 10px;
-        font-weight: 300;
-        letter-spacing: 1px;
-    }
+/* Headings with lines */
+section h2 {
+  margin:20px 0 10px 0;
+  width:100%;
+  text-align:center;
+  color:white;
+  font-weight:bold;
+}
+section h2::before,
+section h2::after {
+  content:"";
+  display:inline-block;
+  width:30%;
+  height:1px;
+  background:white;
+  vertical-align:middle;
+  margin:0 10px;
+}
 
-    /* Photo grid rows (adjusted so both rows fit inside 100vh) */
-    .featured-row,
-    .category-row {
-        height: 42vh;
-        max-height: 42vh;
-        width: 100%;
-        display: flex;
-        overflow: hidden;
-    }
+/* Featured */
+.featured-section {
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  overflow:hidden;
+  padding-top:35px;
+}
 
-    .featured-row img,
-    .category-row img {
-        width: 50%;
-        object-fit: cover;
-    }
+/* NEW: shrink rows so two fit perfectly inside 100vh */
+.featured-row,
+.category-row {
+  height:42vh;
+  max-height:42vh;
+  display:flex;
+  width:max-content;
+  gap:10px;
+}
 
-    .category-section {
-        padding-top: 35px;  
-    }
+.featured-row img,
+.category-row img {
+  height:100%;
+  width:auto;
+  object-fit:cover;
+  border-radius:6px;
+}
 
+@keyframes scroll-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+/* Category Sections */
+.category-section {
+  padding-top:35px;
+  align-items:center;
+  justify-content:flex-start;
+  overflow:hidden;
+}
 </style>
 </head>
 
@@ -77,98 +118,124 @@
 
 <!-- HERO -->
 <section id="hero">
-    <div>My Photography</div>
+  <div class="arrow arrow-down">↓<span>Photos</span></div>
 </section>
 
-<!-- FEATURED / FAVORITES -->
-<section id="featured" class="category-section">
-    <h2>Favourites</h2>
+<!-- Photos dynamically inserted -->
+<div id="photoSections"></div>
 
-    <div class="featured-row">
-        <img src="images/featured1.jpg">
-        <img src="images/featured2.jpg">
-    </div>
+<script>
+document.querySelector('.arrow-down').onclick = () =>
+  document.querySelector('#photoSections section')?.scrollIntoView({ behavior:'smooth' });
 
-    <div class="featured-row">
-        <img src="images/featured3.jpg">
-        <img src="images/featured4.jpg">
-    </div>
-</section>
+/* Contentful setup */
+const SPACE_ID = '5w319pzc4eiq';
+const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
+const ENVIRONMENT = 'master';
 
-<!-- LIGHT -->
-<section id="light" class="category-section">
-    <h2>Light</h2>
+/* Fetch and populate */
+async function fetchPhotos(){
+  const url=`https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&order=sys.createdAt&include=1`;
 
-    <div class="category-row">
-        <img src="images/light1.jpg">
-        <img src="images/light2.jpg">
-    </div>
+  const res = await fetch(url);
+  if(!res.ok){ console.error("Failed Contentful fetch"); return; }
 
-    <div class="category-row">
-        <img src="images/light3.jpg">
-        <img src="images/light4.jpg">
-    </div>
-</section>
+  const data = await res.json();
 
-<!-- TRAVEL -->
-<section id="travel" class="category-section">
-    <h2>Travel</h2>
+  const assets = {};
+  data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
 
-    <div class="category-row">
-        <img src="images/travel1.jpg">
-        <img src="images/travel2.jpg">
-    </div>
+  const photosData = data.items.map(item => {
+    const f = item.fields;
+    return {
+      title: f.title,
+      photo: f.photo ? `https:${assets[f.photo.sys.id]}` : "",
+      thumbnail: f.thumbnail ? `https:${assets[f.thumbnail.sys.id]}` : "",
+      category: f.category || "",
+      featured: f.featured || false
+    };
+  });
 
-    <div class="category-row">
-        <img src="images/travel3.jpg">
-        <img src="images/travel4.jpg">
-    </div>
-</section>
+  displayPhotos(photosData);
+}
 
-<!-- WILDLIFE -->
-<section id="wildlife" class="category-section">
-    <h2>Wildlife</h2>
+function displayPhotos(photosData){
+  const container = document.getElementById("photoSections");
 
-    <div class="category-row">
-        <img src="images/wildlife1.jpg">
-        <img src="images/wildlife2.jpg">
-    </div>
+  const categories = [
+    "Featured",
+    "Double Exposures",
+    "Wildlife",
+    "Travel",
+    "Water",
+    "Light"
+  ];
 
-    <div class="category-row">
-        <img src="images/wildlife3.jpg">
-        <img src="images/wildlife4.jpg">
-    </div>
-</section>
+  categories.forEach(cat => {
+    const items = cat === "Featured"
+      ? photosData.filter(p => p.featured)
+      : photosData.filter(p => p.category === cat);
 
-<!-- DOUBLE EXPOSURES -->
-<section id="double" class="category-section">
-    <h2>Double Exposures</h2>
+    if (!items.length) return;
 
-    <div class="category-row">
-        <img src="images/double1.jpg">
-        <img src="images/double2.jpg">
-    </div>
+    /* New full-height section */
+    const section = document.createElement("section");
+    section.className = cat === "Featured" ? "featured-section" : "category-section";
 
-    <div class="category-row">
-        <img src="images/double3.jpg">
-        <img src="images/double4.jpg">
-    </div>
-</section>
+    /* Up-arrow */
+    section.innerHTML = `
+      <div class="arrow arrow-back-up">↑<span>Hero</span></div>
+      <h2>${cat}</h2>
+    `;
 
-<!-- WATER -->
-<section id="water" class="category-section">
-    <h2>Water</h2>
+    section.querySelector(".arrow-back-up").onclick =
+      () => document.getElementById("hero").scrollIntoView({ behavior:'smooth' });
 
-    <div class="category-row">
-        <img src="images/water1.jpg">
-        <img src="images/water2.jpg">
-    </div>
+    /* Featured rows (animated) */
+    if (cat === "Featured") {
+      const mid = Math.ceil(items.length / 2);
+      [items.slice(0, mid), items.slice(mid)].forEach(rowItems => {
+        const row = document.createElement("div");
+        row.className = "featured-row";
 
-    <div class="category-row">
-        <img src="images/water3.jpg">
-        <img src="images/water4.jpg">
-    </div>
-</section>
+        [...rowItems, ...rowItems].forEach(p => {
+          const img = document.createElement("img");
+          img.src = p.thumbnail || p.photo;
+          img.alt = p.title;
+          row.appendChild(img);
+        });
+
+        row.style.animation =
+          `scroll-right ${30 + rowItems.length * 5}s linear infinite`;
+
+        section.appendChild(row);
+      });
+    }
+
+    /* Standard categories */
+    else {
+      const mid = Math.ceil(items.length / 2);
+      [items.slice(0, mid), items.slice(mid)].forEach(rowItems => {
+        const row = document.createElement("div");
+        row.className = "category-row";
+
+        rowItems.forEach(p => {
+          const img = document.createElement("img");
+          img.src = p.thumbnail || p.photo;
+          img.alt = p.title;
+          row.appendChild(img);
+        });
+
+        section.appendChild(row);
+      });
+    }
+
+    container.appendChild(section);
+  });
+}
+
+fetchPhotos();
+</script>
 
 </body>
 </html>

@@ -56,13 +56,14 @@ section {
 
 /* Headings with lines — Michroma */
 section h2 {
-  margin: 30px 0 0 0;       /* space above photos only */
+  margin: 0;       /* remove default margin */
   width:100%;
   text-align:center;
   color:white;
   font-family:'Michroma', sans-serif; /* Google Font */
   font-size:1rem;
   letter-spacing:0.5px;
+  padding-top: 20px; /* optional top spacing inside section */
 }
 section h2::before,
 section h2::after {
@@ -81,7 +82,17 @@ section h2::after {
   flex-direction:column;
   justify-content:flex-start;
   overflow:hidden;
-  padding-top:35px;
+  padding-top:60px;  /* Push photos lower from header */
+}
+
+/* Category Sections */
+.category-section {
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  align-items:center;
+  overflow:hidden;
+  padding-top:60px;  /* Push photos lower from header */
 }
 
 /* Photo rows */
@@ -92,12 +103,6 @@ section h2::after {
   display:flex;
   width:max-content;
   gap:10px;
-}
-
-/* Add space below header for first row only */
-.featured-row:first-child,
-.category-row:first-child {
-  margin-top:15px;  /* adjust spacing between header and photos */
 }
 
 .featured-row img,
@@ -111,14 +116,6 @@ section h2::after {
 @keyframes scroll-right {
   0% { transform: translateX(-50%); }
   100% { transform: translateX(0); }
-}
-
-/* Category Sections */
-.category-section {
-  padding-top:35px;
-  align-items:center;
-  justify-content:flex-start;
-  overflow:hidden;
 }
 </style>
 </head>

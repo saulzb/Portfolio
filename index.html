@@ -56,11 +56,11 @@ section {
 
 /* Headings with lines — Michroma */
 section h2 {
-  margin: 0;       /* remove default margin */
+  margin: 0; /* reset default margin */
   width:100%;
   text-align:center;
   color:white;
-  font-family:'Michroma', sans-serif; /* Google Font */
+  font-family:'Michroma', sans-serif;
   font-size:1rem;
   letter-spacing:0.5px;
   padding-top: 20px; /* optional top spacing inside section */
@@ -82,7 +82,6 @@ section h2::after {
   flex-direction:column;
   justify-content:flex-start;
   overflow:hidden;
-  padding-top:60px;  /* Push photos lower from header */
 }
 
 /* Category Sections */
@@ -92,7 +91,6 @@ section h2::after {
   justify-content:flex-start;
   align-items:center;
   overflow:hidden;
-  padding-top:60px;  /* Push photos lower from header */
 }
 
 /* Photo rows */
@@ -103,6 +101,12 @@ section h2::after {
   display:flex;
   width:max-content;
   gap:10px;
+}
+
+/* Push first row lower from the header */
+.featured-row:first-of-type,
+.category-row:first-of-type {
+  margin-top: 40px; /* Adjust this value to control spacing */
 }
 
 .featured-row img,

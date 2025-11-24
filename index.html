@@ -51,7 +51,6 @@ section {
 }
 .arrow span { font-size:0.8rem; margin-top:5px; }
 .arrow-down { bottom:40px; left:50%; transform:translateX(-50%); }
-.arrow-back-up { top:20px; left:50%; transform:translateX(-50%); }
 
 /* Headings with lines */
 section h2 {
@@ -81,7 +80,7 @@ section h2::after {
   padding-top:35px;
 }
 
-/* NEW: shrink rows so two fit perfectly inside 100vh */
+/* Two rows fit perfectly */
 .featured-row,
 .category-row {
   height:42vh;
@@ -111,6 +110,7 @@ section h2::after {
   justify-content:flex-start;
   overflow:hidden;
 }
+
 </style>
 </head>
 
@@ -121,10 +121,11 @@ section h2::after {
   <div class="arrow arrow-down">↓<span>Photos</span></div>
 </section>
 
-<!-- Photos dynamically inserted -->
+<!-- Photo sections injected here -->
 <div id="photoSections"></div>
 
 <script>
+/* Scroll down from hero */
 document.querySelector('.arrow-down').onclick = () =>
   document.querySelector('#photoSections section')?.scrollIntoView({ behavior:'smooth' });
 
@@ -178,20 +179,16 @@ function displayPhotos(photosData){
 
     if (!items.length) return;
 
-    /* New full-height section */
+    /* Full-height section */
     const section = document.createElement("section");
     section.className = cat === "Featured" ? "featured-section" : "category-section";
 
-    /* Up-arrow */
+    /* ❌ NO BACK-TO-HERO ARROW HERE */
     section.innerHTML = `
-      <div class="arrow arrow-back-up">↑<span>Hero</span></div>
       <h2>${cat}</h2>
     `;
 
-    section.querySelector(".arrow-back-up").onclick =
-      () => document.getElementById("hero").scrollIntoView({ behavior:'smooth' });
-
-    /* Featured rows (animated) */
+    /* Featured rows (looping animation) */
     if (cat === "Featured") {
       const mid = Math.ceil(items.length / 2);
       [items.slice(0, mid), items.slice(mid)].forEach(rowItems => {

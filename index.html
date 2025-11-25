@@ -142,37 +142,38 @@ section h2::after {
   box-shadow: 0 10px 40px rgba(0,0,0,0.6);
 }
 
+/* LIGHTBOX ARROWS UPDATED */
 .lightbox-arrow {
-  position:fixed;
-  top:50%;
-  transform:translateY(-50%);
-  font-size:48px;
-  color:white;
-  cursor:pointer;
-  user-select:none;
-  z-index:10000;
-  padding:10px;
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 36px;   /* smaller than before */
+  color: rgba(255, 255, 255, 0.85); /* subtle white */
+  cursor: pointer;
+  user-select: none;
+  z-index: 10000;
+  padding: 6px;      /* reduced padding */
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
   outline: none !important;
 }
 
-#lightbox-prev { left:30px; }
-#lightbox-next { right:30px; }
+#lightbox-prev { left: 20px; }
+#lightbox-next { right: 20px; }
 
 #lightbox-close {
-  position:fixed;
-  top:20px;
-  right:30px;
-  font-size:42px;
-  cursor:pointer;
-  z-index:10001;
-  color:white;
-  background:transparent !important;
-  border:none !important;
-  box-shadow:none !important;
-  outline:none !important;
+  position: fixed;
+  top: 15px;
+  right: 20px;
+  font-size: 36px;
+  cursor: pointer;
+  z-index: 10001;
+  color: rgba(255,255,255,0.85);
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 </style>
 </head>
@@ -264,7 +265,6 @@ function displayPhotos(photosData){
           const img = document.createElement("img");
           img.src = p.thumbnail || p.photo;
           img.alt = p.title;
-          img.dataset.full = p.photo || p.thumbnail; // full-res for lightbox
           row.appendChild(img);
         });
 
@@ -281,7 +281,6 @@ function displayPhotos(photosData){
           const img = document.createElement("img");
           img.src = p.thumbnail || p.photo;
           img.alt = p.title;
-          img.dataset.full = p.photo || p.thumbnail; // full-res for lightbox
           row.appendChild(img);
         });
 
@@ -292,7 +291,7 @@ function displayPhotos(photosData){
     container.appendChild(section);
   });
 
-  initArrowKeys();
+  initArrowKeys(); 
   setTimeout(enableLightbox, 300);
 }
 
@@ -328,23 +327,24 @@ function initArrowKeys() {
 }
 
 /* ---------------- LIGHTBOX ---------------- */
-
 let lbImages = [];
 let lbIndex = 0;
 
 function enableLightbox() {
-  const sections = document.querySelectorAll(".category-section, .featured-section");
-  sections.forEach(section => {
-    const imgs = Array.from(section.querySelectorAll("img"));
-    imgs.forEach(img => {
+  const rows = document.querySelectorAll(".category-row");
+  rows.forEach(row => {
+    const imgs = Array.from(row.querySelectorAll("img"));
+    imgs.forEach((img, index) => {
       if (img._hasLightbox) return;
       img._hasLightbox = true;
 
       img.addEventListener("click", () => {
-        // lightbox contains all images in current category section
-        const allImgs = Array.from(section.querySelectorAll("img"));
-        lbImages = allImgs.map(i => i.dataset.full);
-        lbIndex = allImgs.indexOf(img);
+        lbImages = imgs.map(i => {
+          const s = i.src || "";
+          const replaced = s.replace("/thumbnail", "/photo").replace("thumbnail", "photo");
+          return replaced === s ? s : replaced;
+        });
+        lbIndex = index;
         openLightbox();
       });
     });

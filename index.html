@@ -42,7 +42,7 @@ section {
 
 .arrow {
   color:#fff;
-  font-size:1.5rem;
+  font-size:1.2rem;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -50,8 +50,9 @@ section {
   user-select:none;
   z-index:10;
   position:absolute;
+  background: transparent; /* remove background */
 }
-.arrow span { font-size:0.8rem; margin-top:5px; }
+.arrow span { font-size:0.7rem; margin-top:5px; }
 .arrow-down { bottom:40px; left:50%; transform:translateX(-50%); }
 
 /* Headings with lines — Michroma */
@@ -142,38 +143,33 @@ section h2::after {
   box-shadow: 0 10px 40px rgba(0,0,0,0.6);
 }
 
-/* LIGHTBOX ARROWS UPDATED */
 .lightbox-arrow {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 36px;   /* smaller than before */
-  color: rgba(255, 255, 255, 0.85); /* subtle white */
-  cursor: pointer;
-  user-select: none;
-  z-index: 10000;
-  padding: 6px;      /* reduced padding */
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  outline: none !important;
+  position:fixed;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:48px;
+  color:white;
+  cursor:pointer;
+  user-select:none;
+  z-index:10000;
+  background:transparent; /* remove background */
+  border:none;
+  padding:0;
 }
 
-#lightbox-prev { left: 20px; }
-#lightbox-next { right: 20px; }
+#lightbox-prev { left:30px; }
+#lightbox-next { right:30px; }
 
 #lightbox-close {
-  position: fixed;
-  top: 15px;
-  right: 20px;
-  font-size: 36px;
-  cursor: pointer;
-  z-index: 10001;
-  color: rgba(255,255,255,0.85);
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  outline: none !important;
+  position:fixed;
+  top:20px;
+  right:30px;
+  font-size:42px;
+  cursor:pointer;
+  z-index:10001;
+  color:white;
+  background:transparent;
+  border:none;
 }
 </style>
 </head>
@@ -291,7 +287,7 @@ function displayPhotos(photosData){
     container.appendChild(section);
   });
 
-  initArrowKeys(); 
+  initArrowKeys();
   setTimeout(enableLightbox, 300);
 }
 
@@ -331,14 +327,15 @@ let lbImages = [];
 let lbIndex = 0;
 
 function enableLightbox() {
-  const rows = document.querySelectorAll(".category-row");
-  rows.forEach(row => {
-    const imgs = Array.from(row.querySelectorAll("img"));
+  const categories = document.querySelectorAll(".category-section");
+  categories.forEach(section => {
+    const imgs = Array.from(section.querySelectorAll("img"));
     imgs.forEach((img, index) => {
       if (img._hasLightbox) return;
       img._hasLightbox = true;
 
       img.addEventListener("click", () => {
+        // Collect all images in this category
         lbImages = imgs.map(i => {
           const s = i.src || "";
           const replaced = s.replace("/thumbnail", "/photo").replace("thumbnail", "photo");
@@ -407,6 +404,7 @@ function prevLB() {
   openLightbox();
 }
 
+// keyboard navigation
 window.addEventListener("keydown", (e) => {
   const overlay = document.getElementById("lightboxOverlay");
   if (!overlay || overlay.style.display !== "flex") return;

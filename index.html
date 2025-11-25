@@ -56,7 +56,7 @@ section {
 
 /* Headings with lines — Michroma */
 section h2 {
-  margin: 0; /* reset default margin */
+  margin: 0;
   width:100%;
   text-align:center;
   color:white;
@@ -82,7 +82,7 @@ section h2::after {
   flex-direction:column;
   justify-content:flex-start;
   overflow:hidden;
-  padding-top: 90px; /* slightly higher than before */
+  padding-top: 90px;
 }
 
 /* Category Sections */
@@ -92,7 +92,7 @@ section h2::after {
   justify-content:flex-start;
   align-items:center;
   overflow:hidden;
-  padding-top: 90px; /* slightly higher than before */
+  padding-top: 90px;
 }
 
 /* Photo rows */
@@ -105,7 +105,6 @@ section h2::after {
   gap:10px;
 }
 
-/* Keep first row spacing from header */
 .featured-row:first-of-type,
 .category-row:first-of-type {
   margin-top: 40px;
@@ -191,14 +190,10 @@ function displayPhotos(photosData){
 
     if (!items.length) return;
 
-    /* Full-height section */
     const section = document.createElement("section");
     section.className = cat === "Featured" ? "featured-section" : "category-section";
-
-    /* Header only — NO arrow */
     section.innerHTML = `<h2>${cat}</h2>`;
 
-    /* Featured rows (looping animation) */
     if (cat === "Featured") {
       const mid = Math.ceil(items.length / 2);
       [items.slice(0, mid), items.slice(mid)].forEach(rowItems => {
@@ -215,10 +210,7 @@ function displayPhotos(photosData){
         row.style.animation = `scroll-right ${30 + rowItems.length * 5}s linear infinite`;
         section.appendChild(row);
       });
-    }
-
-    /* Normal category rows */
-    else {
+    } else {
       const mid = Math.ceil(items.length / 2);
       [items.slice(0, mid), items.slice(mid)].forEach(rowItems => {
         const row = document.createElement("div");
@@ -236,6 +228,39 @@ function displayPhotos(photosData){
     }
 
     container.appendChild(section);
+  });
+
+  initArrowKeys(); // initialize arrow key navigation after sections load
+}
+
+/* Arrow key navigation */
+function initArrowKeys() {
+  const sections = Array.from(document.querySelectorAll('section'));
+  let currentIndex = 0;
+
+  window.addEventListener('scroll', () => {
+    sections.forEach((sec, i) => {
+      const rect = sec.getBoundingClientRect();
+      if (rect.top >= 0 && rect.top < window.innerHeight / 2) {
+        currentIndex = i;
+      }
+    });
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (currentIndex < sections.length - 1) {
+        currentIndex++;
+        sections[currentIndex].scrollIntoView({ behavior: 'smooth' });
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (currentIndex > 0) {
+        currentIndex--;
+        sections[currentIndex].scrollIntoView({ behavior: 'smooth' });
+      }
+    }
   });
 }
 

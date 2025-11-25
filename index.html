@@ -122,48 +122,6 @@ section h2::after {
   0% { transform: translateX(-50%); }
   100% { transform: translateX(0); }
 }
-
-/* ---------------- LIGHTBOX (ADD ONLY — SAFE) ---------------- */
-#lightboxOverlay {
-  position: fixed;
-  top:0; left:0;
-  width:100vw; height:100vh;
-  background: rgba(0,0,0,0.92);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-}
-
-#lightboxOverlay img {
-  max-width:90vw;
-  max-height:90vh;
-  border-radius:4px;
-}
-
-.lightbox-arrow {
-  position:fixed;
-  top:50%;
-  transform:translateY(-50%);
-  font-size:48px;
-  color:white;
-  cursor:pointer;
-  user-select:none;
-  z-index:10000;
-}
-
-#lightbox-prev { left:30px; }
-#lightbox-next { right:30px; }
-
-#lightbox-close {
-  position:fixed;
-  top:20px;
-  right:30px;
-  font-size:42px;
-  cursor:pointer;
-  z-index:10001;
-  color:white;
-}
 </style>
 </head>
 
@@ -272,8 +230,7 @@ function displayPhotos(photosData){
     container.appendChild(section);
   });
 
-  initArrowKeys();
-  setTimeout(enableLightbox, 800); /* ensure all imgs exist */
+  initArrowKeys(); // initialize arrow key navigation after sections load
 }
 
 /* Arrow key navigation */
@@ -307,69 +264,8 @@ function initArrowKeys() {
   });
 }
 
-/* ---------------- LIGHTBOX (ADD ONLY — SAFE) ---------------- */
-
-let lbImages = [];
-let lbIndex = 0;
-
-function enableLightbox() {
-  const rows = document.querySelectorAll(".category-row");
-
-  rows.forEach(row => {
-    const imgs = Array.from(row.querySelectorAll("img"));
-    imgs.forEach((img, index) => {
-      img.addEventListener("click", () => {
-        lbImages = imgs.map(i => i.src.replace("thumbnail", "photo"));
-        lbIndex = index;
-        openLightbox();
-      });
-    });
-  });
-}
-
-function openLightbox() {
-  const overlay = document.getElementById("lightboxOverlay");
-  const img = document.getElementById("lightbox-img");
-  img.src = lbImages[lbIndex];
-  overlay.style.display = "flex";
-}
-
-function closeLightbox() {
-  document.getElementById("lightboxOverlay").style.display = "none";
-}
-
-function nextLB() {
-  lbIndex = (lbIndex + 1) % lbImages.length;
-  openLightbox();
-}
-
-function prevLB() {
-  lbIndex = (lbIndex - 1 + lbImages.length) % lbImages.length;
-  openLightbox();
-}
-
-document.getElementById("lightbox-close").onclick = closeLightbox;
-document.getElementById("lightbox-next").onclick = nextLB;
-document.getElementById("lightbox-prev").onclick = prevLB;
-
-window.addEventListener("keydown", e => {
-  const open = document.getElementById("lightboxOverlay").style.display === "flex";
-  if (!open) return;
-  if (e.key === "ArrowRight") nextLB();
-  if (e.key === "ArrowLeft") prevLB();
-  if (e.key === "Escape") closeLightbox();
-});
-
 fetchPhotos();
 </script>
-
-<!-- LIGHTBOX ELEMENTS -->
-<div id="lightboxOverlay">
-  <span id="lightbox-close">×</span>
-  <span id="lightbox-prev" class="lightbox-arrow">❮</span>
-  <img id="lightbox-img" src="">
-  <span id="lightbox-next" class="lightbox-arrow">❯</span>
-</div>
 
 </body>
 </html>

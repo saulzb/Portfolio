@@ -42,7 +42,7 @@ section {
 
 .arrow {
   color:#fff;
-  font-size:1.2rem; /* smaller */
+  font-size:1.5rem;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -50,7 +50,6 @@ section {
   user-select:none;
   z-index:10;
   position:absolute;
-  background: transparent; /* remove grey block */
 }
 .arrow span { font-size:0.8rem; margin-top:5px; }
 .arrow-down { bottom:40px; left:50%; transform:translateX(-50%); }
@@ -147,28 +146,33 @@ section h2::after {
   position:fixed;
   top:50%;
   transform:translateY(-50%);
-  font-size:36px;
+  font-size:48px;
   color:white;
   cursor:pointer;
   user-select:none;
   z-index:10000;
   padding:10px;
-  background:transparent;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
-#lightbox-prev { left:20px; }
-#lightbox-next { right:20px; }
+#lightbox-prev { left:30px; }
+#lightbox-next { right:30px; }
 
 #lightbox-close {
   position:fixed;
   top:20px;
   right:30px;
-  font-size:36px;
+  font-size:42px;
   cursor:pointer;
   z-index:10001;
   color:white;
-  background:transparent;
-  border:none;
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+  outline:none !important;
 }
 </style>
 </head>
@@ -260,6 +264,7 @@ function displayPhotos(photosData){
           const img = document.createElement("img");
           img.src = p.thumbnail || p.photo;
           img.alt = p.title;
+          img.dataset.full = p.photo || p.thumbnail; // full-res for lightbox
           row.appendChild(img);
         });
 
@@ -276,6 +281,7 @@ function displayPhotos(photosData){
           const img = document.createElement("img");
           img.src = p.thumbnail || p.photo;
           img.alt = p.title;
+          img.dataset.full = p.photo || p.thumbnail; // full-res for lightbox
           row.appendChild(img);
         });
 
@@ -286,11 +292,11 @@ function displayPhotos(photosData){
     container.appendChild(section);
   });
 
-  initArrowKeys(); // section navigation
-  setTimeout(enableLightbox, 300); // lightbox
+  initArrowKeys();
+  setTimeout(enableLightbox, 300);
 }
 
-/* Section arrow keys */
+/* Arrow key navigation */
 function initArrowKeys() {
   const sections = Array.from(document.querySelectorAll('section'));
   let currentIndex = 0;
@@ -322,24 +328,23 @@ function initArrowKeys() {
 }
 
 /* ---------------- LIGHTBOX ---------------- */
+
 let lbImages = [];
 let lbIndex = 0;
 
 function enableLightbox() {
-  const rows = document.querySelectorAll(".category-row");
-  rows.forEach(row => {
-    const imgs = Array.from(row.querySelectorAll("img"));
-    imgs.forEach((img, index) => {
+  const sections = document.querySelectorAll(".category-section, .featured-section");
+  sections.forEach(section => {
+    const imgs = Array.from(section.querySelectorAll("img"));
+    imgs.forEach(img => {
       if (img._hasLightbox) return;
       img._hasLightbox = true;
 
       img.addEventListener("click", () => {
-        lbImages = imgs.map(i => {
-          const s = i.src || "";
-          const replaced = s.replace("/thumbnail", "/photo").replace("thumbnail", "photo");
-          return replaced === s ? s : replaced;
-        });
-        lbIndex = index;
+        // lightbox contains all images in current category section
+        const allImgs = Array.from(section.querySelectorAll("img"));
+        lbImages = allImgs.map(i => i.dataset.full);
+        lbIndex = allImgs.indexOf(img);
         openLightbox();
       });
     });
@@ -375,6 +380,7 @@ function openLightbox() {
   const overlay = document.getElementById("lightboxOverlay");
   const imgEl = document.getElementById("lightbox-img");
   if (!overlay || !imgEl || lbImages.length === 0) return;
+
   imgEl.src = lbImages[lbIndex] || "";
   overlay.style.display = "flex";
   overlay.setAttribute("aria-hidden", "false");
@@ -405,9 +411,16 @@ window.addEventListener("keydown", (e) => {
   const overlay = document.getElementById("lightboxOverlay");
   if (!overlay || overlay.style.display !== "flex") return;
 
-  if (e.key === "ArrowRight") { nextLB(); e.preventDefault(); }
-  else if (e.key === "ArrowLeft") { prevLB(); e.preventDefault(); }
-  else if (e.key === "Escape") { closeLightbox(); e.preventDefault(); }
+  if (e.key === "ArrowRight") {
+    nextLB();
+    e.preventDefault();
+  } else if (e.key === "ArrowLeft") {
+    prevLB();
+    e.preventDefault();
+  } else if (e.key === "Escape") {
+    closeLightbox();
+    e.preventDefault();
+  }
 });
 
 fetchPhotos();

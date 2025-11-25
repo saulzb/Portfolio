@@ -122,6 +122,52 @@ section h2::after {
   0% { transform: translateX(-50%); }
   100% { transform: translateX(0); }
 }
+
+/* ---------------- LIGHTBOX (isolated additions) ---------------- */
+#lightboxOverlay {
+  position: fixed;
+  top:0; left:0;
+  width:100vw; height:100vh;
+  background: rgba(0,0,0,0.92);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+#lightboxOverlay img {
+  max-width:90vw;
+  max-height:90vh;
+  border-radius:4px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+}
+
+.lightbox-arrow {
+  position:fixed;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:48px;
+  color:white;
+  cursor:pointer;
+  user-select:none;
+  z-index:10000;
+  padding:10px;
+}
+
+#lightbox-prev { left:30px; }
+#lightbox-next { right:30px; }
+
+#lightbox-close {
+  position:fixed;
+  top:20px;
+  right:30px;
+  font-size:42px;
+  cursor:pointer;
+  z-index:10001;
+  color:white;
+  background:transparent;
+  border:none;
+}
 </style>
 </head>
 
@@ -134,6 +180,14 @@ section h2::after {
 
 <!-- Photo sections injected here -->
 <div id="photoSections"></div>
+
+<!-- LIGHTBOX ELEMENTS (placed BEFORE script so script can safely attach) -->
+<div id="lightboxOverlay" aria-hidden="true" role="dialog">
+  <button id="lightbox-close" aria-label="Close">×</button>
+  <button id="lightbox-prev" class="lightbox-arrow" aria-label="Previous">❮</button>
+  <img id="lightbox-img" src="" alt="">
+  <button id="lightbox-next" class="lightbox-arrow" aria-label="Next">❯</button>
+</div>
 
 <script>
 /* Scroll down from hero */
@@ -231,6 +285,9 @@ function displayPhotos(photosData){
   });
 
   initArrowKeys(); // initialize arrow key navigation after sections load
+
+  /* enable lightbox after DOM nodes exist - small timeout to be safe */
+  setTimeout(enableLightbox, 300);
 }
 
 /* Arrow key navigation */
@@ -263,6 +320,121 @@ function initArrowKeys() {
     }
   });
 }
+
+/* ---------------- LIGHTBOX (isolated, robust, non-intrusive) ---------------- */
+
+let lbImages = []; // array of full-photo URLs for the current category row
+let lbIndex = 0;
+
+function enableLightbox() {
+  // Attach click listeners only to images inside category rows (not featured rows)
+  const rows = document.querySelectorAll(".category-row");
+  rows.forEach(row => {
+    const imgs = Array.from(row.querySelectorAll("img"));
+    imgs.forEach((img, index) => {
+      // guard: don't attach multiple handlers if called again
+      if (img._hasLightbox) return;
+      img._hasLightbox = true;
+
+      img.addEventListener("click", () => {
+        // Build lbImages from the raw photo (full) URL when clicked.
+        // We'll try to prefer the 'photo' field if available in the src mapping,
+        // but because your thumbnails are full https urls we rely on the mapping strategy:
+        // if a thumbnail URL corresponds to the same path as full photo except name,
+        // replace 'thumbnail' with 'photo' string. If that doesn't look like a full image,
+        // fallback to the thumbnail itself.
+        lbImages = imgs.map(i => {
+          // attempt to replace "/thumbnail" with "/photo" or similar pattern
+          // but if your thumbnails are distinct, the safest is to use dataset when available.
+          // We stored src only, so attempt replacement; if replacement yields same string,
+          // we'll fall back to original src.
+          const s = i.src || "";
+          const replaced = s.replace("/thumbnail", "/photo").replace("thumbnail", "photo");
+          return replaced === s ? s : replaced;
+        });
+
+        lbIndex = index;
+        openLightbox();
+      });
+    });
+  });
+
+  // Attach UI handlers to overlay controls (only once)
+  const overlay = document.getElementById("lightboxOverlay");
+  const closeBtn = document.getElementById("lightbox-close");
+  const prevBtn = document.getElementById("lightbox-prev");
+  const nextBtn = document.getElementById("lightbox-next");
+
+  if (closeBtn && !closeBtn._attached) {
+    closeBtn.addEventListener("click", closeLightbox);
+    closeBtn._attached = true;
+  }
+  if (prevBtn && !prevBtn._attached) {
+    prevBtn.addEventListener("click", prevLB);
+    prevBtn._attached = true;
+  }
+  if (nextBtn && !nextBtn._attached) {
+    nextBtn.addEventListener("click", nextLB);
+    nextBtn._attached = true;
+  }
+
+  // Close overlay if user clicks outside the image
+  if (overlay && !overlay._outsideClickAttached) {
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeLightbox();
+    });
+    overlay._outsideClickAttached = true;
+  }
+}
+
+function openLightbox() {
+  const overlay = document.getElementById("lightboxOverlay");
+  const imgEl = document.getElementById("lightbox-img");
+  if (!overlay || !imgEl || lbImages.length === 0) return;
+
+  imgEl.src = lbImages[lbIndex] || "";
+  overlay.style.display = "flex";
+  overlay.setAttribute("aria-hidden", "false");
+}
+
+function closeLightbox() {
+  const overlay = document.getElementById("lightboxOverlay");
+  const imgEl = document.getElementById("lightbox-img");
+  if (!overlay) return;
+  overlay.style.display = "none";
+  overlay.setAttribute("aria-hidden", "true");
+  if (imgEl) imgEl.src = "";
+}
+
+function nextLB() {
+  if (lbImages.length === 0) return;
+  lbIndex = Math.min(lbImages.length - 1, lbIndex + 1);
+  // prevent crossing category boundaries: we cap at last index
+  openLightbox();
+}
+
+function prevLB() {
+  if (lbImages.length === 0) return;
+  lbIndex = Math.max(0, lbIndex - 1);
+  openLightbox();
+}
+
+// keyboard navigation for lightbox only, non-invasive
+window.addEventListener("keydown", (e) => {
+  const overlay = document.getElementById("lightboxOverlay");
+  if (!overlay || overlay.style.display !== "flex") return;
+
+  if (e.key === "ArrowRight") {
+    nextLB();
+    e.preventDefault();
+  } else if (e.key === "ArrowLeft") {
+    prevLB();
+    e.preventDefault();
+  } else if (e.key === "Escape") {
+    closeLightbox();
+    e.preventDefault();
+  }
+});
 
 fetchPhotos();
 </script>

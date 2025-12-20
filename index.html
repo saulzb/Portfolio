@@ -108,11 +108,11 @@ section.visible { opacity:1; }
   text-align:center;
 }
 
-/* ---------------- LOADING SCREEN ---------------- */
+/* ---------------- RETRO LOADING SCREEN ---------------- */
 #loadingScreen {
   position:fixed;
   inset:0;
-  background:#008080;
+  background:#004080; /* classic dark blue */
   display:none;
   align-items:center;
   justify-content:center;
@@ -121,24 +121,50 @@ section.visible { opacity:1; }
   color:white;
   flex-direction:column;
 }
-#loadingScreen p {
-  font-size:1.5rem;
-  margin-bottom:20px;
+
+.retro-window {
+  width:320px;
+  background:#c0c0c0;
+  border:2px solid #000;
+  box-shadow:4px 4px 0 #000;
+  display:flex;
+  flex-direction:column;
 }
-.progress-bar {
-  width:250px;
-  height:20px;
-  border:2px solid white;
-  background:#004040;
+
+.title-bar {
+  background:#000080;
+  color:white;
+  padding:4px 8px;
+  font-weight:bold;
+  font-size:0.9rem;
+}
+
+.window-content {
+  padding:20px;
+  background:#c0c0c0;
+}
+
+.window-content p {
+  margin:0 0 12px 0;
+  font-size:0.85rem;
+}
+
+.retro-progress {
+  width:100%;
+  height:16px;
+  border:1px solid #000;
+  background:#808080;
   position:relative;
 }
-.progress-fill {
+
+.retro-fill {
   height:100%;
   width:0;
-  background:white;
-  animation: fillProgress 1.5s linear forwards;
+  background:#00ff00;
+  animation: retroFill 1.5s linear forwards;
 }
-@keyframes fillProgress { to { width:100%; } }
+
+@keyframes retroFill { to { width:100%; } }
 </style>
 </head>
 <body>
@@ -155,8 +181,15 @@ section.visible { opacity:1; }
 
 <!-- LOADING SCREEN -->
 <div id="loadingScreen">
-  <p>Loading…</p>
-  <div class="progress-bar"><div class="progress-fill"></div></div>
+  <div class="retro-window">
+    <div class="title-bar">Loading...</div>
+    <div class="window-content">
+      <p>Initializing...</p>
+      <div class="retro-progress">
+        <div class="retro-fill"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -178,12 +211,12 @@ categories.forEach(cat => {
     const pageName = cat.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g,'') + ".html";
 
     const loading = document.getElementById('loadingScreen');
-    const fill = document.querySelector('.progress-fill');
+    const fill = document.querySelector('.retro-fill');
 
     loading.style.display = 'flex';
     fill.style.animation = 'none';
     void fill.offsetWidth; // trigger reflow
-    fill.style.animation = 'fillProgress 1.5s linear forwards';
+    fill.style.animation = 'retroFill 1.5s linear forwards';
 
     setTimeout(() => { window.location.replace(pageName); }, 1500);
   };

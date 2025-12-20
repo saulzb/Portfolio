@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saul Zidulka-Bejcek</title>
+<title>Saul Zidulka-Bejcek | channelORANGE</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
 
@@ -16,77 +16,71 @@ html, body {
 body::-webkit-scrollbar { width:0; height:0; }
 body { scrollbar-width:none; }
 
-/* HERO */
-#hero {
-  height:100vh;
-  background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
-  position:relative;
+section {
+  width:100%; height:100vh; box-sizing:border-box;
+  position:relative; display:flex; flex-direction:column;
+  scroll-snap-align:start; overflow:hidden;
+  opacity:0; transition:opacity 0.9s ease;
 }
+section.visible { opacity:1; }
 
-.arrow {
-  color:#fff;
-  font-size:1.2rem;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  cursor:pointer;
-  user-select:none;
-  position:absolute;
-  bottom:40px;
-  left:50%;
-  transform:translateX(-50%);
-}
-.arrow span { font-size:0.7rem; margin-top:5px; }
-
-/* Folders Section */
-#folders {
+.category-section {
   padding-top:120px;
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:flex-start;
-  gap:50px;
-  margin-left:40px;
+  align-items:flex-start; /* left-align content */
 }
-.folder {
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  cursor:pointer;
-  text-decoration:none;
-  color:white;
+
+/* Section heading */
+section h2 {
+  margin:0 0 50px 40px; /* keep some left margin for alignment */
+  text-align:left; color:white;
+  font-family:'Michroma',sans-serif; font-size:1rem;
 }
-.folder img {
-  width:120px;
-  height:120px;
-  object-fit:cover;
+section h2::before, section h2::after { display:none; } /* remove lines */
+
+/* Photo grid */
+.category-row {
+  display:flex; flex-wrap:wrap; justify-content:flex-start; gap:40px; margin-bottom:40px;
+  margin-left:40px; /* left-align grid */
+}
+
+.category-row img {
+  width:180px; height:180px; object-fit:cover;
   border-radius:6px;
   box-shadow:0 8px 20px rgba(0,0,0,0.45);
-  background: linear-gradient(145deg,#333,#222);
   position:relative;
+  background: linear-gradient(145deg, #333, #222);
   overflow:hidden;
 }
-.folder img::after {
+
+/* Mac-style reflection overlay */
+.category-row img::after {
   content:"";
-  position:absolute;
-  top:0; left:0;
+  position:absolute; top:0; left:0;
   width:100%; height:100%;
   border-radius:6px;
   pointer-events:none;
-  background: linear-gradient(120deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 60%);
+  background: linear-gradient(120deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 60%);
   transform: translateX(-100%);
   animation: gloss 3s infinite linear;
 }
+
+/* Gloss animation */
 @keyframes gloss {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
 }
-.folder span {
+
+/* Photo numbering - Mac system font */
+.photo-number {
+  display:block;
+  text-align:center;
   margin-top:6px;
   font-family:-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", sans-serif;
-  font-size:0.8rem;
+  font-size:0.75rem;
+  color:#ccc;
 }
 
-/* Lightbox (for hero or folders if needed) */
+/* Lightbox */
 #lightboxOverlay {
   position:fixed; inset:0;
   background:rgba(0,0,0,0.92);
@@ -99,102 +93,121 @@ body { scrollbar-width:none; }
 #lightbox-prev { left:30px; } #lightbox-next { right:30px; }
 #lightbox-close { position:fixed; top:20px; right:30px; font-size:42px; background:none; border:none; color:white; cursor:pointer; }
 
-/* Loading Screen */
-#loadingScreen {
-  position:fixed;
-  inset:0;
-  background:#008080;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:10000;
-  font-family:'Courier New', monospace;
-  color:white;
-  flex-direction:column;
+/* Back arrow */
+.back-arrow {
+  position:absolute; top:20px; left:30px;
+  font-size:28px; cursor:pointer; color:white;
+  user-select:none; transform:rotate(270deg);
 }
-#loadingScreen p {
-  font-size:1.5rem;
-  margin-bottom:20px;
-}
-.progress-bar {
-  width:250px;
-  height:20px;
-  border:2px solid white;
-  background:#004040;
-  position:relative;
-}
-.progress-fill {
-  height:100%;
-  width:0;
-  background:white;
-  animation: fillProgress 1.5s linear forwards;
-}
-@keyframes fillProgress { to { width:100%; } }
 </style>
 </head>
 <body>
 
-<!-- HERO -->
-<section id="hero">
-  <div class="arrow arrow-down">↓<span>Folders</span></div>
-</section>
+<!-- Back arrow -->
+<div class="back-arrow" onclick="window.location.href='index.html'">^</div>
 
-<!-- Folders -->
-<section id="folders">
-  <a class="folder folder-link" href="channelORANGE.html">
-    <img src="channelORANGE.png" alt="channelORANGE">
-    <span>channelORANGE</span>
-  </a>
-  <a class="folder folder-link" href="Dream-State.html">
-    <img src="Dream-State.png" alt="Dream State">
-    <span>Dream State</span>
-  </a>
-  <a class="folder folder-link" href="Raw-PNW.html">
-    <img src="Raw-PNW.png" alt="Raw PNW">
-    <span>Raw PNW</span>
-  </a>
-  <a class="folder folder-link" href="Neon-Lights.html">
-    <img src="Neon-Lights.png" alt="Neon Lights">
-    <span>Neon Lights</span>
-  </a>
-  <a class="folder folder-link" href="TI.html">
-    <img src="TI.png" alt="TI">
-    <span>TI</span>
-  </a>
-  <a class="folder folder-link" href="Quiet-Nights.html">
-    <img src="Quiet-Nights.png" alt="Quiet Nights">
-    <span>Quiet Nights</span>
-  </a>
-</section>
+<div id="photoSections"></div>
 
-<!-- Loading Screen -->
-<div id="loadingScreen">
-  <p>Loading…</p>
-  <div class="progress-bar"><div class="progress-fill"></div></div>
+<div id="lightboxOverlay">
+  <button id="lightbox-close">×</button>
+  <button id="lightbox-prev" class="lightbox-arrow">❮</button>
+  <img id="lightbox-img" src="">
+  <button id="lightbox-next" class="lightbox-arrow">❯</button>
 </div>
 
 <script>
-/* Scroll down arrow from hero */
-document.querySelector('.arrow-down').onclick = () =>
-  document.querySelector('#folders')
-    .scrollIntoView({ behavior:'smooth' });
+const SPACE_ID = '5w319pzc4eiq';
+const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
+const CATEGORY_NAME = "channelORANGE"; // change per page
 
-/* Folder click: show Windows-style loading */
-document.querySelectorAll('.folder-link').forEach(link=>{
-  link.addEventListener('click', e=>{
-    e.preventDefault();
-    const url = link.href;
+async function fetchPhotos(){
+  const res = await fetch(`https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`);
+  const data = await res.json();
 
-    document.getElementById('loadingScreen').style.display='flex';
-    // reset animation
-    const fill = document.querySelector('.progress-fill');
-    fill.style.animation='none';
-    void fill.offsetWidth; // trigger reflow
-    fill.style.animation='fillProgress 1.5s linear forwards';
+  const assets = {};
+  data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
 
-    setTimeout(()=>{ window.location.href = url; }, 1500);
+  const photos = data.items.map(i=>({
+    title:i.fields.title,
+    photo:`https:${assets[i.fields.photo.sys.id]}`,
+    thumbnail:i.fields.thumbnail ? `https:${assets[i.fields.thumbnail.sys.id]}` : "",
+    category:i.fields.category
+  })).filter(p=>p.category === CATEGORY_NAME);
+
+  displayPhotos(photos);
+}
+
+function displayPhotos(photos){
+  const container = document.getElementById("photoSections");
+
+  const section = document.createElement("section");
+  section.className = "category-section";
+  section.innerHTML = `<h2>${CATEGORY_NAME}</h2>`;
+
+  let counter = 1;
+  const row = document.createElement("div");
+  row.className = "category-row";
+
+  photos.forEach(p=>{
+    const img = document.createElement("img");
+    img.src = p.thumbnail || p.photo;
+    img.dataset.full = p.photo;
+
+    const number = document.createElement("span");
+    number.className = "photo-number";
+    number.textContent = "IMG_" + (counter<10 ? "0"+counter : counter);
+    counter++;
+
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "flex";
+    wrapper.style.flexDirection = "column";
+    wrapper.style.alignItems = "center";
+    wrapper.appendChild(img);
+    wrapper.appendChild(number);
+
+    row.appendChild(wrapper);
   });
-});
+
+  section.appendChild(row);
+  container.appendChild(section);
+
+  document.querySelectorAll("section").forEach(s=>observer.observe(s));
+  enableLightbox();
+}
+
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting) e.target.classList.add("visible");});
+},{threshold:0.3});
+
+function enableLightbox(){
+  let lbImages=[], lbIndex=0;
+  document.querySelectorAll(".category-row img").forEach(img=>{
+    img.onclick=()=>{
+      const rowImgs=[...img.parentElement.parentElement.querySelectorAll("img")];
+      lbImages=rowImgs.map(i=>i.dataset.full);
+      lbIndex=rowImgs.indexOf(img);
+      openLB();
+    };
+  });
+
+  function openLB(){ document.body.style.overflow="hidden"; document.getElementById("lightbox-img").src=lbImages[lbIndex]; document.getElementById("lightboxOverlay").style.display="flex"; }
+  function closeLB(){ document.body.style.overflow=""; document.getElementById("lightboxOverlay").style.display="none"; }
+  function nextLB(){ lbIndex=(lbIndex+1)%lbImages.length; document.getElementById("lightbox-img").src=lbImages[lbIndex]; }
+  function prevLB(){ lbIndex=(lbIndex-1+lbImages.length)%lbImages.length; document.getElementById("lightbox-img").src=lbImages[lbIndex]; }
+
+  document.getElementById("lightbox-close").onclick=closeLB;
+  document.getElementById("lightbox-next").onclick=nextLB;
+  document.getElementById("lightbox-prev").onclick=prevLB;
+
+  window.addEventListener("keydown",e=>{
+    if(document.getElementById("lightboxOverlay").style.display!=="flex") return;
+    if(e.key==="ArrowRight") nextLB();
+    if(e.key==="ArrowLeft") prevLB();
+    if(e.key==="Escape") closeLB();
+  });
+}
+
+fetchPhotos();
 </script>
 
 </body>

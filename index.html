@@ -108,11 +108,11 @@ section.visible { opacity:1; }
   text-align:center;
 }
 
-/* ---------------- RETRO LOADING SCREEN ---------------- */
+/* ---------------- FRIENDLY RETRO LOADING SCREEN ---------------- */
 #loadingScreen {
   position: fixed;
   inset:0;
-  background:#0080C0; /* classic bright Windows blue */
+  background:#A3C4DC; /* soft retro blue */
   display: none;
   align-items: center;
   justify-content: center;
@@ -124,14 +124,14 @@ section.visible { opacity:1; }
 
 .retro-window {
   width:320px;
-  background:#C0C0C0; /* light gray like Windows 95 */
+  background:#D3D3D3; /* light gray window */
   border:2px solid #000;
   display:flex;
   flex-direction: column;
 }
 
 .title-bar {
-  background:#0000AA; /* friendly blue */
+  background:#3366CC; /* muted retro blue */
   color:white;
   padding:4px 8px;
   font-weight:bold;
@@ -141,7 +141,7 @@ section.visible { opacity:1; }
 
 .window-content {
   padding:20px;
-  background:#C0C0C0;
+  background:#D3D3D3;
 }
 
 .window-content p {
@@ -153,14 +153,14 @@ section.visible { opacity:1; }
   width:100%;
   height:16px;
   border:2px solid #000;
-  background:#808080;
+  background:#B0B0B0; /* softer gray background for bar */
   position:relative;
 }
 
 .retro-fill {
   height:100%;
   width:0;
-  background:#00FF00;
+  background:#00CC66; /* softer green */
   animation: retroFill 1.5s linear forwards;
 }
 

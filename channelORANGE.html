@@ -25,7 +25,7 @@ section {
 section.visible { opacity:1; }
 
 .category-section {
-  padding-top:120px; /* space from top/title */
+  padding-top:120px;
   align-items:center;
 }
 
@@ -47,11 +47,10 @@ section h2::before, section h2::after {
 .category-row img {
   height:180px; width:auto;
   border-radius:6px;
-  cursor:zoom-in;
-  box-shadow:0 6px 20px rgba(0,0,0,0.35);
-  transition: transform 0.25s ease;
+  box-shadow:0 8px 20px rgba(0,0,0,0.45);
+  background: linear-gradient(145deg, #333, #222);
+  padding:4px;
 }
-.category-row img:hover { transform:scale(1.05); }
 
 /* Photo numbering */
 .photo-number {
@@ -76,7 +75,7 @@ section h2::before, section h2::after {
 #lightbox-prev { left:30px; } #lightbox-next { right:30px; }
 #lightbox-close { position:fixed; top:20px; right:30px; font-size:42px; background:none; border:none; color:white; cursor:pointer; }
 
-/* Back to folders arrow */
+/* Back arrow */
 .back-arrow {
   position:absolute; top:20px; left:30px;
   font-size:28px; cursor:pointer; color:white;
@@ -101,7 +100,7 @@ section h2::before, section h2::after {
 <script>
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
-const CATEGORY_NAME = "channelORANGE"; // <-- change per page
+const CATEGORY_NAME = "channelORANGE"; // change per page
 
 async function fetchPhotos(){
   const res = await fetch(`https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`);
@@ -114,8 +113,7 @@ async function fetchPhotos(){
     title:i.fields.title,
     photo:`https:${assets[i.fields.photo.sys.id]}`,
     thumbnail:i.fields.thumbnail ? `https:${assets[i.fields.thumbnail.sys.id]}` : "",
-    category:i.fields.category,
-    featured:i.fields.featured
+    category:i.fields.category
   })).filter(p=>p.category === CATEGORY_NAME);
 
   displayPhotos(photos);
@@ -129,11 +127,10 @@ function displayPhotos(photos){
   section.innerHTML = `<h2>${CATEGORY_NAME}</h2>`;
 
   let counter = 1;
-
   const row = document.createElement("div");
   row.className = "category-row";
 
-  photos.forEach((p)=>{
+  photos.forEach(p=>{
     const img = document.createElement("img");
     img.src = p.thumbnail || p.photo;
     img.dataset.full = p.photo;

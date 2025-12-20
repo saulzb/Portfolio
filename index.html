@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saul Zidulka-Bejcek - Snapping Sections</title>
+<title>Saul Zidulka-Bejcek</title>
 
-<!-- Google Font: Michroma -->
+<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
 
 <style>
-/* Global page behavior */
+/* ---------------- GLOBAL ---------------- */
 html, body {
   margin:0;
   padding:0;
@@ -18,48 +18,64 @@ html, body {
   font-family:'Archivo Expanded', sans-serif;
   background:#111;
   color:#eee;
-  scroll-behavior: smooth;
-  overflow-x: hidden;
-
-  /* 🔧 FIX 1: disable snap until content loads */
-  scroll-snap-type: none;
+  scroll-behavior:smooth;
+  overflow-x:hidden;
+  scroll-snap-type:none;
 }
 
-/* Every snap section */
+/* Hide scrollbar */
+body::-webkit-scrollbar { width:0; }
+body { scrollbar-width:none; }
+
+/* ---------------- SECTIONS ---------------- */
 section {
   width:100%;
   height:100vh;
-  box-sizing:border-box;
   position:relative;
   display:flex;
   flex-direction:column;
-  scroll-snap-align: start;
+  box-sizing:border-box;
+  scroll-snap-align:start;
   overflow:hidden;
+
+  /* Fade-in */
+  opacity:0;
+  transform:translateY(30px);
+  transition:opacity 0.9s ease, transform 0.9s ease;
 }
 
-/* HERO */
+section.visible {
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* ---------------- HERO ---------------- */
 #hero {
   background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
 }
 
+/* Scroll arrow */
 .arrow {
-  color:#fff;
+  position:absolute;
+  bottom:40px;
+  left:50%;
+  transform:translateX(-50%);
+  color:white;
   font-size:1.2rem;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
   cursor:pointer;
   user-select:none;
   z-index:10;
-  position:absolute;
-  background: transparent;
 }
-.arrow span { font-size:0.7rem; margin-top:5px; }
-.arrow-down { bottom:40px; left:50%; transform:translateX(-50%); }
+.arrow span {
+  display:block;
+  font-size:0.7rem;
+  margin-top:4px;
+  text-align:center;
+}
 
-/* Headings with lines — Michroma */
+/* ---------------- HEADINGS ---------------- */
 section h2 {
-  margin: 0;
+  margin:0;
   width:100%;
   text-align:center;
   color:white;
@@ -67,6 +83,7 @@ section h2 {
   font-size:1rem;
   letter-spacing:0.5px;
 }
+
 section h2::before,
 section h2::after {
   content:"";
@@ -78,38 +95,25 @@ section h2::after {
   margin:0 8px;
 }
 
-/* Featured sections */
+/* ---------------- SECTIONS ---------------- */
 .featured-section {
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-start;
-  overflow:hidden;
-  padding-top: 90px;
+  padding-top:90px;
+  background:
+    radial-gradient(circle at top, #1b1b1b 0%, #000 70%);
 }
 
-/* Category Sections */
 .category-section {
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-start;
-  align-items:center;
-  overflow:hidden;
-  padding-top: 90px;
+  padding-top:90px;
 }
 
-/* Photo rows */
+/* ---------------- ROWS ---------------- */
 .featured-row,
 .category-row {
   height:38vh;
-  max-height:38vh;
   display:flex;
-  width:max-content;
   gap:10px;
-}
-
-.featured-row:first-of-type,
-.category-row:first-of-type {
-  margin-top: 40px;
+  width:max-content;
+  margin-top:40px;
 }
 
 .featured-row img,
@@ -118,19 +122,20 @@ section h2::after {
   width:auto;
   object-fit:cover;
   border-radius:6px;
+  cursor:zoom-in;
 }
 
+/* Featured animation */
 @keyframes scroll-right {
-  0% { transform: translateX(-50%); }
-  100% { transform: translateX(0); }
+  from { transform:translateX(-50%); }
+  to   { transform:translateX(0); }
 }
 
 /* ---------------- LIGHTBOX ---------------- */
 #lightboxOverlay {
-  position: fixed;
-  top:0; left:0;
-  width:100vw; height:100vh;
-  background: rgba(0,0,0,0.92);
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.92);
   display:none;
   align-items:center;
   justify-content:center;
@@ -141,35 +146,31 @@ section h2::after {
   max-width:90vw;
   max-height:90vh;
   border-radius:4px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+}
+
+.lightbox-arrow,
+#lightbox-close {
+  position:fixed;
+  color:white;
+  background:transparent;
+  border:none;
+  cursor:pointer;
+  user-select:none;
 }
 
 .lightbox-arrow {
-  position:fixed;
   top:50%;
-  transform:translateY(-50%);
   font-size:48px;
-  color:white;
-  cursor:pointer;
-  user-select:none;
-  z-index:10000;
-  background:transparent;
-  border:none;
+  transform:translateY(-50%);
 }
 
 #lightbox-prev { left:30px; }
 #lightbox-next { right:30px; }
 
 #lightbox-close {
-  position:fixed;
   top:20px;
   right:30px;
   font-size:42px;
-  cursor:pointer;
-  z-index:10001;
-  color:white;
-  background:transparent;
-  border:none;
 }
 </style>
 </head>
@@ -177,15 +178,15 @@ section h2::after {
 <body>
 
 <!-- HERO -->
-<section id="hero">
-  <div class="arrow arrow-down">↓<span>Photos</span></div>
+<section id="hero" class="visible">
+  <div class="arrow">↓<span>Photos</span></div>
 </section>
 
-<!-- Photo sections injected here -->
+<!-- SECTIONS -->
 <div id="photoSections"></div>
 
 <!-- LIGHTBOX -->
-<div id="lightboxOverlay" aria-hidden="true" role="dialog">
+<div id="lightboxOverlay" aria-hidden="true">
   <button id="lightbox-close">×</button>
   <button id="lightbox-prev" class="lightbox-arrow">❮</button>
   <img id="lightbox-img" src="" alt="">
@@ -193,11 +194,12 @@ section h2::after {
 </div>
 
 <script>
-/* Scroll down from hero */
-document.querySelector('.arrow-down').onclick = () =>
+/* ---------------- HERO SCROLL ---------------- */
+document.querySelector('.arrow').onclick = () =>
   document.querySelector('#photoSections section')
     ?.scrollIntoView({ behavior:'smooth' });
 
+/* ---------------- CONTENTFUL ---------------- */
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
 const ENVIRONMENT = 'master';
@@ -216,21 +218,19 @@ async function fetchPhotos(){
     assets[a.sys.id] = a.fields.file.url
   );
 
-  const photosData = data.items.map(item => {
-    const f = item.fields;
-    return {
-      title: f.title,
-      photo: f.photo ? `https:${assets[f.photo.sys.id]}` : "",
-      thumbnail: f.thumbnail ? `https:${assets[f.thumbnail.sys.id]}` : "",
-      category: f.category || "",
-      featured: f.featured || false
-    };
-  });
+  const photos = data.items.map(item => ({
+    title: item.fields.title,
+    photo: item.fields.photo ? `https:${assets[item.fields.photo.sys.id]}` : "",
+    thumbnail: item.fields.thumbnail ? `https:${assets[item.fields.thumbnail.sys.id]}` : "",
+    category: item.fields.category || "",
+    featured: item.fields.featured || false
+  }));
 
-  displayPhotos(photosData);
+  displayPhotos(photos);
 }
 
-function displayPhotos(photosData){
+/* ---------------- DISPLAY ---------------- */
+function displayPhotos(photos){
   const container = document.getElementById("photoSections");
 
   const categories = [
@@ -244,10 +244,10 @@ function displayPhotos(photosData){
 
   categories.forEach(cat => {
     const items = cat === "Featured"
-      ? photosData.filter(p => p.featured)
-      : photosData.filter(p => p.category === cat);
+      ? photos.filter(p => p.featured)
+      : photos.filter(p => p.category === cat);
 
-    if (!items.length) return;
+    if(!items.length) return;
 
     const section = document.createElement("section");
     section.className = cat === "Featured"
@@ -259,9 +259,7 @@ function displayPhotos(photosData){
     const mid = Math.ceil(items.length / 2);
     [items.slice(0, mid), items.slice(mid)].forEach(rowItems => {
       const row = document.createElement("div");
-      row.className = cat === "Featured"
-        ? "featured-row"
-        : "category-row";
+      row.className = cat === "Featured" ? "featured-row" : "category-row";
 
       const loop = cat === "Featured"
         ? [...rowItems, ...rowItems]
@@ -270,11 +268,12 @@ function displayPhotos(photosData){
       loop.forEach(p => {
         const img = document.createElement("img");
         img.src = p.thumbnail || p.photo;
+        img.dataset.full = p.photo;
         img.alt = p.title;
         row.appendChild(img);
       });
 
-      if (cat === "Featured") {
+      if(cat === "Featured"){
         row.style.animation =
           `scroll-right ${30 + rowItems.length * 5}s linear infinite`;
       }
@@ -285,51 +284,75 @@ function displayPhotos(photosData){
     container.appendChild(section);
   });
 
-  /* 🔧 FIX 2: enable snap AFTER content exists */
+  /* Enable snapping after load */
   requestAnimationFrame(() => {
     document.documentElement.style.scrollSnapType = "y mandatory";
     document.body.style.scrollSnapType = "y mandatory";
-    window.dispatchEvent(new Event("resize"));
   });
 
-  initArrowKeys();
-  setTimeout(enableLightbox, 300);
+  initFadeIn();
+  enableLightbox();
 }
 
-/* Arrow key navigation */
-function initArrowKeys() {
-  const sections = Array.from(document.querySelectorAll('section'));
-  let currentIndex = 0;
-
-  window.addEventListener('scroll', () => {
-    sections.forEach((sec, i) => {
-      const rect = sec.getBoundingClientRect();
-      if (rect.top >= 0 && rect.top < window.innerHeight / 2) {
-        currentIndex = i;
+/* ---------------- FADE-IN ---------------- */
+function initFadeIn(){
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add("visible");
       }
     });
-  });
+  }, { threshold:0.3 });
 
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowDown' && currentIndex < sections.length - 1) {
-      e.preventDefault();
-      sections[++currentIndex]
-        .scrollIntoView({ behavior:'smooth' });
-    }
-    if (e.key === 'ArrowUp' && currentIndex > 0) {
-      e.preventDefault();
-      sections[--currentIndex]
-        .scrollIntoView({ behavior:'smooth' });
-    }
-  });
+  document.querySelectorAll("section").forEach(s => observer.observe(s));
 }
 
-/* LIGHTBOX (unchanged) */
+/* ---------------- LIGHTBOX ---------------- */
 let lbImages = [];
 let lbIndex = 0;
 
-/* ... rest of your lightbox code unchanged ... */
+function enableLightbox(){
+  const imgs = [...document.querySelectorAll('.featured-row img, .category-row img')];
+  lbImages = imgs.map(i => i.dataset.full);
 
+  imgs.forEach((img, i) => {
+    img.onclick = () => {
+      lbIndex = i;
+      openLightbox();
+    };
+  });
+}
+
+function openLightbox(){
+  document.body.style.overflow = "hidden";
+  document.getElementById("lightbox-img").src = lbImages[lbIndex];
+  document.getElementById("lightboxOverlay").style.display = "flex";
+}
+
+function closeLightbox(){
+  document.body.style.overflow = "";
+  document.getElementById("lightboxOverlay").style.display = "none";
+}
+
+function nextImage(){
+  lbIndex = (lbIndex + 1) % lbImages.length;
+  document.getElementById("lightbox-img").src = lbImages[lbIndex];
+}
+
+function prevImage(){
+  lbIndex = (lbIndex - 1 + lbImages.length) % lbImages.length;
+  document.getElementById("lightbox-img").src = lbImages[lbIndex];
+}
+
+document.getElementById("lightbox-close").onclick = closeLightbox;
+document.getElementById("lightbox-next").onclick = nextImage;
+document.getElementById("lightbox-prev").onclick = prevImage;
+
+window.addEventListener("keydown", e => {
+  if(e.key === "Escape") closeLightbox();
+});
+
+/* ---------------- INIT ---------------- */
 fetchPhotos();
 </script>
 

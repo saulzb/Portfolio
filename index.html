@@ -62,9 +62,9 @@ section.visible { opacity:1; }
 
 /* ---------------- FOLDER GRID ---------------- */
 .folder-section {
-  justify-content:center; /* vertical centering */
+  justify-content:center;
   align-items:center;
-  height:100vh; /* full viewport height for snapping */
+  height:100vh;
 }
 .folder-grid {
   display:grid;
@@ -73,7 +73,7 @@ section.visible { opacity:1; }
   max-width:900px;
   width:100%;
   padding:0 60px;
-  justify-items:center; /* center folders horizontally */
+  justify-items:center;
 }
 .folder {
   display:flex;
@@ -107,6 +107,38 @@ section.visible { opacity:1; }
   opacity:0.9;
   text-align:center;
 }
+
+/* ---------------- LOADING SCREEN ---------------- */
+#loadingScreen {
+  position:fixed;
+  inset:0;
+  background:#008080;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:10000;
+  font-family:'Courier New', monospace;
+  color:white;
+  flex-direction:column;
+}
+#loadingScreen p {
+  font-size:1.5rem;
+  margin-bottom:20px;
+}
+.progress-bar {
+  width:250px;
+  height:20px;
+  border:2px solid white;
+  background:#004040;
+  position:relative;
+}
+.progress-fill {
+  height:100%;
+  width:0;
+  background:white;
+  animation: fillProgress 1.5s linear forwards;
+}
+@keyframes fillProgress { to { width:100%; } }
 </style>
 </head>
 <body>
@@ -120,6 +152,12 @@ section.visible { opacity:1; }
 <section class="folder-section">
   <div class="folder-grid" id="folderGrid"></div>
 </section>
+
+<!-- LOADING SCREEN -->
+<div id="loadingScreen">
+  <p>Loading…</p>
+  <div class="progress-bar"><div class="progress-fill"></div></div>
+</div>
 
 <script>
 const categories = [
@@ -138,7 +176,16 @@ categories.forEach(cat => {
   folder.innerHTML = `<div class="folder-icon"></div><span>${cat}</span>`;
   folder.onclick = () => {
     const pageName = cat.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g,'') + ".html";
-    window.location.href = pageName;
+
+    const loading = document.getElementById('loadingScreen');
+    const fill = document.querySelector('.progress-fill');
+
+    loading.style.display = 'flex';
+    fill.style.animation = 'none';
+    void fill.offsetWidth; // trigger reflow
+    fill.style.animation = 'fillProgress 1.5s linear forwards';
+
+    setTimeout(() => { window.location.replace(pageName); }, 1500);
   };
   folderGrid.appendChild(folder);
 });

@@ -8,61 +8,115 @@
 <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
 
 <style>
+/* ---------------- GLOBAL ---------------- */
 html, body {
-  margin:0; padding:0;
-  width:100%; height:100%;
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
   font-family:'Archivo Expanded', sans-serif;
-  background:#111; color:#eee;
-  overflow-x:hidden;
+  background:#111;
+  color:#eee;
   scroll-behavior:smooth;
+  overflow-x:hidden;
+  scroll-snap-type: y mandatory;
 }
 
+body::-webkit-scrollbar { width:0; height:0; }
+body { scrollbar-width:none; }
+
+section {
+  width:100%;
+  height:100vh;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  scroll-snap-align:start;
+  overflow:hidden;
+  opacity:0;
+  transition: opacity 0.9s ease;
+}
+section.visible { opacity:1; }
+
+/* ---------------- HERO ---------------- */
 #hero {
-  height:100vh; display:flex; align-items:center; justify-content:center;
   background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
+  justify-content:center;
+  align-items:center;
   position:relative;
 }
 
 .arrow-down {
-  position:absolute; bottom:40px; left:50%;
+  position:absolute;
+  bottom:40px;
+  left:50%;
   transform:translateX(-50%);
-  display:flex; flex-direction:column; align-items:center;
-  cursor:pointer; user-select:none;
-  font-size:1.2rem; color:white;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  cursor:pointer;
+  user-select:none;
+  font-size:1.2rem;
+  color:white;
 }
 .arrow-down span { font-size:0.7rem; margin-top:5px; }
 
+/* ---------------- FOLDER GRID ---------------- */
 .folder-section {
-  display:flex; justify-content:center; align-items:center;
-  height:100vh;
+  justify-content:center;
+  align-items:center;
 }
 .folder-grid {
-  display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-  gap:50px; max-width:900px; width:100%; padding:0 60px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:50px;
+  max-width:900px;
+  width:100%;
+  padding:0 60px;
 }
 .folder {
-  display:flex; flex-direction:column; align-items:center; cursor:pointer; user-select:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  cursor:pointer;
+  user-select:none;
 }
 .folder-icon {
-  width:88px; height:64px; background:linear-gradient(#f5d58a,#d9a441);
-  border-radius:6px 6px 4px 4px; position:relative;
+  width:88px;
+  height:64px;
+  background:linear-gradient(#f5d58a,#d9a441);
+  border-radius:6px 6px 4px 4px;
+  position:relative;
   box-shadow:0 6px 20px rgba(0,0,0,0.35);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 .folder-icon::before {
-  content:""; position:absolute; top:-10px; left:10px;
-  width:36px; height:14px; background:#f5d58a; border-radius:4px 4px 0 0;
+  content:"";
+  position:absolute;
+  top:-10px;
+  left:10px;
+  width:36px;
+  height:14px;
+  background:#f5d58a;
+  border-radius:4px 4px 0 0;
 }
 .folder:hover .folder-icon {
-  transform:translateY(-6px); box-shadow:0 12px 30px rgba(0,0,0,0.45);
+  transform:translateY(-6px);
+  box-shadow:0 12px 30px rgba(0,0,0,0.45);
 }
-.folder span { margin-top:12px; font-size:0.7rem; letter-spacing:0.5px; opacity:0.9; text-align:center; }
+.folder span {
+  margin-top:12px;
+  font-size:0.7rem;
+  letter-spacing:0.5px;
+  opacity:0.9;
+  text-align:center;
+}
 </style>
 </head>
 <body>
 
 <!-- HERO -->
-<section id="hero">
+<section id="hero" class="visible">
   <div class="arrow-down">↓<span>Photos</span></div>
 </section>
 
@@ -87,16 +141,47 @@ categories.forEach(cat => {
   folder.className = "folder";
   folder.innerHTML = `<div class="folder-icon"></div><span>${cat}</span>`;
   folder.onclick = () => {
-    // Navigate to category page
     const pageName = cat.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g,'') + ".html";
     window.location.href = pageName;
   };
   folderGrid.appendChild(folder);
 });
 
+// Arrow down scroll to folder section
 document.querySelector('.arrow-down').onclick = () => {
   document.querySelector('.folder-section').scrollIntoView({behavior:'smooth'});
 };
+
+// Fade in sections
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting) entry.target.classList.add("visible");
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll("section").forEach(s => observer.observe(s));
+
+// Arrow key navigation between hero and folder section
+let currentIndex = 0;
+const allSections = Array.from(document.querySelectorAll("section"));
+
+window.addEventListener("keydown", e => {
+  if(e.key === "ArrowDown" && currentIndex < allSections.length - 1) {
+    currentIndex++;
+    allSections[currentIndex].scrollIntoView({behavior:"smooth"});
+  }
+  if(e.key === "ArrowUp" && currentIndex > 0) {
+    currentIndex--;
+    allSections[currentIndex].scrollIntoView({behavior:"smooth"});
+  }
+});
+
+window.addEventListener("scroll", () => {
+  allSections.forEach((sec,i)=>{
+    const rect = sec.getBoundingClientRect();
+    if(rect.top >= 0 && rect.top < window.innerHeight/2) currentIndex = i;
+  });
+});
 </script>
 
 </body>

@@ -40,15 +40,13 @@ body { scrollbar-width:none; }
 
 /* Folders Section */
 #folders {
-  height:100vh;
   padding-top:120px;
   scroll-snap-align:start;
   display:flex;
   flex-wrap:wrap;
-  justify-content:flex-start;
+  justify-content:center; /* center aligned */
   gap:50px;
-  margin-left:40px;
-  overflow-y:auto; /* allow scrolling if many folders */
+  overflow:visible;
 }
 .folder {
   display:flex;
@@ -63,24 +61,7 @@ body { scrollbar-width:none; }
   object-fit:cover;
   border-radius:6px;
   box-shadow:0 8px 20px rgba(0,0,0,0.45);
-  background: linear-gradient(145deg,#333,#222);
-  position:relative;
-  overflow:hidden;
-}
-.folder img::after {
-  content:"";
-  position:absolute;
-  top:0; left:0;
-  width:100%; height:100%;
-  border-radius:6px;
-  pointer-events:none;
-  background: linear-gradient(120deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 60%);
-  transform: translateX(-100%);
-  animation: gloss 3s infinite linear;
-}
-@keyframes gloss {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  background:#333;
 }
 .folder span {
   margin-top:6px;
@@ -131,27 +112,27 @@ body { scrollbar-width:none; }
 <!-- Folders Section -->
 <section id="folders">
   <a class="folder folder-link" href="channelORANGE.html">
-    <img src="channelORANGE.png" alt="channelORANGE">
+    <img src="folder-icon.png" alt="channelORANGE">
     <span>channelORANGE</span>
   </a>
   <a class="folder folder-link" href="Dream-State.html">
-    <img src="Dream-State.png" alt="Dream State">
+    <img src="folder-icon.png" alt="Dream State">
     <span>Dream State</span>
   </a>
   <a class="folder folder-link" href="Raw-PNW.html">
-    <img src="Raw-PNW.png" alt="Raw PNW">
+    <img src="folder-icon.png" alt="Raw PNW">
     <span>Raw PNW</span>
   </a>
   <a class="folder folder-link" href="Neon-Lights.html">
-    <img src="Neon-Lights.png" alt="Neon Lights">
+    <img src="folder-icon.png" alt="Neon Lights">
     <span>Neon Lights</span>
   </a>
   <a class="folder folder-link" href="TI.html">
-    <img src="TI.png" alt="TI">
+    <img src="folder-icon.png" alt="TI">
     <span>TI</span>
   </a>
   <a class="folder folder-link" href="Quiet-Nights.html">
-    <img src="Quiet-Nights.png" alt="Quiet Nights">
+    <img src="folder-icon.png" alt="Quiet Nights">
     <span>Quiet Nights</span>
   </a>
 </section>
@@ -176,7 +157,7 @@ document.querySelectorAll('.folder-link').forEach(link=>{
     document.getElementById('loadingScreen').style.display='flex';
     const fill = document.querySelector('.progress-fill');
     fill.style.animation='none';
-    void fill.offsetWidth;
+    void fill.offsetWidth; // trigger reflow
     fill.style.animation='fillProgress 1.5s linear forwards';
 
     setTimeout(()=>{ window.location.href = url; }, 1500);

@@ -5,11 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Saul Zidulka-Bejcek</title>
 
-<!-- Google Font: Michroma -->
 <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
 
 <style>
-/* Global page behavior */
+/* ---------------- GLOBAL ---------------- */
 html, body {
   margin:0;
   padding:0;
@@ -18,12 +17,16 @@ html, body {
   font-family:'Archivo Expanded', sans-serif;
   background:#111;
   color:#eee;
-  scroll-behavior: smooth;
-  overflow-x: hidden;
-  scroll-snap-type: none;
+  scroll-behavior:smooth;
+  overflow-x:hidden;
+  scroll-snap-type:none;
 }
 
-/* Every snap section */
+/* Hide scrollbars */
+body::-webkit-scrollbar { width:0; height:0; }
+body { scrollbar-width:none; }
+
+/* ---------------- SECTIONS ---------------- */
 section {
   width:100%;
   height:100vh;
@@ -31,11 +34,14 @@ section {
   position:relative;
   display:flex;
   flex-direction:column;
-  scroll-snap-align: start;
+  scroll-snap-align:start;
   overflow:hidden;
+  opacity:0;
+  transition:opacity 0.9s ease;
 }
+section.visible { opacity:1; }
 
-/* HERO */
+/* ---------------- HERO ---------------- */
 #hero {
   background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
 }
@@ -48,22 +54,20 @@ section {
   align-items:center;
   cursor:pointer;
   user-select:none;
-  z-index:10;
   position:absolute;
-  background: transparent;
+  z-index:10;
 }
 .arrow span { font-size:0.7rem; margin-top:5px; }
 .arrow-down { bottom:40px; left:50%; transform:translateX(-50%); }
 
-/* Headings */
+/* ---------------- HEADINGS ---------------- */
 section h2 {
-  margin: 0;
+  margin:0;
   width:100%;
   text-align:center;
   color:white;
   font-family:'Michroma', sans-serif;
   font-size:1rem;
-  letter-spacing:0.5px;
 }
 section h2::before,
 section h2::after {
@@ -76,70 +80,106 @@ section h2::after {
   margin:0 8px;
 }
 
-/* Featured sections */
-.featured-section {
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-start;
-  overflow:hidden;
-  padding-top: 90px;
-  background: radial-gradient(circle at top, #1a1a1a 0%, #000 70%);
-}
-
-/* Category Sections */
-.category-section {
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-start;
+/* ---------------- FOLDER NAV ---------------- */
+.folder-section {
+  justify-content:center;
   align-items:center;
-  overflow:hidden;
-  padding-top: 90px;
 }
 
-/* Photo rows */
+.folder-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(140px,1fr));
+  gap:50px;
+  max-width:900px;
+  width:100%;
+  padding:0 60px;
+}
+
+.folder {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  cursor:pointer;
+  user-select:none;
+}
+
+.folder-icon {
+  width:88px;
+  height:64px;
+  background:linear-gradient(#f5d58a,#d9a441);
+  border-radius:6px 6px 4px 4px;
+  position:relative;
+  box-shadow:0 6px 20px rgba(0,0,0,0.35);
+  transition:transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.folder-icon::before {
+  content:"";
+  position:absolute;
+  top:-10px;
+  left:10px;
+  width:36px;
+  height:14px;
+  background:#f5d58a;
+  border-radius:4px 4px 0 0;
+}
+
+.folder:hover .folder-icon {
+  transform:translateY(-6px);
+  box-shadow:0 12px 30px rgba(0,0,0,0.45);
+}
+
+.folder span {
+  margin-top:12px;
+  font-size:0.7rem;
+  letter-spacing:0.5px;
+  text-align:center;
+  opacity:0.9;
+}
+
+/* ---------------- PHOTO SECTIONS ---------------- */
+.featured-section {
+  padding-top:90px;
+  background:radial-gradient(circle at top,#1a1a1a 0%,#000 70%);
+}
+
+.category-section {
+  padding-top:90px;
+  align-items:center;
+}
+
 .featured-row,
 .category-row {
   height:38vh;
-  max-height:38vh;
   display:flex;
-  width:max-content;
   gap:10px;
+  width:max-content;
 }
 
 .featured-row:first-of-type,
 .category-row:first-of-type {
-  margin-top: 40px;
+  margin-top:40px;
 }
 
 .featured-row img,
 .category-row img {
   height:100%;
   width:auto;
-  object-fit:cover;
   border-radius:6px;
-  cursor: zoom-in;
+  cursor:zoom-in;
 }
 
+/* Featured animation */
 @keyframes scroll-right {
-  0% { transform: translateX(-50%); }
-  100% { transform: translateX(0); }
+  from { transform:translateX(-50%); }
+  to { transform:translateX(0); }
 }
 
-/* -------- FADE IN (OPACITY ONLY — SNAP SAFE) -------- */
-section {
-  opacity:0;
-  transition: opacity 0.9s ease;
-}
-section.visible {
-  opacity:1;
-}
-
-/* -------- LIGHTBOX -------- */
+/* ---------------- LIGHTBOX ---------------- */
 #lightboxOverlay {
-  position: fixed;
-  top:0; left:0;
-  width:100vw; height:100vh;
-  background: rgba(0,0,0,0.92);
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.92);
   display:none;
   align-items:center;
   justify-content:center;
@@ -150,7 +190,6 @@ section.visible {
   max-width:90vw;
   max-height:90vh;
   border-radius:4px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
 }
 
 .lightbox-arrow {
@@ -158,12 +197,10 @@ section.visible {
   top:50%;
   transform:translateY(-50%);
   font-size:48px;
+  background:none;
+  border:none;
   color:white;
   cursor:pointer;
-  user-select:none;
-  z-index:10000;
-  background:transparent;
-  border:none;
 }
 
 #lightbox-prev { left:30px; }
@@ -174,31 +211,29 @@ section.visible {
   top:20px;
   right:30px;
   font-size:42px;
-  cursor:pointer;
-  z-index:10001;
-  color:white;
-  background:transparent;
+  background:none;
   border:none;
+  color:white;
+  cursor:pointer;
 }
-
-/* Hide scrollbars */
-body::-webkit-scrollbar { width:0; height:0; }
-body { scrollbar-width:none; }
 </style>
 </head>
 
 <body>
 
+<!-- HERO -->
 <section id="hero" class="visible">
   <div class="arrow arrow-down">↓<span>Photos</span></div>
 </section>
 
+<!-- CONTENT -->
 <div id="photoSections"></div>
 
-<div id="lightboxOverlay" aria-hidden="true" role="dialog">
+<!-- LIGHTBOX -->
+<div id="lightboxOverlay">
   <button id="lightbox-close">×</button>
   <button id="lightbox-prev" class="lightbox-arrow">❮</button>
-  <img id="lightbox-img" src="" alt="">
+  <img id="lightbox-img" src="">
   <button id="lightbox-next" class="lightbox-arrow">❯</button>
 </div>
 
@@ -209,15 +244,11 @@ document.querySelector('.arrow-down').onclick = () =>
 
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
-const ENVIRONMENT = 'master';
 
 async function fetchPhotos(){
-  const url =
-    `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/${ENVIRONMENT}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&order=sys.createdAt&include=1`;
-
-  const res = await fetch(url);
-  if(!res.ok) return;
-
+  const res = await fetch(
+    `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
+  );
   const data = await res.json();
 
   const assets = {};
@@ -225,69 +256,71 @@ async function fetchPhotos(){
     assets[a.sys.id] = a.fields.file.url
   );
 
-  const photosData = data.items.map(item => {
-    const f = item.fields;
-    return {
-      title: f.title,
-      photo: f.photo ? `https:${assets[f.photo.sys.id]}` : "",
-      thumbnail: f.thumbnail ? `https:${assets[f.thumbnail.sys.id]}` : "",
-      category: f.category || "",
-      featured: f.featured || false
-    };
-  });
+  const photos = data.items.map(i => ({
+    title:i.fields.title,
+    photo:`https:${assets[i.fields.photo.sys.id]}`,
+    thumbnail:i.fields.thumbnail ? `https:${assets[i.fields.thumbnail.sys.id]}` : "",
+    category:i.fields.category,
+    featured:i.fields.featured
+  }));
 
-  displayPhotos(photosData);
+  displayPhotos(photos);
 }
 
-function displayPhotos(photosData){
+function displayPhotos(photos){
   const container = document.getElementById("photoSections");
 
+  /* Folder section */
+  const folderSection = document.createElement("section");
+  folderSection.className = "folder-section";
+
+  const folderGrid = document.createElement("div");
+  folderGrid.className = "folder-grid";
+
   const categories = [
-    "Featured",
-    "Light",
-    "Travel",
-    "Wildlife",
-    "Double Exposures",
-    "Water",
+    "channelORANGE",
+    "Dream State",
+    "Raw PNW",
+    "Neon Lights",
+    "TI",
+    "Quiet Night"
   ];
 
   categories.forEach(cat => {
-    const items = cat === "Featured"
-      ? photosData.filter(p => p.featured)
-      : photosData.filter(p => p.category === cat);
+    const folder = document.createElement("div");
+    folder.className = "folder";
+    folder.innerHTML = `<div class="folder-icon"></div><span>${cat}</span>`;
+    folder.onclick = () => {
+      [...document.querySelectorAll("section")]
+        .find(s => s.querySelector("h2")?.textContent === cat)
+        ?.scrollIntoView({ behavior:'smooth' });
+    };
+    folderGrid.appendChild(folder);
+  });
 
-    if (!items.length) return;
+  folderSection.appendChild(folderGrid);
+  container.appendChild(folderSection);
+
+  /* Photo sections */
+  categories.forEach(cat => {
+    const items = photos.filter(p => p.category === cat);
+    if(!items.length) return;
 
     const section = document.createElement("section");
-    section.className = cat === "Featured"
-      ? "featured-section"
-      : "category-section";
-
+    section.className = "category-section";
     section.innerHTML = `<h2>${cat}</h2>`;
 
-    const mid = Math.ceil(items.length / 2);
-    [items.slice(0, mid), items.slice(mid)].forEach(rowItems => {
+    const mid = Math.ceil(items.length/2);
+    [items.slice(0,mid), items.slice(mid)].forEach(rowItems => {
       const row = document.createElement("div");
-      row.className = cat === "Featured"
-        ? "featured-row"
-        : "category-row";
+      row.className = "category-row";
 
-      const loop = cat === "Featured"
-        ? [...rowItems, ...rowItems]
-        : rowItems;
-
-      loop.forEach(p => {
+      rowItems.forEach(p => {
         const img = document.createElement("img");
         img.src = p.thumbnail || p.photo;
-        img.alt = p.title;
         img.dataset.full = p.photo;
         row.appendChild(img);
       });
-
-      if (cat === "Featured") {
-        row.style.animation =
-          `scroll-right ${30 + rowItems.length * 5}s linear infinite`;
-      }
 
       section.appendChild(row);
     });
@@ -298,116 +331,63 @@ function displayPhotos(photosData){
   requestAnimationFrame(() => {
     document.documentElement.style.scrollSnapType = "y mandatory";
     document.body.style.scrollSnapType = "y mandatory";
-    window.dispatchEvent(new Event("resize"));
   });
 
-  initArrowKeys();
-  initFadeIn();
-  setTimeout(enableLightbox, 300);
+  initFade();
+  enableLightbox();
 }
 
-/* Section fade-in */
-function initFadeIn() {
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
+function initFade(){
+  const obs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting) e.target.classList.add("visible");
     });
-  }, { threshold: 0.3 });
+  },{threshold:0.3});
 
-  document.querySelectorAll('section').forEach(sec =>
-    observer.observe(sec)
-  );
-}
-
-/* Arrow key section navigation */
-function initArrowKeys() {
-  const sections = Array.from(document.querySelectorAll('section'));
-  let currentIndex = 0;
-
-  window.addEventListener('scroll', () => {
-    sections.forEach((sec, i) => {
-      const rect = sec.getBoundingClientRect();
-      if (rect.top >= 0 && rect.top < window.innerHeight / 2) {
-        currentIndex = i;
-      }
-    });
-  });
-
-  window.addEventListener('keydown', (e) => {
-    if (document.getElementById('lightboxOverlay').style.display === 'flex') return;
-
-    if (e.key === 'ArrowDown' && currentIndex < sections.length - 1) {
-      e.preventDefault();
-      sections[++currentIndex].scrollIntoView({ behavior:'smooth' });
-    }
-    if (e.key === 'ArrowUp' && currentIndex > 0) {
-      e.preventDefault();
-      sections[--currentIndex].scrollIntoView({ behavior:'smooth' });
-    }
-  });
+  document.querySelectorAll("section").forEach(s=>obs.observe(s));
 }
 
 /* LIGHTBOX */
-let lbImages = [];
-let lbIndex = 0;
-let lightboxOpen = false;
+let lbImages=[], lbIndex=0;
 
-function enableLightbox() {
-  const imgs = Array.from(
-    document.querySelectorAll('.featured-row img, .category-row img')
-  );
-
-  imgs.forEach(img => {
-    img.addEventListener('click', () => {
-      const rowImgs = Array.from(img.parentElement.querySelectorAll('img'));
-      lbImages = rowImgs.map(i => i.dataset.full);
-      lbIndex = rowImgs.indexOf(img);
-      openLightbox();
-    });
+function enableLightbox(){
+  document.querySelectorAll(".category-row img").forEach(img=>{
+    img.onclick=()=>{
+      const rowImgs=[...img.parentElement.querySelectorAll("img")];
+      lbImages=rowImgs.map(i=>i.dataset.full);
+      lbIndex=rowImgs.indexOf(img);
+      openLB();
+    };
   });
 }
 
-function openLightbox() {
-  lightboxOpen = true;
-  document.body.style.overflow = 'hidden';
-  document.getElementById('lightbox-img').src = lbImages[lbIndex];
-  document.getElementById('lightboxOverlay').style.display = 'flex';
+function openLB(){
+  document.body.style.overflow="hidden";
+  document.getElementById("lightbox-img").src=lbImages[lbIndex];
+  document.getElementById("lightboxOverlay").style.display="flex";
+}
+function closeLB(){
+  document.body.style.overflow="";
+  document.getElementById("lightboxOverlay").style.display="none";
+}
+function nextLB(){
+  lbIndex=(lbIndex+1)%lbImages.length;
+  document.getElementById("lightbox-img").src=lbImages[lbIndex];
+}
+function prevLB(){
+  lbIndex=(lbIndex-1+lbImages.length)%lbImages.length;
+  document.getElementById("lightbox-img").src=lbImages[lbIndex];
 }
 
-function closeLightbox() {
-  lightboxOpen = false;
-  document.body.style.overflow = '';
-  document.getElementById('lightboxOverlay').style.display = 'none';
-}
+document.getElementById("lightbox-close").onclick=closeLB;
+document.getElementById("lightbox-next").onclick=nextLB;
+document.getElementById("lightbox-prev").onclick=prevLB;
 
-function nextImage() {
-  lbIndex = (lbIndex + 1) % lbImages.length;
-  document.getElementById('lightbox-img').src = lbImages[lbIndex];
-}
-
-function prevImage() {
-  lbIndex = (lbIndex - 1 + lbImages.length) % lbImages.length;
-  document.getElementById('lightbox-img').src = lbImages[lbIndex];
-}
-
-document.getElementById('lightbox-close').onclick = closeLightbox;
-document.getElementById('lightbox-next').onclick = nextImage;
-document.getElementById('lightbox-prev').onclick = prevImage;
-
-window.addEventListener('keydown', e => {
-  if (!lightboxOpen) return;
-
-  if (e.key === 'ArrowRight') {
-    e.preventDefault();
-    nextImage();
-  }
-  if (e.key === 'ArrowLeft') {
-    e.preventDefault();
-    prevImage();
-  }
-  if (e.key === 'Escape') closeLightbox();
+window.addEventListener("keydown",e=>{
+  if(document.getElementById("lightboxOverlay").style.display!=="flex")return;
+  if(e.key==="ArrowRight")nextLB();
+  if(e.key==="ArrowLeft")prevLB();
+  if(e.key==="Escape")closeLB();
 });
 
 fetchPhotos();

@@ -21,8 +21,8 @@ body { scrollbar-width:none; }
   height:100vh;
   background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
   position:relative;
+  scroll-snap-align:start;
 }
-
 .arrow {
   color:#fff;
   font-size:1.2rem;
@@ -40,12 +40,15 @@ body { scrollbar-width:none; }
 
 /* Folders Section */
 #folders {
+  height:100vh;
   padding-top:120px;
+  scroll-snap-align:start;
   display:flex;
   flex-wrap:wrap;
   justify-content:flex-start;
   gap:50px;
   margin-left:40px;
+  overflow-y:auto; /* allow scrolling if many folders */
 }
 .folder {
   display:flex;
@@ -56,8 +59,7 @@ body { scrollbar-width:none; }
   color:white;
 }
 .folder img {
-  width:120px;
-  height:120px;
+  width:120px; height:120px;
   object-fit:cover;
   border-radius:6px;
   box-shadow:0 8px 20px rgba(0,0,0,0.45);
@@ -85,19 +87,6 @@ body { scrollbar-width:none; }
   font-family:-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", sans-serif;
   font-size:0.8rem;
 }
-
-/* Lightbox (for hero or folders if needed) */
-#lightboxOverlay {
-  position:fixed; inset:0;
-  background:rgba(0,0,0,0.92);
-  display:none; align-items:center; justify-content:center;
-  z-index:9999;
-}
-#lightboxOverlay img { max-width:90vw; max-height:90vh; border-radius:4px; }
-.lightbox-arrow { position:fixed; top:50%; transform:translateY(-50%);
-  font-size:48px; background:none; border:none; color:white; cursor:pointer; }
-#lightbox-prev { left:30px; } #lightbox-next { right:30px; }
-#lightbox-close { position:fixed; top:20px; right:30px; font-size:42px; background:none; border:none; color:white; cursor:pointer; }
 
 /* Loading Screen */
 #loadingScreen {
@@ -139,7 +128,7 @@ body { scrollbar-width:none; }
   <div class="arrow arrow-down">↓<span>Folders</span></div>
 </section>
 
-<!-- Folders -->
+<!-- Folders Section -->
 <section id="folders">
   <a class="folder folder-link" href="channelORANGE.html">
     <img src="channelORANGE.png" alt="channelORANGE">
@@ -176,8 +165,7 @@ body { scrollbar-width:none; }
 <script>
 /* Scroll down arrow from hero */
 document.querySelector('.arrow-down').onclick = () =>
-  document.querySelector('#folders')
-    .scrollIntoView({ behavior:'smooth' });
+  document.querySelector('#folders').scrollIntoView({ behavior:'smooth' });
 
 /* Folder click: show Windows-style loading */
 document.querySelectorAll('.folder-link').forEach(link=>{
@@ -186,10 +174,9 @@ document.querySelectorAll('.folder-link').forEach(link=>{
     const url = link.href;
 
     document.getElementById('loadingScreen').style.display='flex';
-    // reset animation
     const fill = document.querySelector('.progress-fill');
     fill.style.animation='none';
-    void fill.offsetWidth; // trigger reflow
+    void fill.offsetWidth;
     fill.style.animation='fillProgress 1.5s linear forwards';
 
     setTimeout(()=>{ window.location.href = url; }, 1500);

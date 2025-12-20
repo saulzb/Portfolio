@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saul Zidulka-Bejcek - Snapping Sections</title>
+<title>Saul Zidulka-Bejcek</title>
 
 <!-- Google Font: Michroma -->
 <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
@@ -20,8 +20,6 @@ html, body {
   color:#eee;
   scroll-behavior: smooth;
   overflow-x: hidden;
-
-  /* 🔧 FIX 1: disable snap until content loads */
   scroll-snap-type: none;
 }
 
@@ -57,7 +55,7 @@ section {
 .arrow span { font-size:0.7rem; margin-top:5px; }
 .arrow-down { bottom:40px; left:50%; transform:translateX(-50%); }
 
-/* Headings with lines — Michroma */
+/* Headings */
 section h2 {
   margin: 0;
   width:100%;
@@ -85,8 +83,6 @@ section h2::after {
   justify-content:flex-start;
   overflow:hidden;
   padding-top: 90px;
-
-  /* subtle distinction */
   background: radial-gradient(circle at top, #1a1a1a 0%, #000 70%);
 }
 
@@ -129,18 +125,16 @@ section h2::after {
   100% { transform: translateX(0); }
 }
 
-/* ---------------- FADE IN ---------------- */
+/* -------- FADE IN (OPACITY ONLY — SNAP SAFE) -------- */
 section {
   opacity:0;
-  transform: translateY(24px);
-  transition: opacity 0.9s ease, transform 0.9s ease;
+  transition: opacity 0.9s ease;
 }
 section.visible {
   opacity:1;
-  transform: translateY(0);
 }
 
-/* ---------------- LIGHTBOX ---------------- */
+/* -------- LIGHTBOX -------- */
 #lightboxOverlay {
   position: fixed;
   top:0; left:0;
@@ -188,27 +182,19 @@ section.visible {
 }
 
 /* Hide scrollbars */
-body::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-body {
-  scrollbar-width: none;
-}
+body::-webkit-scrollbar { width:0; height:0; }
+body { scrollbar-width:none; }
 </style>
 </head>
 
 <body>
 
-<!-- HERO -->
-<section id="hero">
+<section id="hero" class="visible">
   <div class="arrow arrow-down">↓<span>Photos</span></div>
 </section>
 
-<!-- Photo sections injected here -->
 <div id="photoSections"></div>
 
-<!-- LIGHTBOX -->
 <div id="lightboxOverlay" aria-hidden="true" role="dialog">
   <button id="lightbox-close">×</button>
   <button id="lightbox-prev" class="lightbox-arrow">❮</button>
@@ -217,7 +203,6 @@ body {
 </div>
 
 <script>
-/* Scroll down from hero */
 document.querySelector('.arrow-down').onclick = () =>
   document.querySelector('#photoSections section')
     ?.scrollIntoView({ behavior:'smooth' });
@@ -295,7 +280,7 @@ function displayPhotos(photosData){
         const img = document.createElement("img");
         img.src = p.thumbnail || p.photo;
         img.alt = p.title;
-        img.dataset.full = p.photo; /* full-res for lightbox */
+        img.dataset.full = p.photo;
         row.appendChild(img);
       });
 
@@ -310,7 +295,6 @@ function displayPhotos(photosData){
     container.appendChild(section);
   });
 
-  /* 🔧 FIX 2: enable snap AFTER content exists */
   requestAnimationFrame(() => {
     document.documentElement.style.scrollSnapType = "y mandatory";
     document.body.style.scrollSnapType = "y mandatory";
@@ -322,35 +306,7 @@ function displayPhotos(photosData){
   setTimeout(enableLightbox, 300);
 }
 
-/* Arrow key navigation */
-function initArrowKeys() {
-  const sections = Array.from(document.querySelectorAll('section'));
-  let currentIndex = 0;
-
-  window.addEventListener('scroll', () => {
-    sections.forEach((sec, i) => {
-      const rect = sec.getBoundingClientRect();
-      if (rect.top >= 0 && rect.top < window.innerHeight / 2) {
-        currentIndex = i;
-      }
-    });
-  });
-
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowDown' && currentIndex < sections.length - 1) {
-      e.preventDefault();
-      sections[++currentIndex]
-        .scrollIntoView({ behavior:'smooth' });
-    }
-    if (e.key === 'ArrowUp' && currentIndex > 0) {
-      e.preventDefault();
-      sections[--currentIndex]
-        .scrollIntoView({ behavior:'smooth' });
-    }
-  });
-}
-
-/* Fade-in observer */
+/* Section fade-in */
 function initFadeIn() {
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
@@ -365,32 +321,63 @@ function initFadeIn() {
   );
 }
 
+/* Arrow key section navigation */
+function initArrowKeys() {
+  const sections = Array.from(document.querySelectorAll('section'));
+  let currentIndex = 0;
+
+  window.addEventListener('scroll', () => {
+    sections.forEach((sec, i) => {
+      const rect = sec.getBoundingClientRect();
+      if (rect.top >= 0 && rect.top < window.innerHeight / 2) {
+        currentIndex = i;
+      }
+    });
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (document.getElementById('lightboxOverlay').style.display === 'flex') return;
+
+    if (e.key === 'ArrowDown' && currentIndex < sections.length - 1) {
+      e.preventDefault();
+      sections[++currentIndex].scrollIntoView({ behavior:'smooth' });
+    }
+    if (e.key === 'ArrowUp' && currentIndex > 0) {
+      e.preventDefault();
+      sections[--currentIndex].scrollIntoView({ behavior:'smooth' });
+    }
+  });
+}
+
 /* LIGHTBOX */
 let lbImages = [];
 let lbIndex = 0;
+let lightboxOpen = false;
 
 function enableLightbox() {
   const imgs = Array.from(
     document.querySelectorAll('.featured-row img, .category-row img')
   );
 
-  lbImages = imgs.map(img => img.dataset.full);
-
-  imgs.forEach((img, index) => {
+  imgs.forEach(img => {
     img.addEventListener('click', () => {
-      lbIndex = index;
+      const rowImgs = Array.from(img.parentElement.querySelectorAll('img'));
+      lbImages = rowImgs.map(i => i.dataset.full);
+      lbIndex = rowImgs.indexOf(img);
       openLightbox();
     });
   });
 }
 
 function openLightbox() {
+  lightboxOpen = true;
   document.body.style.overflow = 'hidden';
   document.getElementById('lightbox-img').src = lbImages[lbIndex];
   document.getElementById('lightboxOverlay').style.display = 'flex';
 }
 
 function closeLightbox() {
+  lightboxOpen = false;
   document.body.style.overflow = '';
   document.getElementById('lightboxOverlay').style.display = 'none';
 }
@@ -410,6 +397,16 @@ document.getElementById('lightbox-next').onclick = nextImage;
 document.getElementById('lightbox-prev').onclick = prevImage;
 
 window.addEventListener('keydown', e => {
+  if (!lightboxOpen) return;
+
+  if (e.key === 'ArrowRight') {
+    e.preventDefault();
+    nextImage();
+  }
+  if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    prevImage();
+  }
   if (e.key === 'Escape') closeLightbox();
 });
 

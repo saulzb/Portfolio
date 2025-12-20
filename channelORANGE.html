@@ -25,7 +25,7 @@ section {
 section.visible { opacity:1; }
 
 .category-section {
-  padding-top:120px; /* moved down from top */
+  padding-top:120px; /* space from top/title */
   align-items:center;
 }
 
@@ -42,23 +42,18 @@ section h2::before, section h2::after {
 
 /* Photo grid */
 .category-row {
-  display:flex; gap:40px; /* more spacing */
-  flex-wrap:wrap;
-  justify-content:center;
-  margin-bottom:40px;
+  display:flex; gap:40px; flex-wrap:wrap; justify-content:center; margin-bottom:40px;
 }
 .category-row img {
   height:180px; width:auto;
   border-radius:6px;
   cursor:zoom-in;
   box-shadow:0 6px 20px rgba(0,0,0,0.35);
-  background:#222;
-  padding:6px; /* make it look like a “file” */
   transition: transform 0.25s ease;
 }
 .category-row img:hover { transform:scale(1.05); }
 
-/* File numbers under each photo */
+/* Photo numbering */
 .photo-number {
   display:block;
   text-align:center;
@@ -80,9 +75,19 @@ section h2::before, section h2::after {
   font-size:48px; background:none; border:none; color:white; cursor:pointer; }
 #lightbox-prev { left:30px; } #lightbox-next { right:30px; }
 #lightbox-close { position:fixed; top:20px; right:30px; font-size:42px; background:none; border:none; color:white; cursor:pointer; }
+
+/* Back to folders arrow */
+.back-arrow {
+  position:absolute; top:20px; left:30px;
+  font-size:28px; cursor:pointer; color:white;
+  user-select:none; transform:rotate(270deg); /* sideways ^ */
+}
 </style>
 </head>
 <body>
+
+<!-- Back arrow -->
+<div class="back-arrow" onclick="window.location.href='index.html'">^</div>
 
 <div id="photoSections"></div>
 
@@ -128,13 +133,14 @@ function displayPhotos(photos){
   const row = document.createElement("div");
   row.className = "category-row";
 
-  photos.forEach((p,i)=>{
+  photos.forEach((p)=>{
     const img = document.createElement("img");
     img.src = p.thumbnail || p.photo;
     img.dataset.full = p.photo;
+
     const number = document.createElement("span");
     number.className = "photo-number";
-    number.textContent = (counter<10 ? "0"+counter : counter);
+    number.textContent = "IMG_" + (counter<10 ? "0"+counter : counter);
     counter++;
 
     const wrapper = document.createElement("div");

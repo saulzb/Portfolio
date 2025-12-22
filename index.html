@@ -108,63 +108,72 @@ section.visible { opacity:1; }
   text-align:center;
 }
 
-/* ---------------- FRIENDLY RETRO LOADING SCREEN ---------------- */
+/* ---------------- RETRO POOLSIDE LOADING SCREEN ---------------- */
 #loadingScreen {
   position: fixed;
   inset:0;
-  background:#A3C4DC; /* soft retro blue */
+  background:#A8E6CF; /* pastel green */
   display: none;
   align-items: center;
   justify-content: center;
   z-index:10000;
-  font-family: 'Courier New', monospace;
-  color:black;
-  flex-direction: column;
+  font-family: 'Michroma', sans-serif;
 }
 
-.retro-window {
-  width:320px;
-  background:#D3D3D3; /* light gray window */
-  border:2px solid #000;
+.info-box {
+  display: flex;
+  align-items: center;
+  background-color: #F8F8F2; /* off-white rectangle */
+  border-radius: 12px;
+  padding: 30px 40px;
+  max-width: 700px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.info-box img {
+  width: 120px;
+  height: auto;
+  margin-right: 30px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.text-content {
   display:flex;
   flex-direction: column;
 }
 
-.title-bar {
-  background:#3366CC; /* muted retro blue */
-  color:white;
-  padding:4px 8px;
-  font-weight:bold;
-  font-size:0.9rem;
-  border-bottom:2px solid #000;
+.text-content h1 {
+  margin:0 0 10px 0;
+  font-size: 22px;
+  color: black;
 }
 
-.window-content {
-  padding:20px;
-  background:#D3D3D3;
+.text-content p {
+  margin:0;
+  font-size: 14px;
+  color: black;
+  line-height: 1.4;
 }
 
-.window-content p {
-  margin:0 0 12px 0;
-  font-size:0.85rem;
+/* Progress Bar at Bottom */
+.progress-container {
+  width: 100%;
+  height: 14px;
+  background: #222;
+  border-radius: 6px;
+  margin-top: 20px;
+  overflow: hidden;
 }
 
-.retro-progress {
-  width:100%;
-  height:16px;
-  border:2px solid #000;
-  background:#B0B0B0; /* softer gray background for bar */
-  position:relative;
+.progress-fill {
+  height: 100%;
+  width: 0;
+  background: black;
 }
 
-.retro-fill {
-  height:100%;
-  width:0;
-  background:#00CC66; /* softer green */
-  animation: retroFill 1.5s linear forwards;
-}
-
-@keyframes retroFill { to { width:100%; } }
+/* ---------------- ANIMATIONS ---------------- */
+@keyframes fillBar { to { width: 100%; } }
 </style>
 </head>
 <body>
@@ -181,12 +190,13 @@ section.visible { opacity:1; }
 
 <!-- LOADING SCREEN -->
 <div id="loadingScreen">
-  <div class="retro-window">
-    <div class="title-bar">Loading...</div>
-    <div class="window-content">
-      <p>Initializing<span id="dots">...</span></p>
-      <div class="retro-progress">
-        <div class="retro-fill"></div>
+  <div class="info-box">
+    <img src="your-image.png" alt="Logo/Image">
+    <div class="text-content">
+      <h1>Saul Zidulka-Bejcek</h1>
+      <p>Photography and more.<br>Wildlife, Travel, Psychedelic.<span id="dots">...</span></p>
+      <div class="progress-container">
+        <div class="progress-fill"></div>
       </div>
     </div>
   </div>
@@ -203,33 +213,40 @@ const categories = [
 ];
 
 const folderGrid = document.getElementById("folderGrid");
+const loading = document.getElementById('loadingScreen');
+const progressFill = document.querySelector('.progress-fill');
+const dots = document.getElementById('dots');
+
+folderGrid.innerHTML = '';
 categories.forEach(cat => {
   const folder = document.createElement("div");
   folder.className = "folder";
   folder.innerHTML = `<div class="folder-icon"></div><span>${cat}</span>`;
   folder.onclick = () => {
-    const pageName = cat.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g,'') + ".html";
-
-    const loading = document.getElementById('loadingScreen');
-    const fill = document.querySelector('.retro-fill');
-
+    // Show loading screen
     loading.style.display = 'flex';
-    fill.style.animation = 'none';
-    void fill.offsetWidth; // trigger reflow
-    fill.style.animation = 'retroFill 1.5s linear forwards';
-
-    setTimeout(() => { window.location.replace(pageName); }, 1500);
+    progressFill.style.width = '0';
+    let progress = 0;
+    
+    // Fill progress bar smoothly over 1.5s
+    const fillInterval = setInterval(() => {
+      progress += 1;
+      progressFill.style.width = progress + '%';
+      if(progress >= 100) clearInterval(fillInterval);
+    }, 15); // 1500ms total
+    
+    // Dots animation synced
+    let dotCount = 0;
+    const dotInterval = setInterval(() => {
+      dots.textContent = '.'.repeat(dotCount % 4);
+      dotCount++;
+      if(progress >= 100) clearInterval(dotInterval);
+    }, 375); // sync with bar (4 cycles over 1.5s)
+    
+    setTimeout(() => { window.location.replace(cat.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g,'') + ".html"); }, 1500);
   };
   folderGrid.appendChild(folder);
 });
-
-// Blinking dots for retro feel
-let dots = document.getElementById('dots');
-let count = 0;
-setInterval(() => {
-  if(dots) dots.textContent = '.'.repeat(count % 4);
-  count++;
-}, 500);
 
 // Arrow down scroll to folder section
 document.querySelector('.arrow-down').onclick = () => {

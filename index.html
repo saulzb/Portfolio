@@ -18,7 +18,7 @@ html, body {
   margin: 0;
   width: 100%;
   height: 100%;
-  background: #F4F1EC;
+  background: #F4F1EC; /* off-white outer */
   font-family: 'Michroma', sans-serif;
 }
 
@@ -37,9 +37,9 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 36px 60px;  /* reduced vertical padding, slightly wider horizontally */
-  max-width: 780px;    /* slightly wider */
-  width: 95%;          /* expand horizontally a bit */
+  padding: 36px 50px;  /* slightly less tall and less wide horizontally */
+  max-width: 680px;    /* narrower */
+  width: 90%;
 
   /* REAL TABLECLOTH IMAGE */
   background-image:
@@ -51,14 +51,15 @@ html, body {
       rgba(244,241,236,1) 100%
     ),
     url("RAW'sJul-Aug8593copy.jpg");
-
   background-repeat: repeat;
   background-size: 320px auto;
   background-position: top left;
 
+  /* Outer white border effect using box shadow */
   box-shadow:
+    0 0 0 12px #F4F1EC,          /* outer white margin */
     0 20px 45px rgba(0,0,0,0.08),
-    inset 0 0 0 1px rgba(0,0,0,0.05);
+    inset 0 0 0 1px rgba(0,0,0,1); /* thin black line inside */
   border-radius: 12px;
 }
 

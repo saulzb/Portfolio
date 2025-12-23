@@ -18,7 +18,7 @@ html, body {
   margin: 0;
   width: 100%;
   height: 100%;
-  background: #F4F1EC;
+  background: #F4F1EC; /* warm paper white */
   font-family: 'Michroma', sans-serif;
 }
 
@@ -33,63 +33,55 @@ html, body {
 
 /* ---------------- CENTRAL PANEL ---------------- */
 .info-box {
+  position: relative;
   display: flex;
   align-items: center;
-  padding: 42px 48px;
-  max-width: 700px;
+  padding: 44px 52px;          /* slightly smaller */
+  max-width: 720px;
 
-  /* ORNAMENTAL TABLECLOTH PATTERN */
+  /* ORNAMENTAL TABLECLOTH */
   background:
-    /* fade to off-white */
+    /* vertical fade to paper */
     linear-gradient(
       to bottom,
       rgba(250,249,246,0) 0%,
-      rgba(250,249,246,0.25) 55%,
-      rgba(250,249,246,0.7) 75%,
-      rgba(250,249,246,1) 100%
+      rgba(250,249,246,0.15) 35%,
+      rgba(250,249,246,0.55) 60%,
+      rgba(250,249,246,1) 85%
     ),
 
-    /* floral / ornamental geometry */
-    radial-gradient(circle at 20px 20px,
-      rgba(255,255,255,0.35) 2px,
-      transparent 3px),
-    radial-gradient(circle at 60px 40px,
-      rgba(255,255,255,0.25) 2px,
-      transparent 4px),
-    radial-gradient(circle at 40px 70px,
-      rgba(255,255,255,0.3) 2px,
-      transparent 4px),
-
-    /* subtle repeating motif */
+    /* vine-like curves (abstract) */
     repeating-radial-gradient(
-      circle,
-      rgba(255,255,255,0.12) 0px,
-      rgba(255,255,255,0.12) 1px,
-      transparent 1px,
-      transparent 18px
+      circle at 0 0,
+      rgba(255,255,255,0.35) 0 2px,
+      transparent 2px 24px
     ),
 
-    /* base cloth */
-    #E28A3A;
+    repeating-radial-gradient(
+      circle at 100% 0,
+      rgba(255,255,255,0.25) 0 1.5px,
+      transparent 1.5px 22px
+    ),
 
-  background-size:
-    100% 100%,
-    80px 80px,
-    80px 80px,
-    80px 80px,
-    120px 120px,
-    cover;
+    /* subtle engraved rhythm */
+    repeating-linear-gradient(
+      120deg,
+      rgba(255,255,255,0.2) 0 1px,
+      transparent 1px 14px
+    ),
+
+    #E28A3A; /* vintage orange */
 
   box-shadow:
-    0 16px 36px rgba(0,0,0,0.08),
+    0 18px 40px rgba(0,0,0,0.08),
     inset 0 0 0 1px rgba(0,0,0,0.05);
 }
 
 /* ---------------- IMAGE ---------------- */
 .info-box img {
-  width: 120px;
+  width: 128px;
   height: auto;
-  margin-right: 36px;
+  margin-right: 40px;
   object-fit: cover;
 }
 
@@ -107,22 +99,22 @@ html, body {
 }
 
 .text-content p {
-  margin: 0 0 22px 0;
-  font-size: 12.5px;
+  margin: 0 0 24px 0;
+  font-size: 12.8px;
   letter-spacing: 0.07em;
   line-height: 1.6;
   color: #2A2A2A;
 }
 
-/* ---------------- FRAMED LOADING BAR ---------------- */
-.loader-frame {
-  padding: 10px 12px;
+/* ---------------- LOADING FRAME ---------------- */
+.loading-frame {
+  padding: 12px 14px;
   background: #FAF9F6;
   box-shadow:
-    inset 0 0 0 1px rgba(0,0,0,0.2);
-  width: fit-content;
+    inset 0 0 0 1px rgba(0,0,0,0.18);
 }
 
+/* ---------------- SEGMENTED BAR ---------------- */
 .progress-container {
   display: flex;
   gap: 6px;
@@ -131,13 +123,12 @@ html, body {
 .progress-segment {
   width: 6px;
   height: 18px;
-  background: rgba(0,0,0,0.18);
+  background: rgba(0,0,0,0.15);
   opacity: 0;
-  transform: translateY(3px);
+  transform: translateY(2px);
   transition:
-    opacity 0.45s ease,
-    transform 0.45s ease,
-    background 0.45s ease;
+    opacity 0.5s ease,
+    transform 0.5s ease;
 }
 
 .progress-segment.active {
@@ -161,7 +152,7 @@ html, body {
         Wildlife, Travel, Psychedelic<span id="dots">...</span>
       </p>
 
-      <div class="loader-frame">
+      <div class="loading-frame">
         <div class="progress-container" id="progressBar"></div>
       </div>
     </div>
@@ -173,7 +164,7 @@ html, body {
 const progressBar = document.getElementById("progressBar");
 const dots = document.getElementById("dots");
 
-const SEGMENTS = 18;
+const SEGMENTS = 16;
 
 // Create segments
 for (let i = 0; i < SEGMENTS; i++) {
@@ -185,7 +176,7 @@ for (let i = 0; i < SEGMENTS; i++) {
 const segments = document.querySelectorAll(".progress-segment");
 let index = 0;
 
-// Calm, confident pacing
+// Slow, confident pacing
 setInterval(() => {
   if (index < segments.length) {
     segments[index].classList.add("active");
@@ -193,7 +184,7 @@ setInterval(() => {
   }
 }, 280);
 
-// Subtle dots
+// Dots (restrained)
 let dotCount = 0;
 setInterval(() => {
   dots.textContent = '.'.repeat(dotCount % 4);

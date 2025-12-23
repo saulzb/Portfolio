@@ -18,7 +18,7 @@ html, body {
   margin: 0;
   width: 100%;
   height: 100%;
-  background: #F4F1EC; /* off-white outer */
+  background: #F4F1EC; /* page background */
   font-family: 'Michroma', sans-serif;
 }
 
@@ -37,11 +37,11 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 36px 50px;  /* slightly less tall and less wide horizontally */
-  max-width: 680px;    /* narrower */
-  width: 90%;
+  padding: 32px 40px;  /* smaller vertical and horizontal padding */
+  max-width: 600px;    /* smaller width */
+  width: 85%;          /* slightly narrower */
 
-  /* REAL TABLECLOTH IMAGE */
+  /* TABLECLOTH IMAGE */
   background-image:
     linear-gradient(
       to bottom,
@@ -55,11 +55,8 @@ html, body {
   background-size: 320px auto;
   background-position: top left;
 
-  /* Outer white border effect using box shadow */
-  box-shadow:
-    0 0 0 12px #F4F1EC,          /* outer white margin */
-    0 20px 45px rgba(0,0,0,0.08),
-    inset 0 0 0 1px rgba(0,0,0,1); /* thin black line inside */
+  /* thin black border inside rectangle */
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,1);
   border-radius: 12px;
 }
 
@@ -70,26 +67,26 @@ html, body {
 }
 
 .text-content h1 {
-  margin: 0 0 14px 0;
-  font-size: 21px;
+  margin: 0 0 12px 0;
+  font-size: 20px;
   letter-spacing: 0.05em;
   color: white;
   text-align: left;
 }
 
 .text-content p {
-  margin: 0 0 22px 0;
-  font-size: 12.5px;
+  margin: 0 0 18px 0;
+  font-size: 12px;
   letter-spacing: 0.07em;
-  line-height: 1.6;
+  line-height: 1.5;
   color: white;
   text-align: left;
 }
 
 /* ---------------- LOADING BAR PANEL ---------------- */
 .loading-panel {
-  background: rgba(255,255,255,0.2); /* subtle box around segments */
-  padding: 14px 16px;
+  background: rgba(255,255,255,0.2);
+  padding: 12px 14px;
   box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
   border-radius: 6px;
 }

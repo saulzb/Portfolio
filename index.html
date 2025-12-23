@@ -42,13 +42,8 @@ html, body {
   max-width: 720px;
   width: 90%;
 
-  /* Example subtle orange tablecloth background */
-  background:
-    linear-gradient(
-      rgba(255, 255, 255, 0.6), 
-      rgba(255, 255, 255, 0.3)
-    ),
-    #E38A3A; /* base vintage orange */
+  /* Background tablecloth image */
+  background: url('RAW\'sJul-Aug8593copy.jpg') center/cover no-repeat;
 
   box-shadow:
     0 20px 45px rgba(0,0,0,0.08),
@@ -61,6 +56,19 @@ html, body {
   display: flex;
   flex-direction: column;
   width: 100%;
+  position: relative;
+  z-index: 2;
+  padding: 12px 16px;
+}
+
+/* Semi-transparent overlay behind text for readability */
+.text-content::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4); /* adjust opacity for readability */
+  border-radius: 8px;
+  z-index: -1;
 }
 
 .text-content h1 {

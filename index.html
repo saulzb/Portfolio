@@ -36,55 +36,54 @@ html, body {
   position: relative;
   display: flex;
   align-items: center;
-
-  /* smaller, more refined */
   padding: 44px 48px;
   max-width: 680px;
 
-  /* SOFTER, FLORAL-INSPIRED FABRIC */
+  /* ORGANIC, FLORAL-ISH TABLECLOTH */
   background:
-    /* vertical fade */
+    /* gentle vertical fade */
     linear-gradient(
       to bottom,
-      rgba(250,249,246,0.25) 0%,
-      rgba(250,249,246,0.55) 30%,
-      rgba(250,249,246,0.85) 55%,
-      rgba(250,249,246,1) 75%
+      rgba(250,249,246,0.15) 0%,
+      rgba(250,249,246,0.4) 28%,
+      rgba(250,249,246,0.75) 55%,
+      rgba(250,249,246,1) 80%
     ),
 
-    /* soft floral / petal impression */
+    /* soft floral medallions */
     radial-gradient(
-      circle at 20% 15%,
-      rgba(255,255,255,0.25) 0%,
-      rgba(255,255,255,0.18) 18%,
-      transparent 40%
+      circle at 12% 18%,
+      rgba(255,255,255,0.35) 0%,
+      rgba(255,255,255,0.2) 18%,
+      transparent 45%
     ),
     radial-gradient(
-      circle at 70% 25%,
-      rgba(255,255,255,0.22) 0%,
-      rgba(255,255,255,0.15) 20%,
-      transparent 42%
+      circle at 38% 30%,
+      rgba(255,255,255,0.28) 0%,
+      rgba(255,255,255,0.18) 20%,
+      transparent 46%
     ),
     radial-gradient(
-      circle at 45% 10%,
-      rgba(255,255,255,0.18) 0%,
-      transparent 38%
+      circle at 68% 22%,
+      rgba(255,255,255,0.32) 0%,
+      rgba(255,255,255,0.2) 22%,
+      transparent 48%
     ),
 
-    /* gentle organic noise via gradients */
+    /* subtle curved weave */
     repeating-radial-gradient(
-      circle at 30% 20%,
-      rgba(255,255,255,0.06) 0,
-      rgba(255,255,255,0.06) 2px,
-      transparent 4px,
-      transparent 18px
+      circle at 50% 0%,
+      rgba(255,255,255,0.12) 0,
+      rgba(255,255,255,0.12) 1px,
+      transparent 1px,
+      transparent 14px
     ),
 
     /* base fabric */
-    #E9A15C; /* softer vintage orange */
+    #E6A06A; /* softened vintage orange */
 
   box-shadow:
-    0 16px 36px rgba(0,0,0,0.07),
+    0 18px 40px rgba(0,0,0,0.07),
     inset 0 0 0 1px rgba(0,0,0,0.04);
 }
 
@@ -106,7 +105,7 @@ html, body {
   margin: 0 0 14px 0;
   font-size: 20px;
   letter-spacing: 0.05em;
-  color: #1A1A1A;
+  color: #1E1E1E;
 }
 
 .text-content p {
@@ -130,9 +129,9 @@ html, body {
   opacity: 0;
   transform: translateY(2px);
   transition:
-    opacity 0.6s ease,
-    transform 0.6s ease,
-    background 0.6s ease;
+    opacity 0.5s ease,
+    transform 0.5s ease,
+    background 0.5s ease;
 }
 
 .progress-segment.active {
@@ -178,7 +177,7 @@ for (let i = 0; i < SEGMENTS; i++) {
 const segments = document.querySelectorAll(".progress-segment");
 let index = 0;
 
-// Slower, calmer pacing
+// Calm, luxury pacing
 setInterval(() => {
   if (index < segments.length) {
     segments[index].classList.add("active");
@@ -186,7 +185,7 @@ setInterval(() => {
   }
 }, 300);
 
-// Gentle dots
+// Minimal dots animation
 let dotCount = 0;
 setInterval(() => {
   dots.textContent = '.'.repeat(dotCount % 4);

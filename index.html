@@ -11,24 +11,116 @@
 /* ---------------- RESET ---------------- */
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 /* ---------------- PAGE ---------------- */
 html, body {
-  margin: 0;
   width: 100%;
   height: 100%;
-  background: #F4F1EC; /* page background */
   font-family: 'Michroma', sans-serif;
+  background: #111;
+  color: #eee;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+}
+body::-webkit-scrollbar { width:0; height:0; }
+body { scrollbar-width:none; }
+
+section {
+  width: 100%;
+  height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  scroll-snap-align: start;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+section.visible { opacity:1; }
+
+/* ---------------- HERO ---------------- */
+#hero {
+  background: url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
+  justify-content:center;
+  align-items:center;
+  position:relative;
+}
+
+.arrow-down {
+  position:absolute;
+  bottom:40px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  cursor:pointer;
+  user-select:none;
+  font-size:1.2rem;
+  color:white;
+}
+.arrow-down span { font-size:0.7rem; margin-top:5px; }
+
+/* ---------------- FOLDER GRID ---------------- */
+.folder-section {
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.folder-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:50px;
+  max-width:900px;
+  width:100%;
+  padding:0 60px;
+  justify-items:center;
+}
+.folder {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  cursor:pointer;
+  user-select:none;
+}
+.folder-icon {
+  width:88px;
+  height:64px;
+  background:linear-gradient(#f5d58a,#d9a441);
+  border-radius:6px 6px 4px 4px;
+  position:relative;
+  box-shadow:0 6px 20px rgba(0,0,0,0.35);
+}
+.folder-icon::before {
+  content:"";
+  position:absolute;
+  top:-10px;
+  left:10px;
+  width:36px;
+  height:14px;
+  background:#f5d58a;
+  border-radius:4px 4px 0 0;
+}
+.folder span {
+  margin-top:12px;
+  font-size:0.7rem;
+  letter-spacing:0.5px;
+  opacity:0.9;
+  text-align:center;
 }
 
 /* ---------------- LOADING SCREEN ---------------- */
 #loadingScreen {
   position: fixed;
   inset: 0;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
+  z-index:10000;
 }
 
 /* ---------------- CENTRAL PANEL ---------------- */
@@ -37,11 +129,9 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 32px 40px;  /* smaller vertical and horizontal padding */
-  max-width: 600px;    /* smaller width */
-  width: 85%;          /* slightly narrower */
-
-  /* TABLECLOTH IMAGE */
+  padding: 32px 40px;
+  max-width: 600px;
+  width: 85%;
   background-image:
     linear-gradient(
       to bottom,
@@ -54,8 +144,6 @@ html, body {
   background-repeat: repeat;
   background-size: 320px auto;
   background-position: top left;
-
-  /* thin black border inside rectangle */
   box-shadow: inset 0 0 0 1px rgba(0,0,0,1);
   border-radius: 12px;
 }
@@ -115,9 +203,19 @@ html, body {
 }
 </style>
 </head>
-
 <body>
 
+<!-- HERO -->
+<section id="hero" class="visible">
+  <div class="arrow-down">↓<span>Photos</span></div>
+</section>
+
+<!-- FOLDER NAV -->
+<section class="folder-section">
+  <div class="folder-grid" id="folderGrid"></div>
+</section>
+
+<!-- LOADING SCREEN -->
 <div id="loadingScreen">
   <div class="info-box">
     <div class="text-content">
@@ -126,7 +224,6 @@ html, body {
         Photography and more.<br>
         Wildlife, Travel, Psychedelic<span id="dots">...</span>
       </p>
-
       <div class="loading-panel">
         <div class="progress-container" id="progressBar"></div>
       </div>
@@ -135,37 +232,86 @@ html, body {
 </div>
 
 <script>
-/* ---------------- SEGMENT BAR LOGIC ---------------- */
+const categories = [
+  "channelORANGE",
+  "Dream State",
+  "Raw PNW",
+  "Neon Lights",
+  "TI",
+  "Quiet Night"
+];
+
+const folderGrid = document.getElementById("folderGrid");
+categories.forEach(cat => {
+  const folder = document.createElement("div");
+  folder.className = "folder";
+  folder.innerHTML = `<div class="folder-icon"></div><span>${cat}</span>`;
+  folder.onclick = () => {
+    const pageName = cat.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g,'') + ".html";
+
+    const loading = document.getElementById('loadingScreen');
+    loading.style.display = 'flex';
+
+    const segments = document.querySelectorAll('.progress-segment');
+    segments.forEach(s => s.classList.remove('active')); // reset bar
+    let index = 0;
+    const interval = setInterval(() => {
+      if(index < segments.length){
+        segments[index].classList.add('active');
+        index++;
+      } else clearInterval(interval);
+    }, 260);
+
+    setTimeout(() => { window.location.replace(pageName); }, 260*segments.length + 400);
+  };
+  folderGrid.appendChild(folder);
+});
+
+// Blinking dots for retro feel
+let dots = document.getElementById('dots');
+let count = 0;
+setInterval(() => {
+  if(dots) dots.textContent = '.'.repeat(count % 4);
+  count++;
+}, 650);
+
+// Arrow down scroll to folder section
+document.querySelector('.arrow-down').onclick = () => {
+  document.querySelector('.folder-section').scrollIntoView({behavior:'smooth'});
+};
+
+// Fade in sections
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting) entry.target.classList.add("visible");
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll("section").forEach(s => observer.observe(s));
+
+// Arrow key navigation
+let currentIndex = 0;
+const allSections = Array.from(document.querySelectorAll("section"));
+window.addEventListener("keydown", e => {
+  if(e.key === "ArrowDown" && currentIndex < allSections.length - 1) currentIndex++;
+  if(e.key === "ArrowUp" && currentIndex > 0) currentIndex--;
+  allSections[currentIndex].scrollIntoView({behavior:"smooth"});
+});
+window.addEventListener("scroll", () => {
+  allSections.forEach((sec,i)=>{
+    const rect = sec.getBoundingClientRect();
+    if(rect.top >= 0 && rect.top < window.innerHeight/2) currentIndex = i;
+  });
+});
+
+// Create segmented bar dynamically
 const progressBar = document.getElementById("progressBar");
-const dots = document.getElementById("dots");
-
 const SEGMENTS = 18;
-
-// Create segments
-for (let i = 0; i < SEGMENTS; i++) {
+for (let i=0;i<SEGMENTS;i++){
   const seg = document.createElement("div");
   seg.className = "progress-segment";
   progressBar.appendChild(seg);
 }
-
-const segments = document.querySelectorAll(".progress-segment");
-let index = 0;
-
-// Calm, confident pacing
-setInterval(() => {
-  if (index < segments.length) {
-    segments[index].classList.add("active");
-    index++;
-  }
-}, 260);
-
-// Minimal dots
-let dotCount = 0;
-setInterval(() => {
-  dots.textContent = '.'.repeat(dotCount % 4);
-  dotCount++;
-}, 650);
 </script>
-
 </body>
 </html>

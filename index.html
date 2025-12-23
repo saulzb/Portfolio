@@ -11,14 +11,15 @@
 /* ---------------- RESET ---------------- */
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 /* ---------------- PAGE ---------------- */
 html, body {
-  margin: 0;
   width: 100%;
   height: 100%;
-  background: #F4F1EC;
+  background: #F4F1EC; /* off-white */
   font-family: 'Michroma', sans-serif;
 }
 
@@ -35,97 +36,84 @@ html, body {
 .info-box {
   position: relative;
   display: flex;
-  align-items: center;
-  padding: 44px 50px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 48px 56px;
   max-width: 720px;
+  width: 90%;
 
-  /* REAL TABLECLOTH IMAGE */
-  background-image:
+  /* Example subtle orange tablecloth background */
+  background:
     linear-gradient(
-      to bottom,
-      rgba(244,241,236,0) 0%,
-      rgba(244,241,236,0.25) 40%,
-      rgba(244,241,236,0.6) 65%,
-      rgba(244,241,236,1) 100%
+      rgba(255, 255, 255, 0.6), 
+      rgba(255, 255, 255, 0.3)
     ),
-    url("RAW'sJul-Aug8593copy.jpg");
-
-  background-repeat: repeat;
-  background-size: 320px auto;
-  background-position: top left;
+    #E38A3A; /* base vintage orange */
 
   box-shadow:
     0 20px 45px rgba(0,0,0,0.08),
     inset 0 0 0 1px rgba(0,0,0,0.05);
-}
-
-/* ---------------- IMAGE ---------------- */
-.info-box img {
-  width: 120px;
-  height: auto;
-  margin-right: 40px;
-  object-fit: cover;
+  border-radius: 12px;
 }
 
 /* ---------------- TEXT ---------------- */
 .text-content {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .text-content h1 {
-  margin: 0 0 14px 0;
-  font-size: 21px;
+  margin-bottom: 12px;
+  font-size: 22px;
   letter-spacing: 0.05em;
-  color: #1A1A1A;
+  color: white;
+  text-align: left;
 }
 
 .text-content p {
-  margin: 0 0 22px 0;
-  font-size: 12.5px;
+  margin-bottom: 22px;
+  font-size: 13px;
   letter-spacing: 0.07em;
   line-height: 1.6;
-  color: #2A2A2A;
-}
-
-/* ---------------- LOADING BAR PANEL ---------------- */
-.loading-panel {
-  background: #FAF9F6;
-  padding: 14px 16px;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
+  color: white;
+  text-align: left;
 }
 
 /* ---------------- SEGMENTED BAR ---------------- */
 .progress-container {
   display: flex;
   gap: 6px;
+  padding: 4px;
+  background: rgba(255,255,255,0.2); /* subtle box around segments */
+  border-radius: 6px;
 }
 
 .progress-segment {
-  width: 6px;
-  height: 18px;
-  background: rgba(0,0,0,0.15);
+  width: 7px;
+  height: 20px;
+  background: rgba(255,255,255,0.3);
   opacity: 0;
-  transform: translateY(2px);
+  transform: translateY(3px);
   transition:
-    opacity 0.45s ease,
-    transform 0.45s ease;
+    opacity 0.5s ease,
+    transform 0.5s ease,
+    background 0.5s ease;
 }
 
 .progress-segment.active {
   opacity: 1;
   transform: translateY(0);
-  background: #1A1A1A;
+  background: white;
 }
 </style>
 </head>
 
 <body>
 
+<!-- LOADING SCREEN -->
 <div id="loadingScreen">
   <div class="info-box">
-    <img src="your-image.png" alt="Image">
-
     <div class="text-content">
       <h1>Saul Zidulka-Bejcek</h1>
       <p>
@@ -133,15 +121,13 @@ html, body {
         Wildlife, Travel, Psychedelic<span id="dots">...</span>
       </p>
 
-      <div class="loading-panel">
-        <div class="progress-container" id="progressBar"></div>
-      </div>
+      <div class="progress-container" id="progressBar"></div>
     </div>
   </div>
 </div>
 
 <script>
-/* ---------------- SEGMENT BAR LOGIC ---------------- */
+/* ---------------- SEGMENTED BAR LOGIC ---------------- */
 const progressBar = document.getElementById("progressBar");
 const dots = document.getElementById("dots");
 
@@ -157,7 +143,7 @@ for (let i = 0; i < SEGMENTS; i++) {
 const segments = document.querySelectorAll(".progress-segment");
 let index = 0;
 
-// Calm, confident pacing
+// Animate segments slowly
 setInterval(() => {
   if (index < segments.length) {
     segments[index].classList.add("active");
@@ -165,7 +151,7 @@ setInterval(() => {
   }
 }, 260);
 
-// Minimal dots
+// Dots animation
 let dotCount = 0;
 setInterval(() => {
   dots.textContent = '.'.repeat(dotCount % 4);

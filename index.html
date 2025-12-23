@@ -11,15 +11,14 @@
 /* ---------------- RESET ---------------- */
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 /* ---------------- PAGE ---------------- */
 html, body {
+  margin: 0;
   width: 100%;
   height: 100%;
-  background: #F4F1EC; /* off-white */
+  background: #F4F1EC;
   font-family: 'Michroma', sans-serif;
 }
 
@@ -38,75 +37,75 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 48px 56px;
+  padding: 44px 50px;
   max-width: 720px;
-  width: 90%;
 
-  /* Background tablecloth image */
-  background: url('RAW\'sJul-Aug8593copy.jpg') center/cover no-repeat;
+  /* REAL TABLECLOTH IMAGE */
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(244,241,236,0) 0%,
+      rgba(244,241,236,0.25) 40%,
+      rgba(244,241,236,0.6) 65%,
+      rgba(244,241,236,1) 100%
+    ),
+    url("RAW'sJul-Aug8593copy.jpg");
+
+  background-repeat: repeat;
+  background-size: 320px auto;
+  background-position: top left;
 
   box-shadow:
     0 20px 45px rgba(0,0,0,0.08),
     inset 0 0 0 1px rgba(0,0,0,0.05);
-  border-radius: 12px;
 }
 
 /* ---------------- TEXT ---------------- */
 .text-content {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  position: relative;
-  z-index: 2;
-  padding: 12px 16px;
-}
-
-/* Semi-transparent overlay behind text for readability */
-.text-content::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.4); /* adjust opacity for readability */
-  border-radius: 8px;
-  z-index: -1;
 }
 
 .text-content h1 {
-  margin-bottom: 12px;
-  font-size: 22px;
+  margin: 0 0 14px 0;
+  font-size: 21px;
   letter-spacing: 0.05em;
   color: white;
   text-align: left;
 }
 
 .text-content p {
-  margin-bottom: 22px;
-  font-size: 13px;
+  margin: 0 0 22px 0;
+  font-size: 12.5px;
   letter-spacing: 0.07em;
   line-height: 1.6;
   color: white;
   text-align: left;
 }
 
+/* ---------------- LOADING BAR PANEL ---------------- */
+.loading-panel {
+  background: rgba(255,255,255,0.2); /* subtle box around segments */
+  padding: 14px 16px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
+  border-radius: 6px;
+}
+
 /* ---------------- SEGMENTED BAR ---------------- */
 .progress-container {
   display: flex;
   gap: 6px;
-  padding: 4px;
-  background: rgba(255,255,255,0.2); /* subtle box around segments */
-  border-radius: 6px;
 }
 
 .progress-segment {
-  width: 7px;
-  height: 20px;
+  width: 6px;
+  height: 18px;
   background: rgba(255,255,255,0.3);
   opacity: 0;
-  transform: translateY(3px);
+  transform: translateY(2px);
   transition:
-    opacity 0.5s ease,
-    transform 0.5s ease,
-    background 0.5s ease;
+    opacity 0.45s ease,
+    transform 0.45s ease;
 }
 
 .progress-segment.active {
@@ -119,7 +118,6 @@ html, body {
 
 <body>
 
-<!-- LOADING SCREEN -->
 <div id="loadingScreen">
   <div class="info-box">
     <div class="text-content">
@@ -129,13 +127,15 @@ html, body {
         Wildlife, Travel, Psychedelic<span id="dots">...</span>
       </p>
 
-      <div class="progress-container" id="progressBar"></div>
+      <div class="loading-panel">
+        <div class="progress-container" id="progressBar"></div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-/* ---------------- SEGMENTED BAR LOGIC ---------------- */
+/* ---------------- SEGMENT BAR LOGIC ---------------- */
 const progressBar = document.getElementById("progressBar");
 const dots = document.getElementById("dots");
 
@@ -151,7 +151,7 @@ for (let i = 0; i < SEGMENTS; i++) {
 const segments = document.querySelectorAll(".progress-segment");
 let index = 0;
 
-// Animate segments slowly
+// Calm, confident pacing
 setInterval(() => {
   if (index < segments.length) {
     segments[index].classList.add("active");
@@ -159,7 +159,7 @@ setInterval(() => {
   }
 }, 260);
 
-// Dots animation
+// Minimal dots
 let dotCount = 0;
 setInterval(() => {
   dots.textContent = '.'.repeat(dotCount % 4);

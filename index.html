@@ -36,61 +36,63 @@ html, body {
   position: relative;
   display: flex;
   align-items: center;
-  padding: 56px 64px;
-  max-width: 820px;
 
-  /* INTRICATE TABLECLOTH PATTERN */
+  /* smaller, more refined */
+  padding: 44px 48px;
+  max-width: 680px;
+
+  /* SOFTER, FLORAL-INSPIRED FABRIC */
   background:
-    /* vertical fade to white */
+    /* vertical fade */
     linear-gradient(
       to bottom,
-      rgba(250,249,246,0) 0%,
-      rgba(250,249,246,0.1) 30%,
-      rgba(250,249,246,0.35) 55%,
-      rgba(250,249,246,0.7) 75%,
-      rgba(250,249,246,1) 100%
+      rgba(250,249,246,0.25) 0%,
+      rgba(250,249,246,0.55) 30%,
+      rgba(250,249,246,0.85) 55%,
+      rgba(250,249,246,1) 75%
     ),
 
-    /* fine diagonal weave */
-    repeating-linear-gradient(
-      45deg,
-      rgba(255,255,255,0.45) 0,
-      rgba(255,255,255,0.45) 1px,
-      transparent 1px,
-      transparent 6px
+    /* soft floral / petal impression */
+    radial-gradient(
+      circle at 20% 15%,
+      rgba(255,255,255,0.25) 0%,
+      rgba(255,255,255,0.18) 18%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 70% 25%,
+      rgba(255,255,255,0.22) 0%,
+      rgba(255,255,255,0.15) 20%,
+      transparent 42%
+    ),
+    radial-gradient(
+      circle at 45% 10%,
+      rgba(255,255,255,0.18) 0%,
+      transparent 38%
     ),
 
-    /* secondary diagonal counter-weave */
-    repeating-linear-gradient(
-      -45deg,
-      rgba(255,255,255,0.35) 0,
-      rgba(255,255,255,0.35) 1px,
-      transparent 1px,
-      transparent 8px
+    /* gentle organic noise via gradients */
+    repeating-radial-gradient(
+      circle at 30% 20%,
+      rgba(255,255,255,0.06) 0,
+      rgba(255,255,255,0.06) 2px,
+      transparent 4px,
+      transparent 18px
     ),
 
-    /* subtle vertical stitch rhythm */
-    repeating-linear-gradient(
-      90deg,
-      rgba(255,255,255,0.25) 0,
-      rgba(255,255,255,0.25) 2px,
-      transparent 2px,
-      transparent 24px
-    ),
-
-    /* base fabric color */
-    #E38A3A; /* vintage orange */
+    /* base fabric */
+    #E9A15C; /* softer vintage orange */
 
   box-shadow:
-    0 20px 45px rgba(0,0,0,0.08),
-    inset 0 0 0 1px rgba(0,0,0,0.05);
+    0 16px 36px rgba(0,0,0,0.07),
+    inset 0 0 0 1px rgba(0,0,0,0.04);
 }
 
 /* ---------------- IMAGE ---------------- */
 .info-box img {
-  width: 140px;
+  width: 120px;
   height: auto;
-  margin-right: 48px;
+  margin-right: 36px;
   object-fit: cover;
 }
 
@@ -101,15 +103,15 @@ html, body {
 }
 
 .text-content h1 {
-  margin: 0 0 16px 0;
-  font-size: 22px;
+  margin: 0 0 14px 0;
+  font-size: 20px;
   letter-spacing: 0.05em;
   color: #1A1A1A;
 }
 
 .text-content p {
-  margin: 0 0 28px 0;
-  font-size: 13px;
+  margin: 0 0 22px 0;
+  font-size: 12.5px;
   letter-spacing: 0.07em;
   line-height: 1.6;
   color: #2A2A2A;
@@ -118,19 +120,19 @@ html, body {
 /* ---------------- SEGMENTED BAR ---------------- */
 .progress-container {
   display: flex;
-  gap: 7px;
+  gap: 6px;
 }
 
 .progress-segment {
-  width: 7px;
-  height: 20px;
-  background: rgba(0,0,0,0.15);
+  width: 6px;
+  height: 18px;
+  background: rgba(0,0,0,0.14);
   opacity: 0;
-  transform: translateY(3px);
+  transform: translateY(2px);
   transition:
-    opacity 0.5s ease,
-    transform 0.5s ease,
-    background 0.5s ease;
+    opacity 0.6s ease,
+    transform 0.6s ease,
+    background 0.6s ease;
 }
 
 .progress-segment.active {
@@ -164,7 +166,7 @@ html, body {
 const progressBar = document.getElementById("progressBar");
 const dots = document.getElementById("dots");
 
-const SEGMENTS = 18;
+const SEGMENTS = 16;
 
 // Create segments
 for (let i = 0; i < SEGMENTS; i++) {
@@ -176,20 +178,20 @@ for (let i = 0; i < SEGMENTS; i++) {
 const segments = document.querySelectorAll(".progress-segment");
 let index = 0;
 
-// Slow, luxury pacing
+// Slower, calmer pacing
 setInterval(() => {
   if (index < segments.length) {
     segments[index].classList.add("active");
     index++;
   }
-}, 260);
+}, 300);
 
-// Minimal dots animation
+// Gentle dots
 let dotCount = 0;
 setInterval(() => {
   dots.textContent = '.'.repeat(dotCount % 4);
   dotCount++;
-}, 650);
+}, 700);
 </script>
 
 </body>

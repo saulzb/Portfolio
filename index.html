@@ -120,7 +120,8 @@ section.visible { opacity:1; }
   display: none;
   align-items: center;
   justify-content: center;
-  z-index:10000;
+  z-index: 10000;
+  background: #fff; /* white overlay */
 }
 
 /* ---------------- CENTRAL PANEL ---------------- */
@@ -192,8 +193,8 @@ section.visible { opacity:1; }
   opacity: 0;
   transform: translateY(2px);
   transition:
-    opacity 0.45s ease,
-    transform 0.45s ease;
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
 .progress-segment.active {
@@ -246,28 +247,34 @@ categories.forEach(cat => {
   const folder = document.createElement("div");
   folder.className = "folder";
   folder.innerHTML = `<div class="folder-icon"></div><span>${cat}</span>`;
+  
   folder.onclick = () => {
     const pageName = cat.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g,'') + ".html";
 
     const loading = document.getElementById('loadingScreen');
     loading.style.display = 'flex';
 
+    // Reset segments
     const segments = document.querySelectorAll('.progress-segment');
-    segments.forEach(s => s.classList.remove('active')); // reset bar
+    segments.forEach(s => s.classList.remove('active'));
+
+    // Animate bar quickly
     let index = 0;
     const interval = setInterval(() => {
       if(index < segments.length){
         segments[index].classList.add('active');
         index++;
       } else clearInterval(interval);
-    }, 260);
+    }, 50); // faster segment animation
 
-    setTimeout(() => { window.location.replace(pageName); }, 260*segments.length + 400);
+    // Navigate after 1.5 seconds
+    setTimeout(() => { window.location.replace(pageName); }, 1500);
   };
+  
   folderGrid.appendChild(folder);
 });
 
-// Blinking dots for retro feel
+// Blinking dots
 let dots = document.getElementById('dots');
 let count = 0;
 setInterval(() => {
@@ -275,7 +282,7 @@ setInterval(() => {
   count++;
 }, 650);
 
-// Arrow down scroll to folder section
+// Arrow down scroll
 document.querySelector('.arrow-down').onclick = () => {
   document.querySelector('.folder-section').scrollIntoView({behavior:'smooth'});
 };

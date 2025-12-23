@@ -18,7 +18,7 @@ html, body {
   margin: 0;
   width: 100%;
   height: 100%;
-  background: #F4F1EC; /* warm off-white */
+  background: #F4F1EC;
   font-family: 'Michroma', sans-serif;
 }
 
@@ -33,58 +33,56 @@ html, body {
 
 /* ---------------- CENTRAL PANEL ---------------- */
 .info-box {
-  position: relative;
   display: flex;
   align-items: center;
-  padding: 44px 48px;
-  max-width: 680px;
+  padding: 42px 48px;
+  max-width: 700px;
 
-  /* ORGANIC, FLORAL-ISH TABLECLOTH */
+  /* ORNAMENTAL TABLECLOTH PATTERN */
   background:
-    /* gentle vertical fade */
+    /* fade to off-white */
     linear-gradient(
       to bottom,
-      rgba(250,249,246,0.15) 0%,
-      rgba(250,249,246,0.4) 28%,
-      rgba(250,249,246,0.75) 55%,
-      rgba(250,249,246,1) 80%
+      rgba(250,249,246,0) 0%,
+      rgba(250,249,246,0.25) 55%,
+      rgba(250,249,246,0.7) 75%,
+      rgba(250,249,246,1) 100%
     ),
 
-    /* soft floral medallions */
-    radial-gradient(
-      circle at 12% 18%,
-      rgba(255,255,255,0.35) 0%,
-      rgba(255,255,255,0.2) 18%,
-      transparent 45%
-    ),
-    radial-gradient(
-      circle at 38% 30%,
-      rgba(255,255,255,0.28) 0%,
-      rgba(255,255,255,0.18) 20%,
-      transparent 46%
-    ),
-    radial-gradient(
-      circle at 68% 22%,
-      rgba(255,255,255,0.32) 0%,
-      rgba(255,255,255,0.2) 22%,
-      transparent 48%
-    ),
+    /* floral / ornamental geometry */
+    radial-gradient(circle at 20px 20px,
+      rgba(255,255,255,0.35) 2px,
+      transparent 3px),
+    radial-gradient(circle at 60px 40px,
+      rgba(255,255,255,0.25) 2px,
+      transparent 4px),
+    radial-gradient(circle at 40px 70px,
+      rgba(255,255,255,0.3) 2px,
+      transparent 4px),
 
-    /* subtle curved weave */
+    /* subtle repeating motif */
     repeating-radial-gradient(
-      circle at 50% 0%,
-      rgba(255,255,255,0.12) 0,
+      circle,
+      rgba(255,255,255,0.12) 0px,
       rgba(255,255,255,0.12) 1px,
       transparent 1px,
-      transparent 14px
+      transparent 18px
     ),
 
-    /* base fabric */
-    #E6A06A; /* softened vintage orange */
+    /* base cloth */
+    #E28A3A;
+
+  background-size:
+    100% 100%,
+    80px 80px,
+    80px 80px,
+    80px 80px,
+    120px 120px,
+    cover;
 
   box-shadow:
-    0 18px 40px rgba(0,0,0,0.07),
-    inset 0 0 0 1px rgba(0,0,0,0.04);
+    0 16px 36px rgba(0,0,0,0.08),
+    inset 0 0 0 1px rgba(0,0,0,0.05);
 }
 
 /* ---------------- IMAGE ---------------- */
@@ -103,9 +101,9 @@ html, body {
 
 .text-content h1 {
   margin: 0 0 14px 0;
-  font-size: 20px;
+  font-size: 21px;
   letter-spacing: 0.05em;
-  color: #1E1E1E;
+  color: #1A1A1A;
 }
 
 .text-content p {
@@ -116,7 +114,15 @@ html, body {
   color: #2A2A2A;
 }
 
-/* ---------------- SEGMENTED BAR ---------------- */
+/* ---------------- FRAMED LOADING BAR ---------------- */
+.loader-frame {
+  padding: 10px 12px;
+  background: #FAF9F6;
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,0.2);
+  width: fit-content;
+}
+
 .progress-container {
   display: flex;
   gap: 6px;
@@ -125,13 +131,13 @@ html, body {
 .progress-segment {
   width: 6px;
   height: 18px;
-  background: rgba(0,0,0,0.14);
+  background: rgba(0,0,0,0.18);
   opacity: 0;
-  transform: translateY(2px);
+  transform: translateY(3px);
   transition:
-    opacity 0.5s ease,
-    transform 0.5s ease,
-    background 0.5s ease;
+    opacity 0.45s ease,
+    transform 0.45s ease,
+    background 0.45s ease;
 }
 
 .progress-segment.active {
@@ -155,7 +161,9 @@ html, body {
         Wildlife, Travel, Psychedelic<span id="dots">...</span>
       </p>
 
-      <div class="progress-container" id="progressBar"></div>
+      <div class="loader-frame">
+        <div class="progress-container" id="progressBar"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -165,7 +173,7 @@ html, body {
 const progressBar = document.getElementById("progressBar");
 const dots = document.getElementById("dots");
 
-const SEGMENTS = 16;
+const SEGMENTS = 18;
 
 // Create segments
 for (let i = 0; i < SEGMENTS; i++) {
@@ -177,15 +185,15 @@ for (let i = 0; i < SEGMENTS; i++) {
 const segments = document.querySelectorAll(".progress-segment");
 let index = 0;
 
-// Calm, luxury pacing
+// Calm, confident pacing
 setInterval(() => {
   if (index < segments.length) {
     segments[index].classList.add("active");
     index++;
   }
-}, 300);
+}, 280);
 
-// Minimal dots animation
+// Subtle dots
 let dotCount = 0;
 setInterval(() => {
   dots.textContent = '.'.repeat(dotCount % 4);

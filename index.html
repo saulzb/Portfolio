@@ -47,7 +47,13 @@ section.visible { opacity:1; }
 }
 
 /* ---------------- FOLDER ---------------- */
-.folder { display:flex; flex-direction:column; align-items:center; cursor:pointer; }
+.folder {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  cursor:pointer;
+  position:relative; /* relative for absolute label */
+}
 
 /* ---------------- STACK WRAPPER ---------------- */
 .folder-stack {
@@ -61,7 +67,7 @@ section.visible { opacity:1; }
 /* ---------------- BASE FOLDER ---------------- */
 .folder-main {
   width:88px; height:64px;
-  background:#e4c97a;
+  background:#e4c97a; /* classic Finder yellow */
   border-radius:3px;
   box-shadow:2px 2px 0 #000;
   z-index:10;
@@ -86,13 +92,15 @@ section.visible { opacity:1; }
 
 /* ---------------- LABEL ---------------- */
 .folder span {
-  margin-top:16px;
+  position:absolute;
+  width:100%;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:-24px; /* distance below folder */
   font-size:0.7rem;
   letter-spacing:0.6px;
   opacity:0.85;
   text-align:center;
-  display:block;
-  position:relative; /* allow JS to adjust left dynamically */
 }
 </style>
 </head>
@@ -145,19 +153,6 @@ categories.forEach(cat => {
   };
 
   grid.appendChild(folder);
-});
-
-/* ---------------- CENTER LABELS ---------------- */
-document.querySelectorAll(".folder").forEach(folder => {
-  const label = folder.querySelector("span");
-  const stack = folder.querySelector(".folder-stack");
-
-  // calculate shift to center label over full stack width
-  const stackWidth = stack.offsetWidth;
-  const labelWidth = label.offsetWidth;
-  const shift = (stackWidth - labelWidth) / 2;
-
-  label.style.left = `${shift}px`;
 });
 
 /* ---------------- FADE IN ---------------- */

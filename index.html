@@ -83,12 +83,11 @@ section.visible { opacity:1; }
 .folder-main {
   position:absolute;
   inset:0;
-  background:#e4c97a; /* solid yellow */
+  background:#e4c97a; /* classic Finder yellow */
   border-radius:3px;
   box-shadow:2px 2px 0 #000;
   z-index:10;
   image-rendering: pixelated;
-  overflow:hidden;
 }
 
 /* ---------------- TAB ---------------- */
@@ -101,62 +100,66 @@ section.visible { opacity:1; }
   background:#e4c97a;
   border-radius:2px;
   box-shadow:1px 1px 0 #000;
+  overflow:hidden;
 }
 
-/* ---------------- PIXEL GLITCH EFFECT ---------------- */
+/* ---------------- PIXEL GLITCH LINES ---------------- */
 .folder-main::before {
   content:"";
   position:absolute;
   top:0;
   left:0;
-  width:100%;
-  height:100%;
+  right:0;
+  height:18px;
   background:
-    linear-gradient(to right, rgba(0,0,0,0.1) 2px, transparent 2px),
-    linear-gradient(to bottom, rgba(0,0,0,0.1) 2px, transparent 2px);
-  background-size:4px 4px;
-  pointer-events:none;
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0,0,0,0.35),
+      rgba(0,0,0,0.35) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  opacity:0;
+  animation:top-glitch 4s infinite steps(1);
 }
+
+@keyframes top-glitch {
+  0%, 82% { opacity:0; }
+  83% { opacity:0.6; transform:translateX(-1px); }
+  84% { transform:translateX(1px); }
+  85% { opacity:0; transform:none; }
+}
+
+/* ---------------- TRAIL LAYERS ---------------- */
+/* each one is its own object = visible gaps */
 
 .trail {
   position:absolute;
+  inset:0;
   border-radius:3px;
   image-rendering: pixelated;
 }
 
-/* ---------------- TRAIL LAYERS ---------------- */
-/* offsets + pixel glitch on left */
+/* spacing + color intentionally hard */
 .trail.t1 {
-  top:0; left:-12px;
-  width:88px; height:64px;
+  transform:translateX(-12px);
   background:#c9a84a; /* muted gold */
   z-index:6;
-  box-shadow:
-    2px 0 0 #000, 4px 2px 0 #000; /* small pixel artifacts */
 }
 .trail.t2 {
-  top:0; left:-26px;
-  width:88px; height:64px;
+  transform:translateX(-26px);
   background:#9b5c5c; /* CRT red */
   z-index:5;
-  box-shadow:
-    2px 1px 0 #000, 5px 3px 0 #000;
 }
 .trail.t3 {
-  top:0; left:-40px;
-  width:88px; height:64px;
+  transform:translateX(-40px);
   background:#6e7f52; /* sick green */
   z-index:4;
-  box-shadow:
-    1px 0 0 #000, 3px 2px 0 #000;
 }
 .trail.t4 {
-  top:0; left:-54px;
-  width:88px; height:64px;
+  transform:translateX(-54px);
   background:#5a6b8c; /* dusty blue */
   z-index:3;
-  box-shadow:
-    2px 1px 0 #000, 4px 3px 0 #000;
 }
 
 /* ---------------- LABEL ---------------- */

@@ -32,19 +32,18 @@ body { scrollbar-width:none; }
 section {
   width: 100%;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
-  scroll-snap-align: start;
+  display:flex;
   justify-content:center;
   align-items:center;
-  opacity: 0;
-  transition: opacity 0.9s ease;
+  scroll-snap-align:start;
+  opacity:0;
+  transition:opacity 0.9s ease;
 }
 section.visible { opacity:1; }
 
 /* ---------------- HERO ---------------- */
 #hero {
-  background: url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
+  background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
   position:relative;
 }
 
@@ -62,7 +61,7 @@ section.visible { opacity:1; }
 .folder-grid {
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-  gap:60px;
+  gap:64px;
   max-width:900px;
   padding:0 60px;
   justify-items:center;
@@ -80,41 +79,46 @@ section.visible { opacity:1; }
 /* ---------------- STACKED RETRO FOLDER ---------------- */
 .folder-icon {
   position: relative;
-  width: 88px;
-  height: 64px;
-  background: linear-gradient(#f5d58a,#d9a441);
+  width:88px;
+  height:64px;
+  background:linear-gradient(#f7e7b5,#ddb54a);
   border-radius:6px 6px 4px 4px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
-  overflow: visible;
-  z-index: 4;
+  box-shadow:0 6px 20px rgba(0,0,0,0.35);
+  overflow:visible;
+  z-index:10;
 }
 
-/* --- layer 1 (yellow, closest) --- */
+/* ---------------- RAINBOW STACK (LEFT ONLY) ---------------- */
+
+/* layer 1 – light beige (closest) */
 .folder-icon::before {
   content:"";
   position:absolute;
   inset:0;
-  transform: translateX(-6px);
-  background: linear-gradient(#ffeaa0,#e6b94d);
+  transform:translateX(-6px);
+  background:linear-gradient(#fff1c9,#e6c66a);
   border-radius:6px 6px 4px 4px;
   z-index:-1;
 }
 
-/* --- layer 2 (red) --- */
+/* layer 2 – red */
 .folder-icon::after {
   content:"";
   position:absolute;
   inset:0;
-  transform: translateX(-12px);
-  background: linear-gradient(#ff8a8a,#c43a3a);
+  transform:translateX(-12px);
+  background:linear-gradient(#ff8c8c,#c63b3b);
   border-radius:6px 6px 4px 4px;
   z-index:-2;
 }
 
-/* --- layer 3 (purple, furthest) --- */
+/* deeper layers via shadows (clean separation) */
 .folder-icon {
   box-shadow:
-    -18px 0 0 0 #7b4fe9,
+    -18px 0 0 0 #ffb347,   /* orange */
+    -24px 0 0 0 #7ed957,   /* green */
+    -30px 0 0 0 #5fa8ff,   /* blue */
+    -36px 0 0 0 #9b6cff,   /* purple */
     0 6px 20px rgba(0,0,0,0.35);
 }
 
@@ -125,9 +129,9 @@ section.visible { opacity:1; }
   left:10px;
   width:36px;
   height:14px;
-  background:#f5d58a;
+  background:#f7e7b5;
   border-radius:4px 4px 0 0;
-  z-index:5;
+  z-index:20;
   overflow:hidden;
 }
 
@@ -145,23 +149,22 @@ section.visible { opacity:1; }
       transparent 3px
     );
   opacity:0;
-  animation: glitch 3.5s infinite;
+  animation:folder-glitch 4s infinite;
 }
 
-/* subtle horizontal corruption */
-@keyframes glitch {
-  0%, 90% {
+@keyframes folder-glitch {
+  0%, 92% {
     opacity:0;
     transform:none;
   }
-  91% {
-    opacity:1;
-    transform: translateX(-1px);
-  }
-  92% {
-    transform: translateX(1px);
-  }
   93% {
+    opacity:1;
+    transform:translateX(-1px);
+  }
+  94% {
+    transform:translateX(1px);
+  }
+  95% {
     opacity:0;
     transform:none;
   }
@@ -169,7 +172,7 @@ section.visible { opacity:1; }
 
 /* ---------------- LABEL ---------------- */
 .folder span {
-  margin-top:12px;
+  margin-top:14px;
   font-size:0.7rem;
   letter-spacing:0.5px;
   opacity:0.9;
@@ -191,7 +194,6 @@ section.visible { opacity:1; }
 </section>
 
 <script>
-/* ---------------- DATA ---------------- */
 const categories = [
   "channelORANGE",
   "Dream State",
@@ -201,7 +203,6 @@ const categories = [
   "Crystallite"
 ];
 
-/* ---------------- BUILD FOLDERS ---------------- */
 const folderGrid = document.getElementById("folderGrid");
 
 categories.forEach(cat => {
@@ -226,16 +227,13 @@ categories.forEach(cat => {
   folderGrid.appendChild(folder);
 });
 
-/* ---------------- FADE IN ---------------- */
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) entry.target.classList.add("visible");
-  });
+/* fade in */
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>e.isIntersecting && e.target.classList.add("visible"));
 },{threshold:0.3});
 
-document.querySelectorAll("section").forEach(s => observer.observe(s));
+document.querySelectorAll("section").forEach(s=>observer.observe(s));
 
-/* ---------------- SCROLL ---------------- */
 document.querySelector('.arrow-down').onclick = () => {
   document.querySelectorAll('section')[1]
     .scrollIntoView({behavior:'smooth'});

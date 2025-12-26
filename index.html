@@ -75,14 +75,14 @@ section.visible { opacity:1; }
 /* ---------------- STACK (FULL VISUAL WIDTH) ---------------- */
 .folder-stack {
   position: relative;
-  width: 144px;   /* ENTIRE visual mass */
+  width: 144px;
   height: 64px;
 }
 
 /* ---------------- BASE FOLDER ---------------- */
 .folder-main {
   position: absolute;
-  right: 0;       /* anchor main folder to right */
+  right: 0;
   top: 0;
   width: 88px;
   height: 64px;
@@ -115,16 +115,15 @@ section.visible { opacity:1; }
   image-rendering: pixelated;
 }
 
-/* hard pixel offsets + gaps */
 .trail.t1 { right:12px; background:#c9a84a; z-index:6; }
 .trail.t2 { right:26px; background:#9b5c5c; z-index:5; }
 .trail.t3 { right:40px; background:#6e7f52; z-index:4; }
 .trail.t4 { right:54px; background:#5a6b8c; z-index:3; }
 
-/* ---------------- LABEL (CENTERED TO STACK) ---------------- */
+/* ---------------- LABEL ---------------- */
 .folder span {
   margin-top:16px;
-  width:144px;       /* SAME as folder-stack */
+  width:144px;
   text-align:center;
   font-size:0.7rem;
   letter-spacing:0.6px;
@@ -145,17 +144,17 @@ section.visible { opacity:1; }
 
 <script>
 const categories = [
-  "channelorange.foldr",
-  "dream-state.foldr",
-  "raw-pnw.foldr",
-  "neon-lights.foldr",
-  "ti.foldr",
-  "crystallite.foldr"
+  { label: "channelORANGE", page: "channelorange.html" },
+  { label: "Dream State", page: "dream-state.html" },
+  { label: "Raw PNW", page: "raw-pnw.html" },
+  { label: "Neon Lights", page: "neon-lights.html" },
+  { label: "fluid", page: "fluid.html" },
+  { label: "Crystallite", page: "crystallite.html" }
 ];
 
 const grid = document.getElementById("folderGrid");
 
-categories.forEach(cat => {
+categories.forEach(item => {
   const folder = document.createElement("div");
   folder.className = "folder";
 
@@ -170,12 +169,11 @@ categories.forEach(cat => {
         <div class="folder-tab"></div>
       </div>
     </div>
-    <span>${cat}</span>
+    <span>${item.label}</span>
   `;
 
   folder.onclick = () => {
-    const page = cat.replace('.foldr','') + ".html";
-    window.location.href = page;
+    window.location.href = item.page;
   };
 
   grid.appendChild(folder);

@@ -26,8 +26,6 @@ html, body {
   overflow-x: hidden;
   scroll-snap-type: y mandatory;
 }
-body::-webkit-scrollbar { width:0; height:0; }
-body { scrollbar-width:none; }
 
 section {
   width: 100%;
@@ -35,7 +33,6 @@ section {
   display: flex;
   flex-direction: column;
   scroll-snap-align: start;
-  overflow: hidden;
   opacity: 0;
   transition: opacity 0.9s ease;
 }
@@ -54,15 +51,10 @@ section.visible { opacity:1; }
   bottom:40px;
   left:50%;
   transform:translateX(-50%);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
   cursor:pointer;
-  user-select:none;
   font-size:1.2rem;
   color:white;
 }
-.arrow-down span { font-size:0.7rem; margin-top:5px; }
 
 /* ---------------- FOLDER GRID ---------------- */
 .folder-section {
@@ -74,28 +66,82 @@ section.visible { opacity:1; }
   grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
   gap:50px;
   max-width:900px;
-  width:100%;
   padding:0 60px;
   justify-items:center;
 }
+
 .folder {
   display:flex;
   flex-direction:column;
   align-items:center;
   cursor:pointer;
-  user-select:none;
 }
+
+/* ---------------- RETRO FOLDER ---------------- */
 .folder-icon {
   width:88px;
   height:64px;
+  position:relative;
   background:linear-gradient(#f5d58a,#d9a441);
   border-radius:6px 6px 4px 4px;
-  position:relative;
   box-shadow:0 6px 20px rgba(0,0,0,0.35);
+  z-index:3;
 }
-.folder-icon::before {
+
+/* --- CLONE LAYERS --- */
+.folder-icon::before,
+.folder-icon::after {
   content:"";
   position:absolute;
+  inset:0;
+  border-radius:6px 6px 4px 4px;
+  z-index:-1;
+}
+
+.folder-icon::before {
+  transform: translateX(-6px);
+  background: linear-gradient(#ff6b6b,#c0392b); /* red */
+  opacity:0.9;
+}
+
+.folder-icon::after {
+  transform: translateX(-12px);
+  background: linear-gradient(#c77dff,#6a00f4); /* purple */
+  opacity:0.85;
+}
+
+/* middle yellow clone */
+.folder-icon {
+  box-shadow:
+    -3px 0 0 #f5d58a,
+    -9px 0 0 #ffdd57,
+    0 6px 20px rgba(0,0,0,0.35);
+}
+
+/* ---------------- GLITCH TAB ---------------- */
+.folder-icon span { pointer-events:none; }
+
+.folder-icon::marker { display:none; }
+
+.folder-icon::after,
+.folder-icon::before { pointer-events:none; }
+
+.folder-icon::before {
+  animation: tab-glitch 3.2s infinite steps(2,end);
+}
+
+/* folder tab */
+.folder-icon > .tab,
+.folder-icon::after {}
+
+/* top tab */
+.folder-icon::before,
+.folder-icon::after {}
+
+.folder-icon::before,
+.folder-icon::after {}
+
+.folder-icon::before {
   top:-10px;
   left:10px;
   width:36px;
@@ -103,6 +149,17 @@ section.visible { opacity:1; }
   background:#f5d58a;
   border-radius:4px 4px 0 0;
 }
+
+/* glitch animation */
+@keyframes tab-glitch {
+  0% { clip-path: inset(0 0 0 0); transform: translate(0); }
+  94% { clip-path: inset(0 0 0 0); }
+  95% { clip-path: inset(20% 0 30% 0); transform: translate(-1px,1px); }
+  96% { clip-path: inset(60% 0 0 0); transform: translate(1px,-1px); }
+  97% { clip-path: inset(0 0 0 0); transform: translate(0); }
+}
+
+/* ---------------- LABEL ---------------- */
 .folder span {
   margin-top:12px;
   font-size:0.7rem;
@@ -121,96 +178,20 @@ section.visible { opacity:1; }
   z-index: 10000;
   background: #fff;
 }
-
-/* ---------------- CENTRAL PANEL ---------------- */
-.info-box {
-  padding: 32px 40px;
-  max-width: 600px;
-  width: 85%;
-  background-image:
-    linear-gradient(
-      to bottom,
-      rgba(244,241,236,0) 0%,
-      rgba(244,241,236,0.25) 40%,
-      rgba(244,241,236,0.6) 65%,
-      rgba(244,241,236,1) 100%
-    ),
-    url("RAW'sJul-Aug8593copy.jpg");
-  background-size: 320px auto;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,1);
-  border-radius: 12px;
-}
-
-/* ---------------- TEXT ---------------- */
-.text-content h1 {
-  margin-bottom: 12px;
-  font-size: 20px;
-  color: white;
-}
-.text-content p {
-  margin-bottom: 18px;
-  font-size: 12px;
-  letter-spacing: 0.07em;
-  line-height: 1.5;
-  color: white;
-}
-
-/* ---------------- LOADING BAR ---------------- */
-.loading-panel {
-  background: rgba(255,255,255,0.2);
-  padding: 12px 14px;
-  border-radius: 6px;
-}
-.progress-container {
-  display: flex;
-  gap: 6px;
-}
-.progress-segment {
-  width: 6px;
-  height: 18px;
-  background: rgba(255,255,255,0.3);
-  opacity: 0;
-  transform: translateY(2px);
-  transition: 0.3s ease;
-}
-.progress-segment.active {
-  opacity: 1;
-  transform: translateY(0);
-  background: white;
-}
 </style>
 </head>
 
 <body>
 
-<!-- HERO -->
 <section id="hero" class="visible">
-  <div class="arrow-down">↓<span>Photos</span></div>
+  <div class="arrow-down">↓</div>
 </section>
 
-<!-- FOLDER NAV -->
 <section class="folder-section">
   <div class="folder-grid" id="folderGrid"></div>
 </section>
 
-<!-- LOADING SCREEN -->
-<div id="loadingScreen">
-  <div class="info-box">
-    <div class="text-content">
-      <h1>Saul Zidulka-Bejcek</h1>
-      <p>
-        Photography and more.<br>
-        Wildlife, Travel, Psychedelic<span id="dots">...</span>
-      </p>
-      <div class="loading-panel">
-        <div class="progress-container" id="progressBar"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script>
-/* ---------------- DATA ---------------- */
 const categories = [
   "channelORANGE",
   "Dream State",
@@ -220,7 +201,6 @@ const categories = [
   "Crystallite"
 ];
 
-/* ---------------- FOLDER BUILD ---------------- */
 const folderGrid = document.getElementById("folderGrid");
 
 categories.forEach(cat => {
@@ -229,72 +209,18 @@ categories.forEach(cat => {
   folder.innerHTML = `<div class="folder-icon"></div><span>${cat}</span>`;
 
   folder.onclick = () => {
-    const pageName = cat
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9\-]/g,'') + ".html";
-
+    const pageName = cat.toLowerCase().replace(/\s+/g,'-') + ".html";
     window.location.href = pageName;
   };
 
   folderGrid.appendChild(folder);
 });
 
-/* ---------------- LOADING SCREEN (FIRST VISIT ONLY) ---------------- */
-const progressBar = document.getElementById("progressBar");
-const SEGMENTS = 18;
-
-for (let i = 0; i < SEGMENTS; i++) {
-  const seg = document.createElement("div");
-  seg.className = "progress-segment";
-  progressBar.appendChild(seg);
-}
-
-if (!sessionStorage.getItem("hasLoadedBefore")) {
-  const loading = document.getElementById("loadingScreen");
-  loading.style.display = "flex";
-
-  const segments = document.querySelectorAll(".progress-segment");
-  let index = 0;
-
-  const interval = setInterval(() => {
-    if (index < segments.length) {
-      segments[index].classList.add("active");
-      index++;
-    } else {
-      clearInterval(interval);
-    }
-  }, 50);
-
-  setTimeout(() => {
-    loading.style.display = "none";
-    sessionStorage.setItem("hasLoadedBefore", "true");
-  }, 1500);
-}
-
-/* ---------------- BLINKING DOTS ---------------- */
-const dots = document.getElementById("dots");
-let count = 0;
-setInterval(() => {
-  dots.textContent = ".".repeat(count % 4);
-  count++;
-}, 650);
-
-/* ---------------- SCROLL NAV ---------------- */
-document.querySelector('.arrow-down').onclick = () => {
-  document.querySelector('.folder-section')
-    .scrollIntoView({ behavior:'smooth' });
-};
-
-/* ---------------- FADE IN ---------------- */
 const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) entry.target.classList.add("visible");
-  });
-}, { threshold: 0.3 });
+  entries.forEach(e => e.isIntersecting && e.target.classList.add("visible"));
+},{threshold:0.3});
 
-document.querySelectorAll("section")
-  .forEach(s => observer.observe(s));
+document.querySelectorAll("section").forEach(s => observer.observe(s));
 </script>
 
 </body>

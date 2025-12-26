@@ -58,7 +58,7 @@ section.visible { opacity:1; }
 .folder-grid {
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-  gap:80px;
+  gap:70px;
   max-width:900px;
   padding:0 60px;
   justify-items:center;
@@ -83,7 +83,7 @@ section.visible { opacity:1; }
 .folder-main {
   position:absolute;
   inset:0;
-  background:#e4c97a; /* classic Finder yellow */
+  background:#e4c97a; /* solid yellow */
   border-radius:3px;
   box-shadow:2px 2px 0 #000;
   z-index:10;
@@ -103,62 +103,40 @@ section.visible { opacity:1; }
   overflow:hidden;
 }
 
-/* ---------------- PIXEL GLITCH LINES ---------------- */
-.folder-main::before {
-  content:"";
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  height:18px;
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      rgba(0,0,0,0.35),
-      rgba(0,0,0,0.35) 1px,
-      transparent 1px,
-      transparent 3px
-    );
-  opacity:0;
-  animation:top-glitch 4s infinite steps(1);
-}
-
-@keyframes top-glitch {
-  0%, 82% { opacity:0; }
-  83% { opacity:0.6; transform:translateX(-1px); }
-  84% { transform:translateX(1px); }
-  85% { opacity:0; transform:none; }
-}
-
-/* ---------------- TRAIL LAYERS ---------------- */
-/* each one is its own object = visible gaps */
-
+/* ---------------- PEAKING FOLDERS ---------------- */
 .trail {
   position:absolute;
-  inset:0;
   border-radius:3px;
   image-rendering: pixelated;
 }
 
-/* spacing + color intentionally hard */
+/* Each trail is offset left more, with visible gap */
 .trail.t1 {
-  transform:translateX(-12px);
-  background:#c9a84a; /* muted gold */
+  top:0; left:-12px;
+  width:88px;
+  height:64px;
+  background:#caa24a; /* muted yellow */
   z-index:6;
 }
 .trail.t2 {
-  transform:translateX(-26px);
-  background:#9b5c5c; /* CRT red */
+  top:0; left:-24px;
+  width:88px;
+  height:64px;
+  background:#b25c5c; /* muted red */
   z-index:5;
 }
 .trail.t3 {
-  transform:translateX(-40px);
-  background:#6e7f52; /* sick green */
+  top:0; left:-36px;
+  width:88px;
+  height:64px;
+  background:#6e7f52; /* muted green */
   z-index:4;
 }
 .trail.t4 {
-  transform:translateX(-54px);
-  background:#5a6b8c; /* dusty blue */
+  top:0; left:-48px;
+  width:88px;
+  height:64px;
+  background:#5a6b8c; /* muted blue */
   z-index:3;
 }
 

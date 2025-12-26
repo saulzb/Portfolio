@@ -75,19 +75,22 @@ section.visible { opacity:1; }
 /* ---------------- STACK WRAPPER ---------------- */
 .folder-stack {
   position:relative;
-  width:88px;
+  width:100px; /* expand width to include trails for centering */
   height:64px;
+  display:flex;
+  justify-content:flex-end; /* aligns main folder to right edge of stack */
 }
 
 /* ---------------- BASE FOLDER ---------------- */
 .folder-main {
-  position:absolute;
-  inset:0;
-  background:#e4c97a; /* classic Finder yellow */
+  width:88px; 
+  height:64px;
+  background:#e4c97a; /* solid yellow */
   border-radius:3px;
   box-shadow:2px 2px 0 #000;
   z-index:10;
   image-rendering: pixelated;
+  position:relative;
 }
 
 /* ---------------- TAB ---------------- */
@@ -103,64 +106,20 @@ section.visible { opacity:1; }
   overflow:hidden;
 }
 
-/* ---------------- PIXEL GLITCH LINES ---------------- */
-.folder-main::before {
-  content:"";
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  height:18px;
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      rgba(0,0,0,0.35),
-      rgba(0,0,0,0.35) 1px,
-      transparent 1px,
-      transparent 3px
-    );
-  opacity:0;
-  animation:top-glitch 4s infinite steps(1);
-}
-
-@keyframes top-glitch {
-  0%, 82% { opacity:0; }
-  83% { opacity:0.6; transform:translateX(-1px); }
-  84% { transform:translateX(1px); }
-  85% { opacity:0; transform:none; }
-}
-
 /* ---------------- TRAIL LAYERS ---------------- */
-/* each one is its own object = visible gaps */
-
 .trail {
   position:absolute;
-  inset:0;
+  width:88px; 
+  height:64px;
   border-radius:3px;
   image-rendering: pixelated;
 }
 
-/* spacing + color intentionally hard */
-.trail.t1 {
-  transform:translateX(-12px);
-  background:#c9a84a; /* muted gold */
-  z-index:6;
-}
-.trail.t2 {
-  transform:translateX(-26px);
-  background:#9b5c5c; /* CRT red */
-  z-index:5;
-}
-.trail.t3 {
-  transform:translateX(-40px);
-  background:#6e7f52; /* sick green */
-  z-index:4;
-}
-.trail.t4 {
-  transform:translateX(-54px);
-  background:#5a6b8c; /* dusty blue */
-  z-index:3;
-}
+/* spacing + color */
+.trail.t1 { left:-12px; background:#c9a84a; z-index:6; }
+.trail.t2 { left:-26px; background:#9b5c5c; z-index:5; }
+.trail.t3 { left:-40px; background:#6e7f52; z-index:4; }
+.trail.t4 { left:-54px; background:#5a6b8c; z-index:3; }
 
 /* ---------------- LABEL ---------------- */
 .folder span {
@@ -169,6 +128,7 @@ section.visible { opacity:1; }
   letter-spacing:0.6px;
   opacity:0.85;
   text-align:center;
+  width:100px; /* same as folder-stack width to center text */
 }
 </style>
 </head>

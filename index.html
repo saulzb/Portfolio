@@ -75,10 +75,10 @@ section.visible { opacity:1; }
 /* ---------------- STACK WRAPPER ---------------- */
 .folder-stack {
   position:relative;
-  width:100px; /* expand width to include trails for centering */
+  width:100px; /* includes peaking layers */
   height:64px;
   display:flex;
-  justify-content:flex-end; /* aligns main folder to right edge of stack */
+  justify-content:flex-end; /* main folder aligned to right edge */
 }
 
 /* ---------------- BASE FOLDER ---------------- */
@@ -128,7 +128,9 @@ section.visible { opacity:1; }
   letter-spacing:0.6px;
   opacity:0.85;
   text-align:center;
-  width:100px; /* same as folder-stack width to center text */
+  width:100px; /* same as folder-stack width */
+  transform: translateX(-8px); /* shift left to account for peaking */
+  display:block;
 }
 </style>
 </head>
@@ -159,6 +161,9 @@ categories.forEach(cat => {
   const folder = document.createElement("div");
   folder.className = "folder";
 
+  // lowercase + .foldr appended
+  const displayText = cat.toLowerCase() + ".foldr";
+
   folder.innerHTML = `
     <div class="folder-stack">
       <div class="trail t4"></div>
@@ -170,7 +175,7 @@ categories.forEach(cat => {
         <div class="folder-tab"></div>
       </div>
     </div>
-    <span>${cat}</span>
+    <span>${displayText}</span>
   `;
 
   folder.onclick = () => {

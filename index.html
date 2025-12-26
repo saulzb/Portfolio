@@ -9,31 +9,49 @@
 
 <style>
 /* ---------------- RESET ---------------- */
-* { box-sizing: border-box; margin:0; padding:0; }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 /* ---------------- PAGE ---------------- */
 html, body {
-  width: 100%; height: 100%;
+  width: 100%;
+  height: 100%;
   font-family: 'Michroma', sans-serif;
-  background: #111; color:#eee;
-  overflow-x:hidden;
+  background: #111;
+  color: #eee;
+  overflow-x: hidden;
   scroll-snap-type: y mandatory;
 }
 
 section {
-  width: 100%; height: 100vh;
-  display:flex; justify-content:center; align-items:center;
+  width: 100%;
+  height: 100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
   scroll-snap-align:start;
-  opacity:0; transition:opacity 0.9s ease;
+  opacity:0;
+  transition:opacity 0.9s ease;
 }
 section.visible { opacity:1; }
 
 /* ---------------- HERO ---------------- */
-#hero { background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; position:relative; }
+#hero {
+  background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
+  position:relative;
+}
+
 .arrow-down {
-  position:absolute; bottom:40px; left:50%;
+  position:absolute;
+  bottom:40px;
+  left:50%;
   transform:translateX(-50%);
-  cursor:pointer; font-size:1.2rem; color:white;
+  cursor:pointer;
+  font-size:1.2rem;
+  color:white;
 }
 
 /* ---------------- GRID ---------------- */
@@ -52,22 +70,22 @@ section.visible { opacity:1; }
   flex-direction:column;
   align-items:center;
   cursor:pointer;
-  position:relative; /* relative for absolute label */
 }
 
 /* ---------------- STACK WRAPPER ---------------- */
 .folder-stack {
   position:relative;
-  width:100px; /* includes peaking layers */
+  width:100px; /* expand width to include trails for centering */
   height:64px;
   display:flex;
-  justify-content:flex-end; /* main folder aligned to right edge */
+  justify-content:flex-end; /* aligns main folder to right edge of stack */
 }
 
 /* ---------------- BASE FOLDER ---------------- */
 .folder-main {
-  width:88px; height:64px;
-  background:#e4c97a; /* classic Finder yellow */
+  width:88px; 
+  height:64px;
+  background:#e4c97a; /* solid yellow */
   border-radius:3px;
   box-shadow:2px 2px 0 #000;
   z-index:10;
@@ -77,14 +95,27 @@ section.visible { opacity:1; }
 
 /* ---------------- TAB ---------------- */
 .folder-tab {
-  position:absolute; top:-8px; left:8px;
-  width:32px; height:12px;
-  background:#e4c97a; border-radius:2px; box-shadow:1px 1px 0 #000;
+  position:absolute;
+  top:-8px;
+  left:8px;
+  width:32px;
+  height:12px;
+  background:#e4c97a;
+  border-radius:2px;
+  box-shadow:1px 1px 0 #000;
   overflow:hidden;
 }
 
 /* ---------------- TRAIL LAYERS ---------------- */
-.trail { position:absolute; width:88px; height:64px; border-radius:3px; image-rendering: pixelated; }
+.trail {
+  position:absolute;
+  width:88px; 
+  height:64px;
+  border-radius:3px;
+  image-rendering: pixelated;
+}
+
+/* spacing + color */
 .trail.t1 { left:-12px; background:#c9a84a; z-index:6; }
 .trail.t2 { left:-26px; background:#9b5c5c; z-index:5; }
 .trail.t3 { left:-40px; background:#6e7f52; z-index:4; }
@@ -92,15 +123,12 @@ section.visible { opacity:1; }
 
 /* ---------------- LABEL ---------------- */
 .folder span {
-  position:absolute;
-  width:100%;
-  left:50%;
-  transform:translateX(-50%);
-  bottom:-24px; /* distance below folder */
+  margin-top:16px;
   font-size:0.7rem;
   letter-spacing:0.6px;
   opacity:0.85;
   text-align:center;
+  width:100px; /* same as folder-stack width to center text */
 }
 </style>
 </head>
@@ -131,8 +159,6 @@ categories.forEach(cat => {
   const folder = document.createElement("div");
   folder.className = "folder";
 
-  const displayText = cat.toLowerCase() + ".foldr";
-
   folder.innerHTML = `
     <div class="folder-stack">
       <div class="trail t4"></div>
@@ -144,7 +170,7 @@ categories.forEach(cat => {
         <div class="folder-tab"></div>
       </div>
     </div>
-    <span>${displayText}</span>
+    <span>${cat}</span>
   `;
 
   folder.onclick = () => {

@@ -9,49 +9,31 @@
 
 <style>
 /* ---------------- RESET ---------------- */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin:0; padding:0; }
 
 /* ---------------- PAGE ---------------- */
 html, body {
-  width: 100%;
-  height: 100%;
+  width: 100%; height: 100%;
   font-family: 'Michroma', sans-serif;
-  background: #111;
-  color: #eee;
-  overflow-x: hidden;
+  background: #111; color:#eee;
+  overflow-x:hidden;
   scroll-snap-type: y mandatory;
 }
 
 section {
-  width: 100%;
-  height: 100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  width: 100%; height: 100vh;
+  display:flex; justify-content:center; align-items:center;
   scroll-snap-align:start;
-  opacity:0;
-  transition:opacity 0.9s ease;
+  opacity:0; transition:opacity 0.9s ease;
 }
 section.visible { opacity:1; }
 
 /* ---------------- HERO ---------------- */
-#hero {
-  background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
-  position:relative;
-}
-
+#hero { background:url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat; position:relative; }
 .arrow-down {
-  position:absolute;
-  bottom:40px;
-  left:50%;
+  position:absolute; bottom:40px; left:50%;
   transform:translateX(-50%);
-  cursor:pointer;
-  font-size:1.2rem;
-  color:white;
+  cursor:pointer; font-size:1.2rem; color:white;
 }
 
 /* ---------------- GRID ---------------- */
@@ -65,12 +47,7 @@ section.visible { opacity:1; }
 }
 
 /* ---------------- FOLDER ---------------- */
-.folder {
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  cursor:pointer;
-}
+.folder { display:flex; flex-direction:column; align-items:center; cursor:pointer; }
 
 /* ---------------- STACK WRAPPER ---------------- */
 .folder-stack {
@@ -83,9 +60,8 @@ section.visible { opacity:1; }
 
 /* ---------------- BASE FOLDER ---------------- */
 .folder-main {
-  width:88px; 
-  height:64px;
-  background:#e4c97a; /* solid yellow */
+  width:88px; height:64px;
+  background:#e4c97a;
   border-radius:3px;
   box-shadow:2px 2px 0 #000;
   z-index:10;
@@ -95,27 +71,14 @@ section.visible { opacity:1; }
 
 /* ---------------- TAB ---------------- */
 .folder-tab {
-  position:absolute;
-  top:-8px;
-  left:8px;
-  width:32px;
-  height:12px;
-  background:#e4c97a;
-  border-radius:2px;
-  box-shadow:1px 1px 0 #000;
+  position:absolute; top:-8px; left:8px;
+  width:32px; height:12px;
+  background:#e4c97a; border-radius:2px; box-shadow:1px 1px 0 #000;
   overflow:hidden;
 }
 
 /* ---------------- TRAIL LAYERS ---------------- */
-.trail {
-  position:absolute;
-  width:88px; 
-  height:64px;
-  border-radius:3px;
-  image-rendering: pixelated;
-}
-
-/* spacing + color */
+.trail { position:absolute; width:88px; height:64px; border-radius:3px; image-rendering: pixelated; }
 .trail.t1 { left:-12px; background:#c9a84a; z-index:6; }
 .trail.t2 { left:-26px; background:#9b5c5c; z-index:5; }
 .trail.t3 { left:-40px; background:#6e7f52; z-index:4; }
@@ -128,9 +91,8 @@ section.visible { opacity:1; }
   letter-spacing:0.6px;
   opacity:0.85;
   text-align:center;
-  width:100px; /* same as folder-stack width */
-  transform: translateX(-18px); /* shifted further left for proper centering */
   display:block;
+  position:relative; /* allow JS to adjust left dynamically */
 }
 </style>
 </head>
@@ -161,7 +123,6 @@ categories.forEach(cat => {
   const folder = document.createElement("div");
   folder.className = "folder";
 
-  // lowercase + .foldr appended
   const displayText = cat.toLowerCase() + ".foldr";
 
   folder.innerHTML = `
@@ -184,6 +145,19 @@ categories.forEach(cat => {
   };
 
   grid.appendChild(folder);
+});
+
+/* ---------------- CENTER LABELS ---------------- */
+document.querySelectorAll(".folder").forEach(folder => {
+  const label = folder.querySelector("span");
+  const stack = folder.querySelector(".folder-stack");
+
+  // calculate shift to center label over full stack width
+  const stackWidth = stack.offsetWidth;
+  const labelWidth = label.offsetWidth;
+  const shift = (stackWidth - labelWidth) / 2;
+
+  label.style.left = `${shift}px`;
 });
 
 /* ---------------- FADE IN ---------------- */

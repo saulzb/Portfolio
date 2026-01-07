@@ -9,101 +9,170 @@
 
 <style>
 html, body {
-  margin:0; padding:0; width:100%; height:100%;
-  font-family:'Archivo Expanded',sans-serif; background:#111; color:#eee;
-  scroll-behavior:smooth; overflow-x:hidden; scroll-snap-type:y mandatory;
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  font-family:'Michroma',sans-serif;
+  background:#111;
+  color:#eee;
+  scroll-behavior:smooth;
+  overflow-x:hidden;
+  scroll-snap-type:y mandatory;
 }
 body::-webkit-scrollbar { width:0; height:0; }
 body { scrollbar-width:none; }
 
 section {
-  width:100%; height:100vh; box-sizing:border-box;
-  position:relative; display:flex; flex-direction:column;
-  scroll-snap-align:start; overflow:hidden;
-  opacity:0; transition:opacity 0.9s ease;
+  width:100%;
+  height:100vh;
+  box-sizing:border-box;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  scroll-snap-align:start;
+  overflow:hidden;
+  opacity:0;
+  transition:opacity 0.9s ease;
 }
 section.visible { opacity:1; }
 
+/* ---------------- CATEGORY SECTION ---------------- */
 .category-section {
   padding-top:120px;
-  align-items:flex-start; /* left-align content */
+  align-items:flex-start;
 }
 
-/* Section heading */
-section h2 {
-  margin:0 0 50px 40px; /* keep some left margin for alignment */
-  text-align:left; color:white;
-  font-family:'Michroma',sans-serif; font-size:1rem;
-}
-section h2::before, section h2::after { display:none; } /* remove lines */
+/* ---------------- CLASSIC MAC OS TITLE ---------------- */
+.mac-title {
+  display:inline-block;
+  padding:6px 14px;
+  margin:0 0 50px 40px;
 
-/* Photo grid */
+  font-size:0.9rem;
+  letter-spacing:0.08em;
+
+  color:#000;
+  background:#d6d6d6;
+
+  border-top:2px solid #fff;
+  border-left:2px solid #fff;
+  border-right:2px solid #7a7a7a;
+  border-bottom:2px solid #7a7a7a;
+
+  box-shadow:
+    inset 1px 1px 0 #f5f5f5,
+    inset -1px -1px 0 #8a8a8a;
+
+  image-rendering:pixelated;
+}
+
+/* ---------------- PHOTO GRID ---------------- */
 .category-row {
-  display:flex; flex-wrap:wrap; justify-content:flex-start; gap:40px; margin-bottom:40px;
-  margin-left:40px; /* left-align grid */
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-start;
+  gap:40px;
+  margin-left:40px;
+  margin-bottom:40px;
 }
 
 .category-row img {
-  width:180px; height:180px; object-fit:cover;
+  width:180px;
+  height:180px;
+  object-fit:cover;
   border-radius:6px;
   box-shadow:0 8px 20px rgba(0,0,0,0.45);
+  background:linear-gradient(145deg,#333,#222);
+  cursor:pointer;
   position:relative;
-  background: linear-gradient(145deg, #333, #222);
-  overflow:hidden;
 }
 
-/* Mac-style reflection overlay */
+/* Mac-style gloss */
 .category-row img::after {
   content:"";
-  position:absolute; top:0; left:0;
-  width:100%; height:100%;
+  position:absolute;
+  inset:0;
   border-radius:6px;
   pointer-events:none;
-  background: linear-gradient(120deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 60%);
-  transform: translateX(-100%);
-  animation: gloss 3s infinite linear;
+  background:linear-gradient(
+    120deg,
+    rgba(255,255,255,0.2) 0%,
+    rgba(255,255,255,0) 60%
+  );
+  transform:translateX(-100%);
+  animation:gloss 3s infinite linear;
 }
 
-/* Gloss animation */
 @keyframes gloss {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% { transform:translateX(-100%); }
+  100% { transform:translateX(100%); }
 }
 
-/* Photo numbering - Mac system font */
+/* Photo numbering */
 .photo-number {
   display:block;
-  text-align:center;
   margin-top:6px;
-  font-family:-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
   font-size:0.75rem;
   color:#ccc;
+  text-align:center;
 }
 
-/* Lightbox */
+/* ---------------- LIGHTBOX ---------------- */
 #lightboxOverlay {
-  position:fixed; inset:0;
+  position:fixed;
+  inset:0;
   background:rgba(0,0,0,0.92);
-  display:none; align-items:center; justify-content:center;
+  display:none;
+  align-items:center;
+  justify-content:center;
   z-index:9999;
 }
-#lightboxOverlay img { max-width:90vw; max-height:90vh; border-radius:4px; }
-.lightbox-arrow { position:fixed; top:50%; transform:translateY(-50%);
-  font-size:48px; background:none; border:none; color:white; cursor:pointer; }
-#lightbox-prev { left:30px; } #lightbox-next { right:30px; }
-#lightbox-close { position:fixed; top:20px; right:30px; font-size:42px; background:none; border:none; color:white; cursor:pointer; }
+#lightboxOverlay img {
+  max-width:90vw;
+  max-height:90vh;
+  border-radius:4px;
+}
+.lightbox-arrow {
+  position:fixed;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:48px;
+  background:none;
+  border:none;
+  color:white;
+  cursor:pointer;
+}
+#lightbox-prev { left:30px; }
+#lightbox-next { right:30px; }
+#lightbox-close {
+  position:fixed;
+  top:20px;
+  right:30px;
+  font-size:42px;
+  background:none;
+  border:none;
+  color:white;
+  cursor:pointer;
+}
 
 /* Back arrow */
 .back-arrow {
-  position:absolute; top:20px; left:30px;
-  font-size:28px; cursor:pointer; color:white;
-  user-select:none; transform:rotate(270deg);
+  position:absolute;
+  top:20px;
+  left:30px;
+  font-size:28px;
+  cursor:pointer;
+  color:white;
+  user-select:none;
+  transform:rotate(270deg);
 }
 </style>
 </head>
+
 <body>
 
-<!-- Back arrow -->
 <div class="back-arrow" onclick="window.location.href='index.html'">^</div>
 
 <div id="photoSections"></div>
@@ -118,21 +187,32 @@ section h2::before, section h2::after { display:none; } /* remove lines */
 <script>
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
-const CATEGORY_NAME = "TI"; // change per page
+
+/* OPTION B */
+const CATEGORY_FILTER = "TI";   // Contentful category
+const DISPLAY_NAME = "Fluid";  // Visible title
 
 async function fetchPhotos(){
-  const res = await fetch(`https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`);
+  const res = await fetch(
+    `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
+  );
   const data = await res.json();
 
   const assets = {};
-  data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
+  data.includes?.Asset?.forEach(a => {
+    assets[a.sys.id] = a.fields.file.url;
+  });
 
-  const photos = data.items.map(i=>({
-    title:i.fields.title,
-    photo:`https:${assets[i.fields.photo.sys.id]}`,
-    thumbnail:i.fields.thumbnail ? `https:${assets[i.fields.thumbnail.sys.id]}` : "",
-    category:i.fields.category
-  })).filter(p=>p.category === CATEGORY_NAME);
+  const photos = data.items
+    .map(i => ({
+      title: i.fields.title,
+      photo: `https:${assets[i.fields.photo.sys.id]}`,
+      thumbnail: i.fields.thumbnail
+        ? `https:${assets[i.fields.thumbnail.sys.id]}`
+        : "",
+      category: i.fields.category
+    }))
+    .filter(p => p.category === CATEGORY_FILTER);
 
   displayPhotos(photos);
 }
@@ -142,20 +222,20 @@ function displayPhotos(photos){
 
   const section = document.createElement("section");
   section.className = "category-section";
-  section.innerHTML = `<h2>${CATEGORY_NAME}</h2>`;
+  section.innerHTML = `<h2 class="mac-title">${DISPLAY_NAME}</h2>`;
 
   let counter = 1;
   const row = document.createElement("div");
   row.className = "category-row";
 
-  photos.forEach(p=>{
+  photos.forEach(p => {
     const img = document.createElement("img");
     img.src = p.thumbnail || p.photo;
     img.dataset.full = p.photo;
 
     const number = document.createElement("span");
     number.className = "photo-number";
-    number.textContent = "IMG_" + (counter<10 ? "0"+counter : counter);
+    number.textContent = "IMG_" + String(counter).padStart(2,"0");
     counter++;
 
     const wrapper = document.createElement("div");
@@ -171,29 +251,45 @@ function displayPhotos(photos){
   section.appendChild(row);
   container.appendChild(section);
 
-  document.querySelectorAll("section").forEach(s=>observer.observe(s));
+  observer.observe(section);
   enableLightbox();
 }
 
 const observer = new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting) e.target.classList.add("visible");});
+  entries.forEach(e=>{
+    if(e.isIntersecting) e.target.classList.add("visible");
+  });
 },{threshold:0.3});
 
 function enableLightbox(){
   let lbImages=[], lbIndex=0;
+
   document.querySelectorAll(".category-row img").forEach(img=>{
     img.onclick=()=>{
-      const rowImgs=[...img.parentElement.parentElement.querySelectorAll("img")];
-      lbImages=rowImgs.map(i=>i.dataset.full);
-      lbIndex=rowImgs.indexOf(img);
+      const imgs=[...img.parentElement.parentElement.querySelectorAll("img")];
+      lbImages=imgs.map(i=>i.dataset.full);
+      lbIndex=imgs.indexOf(img);
       openLB();
     };
   });
 
-  function openLB(){ document.body.style.overflow="hidden"; document.getElementById("lightbox-img").src=lbImages[lbIndex]; document.getElementById("lightboxOverlay").style.display="flex"; }
-  function closeLB(){ document.body.style.overflow=""; document.getElementById("lightboxOverlay").style.display="none"; }
-  function nextLB(){ lbIndex=(lbIndex+1)%lbImages.length; document.getElementById("lightbox-img").src=lbImages[lbIndex]; }
-  function prevLB(){ lbIndex=(lbIndex-1+lbImages.length)%lbImages.length; document.getElementById("lightbox-img").src=lbImages[lbIndex]; }
+  function openLB(){
+    document.body.style.overflow="hidden";
+    document.getElementById("lightbox-img").src=lbImages[lbIndex];
+    document.getElementById("lightboxOverlay").style.display="flex";
+  }
+  function closeLB(){
+    document.body.style.overflow="";
+    document.getElementById("lightboxOverlay").style.display="none";
+  }
+  function nextLB(){
+    lbIndex=(lbIndex+1)%lbImages.length;
+    document.getElementById("lightbox-img").src=lbImages[lbIndex];
+  }
+  function prevLB(){
+    lbIndex=(lbIndex-1+lbImages.length)%lbImages.length;
+    document.getElementById("lightbox-img").src=lbImages[lbIndex];
+  }
 
   document.getElementById("lightbox-close").onclick=closeLB;
   document.getElementById("lightbox-next").onclick=nextLB;

@@ -35,17 +35,18 @@ section {
 section.visible { opacity:1; }
 
 .category-section {
-  padding-top:120px;
   display:flex;
   flex-direction:column;
-  align-items:center; /* center prism and photos horizontally */
+  align-items:center;       /* horizontal centering */
+  justify-content:center;   /* vertical centering */
+  gap:60px;                 /* space between prism and photos */
+  height:100%;              /* full section height */
 }
 
 /* ---------------- PRISM HEADER ---------------- */
 .prism-wrapper {
-  margin-bottom:60px;
   display:flex;
-  justify-content:center; /* center prism */
+  justify-content:center; /* center prism horizontally */
 }
 
 .prism {
@@ -184,7 +185,6 @@ section.visible { opacity:1; }
   flex-wrap:wrap;
   gap:40px;
   justify-content:center; /* center images */
-  margin:0; /* remove left margin */
 }
 
 .category-row img {

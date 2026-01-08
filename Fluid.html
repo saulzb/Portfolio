@@ -16,72 +16,84 @@ html, body {
   background:#0a0a0c;
   color:#eaeaea;
   font-family:'Michroma',sans-serif;
+  scroll-behavior:smooth;
+  overflow-x:hidden;
+  scroll-snap-type:y mandatory;
+}
+
+body::-webkit-scrollbar { width:0; height:0; }
+body { scrollbar-width:none; }
+
+section {
+  width:100%;
+  height:100vh;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  scroll-snap-align:start;
+  overflow:hidden;
+  opacity:0;
+  transition:opacity 0.9s ease;
+}
+section.visible { opacity:1; }
+
+.category-section {
+  padding-top:120px;
+  align-items:flex-start;
 }
 
 /* ---------------- PRISM HEADER ---------------- */
 .prism-wrapper {
-  margin:120px 0 80px 40px;
+  margin:0 0 60px 40px;
 }
 
-/* TRIANGULAR CYLINDER PRISM */
 .prism {
   position:relative;
-  width:360px;
-  height:84px;
+  width:300px;
+  height:68px;
   overflow:hidden;
 
-  /* prism shape */
   clip-path: polygon(
-    6% 0%,
-    94% 0%,
-    100% 50%,
-    94% 100%,
-    6% 100%,
+    8% 0%,
+    100% 0%,
+    100% 100%,
+    8% 100%,
     0% 50%
   );
 
   background:
     linear-gradient(135deg,
-      rgba(255,255,255,0.14),
-      rgba(255,255,255,0.04) 40%,
-      rgba(255,255,255,0.10)
+      rgba(255,255,255,0.16),
+      rgba(255,255,255,0.04) 45%,
+      rgba(255,255,255,0.1)
     );
 
-  border:1px solid rgba(255,255,255,0.25);
+  border:1px solid rgba(255,255,255,0.28);
 
   box-shadow:
     inset 0 0 0 1px rgba(255,255,255,0.08),
-    0 20px 40px rgba(0,0,0,0.7);
+    0 18px 36px rgba(0,0,0,0.75);
 
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(2.5px);
 }
 
-/* SIDE FACES (3D illusion) */
-.prism::before,
-.prism::after {
+/* LEFT PRISM FACE ONLY */
+.prism::before {
   content:"";
   position:absolute;
+  left:0;
   top:0;
-  width:22px;
+  width:26px;
   height:100%;
   background:linear-gradient(
     to bottom,
-    rgba(255,255,255,0.25),
+    rgba(255,255,255,0.35),
     rgba(255,255,255,0.02)
   );
-}
-
-.prism::before {
-  left:0;
   clip-path: polygon(0 50%, 100% 0, 100% 100%);
 }
 
-.prism::after {
-  right:0;
-  clip-path: polygon(0 0, 100% 50%, 0 100%);
-}
-
-/* ---------------- TEXT CORE ---------------- */
+/* ---------------- PRISM TEXT ---------------- */
 .prism-text {
   position:absolute;
   inset:0;
@@ -89,15 +101,14 @@ html, body {
   align-items:center;
   justify-content:center;
 
-  font-size:1.4rem; /* larger so it breaks edges */
+  font-size:1.2rem;
   letter-spacing:0.32em;
   text-transform:uppercase;
 
   color:#f0f0f0;
-  filter: blur(0.4px); /* base glass softness */
+  filter: blur(0.45px);
 }
 
-/* ---------------- PRISM SPECTRUM LAYERS ---------------- */
 .prism-text span {
   position:absolute;
   inset:0;
@@ -108,49 +119,15 @@ html, body {
   white-space:nowrap;
 }
 
-/* RED */
-.prism-r {
-  color:#ff3b30;
-  transform:translateX(-3px);
-  filter: blur(0.8px);
-}
+/* PRISM SPECTRUM */
+.prism-r { color:#ff453a; transform:translateX(-3px); filter:blur(0.9px); }
+.prism-o { color:#ff9f0a; transform:translateX(-2px); filter:blur(0.7px); }
+.prism-y { color:#ffd60a; transform:translateX(-1px); filter:blur(0.6px); }
+.prism-g { color:#32d74b; transform:translateX(1px);  filter:blur(0.6px); }
+.prism-c { color:#64d2ff; transform:translateX(2px);  filter:blur(0.7px); }
+.prism-b { color:#0a84ff; transform:translateX(3px);  filter:blur(0.9px); }
 
-/* ORANGE */
-.prism-o {
-  color:#ff9f0a;
-  transform:translateX(-2px);
-  filter: blur(0.6px);
-}
-
-/* YELLOW */
-.prism-y {
-  color:#ffd60a;
-  transform:translateX(-1px);
-  filter: blur(0.5px);
-}
-
-/* GREEN */
-.prism-g {
-  color:#32d74b;
-  transform:translateX(1px);
-  filter: blur(0.5px);
-}
-
-/* CYAN */
-.prism-c {
-  color:#64d2ff;
-  transform:translateX(2px);
-  filter: blur(0.6px);
-}
-
-/* BLUE */
-.prism-b {
-  color:#0a84ff;
-  transform:translateX(3px);
-  filter: blur(0.8px);
-}
-
-/* EDGE ABBREVIATION ZONES */
+/* EDGE CLIPPING */
 .prism-text::before,
 .prism-text::after {
   content:"";
@@ -160,42 +137,204 @@ html, body {
   height:18%;
   pointer-events:none;
 }
-
 .prism-text::before {
   top:0;
-  background:linear-gradient(
-    to bottom,
-    rgba(0,0,0,0.6),
-    transparent
-  );
+  background:linear-gradient(to bottom, rgba(0,0,0,0.65), transparent);
 }
-
 .prism-text::after {
   bottom:0;
-  background:linear-gradient(
-    to top,
-    rgba(0,0,0,0.6),
-    transparent
-  );
+  background:linear-gradient(to top, rgba(0,0,0,0.65), transparent);
+}
+
+/* ---------------- PHOTO GRID ---------------- */
+.category-row {
+  display:flex;
+  flex-wrap:wrap;
+  gap:40px;
+  margin-left:40px;
+}
+
+.category-row img {
+  width:180px;
+  height:180px;
+  object-fit:cover;
+  border-radius:6px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.45);
+}
+
+/* Photo numbering */
+.photo-number {
+  margin-top:6px;
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
+  font-size:0.75rem;
+  color:#ccc;
+  text-align:center;
+}
+
+/* ---------------- LIGHTBOX ---------------- */
+#lightboxOverlay {
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.92);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+#lightboxOverlay img {
+  max-width:90vw;
+  max-height:90vh;
+  border-radius:4px;
+}
+
+.lightbox-arrow {
+  position:fixed;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:48px;
+  background:none;
+  border:none;
+  color:white;
+  cursor:pointer;
+}
+
+#lightbox-prev { left:30px; }
+#lightbox-next { right:30px; }
+#lightbox-close {
+  position:fixed;
+  top:20px;
+  right:30px;
+  font-size:42px;
+  background:none;
+  border:none;
+  color:white;
+  cursor:pointer;
+}
+
+/* Back arrow */
+.back-arrow {
+  position:absolute;
+  top:20px;
+  left:30px;
+  font-size:28px;
+  cursor:pointer;
+  color:white;
+  user-select:none;
+  transform:rotate(270deg);
 }
 </style>
 </head>
 
 <body>
 
-<div class="prism-wrapper">
-  <div class="prism">
-    <div class="prism-text">
-      FLUID
-      <span class="prism-r">FLUID</span>
-      <span class="prism-o">FLUID</span>
-      <span class="prism-y">FLUID</span>
-      <span class="prism-g">FLUID</span>
-      <span class="prism-c">FLUID</span>
-      <span class="prism-b">FLUID</span>
+<div class="back-arrow" onclick="window.location.href='index.html'">^</div>
+
+<section class="category-section visible">
+  <div class="prism-wrapper">
+    <div class="prism">
+      <div class="prism-text">
+        FLUID
+        <span class="prism-r">FLUID</span>
+        <span class="prism-o">FLUID</span>
+        <span class="prism-y">FLUID</span>
+        <span class="prism-g">FLUID</span>
+        <span class="prism-c">FLUID</span>
+        <span class="prism-b">FLUID</span>
+      </div>
     </div>
   </div>
+
+  <div id="photoSections"></div>
+</section>
+
+<div id="lightboxOverlay">
+  <button id="lightbox-close">×</button>
+  <button id="lightbox-prev" class="lightbox-arrow">❮</button>
+  <img id="lightbox-img" src="">
+  <button id="lightbox-next" class="lightbox-arrow">❯</button>
 </div>
+
+<script>
+const SPACE_ID = '5w319pzc4eiq';
+const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
+
+const CATEGORY_NAME = "TI";      // internal filter
+const DISPLAY_NAME = "Fluid";    // visual title
+
+async function fetchPhotos(){
+  const res = await fetch(
+    `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
+  );
+  const data = await res.json();
+
+  const assets = {};
+  data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
+
+  const photos = data.items.map(i=>({
+    photo:`https:${assets[i.fields.photo.sys.id]}`,
+    thumbnail:i.fields.thumbnail ? `https:${assets[i.fields.thumbnail.sys.id]}` : "",
+    category:i.fields.category
+  })).filter(p=>p.category === CATEGORY_NAME);
+
+  displayPhotos(photos);
+}
+
+function displayPhotos(photos){
+  const container = document.getElementById("photoSections");
+
+  const row = document.createElement("div");
+  row.className = "category-row";
+
+  let count = 1;
+  photos.forEach(p=>{
+    const img = document.createElement("img");
+    img.src = p.thumbnail || p.photo;
+    img.dataset.full = p.photo;
+
+    const num = document.createElement("span");
+    num.className = "photo-number";
+    num.textContent = "IMG_" + String(count++).padStart(2,"0");
+
+    const wrap = document.createElement("div");
+    wrap.style.display="flex";
+    wrap.style.flexDirection="column";
+    wrap.style.alignItems="center";
+
+    wrap.appendChild(img);
+    wrap.appendChild(num);
+    row.appendChild(wrap);
+  });
+
+  container.appendChild(row);
+  enableLightbox();
+}
+
+function enableLightbox(){
+  let imgs=[], idx=0;
+  document.querySelectorAll(".category-row img").forEach(img=>{
+    img.onclick=()=>{
+      imgs=[...img.parentElement.parentElement.querySelectorAll("img")].map(i=>i.dataset.full);
+      idx=imgs.indexOf(img.dataset.full);
+      open();
+    };
+  });
+
+  function open(){ document.body.style.overflow="hidden"; lb.src=imgs[idx]; overlay.style.display="flex"; }
+  function close(){ document.body.style.overflow=""; overlay.style.display="none"; }
+  function next(){ idx=(idx+1)%imgs.length; lb.src=imgs[idx]; }
+  function prev(){ idx=(idx-1+imgs.length)%imgs.length; lb.src=imgs[idx]; }
+
+  const overlay=document.getElementById("lightboxOverlay");
+  const lb=document.getElementById("lightbox-img");
+
+  document.getElementById("lightbox-close").onclick=close;
+  document.getElementById("lightbox-next").onclick=next;
+  document.getElementById("lightbox-prev").onclick=prev;
+}
+
+fetchPhotos();
+</script>
 
 </body>
 </html>

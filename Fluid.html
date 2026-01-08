@@ -14,318 +14,188 @@ html, body {
   width:100%;
   height:100%;
   background:#0a0a0c;
-  color:#e8e8e8;
+  color:#eaeaea;
   font-family:'Michroma',sans-serif;
-  overflow-x:hidden;
-}
-
-/* ---------------- SECTION ---------------- */
-section {
-  width:100%;
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  opacity:0;
-  transition:opacity 0.8s ease;
-}
-section.visible { opacity:1; }
-
-.category-section {
-  padding-top:120px;
-  align-items:flex-start;
 }
 
 /* ---------------- PRISM HEADER ---------------- */
 .prism-wrapper {
-  position:relative;
-  margin:0 0 60px 40px;
+  margin:120px 0 80px 40px;
 }
 
-/* glass prism */
+/* TRIANGULAR CYLINDER PRISM */
 .prism {
   position:relative;
-  padding:14px 22px;
+  width:360px;
+  height:84px;
+  overflow:hidden;
+
+  /* prism shape */
+  clip-path: polygon(
+    6% 0%,
+    94% 0%,
+    100% 50%,
+    94% 100%,
+    6% 100%,
+    0% 50%
+  );
+
   background:
     linear-gradient(135deg,
-      rgba(255,255,255,0.10),
-      rgba(255,255,255,0.02) 40%,
-      rgba(255,255,255,0.08)
+      rgba(255,255,255,0.14),
+      rgba(255,255,255,0.04) 40%,
+      rgba(255,255,255,0.10)
     );
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
 
-  border:1px solid rgba(255,255,255,0.18);
+  border:1px solid rgba(255,255,255,0.25);
+
   box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.06),
-    0 10px 30px rgba(0,0,0,0.6);
+    inset 0 0 0 1px rgba(255,255,255,0.08),
+    0 20px 40px rgba(0,0,0,0.7);
 
-  image-rendering:pixelated;
-  overflow:hidden;
+  backdrop-filter: blur(3px);
 }
 
-/* prism noise */
+/* SIDE FACES (3D illusion) */
+.prism::before,
 .prism::after {
   content:"";
   position:absolute;
-  inset:0;
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      rgba(255,255,255,0.04),
-      rgba(255,255,255,0.04) 1px,
-      transparent 1px,
-      transparent 3px
-    );
-  opacity:0.25;
-  pointer-events:none;
+  top:0;
+  width:22px;
+  height:100%;
+  background:linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.25),
+    rgba(255,255,255,0.02)
+  );
 }
 
-/* ---------------- TEXT ---------------- */
+.prism::before {
+  left:0;
+  clip-path: polygon(0 50%, 100% 0, 100% 100%);
+}
+
+.prism::after {
+  right:0;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+/* ---------------- TEXT CORE ---------------- */
 .prism-text {
-  position:relative;
-  font-size:0.8rem;
-  letter-spacing:0.22em;
-  text-transform:uppercase;
-  color:#eaeaea;
-}
-
-/* RGB refraction layers */
-.prism-text::before,
-.prism-text::after {
-  content:attr(data-text);
   position:absolute;
-  top:0;
-  left:0;
-  pointer-events:none;
-}
-
-/* CYAN / BLUE */
-.prism-text::before {
-  color:#3fdcff;
-  transform:
-    translateX(2px)
-    translateY(-1px);
-  clip-path:inset(0 0 0 40%);
-  opacity:0.85;
-}
-
-/* MAGENTA / RED */
-.prism-text::after {
-  color:#ff4fd8;
-  transform:
-    translateX(-2px)
-    translateY(1px);
-  clip-path:inset(0 40% 0 0);
-  opacity:0.85;
-}
-
-/* YELLOW channel (extra span) */
-.prism-yellow {
-  position:absolute;
-  top:0;
-  left:0;
-  color:#ffd84a;
-  transform:translateX(1px) translateY(2px);
-  clip-path:inset(35% 0 0 0);
-  opacity:0.7;
-  pointer-events:none;
-}
-
-/* ---------------- GRID ---------------- */
-.category-row {
-  display:flex;
-  flex-wrap:wrap;
-  gap:40px;
-  margin-left:40px;
-}
-
-.category-row img {
-  width:180px;
-  height:180px;
-  object-fit:cover;
-  background:#111;
-  border-radius:2px;
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.05),
-    0 12px 26px rgba(0,0,0,0.65);
-  cursor:pointer;
-}
-
-.photo-number {
-  margin-top:6px;
-  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
-  font-size:0.75rem;
-  color:#9c9c9c;
-  text-align:center;
-}
-
-/* ---------------- LIGHTBOX ---------------- */
-#lightboxOverlay {
-  position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.95);
-  display:none;
+  display:flex;
   align-items:center;
   justify-content:center;
-  z-index:9999;
+
+  font-size:1.4rem; /* larger so it breaks edges */
+  letter-spacing:0.32em;
+  text-transform:uppercase;
+
+  color:#f0f0f0;
+  filter: blur(0.4px); /* base glass softness */
 }
 
-#lightboxOverlay img {
-  max-width:90vw;
-  max-height:90vh;
-}
-
-.lightbox-arrow {
-  position:fixed;
-  top:50%;
-  transform:translateY(-50%);
-  font-size:48px;
-  background:none;
-  border:none;
-  color:#e6e6e6;
-  cursor:pointer;
-}
-
-#lightbox-prev { left:30px; }
-#lightbox-next { right:30px; }
-#lightbox-close {
-  position:fixed;
-  top:20px;
-  right:30px;
-  font-size:42px;
-  background:none;
-  border:none;
-  color:#e6e6e6;
-  cursor:pointer;
-}
-
-.back-arrow {
+/* ---------------- PRISM SPECTRUM LAYERS ---------------- */
+.prism-text span {
   position:absolute;
-  top:20px;
-  left:30px;
-  font-size:28px;
-  cursor:pointer;
-  transform:rotate(270deg);
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+  white-space:nowrap;
+}
+
+/* RED */
+.prism-r {
+  color:#ff3b30;
+  transform:translateX(-3px);
+  filter: blur(0.8px);
+}
+
+/* ORANGE */
+.prism-o {
+  color:#ff9f0a;
+  transform:translateX(-2px);
+  filter: blur(0.6px);
+}
+
+/* YELLOW */
+.prism-y {
+  color:#ffd60a;
+  transform:translateX(-1px);
+  filter: blur(0.5px);
+}
+
+/* GREEN */
+.prism-g {
+  color:#32d74b;
+  transform:translateX(1px);
+  filter: blur(0.5px);
+}
+
+/* CYAN */
+.prism-c {
+  color:#64d2ff;
+  transform:translateX(2px);
+  filter: blur(0.6px);
+}
+
+/* BLUE */
+.prism-b {
+  color:#0a84ff;
+  transform:translateX(3px);
+  filter: blur(0.8px);
+}
+
+/* EDGE ABBREVIATION ZONES */
+.prism-text::before,
+.prism-text::after {
+  content:"";
+  position:absolute;
+  left:0;
+  width:100%;
+  height:18%;
+  pointer-events:none;
+}
+
+.prism-text::before {
+  top:0;
+  background:linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.6),
+    transparent
+  );
+}
+
+.prism-text::after {
+  bottom:0;
+  background:linear-gradient(
+    to top,
+    rgba(0,0,0,0.6),
+    transparent
+  );
 }
 </style>
 </head>
 
 <body>
 
-<div class="back-arrow" onclick="window.location.href='index.html'">^</div>
-<div id="photoSections"></div>
-
-<div id="lightboxOverlay">
-  <button id="lightbox-close">×</button>
-  <button id="lightbox-prev" class="lightbox-arrow">❮</button>
-  <img id="lightbox-img">
-  <button id="lightbox-next" class="lightbox-arrow">❯</button>
-</div>
-
-<script>
-const SPACE_ID = '5w319pzc4eiq';
-const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
-
-const CATEGORY_FILTER = "TI";
-const DISPLAY_NAME = "Fluid";
-
-async function fetchPhotos(){
-  const res = await fetch(
-    `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
-  );
-  const data = await res.json();
-
-  const assets = {};
-  data.includes?.Asset?.forEach(a=>{
-    assets[a.sys.id] = a.fields.file.url;
-  });
-
-  const photos = data.items
-    .map(i=>({
-      photo:`https:${assets[i.fields.photo.sys.id]}`,
-      thumbnail:i.fields.thumbnail
-        ? `https:${assets[i.fields.thumbnail.sys.id]}`
-        : "",
-      category:i.fields.category
-    }))
-    .filter(p=>p.category === CATEGORY_FILTER);
-
-  displayPhotos(photos);
-}
-
-function displayPhotos(photos){
-  const section = document.createElement("section");
-  section.className = "category-section visible";
-
-  section.innerHTML = `
-    <div class="prism-wrapper">
-      <div class="prism">
-        <div class="prism-text" data-text="${DISPLAY_NAME}">
-          ${DISPLAY_NAME}
-          <span class="prism-yellow">${DISPLAY_NAME}</span>
-        </div>
-      </div>
+<div class="prism-wrapper">
+  <div class="prism">
+    <div class="prism-text">
+      FLUID
+      <span class="prism-r">FLUID</span>
+      <span class="prism-o">FLUID</span>
+      <span class="prism-y">FLUID</span>
+      <span class="prism-g">FLUID</span>
+      <span class="prism-c">FLUID</span>
+      <span class="prism-b">FLUID</span>
     </div>
-  `;
-
-  const row = document.createElement("div");
-  row.className = "category-row";
-
-  let i = 1;
-  photos.forEach(p=>{
-    const img = document.createElement("img");
-    img.src = p.thumbnail || p.photo;
-    img.dataset.full = p.photo;
-
-    const num = document.createElement("div");
-    num.className = "photo-number";
-    num.textContent = "IMG_" + String(i++).padStart(2,"0");
-
-    const wrap = document.createElement("div");
-    wrap.style.display="flex";
-    wrap.style.flexDirection="column";
-    wrap.style.alignItems="center";
-    wrap.appendChild(img);
-    wrap.appendChild(num);
-
-    row.appendChild(wrap);
-  });
-
-  section.appendChild(row);
-  document.getElementById("photoSections").appendChild(section);
-  enableLightbox();
-}
-
-function enableLightbox(){
-  let imgs=[], idx=0;
-  document.querySelectorAll(".category-row img").forEach(img=>{
-    img.onclick=()=>{
-      const rowImgs=[...img.parentElement.parentElement.querySelectorAll("img")];
-      imgs=rowImgs.map(i=>i.dataset.full);
-      idx=rowImgs.indexOf(img);
-      open();
-    };
-  });
-
-  function open(){
-    document.body.style.overflow="hidden";
-    document.getElementById("lightbox-img").src=imgs[idx];
-    document.getElementById("lightboxOverlay").style.display="flex";
-  }
-  function close(){
-    document.body.style.overflow="";
-    document.getElementById("lightboxOverlay").style.display="none";
-  }
-  function next(){ idx=(idx+1)%imgs.length; open(); }
-  function prev(){ idx=(idx-1+imgs.length)%imgs.length; open(); }
-
-  document.getElementById("lightbox-close").onclick=close;
-  document.getElementById("lightbox-next").onclick=next;
-  document.getElementById("lightbox-prev").onclick=prev;
-}
-
-fetchPhotos();
-</script>
+  </div>
+</div>
 
 </body>
 </html>

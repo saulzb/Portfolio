@@ -8,21 +8,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
 
 <style>
+/* ---------------- BASE ---------------- */
 html, body {
   margin:0;
   padding:0;
   width:100%;
   height:100%;
-  background:#0a0a0c;
-  color:#eaeaea;
-  font-family:'Michroma',sans-serif;
-  scroll-behavior:smooth;
+  background:#111;
+  color:#eee;
+  font-family:'Michroma', sans-serif;
   overflow-x:hidden;
   scroll-snap-type:y mandatory;
 }
-
-body::-webkit-scrollbar { width:0; height:0; }
-body { scrollbar-width:none; }
 
 section {
   width:100%;
@@ -31,66 +28,76 @@ section {
   display:flex;
   flex-direction:column;
   scroll-snap-align:start;
-  overflow:hidden;
   opacity:0;
   transition:opacity 0.9s ease;
 }
 section.visible { opacity:1; }
 
-.category-section {
-  padding-top:120px;
-  align-items:flex-start;
-}
-
-/* ---------------- PRISM HEADER ---------------- */
-.prism-wrapper {
-  margin:0 0 60px 40px;
+/* ---------------- HEADER / PRISM ---------------- */
+.category-header {
+  padding-top:110px;
+  padding-left:40px;
 }
 
 .prism {
   position:relative;
-  width:300px;
-  height:68px;
-  overflow:hidden;
+  width:340px;
+  height:110px;
+
+  background:rgba(255,255,255,0.04);
+  backdrop-filter: blur(6px);
+  border-left:14px solid rgba(255,255,255,0.25);
 
   clip-path: polygon(
-    8% 0%,
-    100% 0%,
-    100% 100%,
-    8% 100%,
-    0% 50%
+    0% 0%,
+    94% 8%,
+    100% 50%,
+    94% 92%,
+    0% 100%
   );
-
-  background:
-    linear-gradient(135deg,
-      rgba(255,255,255,0.16),
-      rgba(255,255,255,0.04) 45%,
-      rgba(255,255,255,0.1)
-    );
-
-  border:1px solid rgba(255,255,255,0.28);
 
   box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.08),
-    0 18px 36px rgba(0,0,0,0.75);
+    inset 0 0 12px rgba(255,255,255,0.08),
+    0 10px 30px rgba(0,0,0,0.6);
 
-  backdrop-filter: blur(2.5px);
+  overflow:hidden;
 }
 
-/* LEFT PRISM FACE ONLY */
-.prism::before {
-  content:"";
+/* internal prism creases */
+.prism .crease-horizontal {
   position:absolute;
-  left:0;
-  top:0;
-  width:26px;
-  height:100%;
+  left:-10%;
+  width:120%;
+  height:2px;
+  top:58%;
   background:linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.35),
-    rgba(255,255,255,0.02)
+    to right,
+    rgba(255,255,255,0),
+    rgba(255,255,255,0.4),
+    rgba(255,255,255,0)
   );
-  clip-path: polygon(0 50%, 100% 0, 100% 100%);
+  filter: blur(1.4px);
+  opacity:0.5;
+  mix-blend-mode: screen;
+}
+
+.prism .crease-triangle {
+  position:absolute;
+  right:14%;
+  top:50%;
+  width:70px;
+  height:55px;
+  transform:translateY(-50%) skewX(-6deg);
+  background:linear-gradient(
+    to left,
+    rgba(255,255,255,0.35),
+    rgba(255,255,255,0.08),
+    rgba(255,255,255,0)
+  );
+  clip-path: polygon(100% 50%, 0% 0%, 0% 100%);
+  filter: blur(1.8px);
+  opacity:0.45;
+  mix-blend-mode: screen;
 }
 
 /* ---------------- PRISM TEXT ---------------- */
@@ -100,51 +107,32 @@ section.visible { opacity:1; }
   display:flex;
   align-items:center;
   justify-content:center;
-
-  font-size:1.2rem;
-  letter-spacing:0.32em;
-  text-transform:uppercase;
-
-  color:#f0f0f0;
-  filter: blur(0.45px);
+  font-size:2.8rem;
+  letter-spacing:0.15em;
+  font-weight:400;
+  color:white;
+  filter: blur(0.4px);
 }
 
+/* chromatic layers */
 .prism-text span {
   position:absolute;
-  inset:0;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
   display:flex;
   align-items:center;
   justify-content:center;
   pointer-events:none;
-  white-space:nowrap;
 }
 
-/* PRISM SPECTRUM */
-.prism-r { color:#ff453a; transform:translateX(-3px); filter:blur(0.9px); }
-.prism-o { color:#ff9f0a; transform:translateX(-2px); filter:blur(0.7px); }
-.prism-y { color:#ffd60a; transform:translateX(-1px); filter:blur(0.6px); }
-.prism-g { color:#32d74b; transform:translateX(1px);  filter:blur(0.6px); }
-.prism-c { color:#64d2ff; transform:translateX(2px);  filter:blur(0.7px); }
-.prism-b { color:#0a84ff; transform:translateX(3px);  filter:blur(0.9px); }
-
-/* EDGE CLIPPING */
-.prism-text::before,
-.prism-text::after {
-  content:"";
-  position:absolute;
-  left:0;
-  width:100%;
-  height:18%;
-  pointer-events:none;
-}
-.prism-text::before {
-  top:0;
-  background:linear-gradient(to bottom, rgba(0,0,0,0.65), transparent);
-}
-.prism-text::after {
-  bottom:0;
-  background:linear-gradient(to top, rgba(0,0,0,0.65), transparent);
-}
+.prism-r { color:#ff4a4a; transform:translate(-3px, 0); opacity:0.85; }
+.prism-o { color:#ffb347; transform:translate(-2px, 1px); opacity:0.7; }
+.prism-y { color:#fff38a; transform:translate(-1px, -1px); opacity:0.6; }
+.prism-g { color:#4aff88; transform:translate(1px, 0); opacity:0.7; }
+.prism-c { color:#4ad6ff; transform:translate(2px, 1px); opacity:0.6; }
+.prism-b { color:#6b6bff; transform:translate(3px, -1px); opacity:0.5; }
 
 /* ---------------- PHOTO GRID ---------------- */
 .category-row {
@@ -152,6 +140,7 @@ section.visible { opacity:1; }
   flex-wrap:wrap;
   gap:40px;
   margin-left:40px;
+  margin-top:60px;
 }
 
 .category-row img {
@@ -160,15 +149,6 @@ section.visible { opacity:1; }
   object-fit:cover;
   border-radius:6px;
   box-shadow:0 8px 20px rgba(0,0,0,0.45);
-}
-
-/* Photo numbering */
-.photo-number {
-  margin-top:6px;
-  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
-  font-size:0.75rem;
-  color:#ccc;
-  text-align:center;
 }
 
 /* ---------------- LIGHTBOX ---------------- */
@@ -212,7 +192,7 @@ section.visible { opacity:1; }
   cursor:pointer;
 }
 
-/* Back arrow */
+/* ---------------- BACK ---------------- */
 .back-arrow {
   position:absolute;
   top:20px;
@@ -220,7 +200,6 @@ section.visible { opacity:1; }
   font-size:28px;
   cursor:pointer;
   color:white;
-  user-select:none;
   transform:rotate(270deg);
 }
 </style>
@@ -230,9 +209,12 @@ section.visible { opacity:1; }
 
 <div class="back-arrow" onclick="window.location.href='index.html'">^</div>
 
-<section class="category-section visible">
-  <div class="prism-wrapper">
+<section class="visible">
+  <div class="category-header">
     <div class="prism">
+      <div class="crease-horizontal"></div>
+      <div class="crease-triangle"></div>
+
       <div class="prism-text">
         FLUID
         <span class="prism-r">FLUID</span>
@@ -245,24 +227,25 @@ section.visible { opacity:1; }
     </div>
   </div>
 
-  <div id="photoSections"></div>
+  <div class="category-row" id="photoRow"></div>
 </section>
 
 <div id="lightboxOverlay">
   <button id="lightbox-close">×</button>
   <button id="lightbox-prev" class="lightbox-arrow">❮</button>
-  <img id="lightbox-img" src="">
+  <img id="lightbox-img">
   <button id="lightbox-next" class="lightbox-arrow">❯</button>
 </div>
 
 <script>
+/* -------- OPTION B -------- */
+const CATEGORY_FILTER = "TI";     // internal Contentful value
+const DISPLAY_NAME = "Fluid";     // visual title only
+
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
 
-const CATEGORY_NAME = "TI";      // internal filter
-const DISPLAY_NAME = "Fluid";    // visual title
-
-async function fetchPhotos(){
+async function fetchPhotos() {
   const res = await fetch(
     `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
   );
@@ -271,67 +254,34 @@ async function fetchPhotos(){
   const assets = {};
   data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
 
-  const photos = data.items.map(i=>({
-    photo:`https:${assets[i.fields.photo.sys.id]}`,
-    thumbnail:i.fields.thumbnail ? `https:${assets[i.fields.thumbnail.sys.id]}` : "",
-    category:i.fields.category
-  })).filter(p=>p.category === CATEGORY_NAME);
+  const photos = data.items
+    .map(i => ({
+      photo:`https:${assets[i.fields.photo.sys.id]}`,
+      category:i.fields.category
+    }))
+    .filter(p => p.category === CATEGORY_FILTER);
 
-  displayPhotos(photos);
-}
+  const row = document.getElementById("photoRow");
 
-function displayPhotos(photos){
-  const container = document.getElementById("photoSections");
-
-  const row = document.createElement("div");
-  row.className = "category-row";
-
-  let count = 1;
-  photos.forEach(p=>{
+  photos.forEach(p => {
     const img = document.createElement("img");
-    img.src = p.thumbnail || p.photo;
-    img.dataset.full = p.photo;
-
-    const num = document.createElement("span");
-    num.className = "photo-number";
-    num.textContent = "IMG_" + String(count++).padStart(2,"0");
-
-    const wrap = document.createElement("div");
-    wrap.style.display="flex";
-    wrap.style.flexDirection="column";
-    wrap.style.alignItems="center";
-
-    wrap.appendChild(img);
-    wrap.appendChild(num);
-    row.appendChild(wrap);
+    img.src = p.photo;
+    img.onclick = () => openLightbox(p.photo);
+    row.appendChild(img);
   });
-
-  container.appendChild(row);
-  enableLightbox();
 }
 
-function enableLightbox(){
-  let imgs=[], idx=0;
-  document.querySelectorAll(".category-row img").forEach(img=>{
-    img.onclick=()=>{
-      imgs=[...img.parentElement.parentElement.querySelectorAll("img")].map(i=>i.dataset.full);
-      idx=imgs.indexOf(img.dataset.full);
-      open();
-    };
-  });
+/* -------- LIGHTBOX -------- */
+let currentImg = "";
 
-  function open(){ document.body.style.overflow="hidden"; lb.src=imgs[idx]; overlay.style.display="flex"; }
-  function close(){ document.body.style.overflow=""; overlay.style.display="none"; }
-  function next(){ idx=(idx+1)%imgs.length; lb.src=imgs[idx]; }
-  function prev(){ idx=(idx-1+imgs.length)%imgs.length; lb.src=imgs[idx]; }
-
-  const overlay=document.getElementById("lightboxOverlay");
-  const lb=document.getElementById("lightbox-img");
-
-  document.getElementById("lightbox-close").onclick=close;
-  document.getElementById("lightbox-next").onclick=next;
-  document.getElementById("lightbox-prev").onclick=prev;
+function openLightbox(src){
+  currentImg = src;
+  document.getElementById("lightbox-img").src = src;
+  document.getElementById("lightboxOverlay").style.display="flex";
 }
+document.getElementById("lightbox-close").onclick = () => {
+  document.getElementById("lightboxOverlay").style.display="none";
+};
 
 fetchPhotos();
 </script>

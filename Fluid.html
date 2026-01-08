@@ -17,7 +17,6 @@ html, body {
   overflow-x:hidden;
   scroll-snap-type:y mandatory;
 }
-
 body::-webkit-scrollbar { width:0; height:0; }
 body { scrollbar-width:none; }
 
@@ -46,16 +45,17 @@ section.visible { opacity:1; }
 
 .prism {
   position:relative;
-  width:280px;
+  width:300px;
   height:68px;
   overflow:hidden;
 
+  /* short left side */
   clip-path: polygon(
-    8% 0%,
-    100% 0%,
-    100% 100%,
-    8% 100%,
-    0% 50%
+    15% 0%,   /* left-top */
+    100% 0%,  /* right-top */
+    100% 100%,/* right-bottom */
+    15% 100%, /* left-bottom */
+    0% 50%    /* left tip */
   );
 
   background:
@@ -66,21 +66,19 @@ section.visible { opacity:1; }
     );
 
   border:1px solid rgba(255,255,255,0.28);
-
   box-shadow:
     inset 0 0 0 1px rgba(255,255,255,0.08),
     0 18px 36px rgba(0,0,0,0.75);
-
   backdrop-filter: blur(2.5px);
 }
 
-/* LEFT PRISM FACE */
+/* Left face of prism */
 .prism::before {
   content:"";
   position:absolute;
   left:0;
   top:0;
-  width:26px;
+  width:20px;
   height:100%;
   background:linear-gradient(
     to bottom,
@@ -90,35 +88,29 @@ section.visible { opacity:1; }
   clip-path: polygon(0 50%, 100% 0, 100% 100%);
 }
 
-/* INTERNAL PRISM CREASES */
-.prism .inner-crease-right {
+/* Right inward-facing triangle (looking through) */
+.prism::after {
+  content:"";
   position:absolute;
   right:0;
   top:0;
-  width:1px;
+  width:24px;
   height:100%;
-  background:linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.25),
-    rgba(255,255,255,0.05),
-    rgba(255,255,255,0.15)
-  );
-  transform: skewY(-30deg);
-  opacity:0.4;
+  background:linear-gradient(to bottom, rgba(255,255,255,0.18), rgba(255,255,255,0.02));
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  pointer-events:none;
+  z-index:5;
 }
 
-.prism .inner-crease-horizontal {
+/* Horizontal crease */
+.prism .horizontal-crease {
   position:absolute;
-  left:0;
-  top:40%;
-  width:100%;
-  height:1px;
-  background:linear-gradient(
-    to right,
-    rgba(255,255,255,0.2),
-    rgba(255,255,255,0)
-  );
-  opacity:0.3;
+  left:0; right:0;
+  top:45%;
+  height:2px;
+  background: linear-gradient(to right, rgba(255,255,255,0.25), rgba(255,255,255,0), rgba(255,255,255,0.25));
+  pointer-events:none;
+  z-index:6;
 }
 
 /* ---------------- PRISM TEXT ---------------- */
@@ -128,13 +120,10 @@ section.visible { opacity:1; }
   display:flex;
   align-items:center;
   justify-content:center;
-
-  font-size:1.4rem;
+  font-size:1.6rem;
   letter-spacing:0.32em;
   text-transform:uppercase;
-
   color:#f0f0f0;
-  filter: blur(0.45px);
 }
 
 .prism-text span {
@@ -147,7 +136,7 @@ section.visible { opacity:1; }
   white-space:nowrap;
 }
 
-/* PRISM SPECTRUM */
+/* PRISM CHROMATIC ABERRATION */
 .prism-r { color:#ff453a; transform:translateX(-3px); filter:blur(0.9px); }
 .prism-o { color:#ff9f0a; transform:translateX(-2px); filter:blur(0.7px); }
 .prism-y { color:#ffd60a; transform:translateX(-1px); filter:blur(0.6px); }
@@ -155,7 +144,7 @@ section.visible { opacity:1; }
 .prism-c { color:#64d2ff; transform:translateX(2px);  filter:blur(0.7px); }
 .prism-b { color:#0a84ff; transform:translateX(3px);  filter:blur(0.9px); }
 
-/* EDGE CLIPPING */
+/* Edge clipping */
 .prism-text::before,
 .prism-text::after {
   content:"";
@@ -165,14 +154,8 @@ section.visible { opacity:1; }
   height:18%;
   pointer-events:none;
 }
-.prism-text::before {
-  top:0;
-  background:linear-gradient(to bottom, rgba(0,0,0,0.65), transparent);
-}
-.prism-text::after {
-  bottom:0;
-  background:linear-gradient(to top, rgba(0,0,0,0.65), transparent);
-}
+.prism-text::before { top:0; background:linear-gradient(to bottom, rgba(0,0,0,0.65), transparent);}
+.prism-text::after { bottom:0; background:linear-gradient(to top, rgba(0,0,0,0.65), transparent);}
 
 /* ---------------- PHOTO GRID ---------------- */
 .category-row {
@@ -261,9 +244,8 @@ section.visible { opacity:1; }
 <section class="category-section visible">
   <div class="prism-wrapper">
     <div class="prism">
-      <!-- Internal prism creases -->
-      <div class="inner-crease-right"></div>
-      <div class="inner-crease-horizontal"></div>
+      <!-- Horizontal crease -->
+      <div class="horizontal-crease"></div>
 
       <div class="prism-text">
         FLUID
@@ -290,7 +272,6 @@ section.visible { opacity:1; }
 <script>
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
-
 const CATEGORY_NAME = "TI";      // internal filter
 const DISPLAY_NAME = "Fluid";    // visual title
 

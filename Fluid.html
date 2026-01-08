@@ -14,7 +14,7 @@ html, body {
   width:100%;
   height:100%;
   font-family:'Michroma',sans-serif;
-  background:#111;
+  background:#0b0b0f;
   color:#eee;
   scroll-behavior:smooth;
   overflow-x:hidden;
@@ -43,28 +43,49 @@ section.visible { opacity:1; }
   align-items:flex-start;
 }
 
-/* ---------------- CLASSIC MAC OS TITLE ---------------- */
-.mac-title {
-  display:inline-block;
-  padding:6px 14px;
+/* ---------------- RETRO NEON OS HEADER ---------------- */
+.neon-title {
   margin:0 0 50px 40px;
+  padding:8px 18px;
 
-  font-size:0.9rem;
-  letter-spacing:0.08em;
+  display:inline-block;
 
-  color:#000;
-  background:#d6d6d6;
+  font-size:0.85rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
 
-  border-top:2px solid #fff;
-  border-left:2px solid #fff;
-  border-right:2px solid #7a7a7a;
-  border-bottom:2px solid #7a7a7a;
+  color:#7ffcff;
+  background:#0e1118;
 
+  /* old Windows bevel logic */
+  border-top:1px solid #2dfcff;
+  border-left:1px solid #2dfcff;
+  border-right:1px solid #0a2c33;
+  border-bottom:1px solid #0a2c33;
+
+  /* neon phosphor edge */
   box-shadow:
-    inset 1px 1px 0 #f5f5f5,
-    inset -1px -1px 0 #8a8a8a;
+    inset 0 0 0 1px rgba(127,252,255,0.15),
+    0 0 12px rgba(45,252,255,0.25);
 
   image-rendering:pixelated;
+}
+
+/* faint scanline texture */
+.neon-title::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.06),
+      rgba(255,255,255,0.06) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  opacity:0.15;
 }
 
 /* ---------------- PHOTO GRID ---------------- */
@@ -82,13 +103,17 @@ section.visible { opacity:1; }
   height:180px;
   object-fit:cover;
   border-radius:6px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.45);
-  background:linear-gradient(145deg,#333,#222);
   cursor:pointer;
+
+  background:#111;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 10px 25px rgba(0,0,0,0.6);
+
   position:relative;
 }
 
-/* Mac-style gloss */
+/* subtle neon reflection */
 .category-row img::after {
   content:"";
   position:absolute;
@@ -97,25 +122,20 @@ section.visible { opacity:1; }
   pointer-events:none;
   background:linear-gradient(
     120deg,
-    rgba(255,255,255,0.2) 0%,
-    rgba(255,255,255,0) 60%
+    rgba(0,255,255,0.25),
+    rgba(255,0,255,0.15),
+    transparent 60%
   );
-  transform:translateX(-100%);
-  animation:gloss 3s infinite linear;
+  opacity:0.25;
 }
 
-@keyframes gloss {
-  0% { transform:translateX(-100%); }
-  100% { transform:translateX(100%); }
-}
-
-/* Photo numbering */
+/* photo numbering */
 .photo-number {
   display:block;
   margin-top:6px;
   font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
   font-size:0.75rem;
-  color:#ccc;
+  color:#8fa9b5;
   text-align:center;
 }
 
@@ -123,7 +143,7 @@ section.visible { opacity:1; }
 #lightboxOverlay {
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.92);
+  background:rgba(5,6,10,0.95);
   display:none;
   align-items:center;
   justify-content:center;
@@ -141,7 +161,7 @@ section.visible { opacity:1; }
   font-size:48px;
   background:none;
   border:none;
-  color:white;
+  color:#7ffcff;
   cursor:pointer;
 }
 #lightbox-prev { left:30px; }
@@ -153,7 +173,7 @@ section.visible { opacity:1; }
   font-size:42px;
   background:none;
   border:none;
-  color:white;
+  color:#7ffcff;
   cursor:pointer;
 }
 
@@ -164,7 +184,7 @@ section.visible { opacity:1; }
   left:30px;
   font-size:28px;
   cursor:pointer;
-  color:white;
+  color:#7ffcff;
   user-select:none;
   transform:rotate(270deg);
 }
@@ -188,7 +208,6 @@ section.visible { opacity:1; }
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
 
-/* OPTION B */
 const CATEGORY_FILTER = "TI";   // Contentful category
 const DISPLAY_NAME = "Fluid";  // Visible title
 
@@ -205,7 +224,6 @@ async function fetchPhotos(){
 
   const photos = data.items
     .map(i => ({
-      title: i.fields.title,
       photo: `https:${assets[i.fields.photo.sys.id]}`,
       thumbnail: i.fields.thumbnail
         ? `https:${assets[i.fields.thumbnail.sys.id]}`
@@ -222,7 +240,7 @@ function displayPhotos(photos){
 
   const section = document.createElement("section");
   section.className = "category-section";
-  section.innerHTML = `<h2 class="mac-title">${DISPLAY_NAME}</h2>`;
+  section.innerHTML = `<div class="neon-title">${DISPLAY_NAME}</div>`;
 
   let counter = 1;
   const row = document.createElement("div");
@@ -238,19 +256,18 @@ function displayPhotos(photos){
     number.textContent = "IMG_" + String(counter).padStart(2,"0");
     counter++;
 
-    const wrapper = document.createElement("div");
-    wrapper.style.display = "flex";
-    wrapper.style.flexDirection = "column";
-    wrapper.style.alignItems = "center";
-    wrapper.appendChild(img);
-    wrapper.appendChild(number);
+    const wrap = document.createElement("div");
+    wrap.style.display = "flex";
+    wrap.style.flexDirection = "column";
+    wrap.style.alignItems = "center";
+    wrap.appendChild(img);
+    wrap.appendChild(number);
 
-    row.appendChild(wrapper);
+    row.appendChild(wrap);
   });
 
   section.appendChild(row);
   container.appendChild(section);
-
   observer.observe(section);
   enableLightbox();
 }
@@ -262,45 +279,32 @@ const observer = new IntersectionObserver(entries=>{
 },{threshold:0.3});
 
 function enableLightbox(){
-  let lbImages=[], lbIndex=0;
+  let imgs=[], idx=0;
 
   document.querySelectorAll(".category-row img").forEach(img=>{
     img.onclick=()=>{
-      const imgs=[...img.parentElement.parentElement.querySelectorAll("img")];
-      lbImages=imgs.map(i=>i.dataset.full);
-      lbIndex=imgs.indexOf(img);
-      openLB();
+      const rowImgs=[...img.parentElement.parentElement.querySelectorAll("img")];
+      imgs=rowImgs.map(i=>i.dataset.full);
+      idx=rowImgs.indexOf(img);
+      open();
     };
   });
 
-  function openLB(){
+  function open(){
     document.body.style.overflow="hidden";
-    document.getElementById("lightbox-img").src=lbImages[lbIndex];
+    document.getElementById("lightbox-img").src=imgs[idx];
     document.getElementById("lightboxOverlay").style.display="flex";
   }
-  function closeLB(){
+  function close(){
     document.body.style.overflow="";
     document.getElementById("lightboxOverlay").style.display="none";
   }
-  function nextLB(){
-    lbIndex=(lbIndex+1)%lbImages.length;
-    document.getElementById("lightbox-img").src=lbImages[lbIndex];
-  }
-  function prevLB(){
-    lbIndex=(lbIndex-1+lbImages.length)%lbImages.length;
-    document.getElementById("lightbox-img").src=lbImages[lbIndex];
-  }
+  function next(){ idx=(idx+1)%imgs.length; open(); }
+  function prev(){ idx=(idx-1+imgs.length)%imgs.length; open(); }
 
-  document.getElementById("lightbox-close").onclick=closeLB;
-  document.getElementById("lightbox-next").onclick=nextLB;
-  document.getElementById("lightbox-prev").onclick=prevLB;
-
-  window.addEventListener("keydown",e=>{
-    if(document.getElementById("lightboxOverlay").style.display!=="flex") return;
-    if(e.key==="ArrowRight") nextLB();
-    if(e.key==="ArrowLeft") prevLB();
-    if(e.key==="Escape") closeLB();
-  });
+  document.getElementById("lightbox-close").onclick=close;
+  document.getElementById("lightbox-next").onclick=next;
+  document.getElementById("lightbox-prev").onclick=prev;
 }
 
 fetchPhotos();

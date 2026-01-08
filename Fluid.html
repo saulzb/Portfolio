@@ -14,22 +14,19 @@ html, body {
   width:100%;
   height:100%;
   font-family:'Michroma',sans-serif;
-  background:#0d0d0f;
-  color:#eee;
-  scroll-behavior:smooth;
+  background:#0b0b0d;
+  color:#e6e6e6;
   overflow-x:hidden;
-  scroll-snap-type:y mandatory;
 }
 
+/* ---------------- SECTION ---------------- */
 section {
   width:100%;
   height:100vh;
-  position:relative;
   display:flex;
   flex-direction:column;
-  scroll-snap-align:start;
   opacity:0;
-  transition:opacity 0.9s ease;
+  transition:opacity 0.8s ease;
 }
 section.visible { opacity:1; }
 
@@ -38,68 +35,87 @@ section.visible { opacity:1; }
   align-items:flex-start;
 }
 
-/* ---------------- CHROMATIC OS HEADER ---------------- */
+/* ---------------- PRISM / CRT TITLE ---------------- */
 .os-title {
   position:relative;
   margin:0 0 50px 40px;
-  padding:8px 18px;
+  padding:10px 18px;
+  background:#161618;
 
-  display:inline-block;
-
-  background:#1a1a1d;
-
-  border-top:1px solid #3a3a3d;
-  border-left:1px solid #3a3a3d;
-  border-right:1px solid #0a0a0c;
-  border-bottom:1px solid #0a0a0c;
+  border-top:1px solid #2a2a2d;
+  border-left:1px solid #2a2a2d;
+  border-right:1px solid #000;
+  border-bottom:1px solid #000;
 
   font-size:0.8rem;
-  letter-spacing:0.14em;
+  letter-spacing:0.18em;
   text-transform:uppercase;
 
-  color:#e6e6e6;
   image-rendering:pixelated;
+  overflow:hidden;
 }
 
-/* RGB channel splits */
-.os-title::before,
-.os-title::after {
-  content:attr(data-text);
+/* BASE TEXT */
+.os-title .base {
+  position:relative;
+  color:#e2e2e2;
+  z-index:3;
+}
+
+/* RED CHANNEL */
+.os-title .r {
   position:absolute;
-  top:0;
-  left:0;
-  padding:8px 18px;
-  pointer-events:none;
+  top:10px;
+  left:16px;
+  color:#ff3b3b;
+  transform:translateX(-2px);
+  clip-path:inset(0 20% 0 0);
+  opacity:0.8;
+  z-index:1;
 }
 
-.os-title::before {
-  color:rgba(255,0,0,0.5);
-  transform:translate(-1px,0);
+/* BLUE CHANNEL */
+.os-title .b {
+  position:absolute;
+  top:10px;
+  left:16px;
+  color:#3b6bff;
+  transform:translateX(2px);
+  clip-path:inset(0 0 0 20%);
+  opacity:0.8;
+  z-index:1;
 }
 
+/* GREEN CHANNEL */
+.os-title .g {
+  position:absolute;
+  top:11px;
+  left:16px;
+  color:#4bff7a;
+  transform:translateY(1px);
+  clip-path:inset(20% 0 0 0);
+  opacity:0.6;
+  z-index:0;
+}
+
+/* subtle scanline breakup ONLY on base */
 .os-title::after {
-  color:rgba(0,160,255,0.5);
-  transform:translate(1px,0);
-}
-
-/* faint scanline texture */
-.os-title span::after {
   content:"";
   position:absolute;
   inset:0;
   background:
     repeating-linear-gradient(
       to bottom,
-      rgba(255,255,255,0.05),
-      rgba(255,255,255,0.05) 1px,
+      rgba(255,255,255,0.04),
+      rgba(255,255,255,0.04) 1px,
       transparent 1px,
       transparent 3px
     );
-  opacity:0.2;
   pointer-events:none;
+  opacity:0.25;
 }
 
-/* ---------------- PHOTO GRID ---------------- */
+/* ---------------- GRID ---------------- */
 .category-row {
   display:flex;
   flex-wrap:wrap;
@@ -111,15 +127,14 @@ section.visible { opacity:1; }
   width:180px;
   height:180px;
   object-fit:cover;
-  border-radius:4px;
   background:#111;
+  border-radius:3px;
   box-shadow:
     0 0 0 1px rgba(255,255,255,0.05),
-    0 12px 24px rgba(0,0,0,0.6);
+    0 10px 24px rgba(0,0,0,0.6);
   cursor:pointer;
 }
 
-/* numbering */
 .photo-number {
   margin-top:6px;
   font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
@@ -168,14 +183,13 @@ section.visible { opacity:1; }
   cursor:pointer;
 }
 
-/* Back arrow */
+/* back arrow */
 .back-arrow {
   position:absolute;
   top:20px;
   left:30px;
   font-size:28px;
   cursor:pointer;
-  color:#e6e6e6;
   transform:rotate(270deg);
 }
 </style>
@@ -184,7 +198,6 @@ section.visible { opacity:1; }
 <body>
 
 <div class="back-arrow" onclick="window.location.href='index.html'">^</div>
-
 <div id="photoSections"></div>
 
 <div id="lightboxOverlay">
@@ -198,8 +211,8 @@ section.visible { opacity:1; }
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
 
-const CATEGORY_FILTER = "TI";   // Contentful value
-const DISPLAY_NAME = "Fluid";  // What user sees
+const CATEGORY_FILTER = "TI";
+const DISPLAY_NAME = "Fluid";
 
 async function fetchPhotos(){
   const res = await fetch(
@@ -208,31 +221,33 @@ async function fetchPhotos(){
   const data = await res.json();
 
   const assets = {};
-  data.includes?.Asset?.forEach(a => {
+  data.includes?.Asset?.forEach(a=>{
     assets[a.sys.id] = a.fields.file.url;
   });
 
   const photos = data.items
-    .map(i => ({
+    .map(i=>({
       photo:`https:${assets[i.fields.photo.sys.id]}`,
       thumbnail:i.fields.thumbnail
         ? `https:${assets[i.fields.thumbnail.sys.id]}`
         : "",
       category:i.fields.category
     }))
-    .filter(p => p.category === CATEGORY_FILTER);
+    .filter(p=>p.category === CATEGORY_FILTER);
 
   displayPhotos(photos);
 }
 
 function displayPhotos(photos){
-  const container = document.getElementById("photoSections");
-
   const section = document.createElement("section");
-  section.className = "category-section";
+  section.className = "category-section visible";
+
   section.innerHTML = `
-    <div class="os-title" data-text="${DISPLAY_NAME}">
-      <span>${DISPLAY_NAME}</span>
+    <div class="os-title">
+      <div class="r">${DISPLAY_NAME}</div>
+      <div class="g">${DISPLAY_NAME}</div>
+      <div class="b">${DISPLAY_NAME}</div>
+      <div class="base">${DISPLAY_NAME}</div>
     </div>
   `;
 
@@ -260,20 +275,12 @@ function displayPhotos(photos){
   });
 
   section.appendChild(row);
-  container.appendChild(section);
-  observer.observe(section);
+  document.getElementById("photoSections").appendChild(section);
   enableLightbox();
 }
 
-const observer = new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting) e.target.classList.add("visible");
-  });
-},{threshold:0.3});
-
 function enableLightbox(){
   let imgs=[], idx=0;
-
   document.querySelectorAll(".category-row img").forEach(img=>{
     img.onclick=()=>{
       const rowImgs=[...img.parentElement.parentElement.querySelectorAll("img")];

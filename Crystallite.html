@@ -10,204 +10,294 @@
 <style>
 html, body {
   margin:0; padding:0; width:100%; height:100%;
-  font-family:'Archivo Expanded',sans-serif; background:#111; color:#eee;
-  scroll-behavior:smooth; overflow-x:hidden; scroll-snap-type:y mandatory;
+  background:#0a0a0c;
+  color:#eaeaea;
+  font-family:'Michroma',sans-serif;
+  scroll-behavior:smooth;
+  overflow-x:hidden;
+  position: relative;
 }
-body::-webkit-scrollbar { width:0; height:0; }
-body { scrollbar-width:none; }
 
 section {
-  width:100%; height:100vh; box-sizing:border-box;
-  position:relative; display:flex; flex-direction:column;
-  scroll-snap-align:start; overflow:hidden;
-  opacity:0; transition:opacity 0.9s ease;
+  width:100%;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:60px;
+  transform: translateY(-10px);
+  position: relative;
 }
-section.visible { opacity:1; }
 
-.category-section {
-  padding-top:120px;
-  align-items:flex-start; /* left-align content */
+/* ---------------- BACK TO HOME ---------------- */
+.back-home {
+  position: absolute;
+  top:30px;
+  left:50%;
+  transform: translateX(-50%);
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
+  font-size:0.75rem;
+  color: rgba(204, 204, 204, 0.5); /* semi-transparent */
+  text-decoration:none;
+  text-align:center;
+  z-index:10;
+  transition: opacity 0.3s ease;
+  opacity: 0.65; /* initial opacity */
 }
 
-/* Section heading */
-section h2 {
-  margin:0 0 50px 40px; /* keep some left margin for alignment */
-  text-align:left; color:white;
-  font-family:'Michroma',sans-serif; font-size:1rem;
+.back-home:hover {
+  color: rgba(255, 255, 255, 0.8); /* slightly brighter on hover */
 }
-section h2::before, section h2::after { display:none; } /* remove lines */
 
-/* Photo grid */
+/* ---------------- PRISM ---------------- */
+.prism {
+  position:relative;
+  width:280px;
+  height:68px;
+  overflow:hidden;
+
+  clip-path: polygon(
+    8% 0%,
+    100% 0%,
+    100% 100%,
+    8% 100%,
+    0% 50%
+  );
+
+  background:
+    linear-gradient(135deg,
+      rgba(255,255,255,0.16),
+      rgba(255,255,255,0.04) 45%,
+      rgba(255,255,255,0.1)
+    );
+
+  border:1px solid rgba(255,255,255,0.25);
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.08),
+    0 18px 36px rgba(0,0,0,0.75);
+
+  backdrop-filter: blur(2.5px);
+}
+
+/* LEFT EXTERNAL FACE */
+.prism::before {
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:22px;
+  height:100%;
+  background:linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.35),
+    rgba(255,255,255,0.02)
+  );
+  clip-path: polygon(0 50%, 100% 0, 100% 100%);
+}
+
+/* ---------------- INTERNAL PRISM FACES ---------------- */
+.inner-face-right {
+  position:absolute;
+  right:0;
+  top:0;
+  width:34px;
+  height:100%;
+  opacity:0.35;
+
+  background:linear-gradient(
+    to right,
+    rgba(255,255,255,0.35),
+    rgba(255,255,255,0.08),
+    rgba(255,255,255,0)
+  );
+
+  clip-path: polygon(
+    0% 50%,
+    100% 0%,
+    100% 100%
+  );
+}
+
+.inner-face-horizontal {
+  position:absolute;
+  left:-10%;
+  top:46%;
+  width:120%;
+  height:18%;
+  opacity:0.28;
+
+  background:linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.35),
+    rgba(255,255,255,0.08),
+    rgba(255,255,255,0)
+  );
+
+  clip-path: polygon(
+    0% 0%,
+    100% 8%,
+    100% 100%,
+    0% 92%
+  );
+}
+
+/* ---------------- TEXT ---------------- */
+.prism-text {
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.1rem;
+  letter-spacing:0.32em;
+  text-transform:uppercase;
+  filter: blur(0.45px);
+}
+
+.prism-text span {
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+}
+
+/* CHROMATIC SPLIT */
+.prism-r { color:#ff453a; transform:translateX(-3px); filter:blur(0.9px); }
+.prism-o { color:#ff9f0a; transform:translateX(-2px); filter:blur(0.7px); }
+.prism-y { color:#ffd60a; transform:translateX(-1px); filter:blur(0.6px); }
+.prism-g { color:#32d74b; transform:translateX(1px);  filter:blur(0.6px); }
+.prism-c { color:#64d2ff; transform:translateX(2px);  filter:blur(0.7px); }
+.prism-b { color:#0a84ff; transform:translateX(3px);  filter:blur(0.9px); }
+
+/* ---------------- PHOTO GRID ---------------- */
 .category-row {
-  display:flex; flex-wrap:wrap; justify-content:flex-start; gap:40px; margin-bottom:40px;
-  margin-left:40px; /* left-align grid */
+  display:flex;
+  flex-wrap:wrap;
+  gap:40px;
+  justify-content:center;
 }
 
 .category-row img {
-  width:180px; height:180px; object-fit:cover;
+  width:180px;
+  height:180px;
+  object-fit:cover;
   border-radius:6px;
   box-shadow:0 8px 20px rgba(0,0,0,0.45);
-  position:relative;
-  background: linear-gradient(145deg, #333, #222);
-  overflow:hidden;
+  cursor:pointer;
 }
 
-/* Mac-style reflection overlay */
-.category-row img::after {
-  content:"";
-  position:absolute; top:0; left:0;
-  width:100%; height:100%;
-  border-radius:6px;
-  pointer-events:none;
-  background: linear-gradient(120deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 60%);
-  transform: translateX(-100%);
-  animation: gloss 3s infinite linear;
-}
-
-/* Gloss animation */
-@keyframes gloss {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-/* Photo numbering - Mac system font */
 .photo-number {
-  display:block;
-  text-align:center;
   margin-top:6px;
-  font-family:-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
   font-size:0.75rem;
   color:#ccc;
-}
-
-/* Lightbox */
-#lightboxOverlay {
-  position:fixed; inset:0;
-  background:rgba(0,0,0,0.92);
-  display:none; align-items:center; justify-content:center;
-  z-index:9999;
-}
-#lightboxOverlay img { max-width:90vw; max-height:90vh; border-radius:4px; }
-.lightbox-arrow { position:fixed; top:50%; transform:translateY(-50%);
-  font-size:48px; background:none; border:none; color:white; cursor:pointer; }
-#lightbox-prev { left:30px; } #lightbox-next { right:30px; }
-#lightbox-close { position:fixed; top:20px; right:30px; font-size:42px; background:none; border:none; color:white; cursor:pointer; }
-
-/* Back arrow */
-.back-arrow {
-  position:absolute; top:20px; left:30px;
-  font-size:28px; cursor:pointer; color:white;
-  user-select:none; transform:rotate(270deg);
+  text-align:center;
 }
 </style>
 </head>
+
 <body>
 
-<!-- Back arrow -->
-<div class="back-arrow" onclick="window.location.href='index.html'">^</div>
+<section>
 
-<div id="photoSections"></div>
+  <a href="index.html" class="back-home">Back to Home</a>
 
-<div id="lightboxOverlay">
-  <button id="lightbox-close">×</button>
-  <button id="lightbox-prev" class="lightbox-arrow">❮</button>
-  <img id="lightbox-img" src="">
-  <button id="lightbox-next" class="lightbox-arrow">❯</button>
-</div>
+  <div class="prism">
+    <div class="inner-face-right"></div>
+    <div class="inner-face-horizontal"></div>
+
+    <div class="prism-text">
+      Crystallite
+      <span class="prism-r">Crystallite</span>
+      <span class="prism-o">Crystallite</span>
+      <span class="prism-y">Crystallite</span>
+      <span class="prism-g">Crystallite</span>
+      <span class="prism-c">Crystallite</span>
+      <span class="prism-b">Crystallite</cspan>
+    </div>
+  </div>
+
+  <div id="photoSections"></div>
+
+</section>
 
 <script>
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
-const CATEGORY_NAME = "Crystallite"; // change per page
+const CATEGORY_NAME = "Crystallite";
 
 async function fetchPhotos(){
-  const res = await fetch(`https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`);
+  const res = await fetch(
+    `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
+  );
   const data = await res.json();
 
   const assets = {};
   data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
 
   const photos = data.items.map(i=>({
-    title:i.fields.title,
     photo:`https:${assets[i.fields.photo.sys.id]}`,
     thumbnail:i.fields.thumbnail ? `https:${assets[i.fields.thumbnail.sys.id]}` : "",
     category:i.fields.category
   })).filter(p=>p.category === CATEGORY_NAME);
 
-  displayPhotos(photos);
+  renderPhotos(photos);
 }
 
-function displayPhotos(photos){
-  const container = document.getElementById("photoSections");
-
-  const section = document.createElement("section");
-  section.className = "category-section";
-  section.innerHTML = `<h2>${CATEGORY_NAME}</h2>`;
-
-  let counter = 1;
+function renderPhotos(photos){
   const row = document.createElement("div");
   row.className = "category-row";
 
+  let count = 1;
   photos.forEach(p=>{
+    const link = document.createElement("a");
+    link.href = p.photo;
+    link.target = "_blank";
+
     const img = document.createElement("img");
     img.src = p.thumbnail || p.photo;
-    img.dataset.full = p.photo;
 
-    const number = document.createElement("span");
-    number.className = "photo-number";
-    number.textContent = "IMG_" + (counter<10 ? "0"+counter : counter);
-    counter++;
+    const num = document.createElement("div");
+    num.className = "photo-number";
+    num.textContent = "IMG_" + String(count++).padStart(2,"0");
 
-    const wrapper = document.createElement("div");
-    wrapper.style.display = "flex";
-    wrapper.style.flexDirection = "column";
-    wrapper.style.alignItems = "center";
-    wrapper.appendChild(img);
-    wrapper.appendChild(number);
+    const wrap = document.createElement("div");
+    wrap.style.display="flex";
+    wrap.style.flexDirection="column";
+    wrap.style.alignItems="center";
 
-    row.appendChild(wrapper);
+    link.appendChild(img);
+    wrap.appendChild(link);
+    wrap.appendChild(num);
+
+    row.appendChild(wrap);
   });
 
-  section.appendChild(row);
-  container.appendChild(section);
-
-  document.querySelectorAll("section").forEach(s=>observer.observe(s));
-  enableLightbox();
-}
-
-const observer = new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting) e.target.classList.add("visible");});
-},{threshold:0.3});
-
-function enableLightbox(){
-  let lbImages=[], lbIndex=0;
-  document.querySelectorAll(".category-row img").forEach(img=>{
-    img.onclick=()=>{
-      const rowImgs=[...img.parentElement.parentElement.querySelectorAll("img")];
-      lbImages=rowImgs.map(i=>i.dataset.full);
-      lbIndex=rowImgs.indexOf(img);
-      openLB();
-    };
-  });
-
-  function openLB(){ document.body.style.overflow="hidden"; document.getElementById("lightbox-img").src=lbImages[lbIndex]; document.getElementById("lightboxOverlay").style.display="flex"; }
-  function closeLB(){ document.body.style.overflow=""; document.getElementById("lightboxOverlay").style.display="none"; }
-  function nextLB(){ lbIndex=(lbIndex+1)%lbImages.length; document.getElementById("lightbox-img").src=lbImages[lbIndex]; }
-  function prevLB(){ lbIndex=(lbIndex-1+lbImages.length)%lbImages.length; document.getElementById("lightbox-img").src=lbImages[lbIndex]; }
-
-  document.getElementById("lightbox-close").onclick=closeLB;
-  document.getElementById("lightbox-next").onclick=nextLB;
-  document.getElementById("lightbox-prev").onclick=prevLB;
-
-  window.addEventListener("keydown",e=>{
-    if(document.getElementById("lightboxOverlay").style.display!=="flex") return;
-    if(e.key==="ArrowRight") nextLB();
-    if(e.key==="ArrowLeft") prevLB();
-    if(e.key==="Escape") closeLB();
-  });
+  document.getElementById("photoSections").appendChild(row);
 }
 
 fetchPhotos();
+
+/* ---------------- SCROLL FADE EFFECT FOR BACK BUTTON ---------------- */
+const backButton = document.querySelector('.back-home');
+
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY || document.documentElement.scrollTop;
+  const fadeStart = 50; // start fading after 50px
+  const fadeEnd = 250;  // fully transparent after 250px
+  if(scrollTop < fadeStart){
+    backButton.style.opacity = 0.5;
+  } else if(scrollTop > fadeEnd){
+    backButton.style.opacity = 0;
+  } else {
+    const opacity = 0.5 * (1 - (scrollTop - fadeStart) / (fadeEnd - fadeStart));
+    backButton.style.opacity = opacity;
+  }
+});
 </script>
 
 </body>

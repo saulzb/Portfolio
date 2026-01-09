@@ -15,24 +15,11 @@ html, body {
   font-family:'Michroma',sans-serif;
   scroll-behavior:smooth;
   overflow-x:hidden;
-  scroll-snap-type:y mandatory;
 }
-
-body::-webkit-scrollbar { width:0; height:0; }
-body { scrollbar-width:none; }
 
 section {
   width:100%;
   height:100vh;
-  display:flex;
-  flex-direction:column;
-  scroll-snap-align:start;
-  opacity:0;
-  transition:opacity 0.9s ease;
-}
-section.visible { opacity:1; }
-
-.category-section {
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -42,11 +29,6 @@ section.visible { opacity:1; }
 }
 
 /* ---------------- PRISM ---------------- */
-.prism-wrapper {
-  display:flex;
-  justify-content:center;
-}
-
 .prism {
   position:relative;
   width:280px;
@@ -93,28 +75,28 @@ section.visible { opacity:1; }
   clip-path: polygon(0 50%, 100% 0, 100% 100%);
 }
 
-/* ---------------- INTERNAL FACES ---------------- */
+/* ---------------- INTERNAL PRISM FACES ---------------- */
 
-/* RIGHT INWARD TRIANGLE (far face) */
+/* RIGHT FAR FACE (points LEFT now) */
 .inner-face-right {
   position:absolute;
   right:0;
   top:0;
-  width:36px;
+  width:34px;
   height:100%;
   opacity:0.35;
 
   background:linear-gradient(
-    to left,
+    to right,
     rgba(255,255,255,0.35),
-    rgba(255,255,255,0.05),
+    rgba(255,255,255,0.08),
     rgba(255,255,255,0)
   );
 
   clip-path: polygon(
-    100% 50%,
-    0% 0%,
-    0% 100%
+    0% 50%,
+    100% 0%,
+    100% 100%
   );
 }
 
@@ -164,7 +146,7 @@ section.visible { opacity:1; }
   pointer-events:none;
 }
 
-/* SPECTRUM */
+/* CHROMATIC SPLIT */
 .prism-r { color:#ff453a; transform:translateX(-3px); filter:blur(0.9px); }
 .prism-o { color:#ff9f0a; transform:translateX(-2px); filter:blur(0.7px); }
 .prism-y { color:#ffd60a; transform:translateX(-1px); filter:blur(0.6px); }
@@ -172,7 +154,7 @@ section.visible { opacity:1; }
 .prism-c { color:#64d2ff; transform:translateX(2px);  filter:blur(0.7px); }
 .prism-b { color:#0a84ff; transform:translateX(3px);  filter:blur(0.9px); }
 
-/* ---------------- PHOTOS ---------------- */
+/* ---------------- PHOTO GRID ---------------- */
 .category-row {
   display:flex;
   flex-wrap:wrap;
@@ -200,29 +182,78 @@ section.visible { opacity:1; }
 
 <body>
 
-<section class="category-section visible">
+<section>
 
-  <div class="prism-wrapper">
-    <div class="prism">
+  <div class="prism">
+    <div class="inner-face-right"></div>
+    <div class="inner-face-horizontal"></div>
 
-      <!-- INTERNAL GEOMETRY -->
-      <div class="inner-face-right"></div>
-      <div class="inner-face-horizontal"></div>
-
-      <div class="prism-text">
-        FLUID
-        <span class="prism-r">FLUID</span>
-        <span class="prism-o">FLUID</span>
-        <span class="prism-y">FLUID</span>
-        <span class="prism-g">FLUID</span>
-        <span class="prism-c">FLUID</span>
-        <span class="prism-b">FLUID</span>
-      </div>
+    <div class="prism-text">
+      FLUID
+      <span class="prism-r">FLUID</span>
+      <span class="prism-o">FLUID</span>
+      <span class="prism-y">FLUID</span>
+      <span class="prism-g">FLUID</span>
+      <span class="prism-c">FLUID</span>
+      <span class="prism-b">FLUID</span>
     </div>
   </div>
 
   <div id="photoSections"></div>
+
 </section>
+
+<script>
+const SPACE_ID = '5w319pzc4eiq';
+const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
+const CATEGORY_NAME = "TI";
+
+async function fetchPhotos(){
+  const res = await fetch(
+    `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
+  );
+  const data = await res.json();
+
+  const assets = {};
+  data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
+
+  const photos = data.items.map(i=>({
+    photo:`https:${assets[i.fields.photo.sys.id]}`,
+    thumbnail:i.fields.thumbnail ? `https:${assets[i.fields.thumbnail.sys.id]}` : "",
+    category:i.fields.category
+  })).filter(p=>p.category === CATEGORY_NAME);
+
+  renderPhotos(photos);
+}
+
+function renderPhotos(photos){
+  const row = document.createElement("div");
+  row.className = "category-row";
+
+  let count = 1;
+  photos.forEach(p=>{
+    const img = document.createElement("img");
+    img.src = p.thumbnail || p.photo;
+
+    const num = document.createElement("div");
+    num.className = "photo-number";
+    num.textContent = "IMG_" + String(count++).padStart(2,"0");
+
+    const wrap = document.createElement("div");
+    wrap.style.display="flex";
+    wrap.style.flexDirection="column";
+    wrap.style.alignItems="center";
+
+    wrap.appendChild(img);
+    wrap.appendChild(num);
+    row.appendChild(wrap);
+  });
+
+  document.getElementById("photoSections").appendChild(row);
+}
+
+fetchPhotos();
+</script>
 
 </body>
 </html>

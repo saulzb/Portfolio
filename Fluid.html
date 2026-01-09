@@ -24,11 +24,10 @@ section {
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:flex-start; /* move content slightly higher */
+  justify-content:center;
   gap:60px;
-  transform: translateY(-30px); /* slightly higher */
+  transform: translateY(-10px);
   position: relative;
-  padding-top:60px; /* add some top padding so Back button doesn't overlap */
 }
 
 /* ---------------- BACK TO HOME ---------------- */
@@ -39,13 +38,16 @@ section {
   transform: translateX(-50%);
   font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
   font-size:0.75rem;
-  color: rgba(204, 204, 204, 0.5); /* 50% opacity */
+  color: rgba(204, 204, 204, 0.5); /* semi-transparent */
   text-decoration:none;
   text-align:center;
   z-index:10;
+  transition: opacity 0.3s ease;
+  opacity: 0.5; /* initial opacity */
 }
+
 .back-home:hover {
-  color: rgba(255, 255, 255, 0.8); /* brighter on hover */
+  color: rgba(255, 255, 255, 0.8); /* slightly brighter on hover */
 }
 
 /* ---------------- PRISM ---------------- */
@@ -279,6 +281,23 @@ function renderPhotos(photos){
 }
 
 fetchPhotos();
+
+/* ---------------- SCROLL FADE EFFECT FOR BACK BUTTON ---------------- */
+const backButton = document.querySelector('.back-home');
+
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY || document.documentElement.scrollTop;
+  const fadeStart = 50; // start fading after 50px
+  const fadeEnd = 250;  // fully transparent after 250px
+  if(scrollTop < fadeStart){
+    backButton.style.opacity = 0.5;
+  } else if(scrollTop > fadeEnd){
+    backButton.style.opacity = 0;
+  } else {
+    const opacity = 0.5 * (1 - (scrollTop - fadeStart) / (fadeEnd - fadeStart));
+    backButton.style.opacity = opacity;
+  }
+});
 </script>
 
 </body>

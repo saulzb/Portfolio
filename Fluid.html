@@ -15,17 +15,36 @@ html, body {
   font-family:'Michroma',sans-serif;
   scroll-behavior:smooth;
   overflow-x:hidden;
+  position: relative;
 }
 
 section {
   width:100%;
-  height:100vh;
+  min-height:100vh;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
   gap:60px;
   transform: translateY(-10px);
+  position: relative;
+}
+
+/* ---------------- BACK TO HOME ---------------- */
+.back-home {
+  position: absolute;
+  top:20px;
+  left:50%;
+  transform: translateX(-50%);
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
+  font-size:0.75rem;
+  color:#ccc;
+  text-decoration:none;
+  text-align:center;
+  z-index:10;
+}
+.back-home:hover {
+  color:#fff;
 }
 
 /* ---------------- PRISM ---------------- */
@@ -77,7 +96,7 @@ section {
 
 /* ---------------- INTERNAL PRISM FACES ---------------- */
 
-/* RIGHT FAR FACE (points LEFT now) */
+/* RIGHT FAR FACE */
 .inner-face-right {
   position:absolute;
   right:0;
@@ -168,6 +187,7 @@ section {
   object-fit:cover;
   border-radius:6px;
   box-shadow:0 8px 20px rgba(0,0,0,0.45);
+  cursor:pointer;
 }
 
 .photo-number {
@@ -183,6 +203,8 @@ section {
 <body>
 
 <section>
+
+  <a href="index.html" class="back-home">Back to Home</a>
 
   <div class="prism">
     <div class="inner-face-right"></div>
@@ -232,6 +254,10 @@ function renderPhotos(photos){
 
   let count = 1;
   photos.forEach(p=>{
+    const link = document.createElement("a");
+    link.href = p.photo;
+    link.target = "_blank";
+
     const img = document.createElement("img");
     img.src = p.thumbnail || p.photo;
 
@@ -244,8 +270,10 @@ function renderPhotos(photos){
     wrap.style.flexDirection="column";
     wrap.style.alignItems="center";
 
-    wrap.appendChild(img);
+    link.appendChild(img);
+    wrap.appendChild(link);
     wrap.appendChild(num);
+
     row.appendChild(wrap);
   });
 

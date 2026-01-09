@@ -24,10 +24,11 @@ section {
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:center;
+  justify-content:flex-start; /* move content slightly higher */
   gap:60px;
-  transform: translateY(-10px);
+  transform: translateY(-30px); /* slightly higher */
   position: relative;
+  padding-top:60px; /* add some top padding so Back button doesn't overlap */
 }
 
 /* ---------------- BACK TO HOME ---------------- */
@@ -38,13 +39,13 @@ section {
   transform: translateX(-50%);
   font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
   font-size:0.75rem;
-  color:#ccc;
+  color: rgba(204, 204, 204, 0.5); /* 50% opacity */
   text-decoration:none;
   text-align:center;
   z-index:10;
 }
 .back-home:hover {
-  color:#fff;
+  color: rgba(255, 255, 255, 0.8); /* brighter on hover */
 }
 
 /* ---------------- PRISM ---------------- */
@@ -95,8 +96,6 @@ section {
 }
 
 /* ---------------- INTERNAL PRISM FACES ---------------- */
-
-/* RIGHT FAR FACE */
 .inner-face-right {
   position:absolute;
   right:0;
@@ -119,7 +118,6 @@ section {
   );
 }
 
-/* HORIZONTAL INTERNAL PLANE */
 .inner-face-horizontal {
   position:absolute;
   left:-10%;

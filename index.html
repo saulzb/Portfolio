@@ -132,6 +132,24 @@ section.visible {
   letter-spacing:0.6px;
   opacity:0.85;
 }
+
+/* ---------------- MOBILE LAYOUT ---------------- */
+@media (max-width: 768px) {
+  .folder-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 48px 24px;
+    padding: 0 24px;
+    max-width: 100%;
+  }
+
+  .folder {
+    transform: scale(0.9);
+  }
+
+  section#folders {
+    align-items: center;
+  }
+}
 </style>
 </head>
 

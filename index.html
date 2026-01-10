@@ -36,7 +36,10 @@ section {
   opacity:0;
   transition:opacity 0.9s ease;
 }
-section.visible { opacity:1; }
+
+section.visible {
+  opacity:1;
+}
 
 /* ---------------- HERO ---------------- */
 #hero {
@@ -72,7 +75,7 @@ section.visible { opacity:1; }
   cursor:pointer;
 }
 
-/* ---------------- STACK (FULL VISUAL WIDTH) ---------------- */
+/* ---------------- STACK ---------------- */
 .folder-stack {
   position: relative;
   width: 144px;
@@ -105,7 +108,7 @@ section.visible { opacity:1; }
   box-shadow:1px 1px 0 #000;
 }
 
-/* ---------------- TRAIL LAYERS ---------------- */
+/* ---------------- TRAIL ---------------- */
 .trail {
   position:absolute;
   top:0;
@@ -134,11 +137,13 @@ section.visible { opacity:1; }
 
 <body>
 
+<!-- HERO -->
 <section id="hero" class="visible">
   <div class="arrow-down">↓</div>
 </section>
 
-<section>
+<!-- FOLDERS -->
+<section id="folders">
   <div class="folder-grid" id="folderGrid"></div>
 </section>
 
@@ -181,13 +186,16 @@ categories.forEach(item => {
 
 /* ---------------- FADE IN ---------------- */
 const observer = new IntersectionObserver(entries=>{
-  entries.forEach(e=>e.isIntersecting && e.target.classList.add("visible"));
+  entries.forEach(e=>{
+    if(e.isIntersecting) e.target.classList.add("visible");
+  });
 },{threshold:0.3});
 
 document.querySelectorAll("section").forEach(s=>observer.observe(s));
 
+/* ---------------- SCROLL DOWN ---------------- */
 document.querySelector('.arrow-down').onclick = () => {
-  document.querySelectorAll('section')[1]
+  document.getElementById("folders")
     .scrollIntoView({behavior:'smooth'});
 };
 </script>

@@ -16,8 +16,8 @@ html, body {
   background:#0a0a0c;
   color:#eaeaea;
   font-family:'Michroma',sans-serif;
-  scroll-behavior:smooth;
   overflow-x:hidden;
+  scroll-behavior:smooth;
 }
 
 /* ---------------- SECTION ---------------- */
@@ -35,21 +35,21 @@ section {
 
 /* ---------------- BACK TO FOLDERS ---------------- */
 .back-home {
-  position: absolute;
+  position:absolute;
   top:30px;
   left:50%;
-  transform: translateX(-50%);
+  transform:translateX(-50%);
   font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
   font-size:0.75rem;
-  color: rgba(204,204,204,0.5);
+  color:rgba(204,204,204,0.5);
   text-decoration:none;
-  z-index:10;
-  transition: opacity 0.3s ease, color 0.3s ease;
+  z-index:20;
+  transition:opacity 0.3s ease, color 0.3s ease;
   opacity:0.65;
 }
 
 .back-home:hover {
-  color: rgba(255,255,255,0.8);
+  color:rgba(255,255,255,0.8);
 }
 
 /* ---------------- PRISM ---------------- */
@@ -58,15 +58,16 @@ section {
   width:280px;
   height:68px;
   overflow:hidden;
-  clip-path: polygon(8% 0%,100% 0%,100% 100%,8% 100%,0% 50%);
+  clip-path:polygon(8% 0%,100% 0%,100% 100%,8% 100%,0% 50%);
   background:linear-gradient(135deg,
     rgba(255,255,255,0.16),
     rgba(255,255,255,0.04) 45%,
     rgba(255,255,255,0.1)
   );
   border:1px solid rgba(255,255,255,0.25);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08),0 18px 36px rgba(0,0,0,0.75);
-  backdrop-filter: blur(2.5px);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08),
+             0 18px 36px rgba(0,0,0,0.75);
+  backdrop-filter:blur(2.5px);
 }
 
 .prism::before {
@@ -76,8 +77,10 @@ section {
   top:0;
   width:22px;
   height:100%;
-  background:linear-gradient(to bottom,rgba(255,255,255,0.35),rgba(255,255,255,0.02));
-  clip-path: polygon(0 50%,100% 0,100% 100%);
+  background:linear-gradient(to bottom,
+    rgba(255,255,255,0.35),
+    rgba(255,255,255,0.02));
+  clip-path:polygon(0 50%,100% 0,100% 100%);
 }
 
 .inner-face-right {
@@ -87,8 +90,10 @@ section {
   width:34px;
   height:100%;
   opacity:0.35;
-  background:linear-gradient(to right,rgba(255,255,255,0.35),rgba(255,255,255,0));
-  clip-path: polygon(0% 50%,100% 0%,100% 100%);
+  background:linear-gradient(to right,
+    rgba(255,255,255,0.35),
+    rgba(255,255,255,0));
+  clip-path:polygon(0% 50%,100% 0%,100% 100%);
 }
 
 .inner-face-horizontal {
@@ -98,8 +103,10 @@ section {
   width:120%;
   height:18%;
   opacity:0.28;
-  background:linear-gradient(to bottom,rgba(255,255,255,0.35),rgba(255,255,255,0));
-  clip-path: polygon(0% 0%,100% 8%,100% 100%,0% 92%);
+  background:linear-gradient(to bottom,
+    rgba(255,255,255,0.35),
+    rgba(255,255,255,0));
+  clip-path:polygon(0% 0%,100% 8%,100% 100%,0% 92%);
 }
 
 /* ---------------- PRISM TEXT ---------------- */
@@ -112,7 +119,7 @@ section {
   font-size:1.4rem;
   letter-spacing:0.32em;
   text-transform:uppercase;
-  filter: blur(0.45px);
+  filter:blur(0.45px);
 }
 
 .prism-text span {
@@ -124,14 +131,14 @@ section {
   pointer-events:none;
 }
 
-.prism-r { color:#ff453a; transform:translateX(-3px); filter:blur(0.9px); }
-.prism-o { color:#ff9f0a; transform:translateX(-2px); filter:blur(0.7px); }
-.prism-y { color:#ffd60a; transform:translateX(-1px); filter:blur(0.6px); }
-.prism-g { color:#32d74b; transform:translateX(1px);  filter:blur(0.6px); }
-.prism-c { color:#64d2ff; transform:translateX(2px);  filter:blur(0.7px); }
-.prism-b { color:#0a84ff; transform:translateX(3px);  filter:blur(0.9px); }
+.prism-r{color:#ff453a;transform:translateX(-3px);filter:blur(0.9px);}
+.prism-o{color:#ff9f0a;transform:translateX(-2px);filter:blur(0.7px);}
+.prism-y{color:#ffd60a;transform:translateX(-1px);filter:blur(0.6px);}
+.prism-g{color:#32d74b;transform:translateX(1px);filter:blur(0.6px);}
+.prism-c{color:#64d2ff;transform:translateX(2px);filter:blur(0.7px);}
+.prism-b{color:#0a84ff;transform:translateX(3px);filter:blur(0.9px);}
 
-/* ---------------- PHOTO GRID ---------------- */
+/* ---------------- GRID ---------------- */
 .category-row {
   display:flex;
   flex-wrap:wrap;
@@ -147,6 +154,34 @@ section {
   box-shadow:0 8px 20px rgba(0,0,0,0.45);
   cursor:pointer;
 }
+
+/* ---------------- LIGHTBOX ---------------- */
+.lightbox {
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.92);
+  display:none;
+  z-index:999;
+  overflow-y:auto;
+}
+
+.lightbox.active {
+  display:block;
+}
+
+.lightbox-content {
+  max-width:900px;
+  margin:80px auto;
+  display:flex;
+  flex-direction:column;
+  gap:40px;
+  padding:0 20px;
+}
+
+.lightbox-content img {
+  width:100%;
+  border-radius:6px;
+}
 </style>
 </head>
 
@@ -154,10 +189,8 @@ section {
 
 <section>
 
-  <!-- BACK TO FOLDERS -->
   <a href="index.html#folders" class="back-home">Back to folders</a>
 
-  <!-- PRISM -->
   <div class="prism">
     <div class="inner-face-right"></div>
     <div class="inner-face-horizontal"></div>
@@ -176,10 +209,17 @@ section {
 
 </section>
 
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-content" id="lightboxContent"></div>
+</div>
+
 <script>
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
 const CATEGORY_NAME = "TI";
+
+let photoList = [];
 
 async function fetchPhotos(){
   const res = await fetch(
@@ -192,46 +232,63 @@ async function fetchPhotos(){
     assets[a.sys.id] = a.fields.file.url;
   });
 
-  const photos = data.items
+  photoList = data.items
     .map(i => ({
       photo: `https:${assets[i.fields.photo.sys.id]}`,
-      thumbnail: i.fields.thumbnail ? `https:${assets[i.fields.thumbnail.sys.id]}` : "",
-      category: i.fields.category
+      thumbnail: i.fields.thumbnail
+        ? `https:${assets[i.fields.thumbnail.sys.id]}`
+        : ""
     }))
-    .filter(p => p.category === CATEGORY_NAME);
+    .filter(p => p.photo);
 
-  renderPhotos(photos);
+  renderPhotos(photoList);
 }
 
 function renderPhotos(photos){
   const row = document.createElement("div");
   row.className = "category-row";
 
-  photos.forEach(p => {
-    const link = document.createElement("a");
-    link.href = p.photo;
-
+  photos.forEach((p, i) => {
     const img = document.createElement("img");
     img.src = p.thumbnail || p.photo;
-
-    link.appendChild(img);
-    row.appendChild(link);
+    img.onclick = () => openLightbox(i);
+    row.appendChild(img);
   });
 
   document.getElementById("photoSections").appendChild(row);
 }
 
-fetchPhotos();
+function openLightbox(startIndex){
+  const box = document.getElementById("lightbox");
+  const content = document.getElementById("lightboxContent");
+  content.innerHTML = "";
 
-/* -------- BACK BUTTON FADE ON SCROLL -------- */
-const backBtn = document.querySelector('.back-home');
+  photoList.forEach(p => {
+    const img = document.createElement("img");
+    img.src = p.photo;
+    content.appendChild(img);
+  });
 
-window.addEventListener('scroll', () => {
-  const y = window.scrollY;
-  if (y < 50) backBtn.style.opacity = 0.6;
-  else if (y > 250) backBtn.style.opacity = 0;
-  else backBtn.style.opacity = 0.6 * (1 - (y - 50) / 200);
+  box.classList.add("active");
+  document.body.style.overflow = "hidden";
+
+  setTimeout(() => {
+    content.children[startIndex].scrollIntoView({behavior:"auto"});
+  }, 50);
+}
+
+function closeLightbox(){
+  document.getElementById("lightbox").classList.remove("active");
+  document.body.style.overflow = "";
+}
+
+document.getElementById("lightbox").onclick = closeLightbox;
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeLightbox();
 });
+
+fetchPhotos();
 </script>
 
 </body>

@@ -99,6 +99,7 @@ section {
   justify-content:center;
 }
 
+/* CHROMATIC SPLIT PRISM COLORS */
 .prism-r { color:#ff453a; transform:translateX(-3px); filter:blur(0.9px); }
 .prism-o { color:#ff9f0a; transform:translateX(-2px); filter:blur(0.7px); }
 .prism-y { color:#ffd60a; transform:translateX(-1px); filter:blur(0.6px); }
@@ -136,7 +137,7 @@ section {
 
 .lightbox.show { display:flex; }
 
-/* soft background field */
+/* soft blurred background for vertical images */
 .lightbox-bg {
   position:absolute;
   inset:0;
@@ -153,20 +154,46 @@ section {
   max-width:90vw;
   max-height:90vh;
   z-index:2;
-  transition:opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease;
+  transition:transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
 }
 
-/* invisible nav zones */
-.nav-zone {
+/* ---------------- NAV MARKS ---------------- */
+.nav-mark {
   position:absolute;
-  top:0;
-  width:35%;
-  height:100%;
-  z-index:3;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:3rem;
+  color:rgba(204,204,204,0.4);
+  font-family:'Michroma',sans-serif;
   cursor:pointer;
+  z-index:3;
+  user-select:none;
+  transition: transform 0.15s ease, color 0.15s ease, text-shadow 0.15s ease;
 }
-.nav-left { left:0; cursor:w-resize; }
-.nav-right { right:0; cursor:e-resize; }
+.nav-mark:hover { color:#fff; }
+.nav-left { left:20px; }
+.nav-right { right:20px; }
+
+/* RGB split on press */
+.nav-press {
+  text-shadow:
+    -1px 0 red,
+    1px 0 cyan;
+  transform:scale(1.15);
+}
+
+/* ---------------- CLOSE BUTTON ---------------- */
+.close-btn {
+  position:absolute;
+  top:20px;
+  right:20px;
+  font-size:2rem;
+  color:rgba(255,255,255,0.7);
+  cursor:pointer;
+  z-index:4;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+.close-btn:hover { color:#fff; transform:scale(1.1); }
 </style>
 </head>
 
@@ -195,9 +222,10 @@ section {
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
   <div class="lightbox-bg" id="lightbox-bg"></div>
-  <div class="nav-zone nav-left"></div>
+  <div class="nav-mark nav-left">⟋</div>
   <img id="lightbox-img">
-  <div class="nav-zone nav-right"></div>
+  <div class="nav-mark nav-right">⟍</div>
+  <div class="close-btn">✕</div>
 </div>
 
 <script>
@@ -241,11 +269,14 @@ function renderPhotos(){
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightbox-img");
 const lightboxBg = document.getElementById("lightbox-bg");
+const navLeft = document.querySelector(".nav-left");
+const navRight = document.querySelector(".nav-right");
+const closeBtn = document.querySelector(".close-btn");
 
 function openLightbox(i){
   currentIndex = i;
   lightboxImg.style.opacity = 0;
-  lightboxImg.style.filter = "blur(2px)";
+  lightboxImg.style.filter = "blur(4px)";
   setTimeout(()=>{
     lightboxImg.src = gallery[i];
     lightboxBg.style.backgroundImage = `url(${gallery[i]})`;
@@ -255,16 +286,23 @@ function openLightbox(i){
   lightbox.classList.add("show");
 }
 
-function next(){ openLightbox((currentIndex+1)%gallery.length); }
-function prev(){ openLightbox((currentIndex-1+gallery.length)%gallery.length); }
+function next(){
+  navRight.classList.add("nav-press");
+  setTimeout(()=>navRight.classList.remove("nav-press"),150);
+  openLightbox((currentIndex+1)%gallery.length);
+}
 
-document.querySelector(".nav-right").onclick = next;
-document.querySelector(".nav-left").onclick = prev;
+function prev(){
+  navLeft.classList.add("nav-press");
+  setTimeout(()=>navLeft.classList.remove("nav-press"),150);
+  openLightbox((currentIndex-1+gallery.length)%gallery.length);
+}
 
-lightbox.onclick = e => {
-  if(e.target === lightbox) lightbox.classList.remove("show");
-};
+navRight.onclick = next;
+navLeft.onclick = prev;
+closeBtn.onclick = ()=>lightbox.classList.remove("show");
 
+lightbox.onclick = e => { if(e.target===lightbox) lightbox.classList.remove("show"); };
 document.addEventListener("keydown", e=>{
   if(!lightbox.classList.contains("show")) return;
   if(e.key==="ArrowRight") next();

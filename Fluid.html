@@ -38,17 +38,12 @@ section {
   transform: translateX(-50%);
   font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
   font-size:0.75rem;
-  color: rgba(204, 204, 204, 0.5); /* semi-transparent */
+  color: rgba(204,204,204,0.5);
   text-decoration:none;
-  text-align:center;
   z-index:10;
   transition: opacity 0.3s ease;
-  opacity: 0.65; /* initial opacity */
 }
-
-.back-home:hover {
-  color: rgba(255, 255, 255, 0.8); /* slightly brighter on hover */
-}
+.back-home:hover { color: rgba(255,255,255,0.8); }
 
 /* ---------------- PRISM ---------------- */
 .prism {
@@ -56,94 +51,40 @@ section {
   width:280px;
   height:68px;
   overflow:hidden;
-
-  clip-path: polygon(
-    8% 0%,
-    100% 0%,
-    100% 100%,
-    8% 100%,
-    0% 50%
-  );
-
-  background:
-    linear-gradient(135deg,
-      rgba(255,255,255,0.16),
-      rgba(255,255,255,0.04) 45%,
-      rgba(255,255,255,0.1)
-    );
-
+  clip-path: polygon(8% 0%,100% 0%,100% 100%,8% 100%,0% 50%);
+  background: linear-gradient(135deg,rgba(255,255,255,0.16),rgba(255,255,255,0.04) 45%,rgba(255,255,255,0.1));
   border:1px solid rgba(255,255,255,0.25);
-
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.08),
-    0 18px 36px rgba(0,0,0,0.75);
-
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08),0 18px 36px rgba(0,0,0,0.75);
   backdrop-filter: blur(2.5px);
 }
 
-/* LEFT EXTERNAL FACE */
 .prism::before {
   content:"";
   position:absolute;
-  left:0;
-  top:0;
-  width:22px;
-  height:100%;
-  background:linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.35),
-    rgba(255,255,255,0.02)
-  );
+  left:0; top:0;
+  width:22px; height:100%;
+  background:linear-gradient(to bottom,rgba(255,255,255,0.35),rgba(255,255,255,0.02));
   clip-path: polygon(0 50%, 100% 0, 100% 100%);
 }
 
-/* ---------------- INTERNAL PRISM FACES ---------------- */
 .inner-face-right {
   position:absolute;
-  right:0;
-  top:0;
-  width:34px;
-  height:100%;
+  right:0; top:0;
+  width:34px; height:100%;
   opacity:0.35;
-
-  background:linear-gradient(
-    to right,
-    rgba(255,255,255,0.35),
-    rgba(255,255,255,0.08),
-    rgba(255,255,255,0)
-  );
-
-  clip-path: polygon(
-    0% 50%,
-    100% 0%,
-    100% 100%
-  );
+  background:linear-gradient(to right,rgba(255,255,255,0.35),rgba(255,255,255,0.08),rgba(255,255,255,0));
+  clip-path: polygon(0% 50%,100% 0%,100% 100%);
 }
 
 .inner-face-horizontal {
   position:absolute;
-  left:-10%;
-  top:46%;
-  width:120%;
-  height:18%;
+  left:-10%; top:46%;
+  width:120%; height:18%;
   opacity:0.28;
-
-  background:linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.35),
-    rgba(255,255,255,0.08),
-    rgba(255,255,255,0)
-  );
-
-  clip-path: polygon(
-    0% 0%,
-    100% 8%,
-    100% 100%,
-    0% 92%
-  );
+  background:linear-gradient(to bottom,rgba(255,255,255,0.35),rgba(255,255,255,0.08),rgba(255,255,255,0));
+  clip-path: polygon(0% 0%,100% 8%,100% 100%,0% 92%);
 }
 
-/* ---------------- TEXT ---------------- */
 .prism-text {
   position:absolute;
   inset:0;
@@ -165,13 +106,12 @@ section {
   pointer-events:none;
 }
 
-/* CHROMATIC SPLIT */
 .prism-r { color:#ff453a; transform:translateX(-3px); filter:blur(0.9px); }
 .prism-o { color:#ff9f0a; transform:translateX(-2px); filter:blur(0.7px); }
 .prism-y { color:#ffd60a; transform:translateX(-1px); filter:blur(0.6px); }
-.prism-g { color:#32d74b; transform:translateX(1px);  filter:blur(0.6px); }
-.prism-c { color:#64d2ff; transform:translateX(2px);  filter:blur(0.7px); }
-.prism-b { color:#0a84ff; transform:translateX(3px);  filter:blur(0.9px); }
+.prism-g { color:#32d74b; transform:translateX(1px); filter:blur(0.6px); }
+.prism-c { color:#64d2ff; transform:translateX(2px); filter:blur(0.7px); }
+.prism-b { color:#0a84ff; transform:translateX(3px); filter:blur(0.9px); }
 
 /* ---------------- PHOTO GRID ---------------- */
 .category-row {
@@ -197,6 +137,38 @@ section {
   color:#ccc;
   text-align:center;
 }
+
+/* ---------------- LIGHTBOX ---------------- */
+.lightbox {
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.92);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+}
+
+.lightbox img {
+  max-width:90vw;
+  max-height:90vh;
+}
+
+.lightbox.show { display:flex; }
+
+.lightbox-nav {
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:2rem;
+  color:#ccc;
+  cursor:pointer;
+  padding:20px;
+}
+.lightbox-nav:hover { color:#fff; }
+
+.prev { left:20px; }
+.next { right:20px; }
 </style>
 </head>
 
@@ -204,12 +176,12 @@ section {
 
 <section>
 
-  <a href="index.html" class="back-home">Back to Home</a>
+  <!-- 🔹 anchor goes to folder chooser -->
+  <a href="index.html#folders" class="back-home">Back to Home</a>
 
   <div class="prism">
     <div class="inner-face-right"></div>
     <div class="inner-face-horizontal"></div>
-
     <div class="prism-text">
       FLUID
       <span class="prism-r">FLUID</span>
@@ -225,10 +197,20 @@ section {
 
 </section>
 
+<!-- 🔹 LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-nav prev">&#10094;</div>
+  <img id="lightbox-img">
+  <div class="lightbox-nav next">&#10095;</div>
+</div>
+
 <script>
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
 const CATEGORY_NAME = "TI";
+
+let gallery = [];
+let currentIndex = 0;
 
 async function fetchPhotos(){
   const res = await fetch(
@@ -239,65 +221,56 @@ async function fetchPhotos(){
   const assets = {};
   data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
 
-  const photos = data.items.map(i=>({
-    photo:`https:${assets[i.fields.photo.sys.id]}`,
-    thumbnail:i.fields.thumbnail ? `https:${assets[i.fields.thumbnail.sys.id]}` : "",
-    category:i.fields.category
-  })).filter(p=>p.category === CATEGORY_NAME);
+  gallery = data.items.map(i=>`https:${assets[i.fields.photo.sys.id]}`)
+    .filter((_,i)=>data.items[i].fields.category===CATEGORY_NAME);
 
-  renderPhotos(photos);
+  renderPhotos(gallery);
 }
 
 function renderPhotos(photos){
   const row = document.createElement("div");
   row.className = "category-row";
 
-  let count = 1;
-  photos.forEach(p=>{
-    const link = document.createElement("a");
-    link.href = p.photo;
-    link.target = "_blank";
-
+  photos.forEach((src,i)=>{
     const img = document.createElement("img");
-    img.src = p.thumbnail || p.photo;
+    img.src = src;
+    img.onclick = ()=>openLightbox(i);
 
     const num = document.createElement("div");
     num.className = "photo-number";
-    num.textContent = "IMG_" + String(count++).padStart(2,"0");
+    num.textContent = "IMG_" + String(i+1).padStart(2,"0");
 
     const wrap = document.createElement("div");
     wrap.style.display="flex";
     wrap.style.flexDirection="column";
     wrap.style.alignItems="center";
 
-    link.appendChild(img);
-    wrap.appendChild(link);
+    wrap.appendChild(img);
     wrap.appendChild(num);
-
     row.appendChild(wrap);
   });
 
   document.getElementById("photoSections").appendChild(row);
 }
 
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightbox-img");
+
+function openLightbox(i){
+  currentIndex = i;
+  lightboxImg.src = gallery[i];
+  lightbox.classList.add("show");
+}
+
+function showNext(){ openLightbox((currentIndex+1)%gallery.length); }
+function showPrev(){ openLightbox((currentIndex-1+gallery.length)%gallery.length); }
+
+document.querySelector(".next").onclick = showNext;
+document.querySelector(".prev").onclick = showPrev;
+lightbox.onclick = e => { if(e.target===lightbox) lightbox.classList.remove("show"); };
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") lightbox.classList.remove("show"); });
+
 fetchPhotos();
-
-/* ---------------- SCROLL FADE EFFECT FOR BACK BUTTON ---------------- */
-const backButton = document.querySelector('.back-home');
-
-window.addEventListener('scroll', () => {
-  const scrollTop = window.scrollY || document.documentElement.scrollTop;
-  const fadeStart = 50; // start fading after 50px
-  const fadeEnd = 250;  // fully transparent after 250px
-  if(scrollTop < fadeStart){
-    backButton.style.opacity = 0.5;
-  } else if(scrollTop > fadeEnd){
-    backButton.style.opacity = 0;
-  } else {
-    const opacity = 0.5 * (1 - (scrollTop - fadeStart) / (fadeEnd - fadeStart));
-    backButton.style.opacity = opacity;
-  }
-});
 </script>
 
 </body>

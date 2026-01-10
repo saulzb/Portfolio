@@ -130,14 +130,6 @@ section {
   cursor:pointer;
 }
 
-.photo-number {
-  margin-top:6px;
-  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
-  font-size:0.75rem;
-  color:#ccc;
-  text-align:center;
-}
-
 /* ---------------- LIGHTBOX ---------------- */
 .lightbox {
   position:fixed;
@@ -176,7 +168,6 @@ section {
 
 <section>
 
-  <!-- 🔹 anchor goes to folder chooser -->
   <a href="index.html#folders" class="back-home">Back to home</a>
 
   <div class="prism">
@@ -197,7 +188,6 @@ section {
 
 </section>
 
-<!-- 🔹 LIGHTBOX -->
 <div class="lightbox" id="lightbox">
   <div class="lightbox-nav prev">&#10094;</div>
   <img id="lightbox-img">
@@ -221,8 +211,9 @@ async function fetchPhotos(){
   const assets = {};
   data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
 
-  gallery = data.items.map(i=>`https:${assets[i.fields.photo.sys.id]}`)
-    .filter((_,i)=>data.items[i].fields.category===CATEGORY_NAME);
+  gallery = data.items
+    .map(i => `https:${assets[i.fields.photo.sys.id]}`)
+    .filter((_, i) => data.items[i].fields.category === CATEGORY_NAME);
 
   renderPhotos(gallery);
 }
@@ -231,23 +222,11 @@ function renderPhotos(photos){
   const row = document.createElement("div");
   row.className = "category-row";
 
-  photos.forEach((src,i)=>{
+  photos.forEach((src, i) => {
     const img = document.createElement("img");
     img.src = src;
-    img.onclick = ()=>openLightbox(i);
-
-    const num = document.createElement("div");
-    num.className = "photo-number";
-    num.textContent = "IMG_" + String(i+1).padStart(2,"0");
-
-    const wrap = document.createElement("div");
-    wrap.style.display="flex";
-    wrap.style.flexDirection="column";
-    wrap.style.alignItems="center";
-
-    wrap.appendChild(img);
-    wrap.appendChild(num);
-    row.appendChild(wrap);
+    img.onclick = () => openLightbox(i);
+    row.appendChild(img);
   });
 
   document.getElementById("photoSections").appendChild(row);

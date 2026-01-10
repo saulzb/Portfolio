@@ -136,7 +136,6 @@ section {
 
 .lightbox.show { display:flex; }
 
-/* blurred background for vertical images */
 .lightbox-bg {
   position:absolute;
   inset:0;
@@ -147,7 +146,6 @@ section {
   transform:scale(1.1);
 }
 
-/* main image */
 .lightbox img {
   position:relative;
   max-width:90vw;
@@ -156,14 +154,13 @@ section {
   transition:transform 0.4s ease, filter 0.4s ease, opacity 0.4s ease;
 }
 
-/* ---------------- FILM-INSPIRED NAV MARKERS ---------------- */
+/* ---------------- NAV ---------------- */
 .nav-mark {
   position:absolute;
   top:50%;
   transform:translateY(-50%);
   font-size:3rem;
   color:rgba(204,204,204,0.4);
-  font-family:'Michroma',sans-serif;
   cursor:pointer;
   z-index:3;
   user-select:none;
@@ -173,12 +170,17 @@ section {
 .nav-left { left:20px; }
 .nav-right { right:20px; }
 
-/* RGB split on press */
 .nav-press {
-  text-shadow:
-    -1px 0 red,
-    1px 0 cyan;
+  text-shadow:-1px 0 red, 1px 0 cyan;
   transform:scale(1.15);
+}
+
+/* ---------------- MOBILE FIX ---------------- */
+@media (max-width: 768px) {
+  section {
+    justify-content:flex-start;
+    padding-top:120px;
+  }
 }
 </style>
 </head>
@@ -186,23 +188,23 @@ section {
 <body>
 
 <section>
-<a href="index.html#folders" class="back-home">Back to home</a>
+  <a href="index.html#folders" class="back-home">Back to home</a>
 
-<div class="prism">
-  <div class="inner-face-right"></div>
-  <div class="inner-face-horizontal"></div>
-  <div class="prism-text">
-    FLUID
-    <span class="prism-r">FLUID</span>
-    <span class="prism-o">FLUID</span>
-    <span class="prism-y">FLUID</span>
-    <span class="prism-g">FLUID</span>
-    <span class="prism-c">FLUID</span>
-    <span class="prism-b">FLUID</span>
+  <div class="prism">
+    <div class="inner-face-right"></div>
+    <div class="inner-face-horizontal"></div>
+    <div class="prism-text">
+      FLUID
+      <span class="prism-r">FLUID</span>
+      <span class="prism-o">FLUID</span>
+      <span class="prism-y">FLUID</span>
+      <span class="prism-g">FLUID</span>
+      <span class="prism-c">FLUID</span>
+      <span class="prism-b">FLUID</span>
+    </div>
   </div>
-</div>
 
-<div id="photoSections"></div>
+  <div id="photoSections"></div>
 </section>
 
 <!-- LIGHTBOX -->
@@ -278,17 +280,8 @@ function openLightbox(i){
   lightbox.classList.add("show");
 }
 
-function next(){
-  navRight.classList.add("nav-press");
-  setTimeout(()=>navRight.classList.remove("nav-press"),150);
-  openLightbox((currentIndex+1)%gallery.length);
-}
-
-function prev(){
-  navLeft.classList.add("nav-press");
-  setTimeout(()=>navLeft.classList.remove("nav-press"),150);
-  openLightbox((currentIndex-1+gallery.length)%gallery.length);
-}
+function next(){ openLightbox((currentIndex+1)%gallery.length); }
+function prev(){ openLightbox((currentIndex-1+gallery.length)%gallery.length); }
 
 navRight.onclick = next;
 navLeft.onclick = prev;

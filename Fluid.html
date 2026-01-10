@@ -133,6 +133,7 @@ section {
   align-items:center;
   justify-content:center;
   z-index:999;
+  overflow:hidden;
 }
 
 .lightbox.show { display:flex; }
@@ -152,7 +153,7 @@ section {
   max-width:90vw;
   max-height:90vh;
   z-index:2;
-  transition: transform 0.25s ease, filter 0.25s ease, opacity 0.25s ease;
+  transition:transform 0.4s ease, filter 0.4s ease, opacity 0.4s ease;
 }
 
 /* ---------------- NAV MARKS ---------------- */
@@ -171,10 +172,8 @@ section {
 .nav-mark:hover { color:#fff; }
 .nav-left { left:20px; }
 .nav-right { right:20px; }
-
-/* RGB micro-split on press */
 .nav-press {
-  text-shadow: -1px 0 red, 1px 0 cyan;
+  text-shadow:-1px 0 red,1px 0 cyan;
   transform:scale(1.15);
 }
 
@@ -196,23 +195,23 @@ section {
 <body>
 
 <section>
-  <a href="index.html#folders" class="back-home">Back to home</a>
+<a href="index.html#folders" class="back-home">Back to home</a>
 
-  <div class="prism">
-    <div class="inner-face-right"></div>
-    <div class="inner-face-horizontal"></div>
-    <div class="prism-text">
-      FLUID
-      <span class="prism-r">FLUID</span>
-      <span class="prism-o">FLUID</span>
-      <span class="prism-y">FLUID</span>
-      <span class="prism-g">FLUID</span>
-      <span class="prism-c">FLUID</span>
-      <span class="prism-b">FLUID</span>
-    </div>
+<div class="prism">
+  <div class="inner-face-right"></div>
+  <div class="inner-face-horizontal"></div>
+  <div class="prism-text">
+    FLUID
+    <span class="prism-r">FLUID</span>
+    <span class="prism-o">FLUID</span>
+    <span class="prism-y">FLUID</span>
+    <span class="prism-g">FLUID</span>
+    <span class="prism-c">FLUID</span>
+    <span class="prism-b">FLUID</span>
   </div>
+</div>
 
-  <div id="photoSections"></div>
+<div id="photoSections"></div>
 </section>
 
 <!-- LIGHTBOX -->
@@ -269,30 +268,49 @@ const navLeft = document.querySelector(".nav-left");
 const navRight = document.querySelector(".nav-right");
 const closeBtn = document.querySelector(".close-btn");
 
-// cinematic motion blur + fade
-function openLightbox(i){
+function openLightbox(i, direction = 1){
+  if(!gallery.length) return;
+
+  const oldImg = lightboxImg.cloneNode();
+  oldImg.src = lightboxImg.src;
+  oldImg.style.position = "absolute";
+  oldImg.style.zIndex = 1;
+  oldImg.style.transition = "transform 0.4s ease, opacity 0.4s ease, filter 0.4s ease";
+  oldImg.style.transform = `translateX(0px) scale(1)`;
+  lightbox.appendChild(oldImg);
+
   currentIndex = i;
+  lightboxImg.src = gallery[i];
   lightboxImg.style.opacity = 0;
   lightboxImg.style.filter = "blur(6px)";
+  lightboxImg.style.transform = `translateX(${direction*100}px) scale(1.05)`;
+
   setTimeout(()=>{
-    lightboxImg.src = gallery[i];
-    lightboxBg.style.backgroundImage = `url(${gallery[i]})`;
+    lightboxImg.style.transition = "transform 0.4s ease, opacity 0.4s ease, filter 0.4s ease";
     lightboxImg.style.opacity = 1;
     lightboxImg.style.filter = "blur(0)";
-  },120);
+    lightboxImg.style.transform = "translateX(0) scale(1)";
+
+    oldImg.style.opacity = 0;
+    oldImg.style.filter = "blur(6px)";
+    oldImg.style.transform = `translateX(${-direction*100}px) scale(1.05)`;
+  }, 20);
+
+  setTimeout(()=>{ lightbox.removeChild(oldImg); }, 420);
+  lightboxBg.style.backgroundImage = `url(${gallery[i]})`;
   lightbox.classList.add("show");
 }
 
 function next(){
   navRight.classList.add("nav-press");
   setTimeout(()=>navRight.classList.remove("nav-press"),150);
-  openLightbox((currentIndex+1)%gallery.length);
+  openLightbox((currentIndex+1)%gallery.length, 1);
 }
 
 function prev(){
   navLeft.classList.add("nav-press");
   setTimeout(()=>navLeft.classList.remove("nav-press"),150);
-  openLightbox((currentIndex-1+gallery.length)%gallery.length);
+  openLightbox((currentIndex-1+gallery.length)%gallery.length, -1);
 }
 
 navRight.onclick = next;

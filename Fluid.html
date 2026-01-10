@@ -15,35 +15,31 @@ html, body {
   font-family:'Michroma',sans-serif;
   scroll-behavior:smooth;
   overflow-x:hidden;
-  position: relative;
 }
 
+/* ---------------- SECTION ---------------- */
 section {
-  width:100%;
   min-height:100vh;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
   gap:60px;
-  transform: translateY(-10px);
-  position: relative;
 }
 
-/* ---------------- BACK TO HOME ---------------- */
+/* ---------------- BACK ---------------- */
 .back-home {
-  position: absolute;
+  position:absolute;
   top:30px;
   left:50%;
-  transform: translateX(-50%);
+  transform:translateX(-50%);
   font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
   font-size:0.75rem;
-  color: rgba(204,204,204,0.5);
+  color:rgba(204,204,204,0.5);
   text-decoration:none;
   z-index:10;
-  transition: opacity 0.3s ease;
 }
-.back-home:hover { color: rgba(255,255,255,0.8); }
+.back-home:hover { color:rgba(255,255,255,0.8); }
 
 /* ---------------- PRISM ---------------- */
 .prism {
@@ -52,10 +48,9 @@ section {
   height:68px;
   overflow:hidden;
   clip-path: polygon(8% 0%,100% 0%,100% 100%,8% 100%,0% 50%);
-  background: linear-gradient(135deg,rgba(255,255,255,0.16),rgba(255,255,255,0.04) 45%,rgba(255,255,255,0.1));
+  background:linear-gradient(135deg,rgba(255,255,255,0.16),rgba(255,255,255,0.04) 45%,rgba(255,255,255,0.1));
   border:1px solid rgba(255,255,255,0.25);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08),0 18px 36px rgba(0,0,0,0.75);
-  backdrop-filter: blur(2.5px);
 }
 
 .prism::before {
@@ -64,7 +59,7 @@ section {
   left:0; top:0;
   width:22px; height:100%;
   background:linear-gradient(to bottom,rgba(255,255,255,0.35),rgba(255,255,255,0.02));
-  clip-path: polygon(0 50%, 100% 0, 100% 100%);
+  clip-path: polygon(0 50%,100% 0,100% 100%);
 }
 
 .inner-face-right {
@@ -93,7 +88,6 @@ section {
   justify-content:center;
   font-size:1.4rem;
   letter-spacing:0.32em;
-  text-transform:uppercase;
   filter: blur(0.45px);
 }
 
@@ -103,17 +97,16 @@ section {
   display:flex;
   align-items:center;
   justify-content:center;
-  pointer-events:none;
 }
 
 .prism-r { color:#ff453a; transform:translateX(-3px); filter:blur(0.9px); }
 .prism-o { color:#ff9f0a; transform:translateX(-2px); filter:blur(0.7px); }
 .prism-y { color:#ffd60a; transform:translateX(-1px); filter:blur(0.6px); }
-.prism-g { color:#32d74b; transform:translateX(1px); filter:blur(0.6px); }
-.prism-c { color:#64d2ff; transform:translateX(2px); filter:blur(0.7px); }
-.prism-b { color:#0a84ff; transform:translateX(3px); filter:blur(0.9px); }
+.prism-g { color:#32d74b; transform:translateX(1px);  filter:blur(0.6px); }
+.prism-c { color:#64d2ff; transform:translateX(2px);  filter:blur(0.7px); }
+.prism-b { color:#0a84ff; transform:translateX(3px);  filter:blur(0.9px); }
 
-/* ---------------- PHOTO GRID ---------------- */
+/* ---------------- GRID ---------------- */
 .category-row {
   display:flex;
   flex-wrap:wrap;
@@ -141,57 +134,70 @@ section {
   z-index:999;
 }
 
-.lightbox img {
-  max-width:90vw;
-  max-height:90vh;
-}
-
 .lightbox.show { display:flex; }
 
-.lightbox-nav {
+/* soft background field */
+.lightbox-bg {
   position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-  font-size:2rem;
-  color:#ccc;
-  cursor:pointer;
-  padding:20px;
+  inset:0;
+  background-size:cover;
+  background-position:center;
+  filter:blur(60px) brightness(0.4);
+  opacity:0.35;
+  transform:scale(1.1);
 }
-.lightbox-nav:hover { color:#fff; }
 
-.prev { left:20px; }
-.next { right:20px; }
+/* main image */
+.lightbox img {
+  position:relative;
+  max-width:90vw;
+  max-height:90vh;
+  z-index:2;
+  transition:opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease;
+}
+
+/* invisible nav zones */
+.nav-zone {
+  position:absolute;
+  top:0;
+  width:35%;
+  height:100%;
+  z-index:3;
+  cursor:pointer;
+}
+.nav-left { left:0; cursor:w-resize; }
+.nav-right { right:0; cursor:e-resize; }
 </style>
 </head>
 
 <body>
 
 <section>
+<a href="index.html#folders" class="back-home">Back to home</a>
 
-  <a href="index.html#folders" class="back-home">Back to home</a>
-
-  <div class="prism">
-    <div class="inner-face-right"></div>
-    <div class="inner-face-horizontal"></div>
-    <div class="prism-text">
-      FLUID
-      <span class="prism-r">FLUID</span>
-      <span class="prism-o">FLUID</span>
-      <span class="prism-y">FLUID</span>
-      <span class="prism-g">FLUID</span>
-      <span class="prism-c">FLUID</span>
-      <span class="prism-b">FLUID</span>
-    </div>
+<div class="prism">
+  <div class="inner-face-right"></div>
+  <div class="inner-face-horizontal"></div>
+  <div class="prism-text">
+    FLUID
+    <span class="prism-r">FLUID</span>
+    <span class="prism-o">FLUID</span>
+    <span class="prism-y">FLUID</span>
+    <span class="prism-g">FLUID</span>
+    <span class="prism-c">FLUID</span>
+    <span class="prism-b">FLUID</span>
   </div>
+</div>
 
-  <div id="photoSections"></div>
-
+<div id="photoSections"></div>
 </section>
 
+<!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
-  <div class="lightbox-nav prev">&#10094;</div>
+  <div class="lightbox-bg" id="lightbox-bg"></div>
+  <div class="nav-zone nav-left"></div>
   <img id="lightbox-img">
-  <div class="lightbox-nav next">&#10095;</div>
+  <div class="nav-zone nav-right"></div>
 </div>
 
 <script>
@@ -209,23 +215,23 @@ async function fetchPhotos(){
   const data = await res.json();
 
   const assets = {};
-  data.includes?.Asset?.forEach(a => assets[a.sys.id] = a.fields.file.url);
+  data.includes.Asset.forEach(a => assets[a.sys.id] = a.fields.file.url);
 
   gallery = data.items
-    .map(i => `https:${assets[i.fields.photo.sys.id]}`)
-    .filter((_, i) => data.items[i].fields.category === CATEGORY_NAME);
+    .filter(i => i.fields.category === CATEGORY_NAME)
+    .map(i => `https:${assets[i.fields.photo.sys.id]}`);
 
-  renderPhotos(gallery);
+  renderPhotos();
 }
 
-function renderPhotos(photos){
+function renderPhotos(){
   const row = document.createElement("div");
   row.className = "category-row";
 
-  photos.forEach((src, i) => {
+  gallery.forEach((src,i)=>{
     const img = document.createElement("img");
     img.src = src;
-    img.onclick = () => openLightbox(i);
+    img.onclick = ()=>openLightbox(i);
     row.appendChild(img);
   });
 
@@ -234,20 +240,37 @@ function renderPhotos(photos){
 
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightbox-img");
+const lightboxBg = document.getElementById("lightbox-bg");
 
 function openLightbox(i){
   currentIndex = i;
-  lightboxImg.src = gallery[i];
+  lightboxImg.style.opacity = 0;
+  lightboxImg.style.filter = "blur(2px)";
+  setTimeout(()=>{
+    lightboxImg.src = gallery[i];
+    lightboxBg.style.backgroundImage = `url(${gallery[i]})`;
+    lightboxImg.style.opacity = 1;
+    lightboxImg.style.filter = "blur(0)";
+  },120);
   lightbox.classList.add("show");
 }
 
-function showNext(){ openLightbox((currentIndex+1)%gallery.length); }
-function showPrev(){ openLightbox((currentIndex-1+gallery.length)%gallery.length); }
+function next(){ openLightbox((currentIndex+1)%gallery.length); }
+function prev(){ openLightbox((currentIndex-1+gallery.length)%gallery.length); }
 
-document.querySelector(".next").onclick = showNext;
-document.querySelector(".prev").onclick = showPrev;
-lightbox.onclick = e => { if(e.target===lightbox) lightbox.classList.remove("show"); };
-document.addEventListener("keydown",e=>{ if(e.key==="Escape") lightbox.classList.remove("show"); });
+document.querySelector(".nav-right").onclick = next;
+document.querySelector(".nav-left").onclick = prev;
+
+lightbox.onclick = e => {
+  if(e.target === lightbox) lightbox.classList.remove("show");
+};
+
+document.addEventListener("keydown", e=>{
+  if(!lightbox.classList.contains("show")) return;
+  if(e.key==="ArrowRight") next();
+  if(e.key==="ArrowLeft") prev();
+  if(e.key==="Escape") lightbox.classList.remove("show");
+});
 
 fetchPhotos();
 </script>

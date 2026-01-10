@@ -137,7 +137,6 @@ section {
 
 .lightbox.show { display:flex; }
 
-/* soft blurred background for vertical images */
 .lightbox-bg {
   position:absolute;
   inset:0;
@@ -148,13 +147,12 @@ section {
   transform:scale(1.1);
 }
 
-/* main image */
 .lightbox img {
   position:relative;
   max-width:90vw;
   max-height:90vh;
   z-index:2;
-  transition:transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
+  transition: transform 0.25s ease, filter 0.25s ease, opacity 0.25s ease;
 }
 
 /* ---------------- NAV MARKS ---------------- */
@@ -174,11 +172,9 @@ section {
 .nav-left { left:20px; }
 .nav-right { right:20px; }
 
-/* RGB split on press */
+/* RGB micro-split on press */
 .nav-press {
-  text-shadow:
-    -1px 0 red,
-    1px 0 cyan;
+  text-shadow: -1px 0 red, 1px 0 cyan;
   transform:scale(1.15);
 }
 
@@ -200,23 +196,23 @@ section {
 <body>
 
 <section>
-<a href="index.html#folders" class="back-home">Back to home</a>
+  <a href="index.html#folders" class="back-home">Back to home</a>
 
-<div class="prism">
-  <div class="inner-face-right"></div>
-  <div class="inner-face-horizontal"></div>
-  <div class="prism-text">
-    FLUID
-    <span class="prism-r">FLUID</span>
-    <span class="prism-o">FLUID</span>
-    <span class="prism-y">FLUID</span>
-    <span class="prism-g">FLUID</span>
-    <span class="prism-c">FLUID</span>
-    <span class="prism-b">FLUID</span>
+  <div class="prism">
+    <div class="inner-face-right"></div>
+    <div class="inner-face-horizontal"></div>
+    <div class="prism-text">
+      FLUID
+      <span class="prism-r">FLUID</span>
+      <span class="prism-o">FLUID</span>
+      <span class="prism-y">FLUID</span>
+      <span class="prism-g">FLUID</span>
+      <span class="prism-c">FLUID</span>
+      <span class="prism-b">FLUID</span>
+    </div>
   </div>
-</div>
 
-<div id="photoSections"></div>
+  <div id="photoSections"></div>
 </section>
 
 <!-- LIGHTBOX -->
@@ -273,10 +269,11 @@ const navLeft = document.querySelector(".nav-left");
 const navRight = document.querySelector(".nav-right");
 const closeBtn = document.querySelector(".close-btn");
 
+// cinematic motion blur + fade
 function openLightbox(i){
   currentIndex = i;
   lightboxImg.style.opacity = 0;
-  lightboxImg.style.filter = "blur(4px)";
+  lightboxImg.style.filter = "blur(6px)";
   setTimeout(()=>{
     lightboxImg.src = gallery[i];
     lightboxBg.style.backgroundImage = `url(${gallery[i]})`;

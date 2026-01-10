@@ -62,16 +62,50 @@ section {
   clip-path: polygon(0 50%,100% 0,100% 100%);
 }
 
-.inner-face-right { position:absolute; right:0; top:0; width:34px; height:100%; opacity:0.35;
-background:linear-gradient(to right,rgba(255,255,255,0.35),rgba(255,255,255,0.08),rgba(255,255,255,0));
-clip-path: polygon(0% 50%,100% 0%,100% 100%); }
+.inner-face-right {
+  position:absolute;
+  right:0; top:0;
+  width:34px; height:100%;
+  opacity:0.35;
+  background:linear-gradient(to right,rgba(255,255,255,0.35),rgba(255,255,255,0.08),rgba(255,255,255,0));
+  clip-path: polygon(0% 50%,100% 0%,100% 100%);
+}
 
-.inner-face-horizontal { position:absolute; left:-10%; top:46%; width:120%; height:18%; opacity:0.28;
-background:linear-gradient(to bottom,rgba(255,255,255,0.35),rgba(255,255,255,0.08),rgba(255,255,255,0));
-clip-path: polygon(0% 0%,100% 8%,100% 100%,0% 92%); }
+.inner-face-horizontal {
+  position:absolute;
+  left:-10%; top:46%;
+  width:120%; height:18%;
+  opacity:0.28;
+  background:linear-gradient(to bottom,rgba(255,255,255,0.35),rgba(255,255,255,0.08),rgba(255,255,255,0));
+  clip-path: polygon(0% 0%,100% 8%,100% 100%,0% 92%);
+}
 
-.prism-text { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:1.4rem; letter-spacing:0.32em; filter: blur(0.45px); }
-.prism-text span { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+.prism-text {
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.4rem;
+  letter-spacing:0.32em;
+  filter: blur(0.45px);
+}
+
+.prism-text span {
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* CHROMATIC SPLIT PRISM COLORS */
+.prism-r { color:#ff453a; transform:translateX(-3px); filter:blur(0.9px); }
+.prism-o { color:#ff9f0a; transform:translateX(-2px); filter:blur(0.7px); }
+.prism-y { color:#ffd60a; transform:translateX(-1px); filter:blur(0.6px); }
+.prism-g { color:#32d74b; transform:translateX(1px);  filter:blur(0.6px); }
+.prism-c { color:#64d2ff; transform:translateX(2px);  filter:blur(0.7px); }
+.prism-b { color:#0a84ff; transform:translateX(3px);  filter:blur(0.9px); }
 
 /* ---------------- GRID ---------------- */
 .category-row {
@@ -94,52 +128,59 @@ clip-path: polygon(0% 0%,100% 8%,100% 100%,0% 92%); }
 .lightbox {
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.95);
+  background:rgba(0,0,0,0.92);
   display:none;
   align-items:center;
   justify-content:center;
   z-index:999;
-  overflow:hidden;
 }
 
 .lightbox.show { display:flex; }
 
+/* soft blurred background for vertical images */
 .lightbox-bg {
   position:absolute;
   inset:0;
   background-size:cover;
   background-position:center;
-  filter:blur(60px) brightness(0.35);
+  filter:blur(60px) brightness(0.4);
   opacity:0.35;
   transform:scale(1.1);
 }
 
+/* main image */
 .lightbox img {
   position:relative;
   max-width:90vw;
   max-height:90vh;
   z-index:2;
-  border-radius:3px;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition:transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
 }
 
-/* ---------------- NAVIGATION ---------------- */
-.nav-arrow {
+/* ---------------- NAV MARKS ---------------- */
+.nav-mark {
   position:absolute;
   top:50%;
   transform:translateY(-50%);
-  font-size:2.5rem;
-  color:rgba(255,255,255,0.5);
+  font-size:3rem;
+  color:rgba(204,204,204,0.4);
+  font-family:'Michroma',sans-serif;
   cursor:pointer;
-  user-select:none;
-  transition: transform 0.15s ease, color 0.15s ease;
   z-index:3;
+  user-select:none;
+  transition: transform 0.15s ease, color 0.15s ease, text-shadow 0.15s ease;
 }
-
-.nav-arrow:hover { color:rgba(255,255,255,0.85); transform:scale(1.15); }
-
+.nav-mark:hover { color:#fff; }
 .nav-left { left:20px; }
 .nav-right { right:20px; }
+
+/* RGB split on press */
+.nav-press {
+  text-shadow:
+    -1px 0 red,
+    1px 0 cyan;
+  transform:scale(1.15);
+}
 
 /* ---------------- CLOSE BUTTON ---------------- */
 .close-btn {
@@ -153,7 +194,6 @@ clip-path: polygon(0% 0%,100% 8%,100% 100%,0% 92%); }
   transition: transform 0.2s ease, color 0.2s ease;
 }
 .close-btn:hover { color:#fff; transform:scale(1.1); }
-
 </style>
 </head>
 
@@ -182,9 +222,9 @@ clip-path: polygon(0% 0%,100% 8%,100% 100%,0% 92%); }
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
   <div class="lightbox-bg" id="lightbox-bg"></div>
-  <div class="nav-arrow nav-left">&#10094;</div>
+  <div class="nav-mark nav-left">⟋</div>
   <img id="lightbox-img">
-  <div class="nav-arrow nav-right">&#10095;</div>
+  <div class="nav-mark nav-right">⟍</div>
   <div class="close-btn">✕</div>
 </div>
 
@@ -236,21 +276,25 @@ const closeBtn = document.querySelector(".close-btn");
 function openLightbox(i){
   currentIndex = i;
   lightboxImg.style.opacity = 0;
-  lightboxImg.style.transform = "scale(0.95)";
+  lightboxImg.style.filter = "blur(4px)";
   setTimeout(()=>{
     lightboxImg.src = gallery[i];
     lightboxBg.style.backgroundImage = `url(${gallery[i]})`;
     lightboxImg.style.opacity = 1;
-    lightboxImg.style.transform = "scale(1)";
-  },100);
+    lightboxImg.style.filter = "blur(0)";
+  },120);
   lightbox.classList.add("show");
 }
 
 function next(){
+  navRight.classList.add("nav-press");
+  setTimeout(()=>navRight.classList.remove("nav-press"),150);
   openLightbox((currentIndex+1)%gallery.length);
 }
 
 function prev(){
+  navLeft.classList.add("nav-press");
+  setTimeout(()=>navLeft.classList.remove("nav-press"),150);
   openLightbox((currentIndex-1+gallery.length)%gallery.length);
 }
 

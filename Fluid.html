@@ -236,6 +236,10 @@ function renderPhotos(photos){
     img.src = src;
     img.onclick = ()=>openLightbox(i);
 
+    const num = document.createElement("div");
+    num.className = "photo-number";
+    num.textContent = "IMG_" + String(i+1).padStart(2,"0");
+
     const wrap = document.createElement("div");
     wrap.style.display="flex";
     wrap.style.flexDirection="column";

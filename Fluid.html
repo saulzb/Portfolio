@@ -246,7 +246,14 @@ function renderPhotos(){
 
   gallery.forEach((src,i)=>{
     const img = document.createElement("img");
-    img.src = src;
+
+    // ----- OPTIMIZED IMAGE LOADING -----
+    img.loading = "lazy";                   // lazy-load offscreen images
+    img.decoding = "async";                 // decode asynchronously
+    const dpr = window.devicePixelRatio || 1;
+    const width = Math.min(1000, 400 * dpr); // DPR-aware width, max 1000px
+    img.src = `${src}?w=${width}&fm=webp&q=90`; // high-quality WebP for grain/color
+
     img.onclick = ()=>openLightbox(i);
     row.appendChild(img);
   });

@@ -249,25 +249,27 @@ async function fetchPhotos(){
   renderPhotos();
 }
 
-// ----- RENDER THUMBNAILS WITH BLUR-UP -----
+// ----- RENDER THUMBNAILS WITH MOBILE-ONLY TINY PLACEHOLDER -----
 function renderPhotos(){
   const row = document.createElement("div");
   row.className = "category-row";
 
+  const isMobile = window.innerWidth <= 768;
+  const dpr = window.devicePixelRatio || 1;
+
   gallery.forEach((src,i)=>{
     const img = document.createElement("img");
 
-    const dpr = window.devicePixelRatio || 1;
-    const thumbWidth = 180 * dpr;
+    let placeholderWidth = isMobile ? 20 : 180 * dpr;
+    let highResWidth = 180 * dpr;
 
-    // tiny blurry placeholder first
-    img.src = `${src}?w=20&fm=webp&q=10`;
+    // tiny placeholder only on mobile
+    img.src = `${src}?w=${placeholderWidth}&fm=webp&q=10`;
     img.loading = "lazy";
     img.decoding = "async";
 
-    // high-res thumbnail
     const highRes = new Image();
-    highRes.src = `${src}?w=${thumbWidth}&fm=webp&q=80`;
+    highRes.src = `${src}?w=${highResWidth}&fm=webp&q=80`;
     highRes.decoding = "async";
     highRes.onload = () => {
       img.src = highRes.src;

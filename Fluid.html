@@ -224,6 +224,7 @@ let gallery = [];
 let currentIndex = 0;
 let firstOpen = true;
 
+// ----- FETCH PHOTOS -----
 async function fetchPhotos(){
   const res = await fetch(
     `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
@@ -240,6 +241,7 @@ async function fetchPhotos(){
   renderPhotos();
 }
 
+// ----- RENDER THUMBNAILS -----
 function renderPhotos(){
   const row = document.createElement("div");
   row.className = "category-row";
@@ -247,12 +249,12 @@ function renderPhotos(){
   gallery.forEach((src,i)=>{
     const img = document.createElement("img");
 
-    // ----- OPTIMIZED IMAGE LOADING -----
-    img.loading = "lazy";                   // lazy-load offscreen images
-    img.decoding = "async";                 // decode asynchronously
+    // ---- THUMBNAIL SETTINGS ----
     const dpr = window.devicePixelRatio || 1;
-    const width = Math.min(1000, 400 * dpr); // DPR-aware width, max 1000px
-    img.src = `${src}?w=${width}&fm=webp&q=90`; // high-quality WebP for grain/color
+    const thumbWidth = 180 * dpr; // tiny but crisp on retina
+    img.src = `${src}?w=${thumbWidth}&fm=webp&q=80`;
+    img.loading = "lazy";
+    img.decoding = "async";
 
     img.onclick = ()=>openLightbox(i);
     row.appendChild(img);
@@ -261,6 +263,7 @@ function renderPhotos(){
   document.getElementById("photoSections").appendChild(row);
 }
 
+// ----- OPEN LIGHTBOX WITH PROGRESSIVE LOAD -----
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightbox-img");
 const lightboxBg = document.getElementById("lightbox-bg");
@@ -269,24 +272,34 @@ const navRight = document.querySelector(".nav-right");
 
 function openLightbox(i){
   currentIndex = i;
-  if(!firstOpen){
-    lightboxImg.style.transform = "scale(1.05)";
-    lightboxImg.style.opacity = 0;
-    setTimeout(()=>{
-      lightboxImg.src = gallery[i];
-      lightboxBg.style.backgroundImage = `url(${gallery[i]})`;
-      lightboxImg.style.transform = "scale(1)";
-      lightboxImg.style.opacity = 1;
-    }, 200);
-  } else {
-    lightboxImg.src = gallery[i];
-    lightboxBg.style.backgroundImage = `url(${gallery[i]})`;
-    lightboxImg.style.opacity = 1;
-    firstOpen = false;
-  }
   lightbox.classList.add("show");
+
+  const dpr = window.devicePixelRatio || 1;
+  const lbWidth = Math.min(1000, 600*dpr); // medium-res for lightbox
+
+  // blurred placeholder background first
+  lightboxBg.style.backgroundImage = `url(${gallery[i]}?w=50&fm=webp&q=10)`;
+
+  // load main image asynchronously
+  const imgLarge = new Image();
+  imgLarge.decoding = "async";
+  imgLarge.src = `${gallery[i]}?w=${lbWidth}&fm=webp&q=90`;
+  imgLarge.onload = () => { lightboxImg.src = imgLarge.src; }
+
+  // optional: preload next/prev
+  preload((i+1)%gallery.length);
+  preload((i-1+gallery.length)%gallery.length);
 }
 
+// ----- PRELOAD NEXT/PREVIOUS -----
+function preload(i){
+  const imgPre = new Image();
+  const dpr = window.devicePixelRatio || 1;
+  const width = Math.min(1000, 600*dpr);
+  imgPre.src = `${gallery[i]}?w=${width}&fm=webp&q=90`;
+}
+
+// ----- LIGHTBOX NAV -----
 function next(){ openLightbox((currentIndex+1)%gallery.length); }
 function prev(){ openLightbox((currentIndex-1+gallery.length)%gallery.length); }
 

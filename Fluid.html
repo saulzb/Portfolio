@@ -249,7 +249,7 @@ async function fetchPhotos(){
   renderPhotos();
 }
 
-// ----- RENDER THUMBNAILS WITH MOBILE-ONLY TINY PLACEHOLDER -----
+// ----- RENDER THUMBNAILS -----
 function renderPhotos(){
   const row = document.createElement("div");
   row.className = "category-row";
@@ -263,7 +263,6 @@ function renderPhotos(){
     let placeholderWidth = isMobile ? 20 : 180 * dpr;
     let highResWidth = 180 * dpr;
 
-    // tiny placeholder only on mobile
     img.src = `${src}?w=${placeholderWidth}&fm=webp&q=10`;
     img.loading = "lazy";
     img.decoding = "async";
@@ -271,10 +270,7 @@ function renderPhotos(){
     const highRes = new Image();
     highRes.src = `${src}?w=${highResWidth}&fm=webp&q=80`;
     highRes.decoding = "async";
-    highRes.onload = () => {
-      img.src = highRes.src;
-      img.classList.add("loaded");
-    };
+    highRes.onload = () => { img.src = highRes.src; img.classList.add("loaded"); }
 
     img.onclick = ()=>openLightbox(i);
     row.appendChild(img);
@@ -297,10 +293,8 @@ function openLightbox(i){
   const dpr = window.devicePixelRatio || 1;
   const lbWidth = Math.min(1000, 600*dpr);
 
-  // blurred placeholder background
   lightboxBg.style.backgroundImage = `url(${gallery[i]}?w=50&fm=webp&q=10)`;
 
-  // load main image async
   const imgLarge = new Image();
   imgLarge.decoding = "async";
   imgLarge.src = `${gallery[i]}?w=${lbWidth}&fm=webp&q=90`;
@@ -336,6 +330,30 @@ document.addEventListener("keydown", e=>{
   if(e.key==="ArrowRight") next();
   if(e.key==="ArrowLeft") prev();
   if(e.key==="Escape") lightbox.classList.remove("show");
+});
+
+// ----- MOBILE SWIPE -----
+let startX = 0;
+let startY = 0;
+const swipeThreshold = 50; // px
+
+lightbox.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }
+});
+
+lightbox.addEventListener('touchend', e => {
+  const endX = e.changedTouches[0].clientX;
+  const endY = e.changedTouches[0].clientY;
+  const deltaX = endX - startX;
+  const deltaY = endY - startY;
+
+  if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
+    if (deltaX < 0) next(); // swipe left
+    else prev();             // swipe right
+  }
 });
 
 fetchPhotos();

@@ -141,6 +141,7 @@ section {
   align-items:center;
   justify-content:center;
   z-index:999;
+  touch-action: pan-y; /* restrict horizontal swipe propagation */
 }
 
 .lightbox.show { display:flex; }
@@ -153,6 +154,7 @@ section {
   filter:blur(60px) brightness(0.4);
   opacity:0.35;
   transform:scale(1.1);
+  pointer-events:none; /* prevent interaction with background */
 }
 
 .lightbox img {
@@ -161,6 +163,7 @@ section {
   max-height:90vh;
   z-index:2;
   transition:transform 0.4s ease, filter 0.4s ease, opacity 0.4s ease;
+  touch-action: pan-x; /* allow horizontal swipe on image only */
 }
 
 /* ---------------- NAV ---------------- */
@@ -190,6 +193,9 @@ section {
     justify-content:flex-start;
     padding-top:120px;
   }
+
+  /* hide arrows on mobile */
+  .nav-mark { display: none; }
 }
 </style>
 </head>
@@ -332,19 +338,19 @@ document.addEventListener("keydown", e=>{
   if(e.key==="Escape") lightbox.classList.remove("show");
 });
 
-// ----- MOBILE SWIPE -----
+// ----- MOBILE SWIPE (image only) -----
 let startX = 0;
 let startY = 0;
 const swipeThreshold = 50; // px
 
-lightbox.addEventListener('touchstart', e => {
+lightboxImg.addEventListener('touchstart', e => {
   if (e.touches.length === 1) {
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
   }
 });
 
-lightbox.addEventListener('touchend', e => {
+lightboxImg.addEventListener('touchend', e => {
   const endX = e.changedTouches[0].clientX;
   const endY = e.changedTouches[0].clientY;
   const deltaX = endX - startX;

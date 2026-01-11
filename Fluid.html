@@ -114,6 +114,7 @@ section {
   justify-content:center;
 }
 
+/* BLUR-UP THUMBNAILS */
 .category-row img {
   width:180px;
   height:180px;
@@ -121,6 +122,14 @@ section {
   border-radius:6px;
   box-shadow:0 8px 20px rgba(0,0,0,0.45);
   cursor:pointer;
+
+  filter: blur(15px);
+  transition: filter 0.6s ease-out, opacity 0.6s ease-out;
+  opacity:0;
+}
+.category-row img.loaded {
+  filter: blur(0);
+  opacity:1;
 }
 
 /* ---------------- LIGHTBOX ---------------- */
@@ -222,7 +231,6 @@ const CATEGORY_NAME = "TI";
 
 let gallery = [];
 let currentIndex = 0;
-let firstOpen = true;
 
 // ----- FETCH PHOTOS -----
 async function fetchPhotos(){
@@ -241,7 +249,7 @@ async function fetchPhotos(){
   renderPhotos();
 }
 
-// ----- RENDER THUMBNAILS -----
+// ----- RENDER THUMBNAILS WITH BLUR-UP -----
 function renderPhotos(){
   const row = document.createElement("div");
   row.className = "category-row";
@@ -249,12 +257,22 @@ function renderPhotos(){
   gallery.forEach((src,i)=>{
     const img = document.createElement("img");
 
-    // ---- THUMBNAIL SETTINGS ----
     const dpr = window.devicePixelRatio || 1;
-    const thumbWidth = 180 * dpr; // tiny but crisp on retina
-    img.src = `${src}?w=${thumbWidth}&fm=webp&q=80`;
+    const thumbWidth = 180 * dpr;
+
+    // tiny blurry placeholder first
+    img.src = `${src}?w=20&fm=webp&q=10`;
     img.loading = "lazy";
     img.decoding = "async";
+
+    // high-res thumbnail
+    const highRes = new Image();
+    highRes.src = `${src}?w=${thumbWidth}&fm=webp&q=80`;
+    highRes.decoding = "async";
+    highRes.onload = () => {
+      img.src = highRes.src;
+      img.classList.add("loaded");
+    };
 
     img.onclick = ()=>openLightbox(i);
     row.appendChild(img);
@@ -263,7 +281,7 @@ function renderPhotos(){
   document.getElementById("photoSections").appendChild(row);
 }
 
-// ----- OPEN LIGHTBOX WITH PROGRESSIVE LOAD -----
+// ----- LIGHTBOX -----
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightbox-img");
 const lightboxBg = document.getElementById("lightbox-bg");
@@ -275,18 +293,17 @@ function openLightbox(i){
   lightbox.classList.add("show");
 
   const dpr = window.devicePixelRatio || 1;
-  const lbWidth = Math.min(1000, 600*dpr); // medium-res for lightbox
+  const lbWidth = Math.min(1000, 600*dpr);
 
-  // blurred placeholder background first
+  // blurred placeholder background
   lightboxBg.style.backgroundImage = `url(${gallery[i]}?w=50&fm=webp&q=10)`;
 
-  // load main image asynchronously
+  // load main image async
   const imgLarge = new Image();
   imgLarge.decoding = "async";
   imgLarge.src = `${gallery[i]}?w=${lbWidth}&fm=webp&q=90`;
   imgLarge.onload = () => { lightboxImg.src = imgLarge.src; }
 
-  // optional: preload next/prev
   preload((i+1)%gallery.length);
   preload((i-1+gallery.length)%gallery.length);
 }

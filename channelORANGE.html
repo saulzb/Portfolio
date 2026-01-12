@@ -255,31 +255,50 @@ async function fetchPhotos(){
   renderPhotos();
 }
 
+// ----- INTERSECTION OBSERVER FOR THUMBS -----
+const thumbObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+
+    const img = entry.target;
+    const src = img.dataset.src;
+    const dpr = window.devicePixelRatio || 1;
+
+    // 180px display × DPR × 2 (retina-safe, no waste)
+    const requestWidth = Math.ceil(180 * dpr * 2);
+
+    const highRes = new Image();
+    highRes.decoding = "async";
+    highRes.src = `${src}?w=${requestWidth}&fm=webp&q=85&fit=fill&fl=progressive`;
+    highRes.onload = () => {
+      img.src = highRes.src;
+      img.classList.add("loaded");
+    };
+
+    thumbObserver.unobserve(img);
+  });
+}, { rootMargin: "200px" });
+
 // ----- RENDER THUMBNAILS -----
 function renderPhotos(){
   const row = document.createElement("div");
   row.className = "category-row";
 
   const isMobile = window.innerWidth <= 768;
-  const dpr = window.devicePixelRatio || 1;
 
   gallery.forEach((src,i)=>{
     const img = document.createElement("img");
 
-    let placeholderWidth = isMobile ? 20 : 180 * dpr;
-    let highResWidth = 180 * dpr;
-
-    img.src = `${src}?w=${placeholderWidth}&fm=webp&q=10`;
+    // Tiny placeholder (fast)
+    img.src = `${src}?w=40&fm=webp&q=10`;
+    img.dataset.src = src;
     img.loading = "lazy";
     img.decoding = "async";
 
-    const highRes = new Image();
-    highRes.src = `${src}?w=${highResWidth}&fm=webp&q=80`;
-    highRes.decoding = "async";
-    highRes.onload = () => { img.src = highRes.src; img.classList.add("loaded"); }
-
     img.onclick = ()=>openLightbox(i);
+
     row.appendChild(img);
+    thumbObserver.observe(img);
   });
 
   document.getElementById("photoSections").appendChild(row);
@@ -297,25 +316,40 @@ function openLightbox(i){
   lightbox.classList.add("show");
 
   const dpr = window.devicePixelRatio || 1;
-  const lbWidth = Math.min(1000, 600*dpr);
 
-  lightboxBg.style.backgroundImage = `url(${gallery[i]}?w=50&fm=webp&q=10)`;
+  // Match actual viewport size (no upscaling)
+  const targetSize = Math.ceil(
+    Math.max(window.innerWidth, window.innerHeight) * dpr * 0.9
+  );
+
+  // Soft background
+  lightboxBg.style.backgroundImage =
+    `url(${gallery[i]}?w=60&fm=webp&q=10)`;
 
   const imgLarge = new Image();
   imgLarge.decoding = "async";
-  imgLarge.src = `${gallery[i]}?w=${lbWidth}&fm=webp&q=90`;
-  imgLarge.onload = () => { lightboxImg.src = imgLarge.src; }
+  imgLarge.src =
+    `${gallery[i]}?w=${targetSize}&fm=webp&q=92&fit=fill&fl=progressive`;
 
-  preload((i+1)%gallery.length);
-  preload((i-1+gallery.length)%gallery.length);
+  imgLarge.onload = () => {
+    lightboxImg.src = imgLarge.src;
+  };
+
+  preloadNext(i);
 }
 
-// ----- PRELOAD NEXT/PREVIOUS -----
-function preload(i){
-  const imgPre = new Image();
+// ----- PRELOAD NEXT ONLY (saves bandwidth) -----
+function preloadNext(i){
+  const nextIndex = (i+1) % gallery.length;
   const dpr = window.devicePixelRatio || 1;
-  const width = Math.min(1000, 600*dpr);
-  imgPre.src = `${gallery[i]}?w=${width}&fm=webp&q=90`;
+
+  const targetSize = Math.ceil(
+    Math.max(window.innerWidth, window.innerHeight) * dpr * 0.9
+  );
+
+  const imgPre = new Image();
+  imgPre.src =
+    `${gallery[nextIndex]}?w=${targetSize}&fm=webp&q=85&fit=fill`;
 }
 
 // ----- LIGHTBOX NAV -----
@@ -338,10 +372,10 @@ document.addEventListener("keydown", e=>{
   if(e.key==="Escape") lightbox.classList.remove("show");
 });
 
-// ----- MOBILE SWIPE (image only) -----
+// ----- MOBILE SWIPE (unchanged) -----
 let startX = 0;
 let startY = 0;
-const swipeThreshold = 50; // px
+const swipeThreshold = 50;
 
 lightboxImg.addEventListener('touchstart', e => {
   if (e.touches.length === 1) {
@@ -357,8 +391,7 @@ lightboxImg.addEventListener('touchend', e => {
   const deltaY = endY - startY;
 
   if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
-    if (deltaX < 0) next(); // swipe left
-    else prev();             // swipe right
+    deltaX < 0 ? next() : prev();
   }
 });
 

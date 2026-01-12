@@ -246,7 +246,9 @@ async function fetchPhotos(){
   const data = await res.json();
 
   const assets = {};
-  data.includes.Asset.forEach(a => assets[a.sys.id] = a.fields.file.url);
+  data.includes.Asset.forEach(a => {
+    assets[a.sys.id] = a.fields.file.url;
+  });
 
   gallery = data.items
     .filter(i => i.fields.category === CATEGORY_NAME)
@@ -255,50 +257,33 @@ async function fetchPhotos(){
   renderPhotos();
 }
 
-// ----- INTERSECTION OBSERVER FOR THUMBS -----
-const thumbObserver = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (!entry.isIntersecting) return;
+// ----- RENDER THUMBNAILS (SAFE VERSION) -----
+function renderPhotos(){
+  const row = document.createElement("div");
+  row.className = "category-row";
 
-    const img = entry.target;
-    const src = img.dataset.src;
-    const dpr = window.devicePixelRatio || 1;
+  const dpr = window.devicePixelRatio || 1;
+  const thumbRequest = Math.ceil(180 * dpr * 2);
 
-    // 180px display × DPR × 2 (retina-safe, no waste)
-    const requestWidth = Math.ceil(180 * dpr * 2);
+  gallery.forEach((src,i)=>{
+    const img = document.createElement("img");
 
+    // tiny placeholder
+    img.src = `${src}?w=40&fm=webp&q=10`;
+    img.loading = "lazy";
+    img.decoding = "async";
+
+    // high-res swap
     const highRes = new Image();
     highRes.decoding = "async";
-    highRes.src = `${src}?w=${requestWidth}&fm=webp&q=85&fit=fill&fl=progressive`;
+    highRes.src = `${src}?w=${thumbRequest}&fm=webp&q=85&fit=fill&fl=progressive`;
     highRes.onload = () => {
       img.src = highRes.src;
       img.classList.add("loaded");
     };
 
-    thumbObserver.unobserve(img);
-  });
-}, { rootMargin: "200px" });
-
-// ----- RENDER THUMBNAILS -----
-function renderPhotos(){
-  const row = document.createElement("div");
-  row.className = "category-row";
-
-  const isMobile = window.innerWidth <= 768;
-
-  gallery.forEach((src,i)=>{
-    const img = document.createElement("img");
-
-    // Tiny placeholder (fast)
-    img.src = `${src}?w=40&fm=webp&q=10`;
-    img.dataset.src = src;
-    img.loading = "lazy";
-    img.decoding = "async";
-
     img.onclick = ()=>openLightbox(i);
-
     row.appendChild(img);
-    thumbObserver.observe(img);
   });
 
   document.getElementById("photoSections").appendChild(row);
@@ -316,13 +301,10 @@ function openLightbox(i){
   lightbox.classList.add("show");
 
   const dpr = window.devicePixelRatio || 1;
-
-  // Match actual viewport size (no upscaling)
   const targetSize = Math.ceil(
     Math.max(window.innerWidth, window.innerHeight) * dpr * 0.9
   );
 
-  // Soft background
   lightboxBg.style.backgroundImage =
     `url(${gallery[i]}?w=60&fm=webp&q=10)`;
 
@@ -338,11 +320,10 @@ function openLightbox(i){
   preloadNext(i);
 }
 
-// ----- PRELOAD NEXT ONLY (saves bandwidth) -----
+// ----- PRELOAD NEXT ONLY -----
 function preloadNext(i){
-  const nextIndex = (i+1) % gallery.length;
+  const nextIndex = (i+1)%gallery.length;
   const dpr = window.devicePixelRatio || 1;
-
   const targetSize = Math.ceil(
     Math.max(window.innerWidth, window.innerHeight) * dpr * 0.9
   );
@@ -352,7 +333,7 @@ function preloadNext(i){
     `${gallery[nextIndex]}?w=${targetSize}&fm=webp&q=85&fit=fill`;
 }
 
-// ----- LIGHTBOX NAV -----
+// ----- NAV -----
 function next(){ openLightbox((currentIndex+1)%gallery.length); }
 function prev(){ openLightbox((currentIndex-1+gallery.length)%gallery.length); }
 

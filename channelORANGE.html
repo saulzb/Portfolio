@@ -1,235 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saul Zidulka-Bejcek | channelORANGE</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
-
-<style>
-html, body {
-  margin:0; padding:0; width:100%; height:100%;
-  background:#0a0a0c;
-  color:#eaeaea;
-  font-family:'Michroma',sans-serif;
-  scroll-behavior:smooth;
-}
-
-/* ---------------- SECTION ---------------- */
-section {
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:60px;
-}
-
-/* ---------------- BACK ---------------- */
-.back-home {
-  position:absolute;
-  top:30px;
-  left:50%;
-  transform:translateX(-50%);
-  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
-  font-size:0.75rem;
-  color:rgba(204,204,204,0.5);
-  text-decoration:none;
-  z-index:10;
-}
-.back-home:hover { color:rgba(255,255,255,0.8); }
-
-/* ---------------- PRISM ---------------- */
-.prism {
-  position:relative;
-  width:280px;
-  height:68px;
-  overflow:hidden;
-  clip-path: polygon(8% 0%,100% 0%,100% 100%,8% 100%,0% 50%);
-  background:linear-gradient(135deg,rgba(255,255,255,0.16),rgba(255,255,255,0.04) 45%,rgba(255,255,255,0.1));
-  border:1px solid rgba(255,255,255,0.25);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08),0 18px 36px rgba(0,0,0,0.75);
-}
-
-.prism::before {
-  content:"";
-  position:absolute;
-  left:0; top:0;
-  width:22px; height:100%;
-  background:linear-gradient(to bottom,rgba(255,255,255,0.35),rgba(255,255,255,0.02));
-  clip-path: polygon(0 50%,100% 0,100% 100%);
-}
-
-.inner-face-right {
-  position:absolute;
-  right:0; top:0;
-  width:34px; height:100%;
-  opacity:0.35;
-  background:linear-gradient(to right,rgba(255,255,255,0.35),rgba(255,255,255,0.08),rgba(255,255,255,0));
-  clip-path: polygon(0% 50%,100% 0%,100% 100%);
-}
-
-.inner-face-horizontal {
-  position:absolute;
-  left:-10%; top:46%;
-  width:120%; height:18%;
-  opacity:0.28;
-  background:linear-gradient(to bottom,rgba(255,255,255,0.35),rgba(255,255,255,0.08),rgba(255,255,255,0));
-  clip-path: polygon(0% 0%,100% 8%,100% 100%,0% 92%);
-}
-
-.prism-text {
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:0.8rem;
-  letter-spacing:0.32em;
-  filter: blur(0.45px);
-}
-
-.prism-text span {
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-/* CHROMATIC SPLIT PRISM COLORS */
-.prism-r { color:#ff453a; transform:translateX(-3px); filter:blur(0.9px); }
-.prism-o { color:#ff9f0a; transform:translateX(-2px); filter:blur(0.7px); }
-.prism-y { color:#ffd60a; transform:translateX(-1px); filter:blur(0.6px); }
-.prism-g { color:#32d74b; transform:translateX(1px);  filter:blur(0.6px); }
-.prism-c { color:#64d2ff; transform:translateX(2px);  filter:blur(0.7px); }
-.prism-b { color:#0a84ff; transform:translateX(3px);  filter:blur(0.9px); }
-
-/* ---------------- GRID ---------------- */
-.category-row {
-  display:flex;
-  flex-wrap:wrap;
-  gap:40px;
-  justify-content:center;
-}
-
-/* BLUR-UP THUMBNAILS */
-.category-row img {
-  width:180px;
-  height:180px;
-  object-fit:cover;
-  border-radius:6px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.45);
-  cursor:pointer;
-
-  filter: blur(15px);
-  transition: filter 0.6s ease-out, opacity 0.6s ease-out;
-  opacity:0;
-}
-.category-row img.loaded {
-  filter: blur(0);
-  opacity:1;
-}
-
-/* ---------------- LIGHTBOX ---------------- */
-.lightbox {
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.92);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:999;
-  touch-action: pan-y; /* restrict horizontal swipe propagation */
-}
-
-.lightbox.show { display:flex; }
-
-.lightbox-bg {
-  position:absolute;
-  inset:0;
-  background-size:cover;
-  background-position:center;
-  filter:blur(60px) brightness(0.4);
-  opacity:0.35;
-  transform:scale(1.1);
-  pointer-events:none; /* prevent interaction with background */
-}
-
-.lightbox img {
-  position:relative;
-  max-width:90vw;
-  max-height:90vh;
-  z-index:2;
-  transition:transform 0.4s ease, filter 0.4s ease, opacity 0.4s ease;
-  touch-action: pan-x; /* allow horizontal swipe on image only */
-}
-
-/* ---------------- NAV ---------------- */
-.nav-mark {
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-  font-size:3rem;
-  color:rgba(204,204,204,0.4);
-  cursor:pointer;
-  z-index:3;
-  user-select:none;
-  transition: transform 0.15s ease, color 0.15s ease, text-shadow 0.15s ease;
-}
-.nav-mark:hover { color:#fff; }
-.nav-left { left:20px; }
-.nav-right { right:20px; }
-
-.nav-press {
-  text-shadow:-1px 0 red, 1px 0 cyan;
-  transform:scale(1.15);
-}
-
-/* ---------------- MOBILE FIX ---------------- */
-@media (max-width: 768px) {
-  section {
-    justify-content:flex-start;
-    padding-top:120px;
-  }
-
-  /* hide arrows on mobile */
-  .nav-mark { display: none; }
-}
-</style>
-</head>
-
-<body>
-
-<section>
-  <a href="index.html#folders" class="back-home">Back to home</a>
-
-  <div class="prism">
-    <div class="inner-face-right"></div>
-    <div class="inner-face-horizontal"></div>
-    <div class="prism-text">
-      channelORANGE
-      <span class="prism-r">channelORANGE</span>
-      <span class="prism-o">channelORANGE</span>
-      <span class="prism-y">channelORANGE</span>
-      <span class="prism-g">channelORANGE</span>
-      <span class="prism-c">channelORANGE</span>
-      <span class="prism-b">channelORANGE</span>
-    </div>
-  </div>
-
-  <div id="photoSections"></div>
-</section>
-
-<!-- LIGHTBOX -->
-<div class="lightbox" id="lightbox">
-  <div class="lightbox-bg" id="lightbox-bg"></div>
-  <div class="nav-mark nav-left">◂</div>
-  <img id="lightbox-img">
-  <div class="nav-mark nav-right">▸</div>
-</div>
-
 <script>
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
@@ -255,31 +23,50 @@ async function fetchPhotos(){
   renderPhotos();
 }
 
+// ----- INTERSECTION OBSERVER FOR THUMBS -----
+const thumbObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+
+    const img = entry.target;
+    const src = img.dataset.src;
+    const dpr = window.devicePixelRatio || 1;
+
+    // 180px display × DPR × 2 (retina-safe, no waste)
+    const requestWidth = Math.ceil(180 * dpr * 2);
+
+    const highRes = new Image();
+    highRes.decoding = "async";
+    highRes.src = `${src}?w=${requestWidth}&fm=webp&q=85&fit=fill&fl=progressive`;
+    highRes.onload = () => {
+      img.src = highRes.src;
+      img.classList.add("loaded");
+    };
+
+    thumbObserver.unobserve(img);
+  });
+}, { rootMargin: "200px" });
+
 // ----- RENDER THUMBNAILS -----
 function renderPhotos(){
   const row = document.createElement("div");
   row.className = "category-row";
 
   const isMobile = window.innerWidth <= 768;
-  const dpr = window.devicePixelRatio || 1;
 
   gallery.forEach((src,i)=>{
     const img = document.createElement("img");
 
-    let placeholderWidth = isMobile ? 20 : 180 * dpr;
-    let highResWidth = 180 * dpr;
-
-    img.src = `${src}?w=${placeholderWidth}&fm=webp&q=10`;
+    // Tiny placeholder (fast)
+    img.src = `${src}?w=40&fm=webp&q=10`;
+    img.dataset.src = src;
     img.loading = "lazy";
     img.decoding = "async";
 
-    const highRes = new Image();
-    highRes.src = `${src}?w=${highResWidth}&fm=webp&q=80`;
-    highRes.decoding = "async";
-    highRes.onload = () => { img.src = highRes.src; img.classList.add("loaded"); }
-
     img.onclick = ()=>openLightbox(i);
+
     row.appendChild(img);
+    thumbObserver.observe(img);
   });
 
   document.getElementById("photoSections").appendChild(row);
@@ -297,25 +84,40 @@ function openLightbox(i){
   lightbox.classList.add("show");
 
   const dpr = window.devicePixelRatio || 1;
-  const lbWidth = Math.min(1000, 600*dpr);
 
-  lightboxBg.style.backgroundImage = `url(${gallery[i]}?w=50&fm=webp&q=10)`;
+  // Match actual viewport size (no upscaling)
+  const targetSize = Math.ceil(
+    Math.max(window.innerWidth, window.innerHeight) * dpr * 0.9
+  );
+
+  // Soft background
+  lightboxBg.style.backgroundImage =
+    `url(${gallery[i]}?w=60&fm=webp&q=10)`;
 
   const imgLarge = new Image();
   imgLarge.decoding = "async";
-  imgLarge.src = `${gallery[i]}?w=${lbWidth}&fm=webp&q=90`;
-  imgLarge.onload = () => { lightboxImg.src = imgLarge.src; }
+  imgLarge.src =
+    `${gallery[i]}?w=${targetSize}&fm=webp&q=92&fit=fill&fl=progressive`;
 
-  preload((i+1)%gallery.length);
-  preload((i-1+gallery.length)%gallery.length);
+  imgLarge.onload = () => {
+    lightboxImg.src = imgLarge.src;
+  };
+
+  preloadNext(i);
 }
 
-// ----- PRELOAD NEXT/PREVIOUS -----
-function preload(i){
-  const imgPre = new Image();
+// ----- PRELOAD NEXT ONLY (saves bandwidth) -----
+function preloadNext(i){
+  const nextIndex = (i+1) % gallery.length;
   const dpr = window.devicePixelRatio || 1;
-  const width = Math.min(1000, 600*dpr);
-  imgPre.src = `${gallery[i]}?w=${width}&fm=webp&q=90`;
+
+  const targetSize = Math.ceil(
+    Math.max(window.innerWidth, window.innerHeight) * dpr * 0.9
+  );
+
+  const imgPre = new Image();
+  imgPre.src =
+    `${gallery[nextIndex]}?w=${targetSize}&fm=webp&q=85&fit=fill`;
 }
 
 // ----- LIGHTBOX NAV -----
@@ -338,10 +140,10 @@ document.addEventListener("keydown", e=>{
   if(e.key==="Escape") lightbox.classList.remove("show");
 });
 
-// ----- MOBILE SWIPE (image only) -----
+// ----- MOBILE SWIPE (unchanged) -----
 let startX = 0;
 let startY = 0;
-const swipeThreshold = 50; // px
+const swipeThreshold = 50;
 
 lightboxImg.addEventListener('touchstart', e => {
   if (e.touches.length === 1) {
@@ -357,13 +159,9 @@ lightboxImg.addEventListener('touchend', e => {
   const deltaY = endY - startY;
 
   if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
-    if (deltaX < 0) next(); // swipe left
-    else prev();             // swipe right
+    deltaX < 0 ? next() : prev();
   }
 });
 
 fetchPhotos();
 </script>
-
-</body>
-</html>

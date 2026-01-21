@@ -124,8 +124,8 @@ section {
   cursor:pointer;
 
   filter: blur(15px);
-  transition: filter 0.6s ease-out, opacity 0.6s ease-out;
   opacity:0;
+  transition: filter 0.6s ease-out, opacity 0.6s ease-out;
 }
 .category-row img.loaded {
   filter: blur(0);
@@ -141,7 +141,6 @@ section {
   align-items:center;
   justify-content:center;
   z-index:999;
-  touch-action: pan-y; /* restrict horizontal swipe propagation */
 }
 
 .lightbox.show { display:flex; }
@@ -154,7 +153,7 @@ section {
   filter:blur(60px) brightness(0.4);
   opacity:0.35;
   transform:scale(1.1);
-  pointer-events:none; /* prevent interaction with background */
+  pointer-events:none;
 }
 
 .lightbox img {
@@ -162,8 +161,6 @@ section {
   max-width:90vw;
   max-height:90vh;
   z-index:2;
-  transition:transform 0.4s ease, filter 0.4s ease, opacity 0.4s ease;
-  touch-action: pan-x; /* allow horizontal swipe on image only */
 }
 
 /* ---------------- NAV ---------------- */
@@ -176,26 +173,12 @@ section {
   cursor:pointer;
   z-index:3;
   user-select:none;
-  transition: transform 0.15s ease, color 0.15s ease, text-shadow 0.15s ease;
 }
-.nav-mark:hover { color:#fff; }
 .nav-left { left:20px; }
 .nav-right { right:20px; }
 
-.nav-press {
-  text-shadow:-1px 0 red, 1px 0 cyan;
-  transform:scale(1.15);
-}
-
-/* ---------------- MOBILE FIX ---------------- */
-@media (max-width: 768px) {
-  section {
-    justify-content:flex-start;
-    padding-top:120px;
-  }
-
-  /* hide arrows on mobile */
-  .nav-mark { display: none; }
+@media (max-width:768px){
+  .nav-mark { display:none; }
 }
 </style>
 </head>
@@ -222,7 +205,6 @@ section {
   <div id="photoSections"></div>
 </section>
 
-<!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
   <div class="lightbox-bg" id="lightbox-bg"></div>
   <div class="nav-mark nav-left">◂</div>
@@ -238,7 +220,7 @@ const CATEGORY_NAME = "channelORANGE";
 let gallery = [];
 let currentIndex = 0;
 
-// ----- FETCH PHOTOS -----
+// FETCH
 async function fetchPhotos(){
   const res = await fetch(
     `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
@@ -246,9 +228,7 @@ async function fetchPhotos(){
   const data = await res.json();
 
   const assets = {};
-  data.includes.Asset.forEach(a => {
-    assets[a.sys.id] = a.fields.file.url;
-  });
+  data.includes.Asset.forEach(a => assets[a.sys.id] = a.fields.file.url);
 
   gallery = data.items
     .filter(i => i.fields.category === CATEGORY_NAME)
@@ -257,51 +237,46 @@ async function fetchPhotos(){
   renderPhotos();
 }
 
-// ----- RENDER THUMBNAILS (SAFE VERSION) -----
+// RENDER THUMBNAILS (SAFE + SHARP)
 function renderPhotos(){
   const row = document.createElement("div");
   row.className = "category-row";
 
   const dpr = window.devicePixelRatio || 1;
-  const thumbRequest = Math.ceil(180 * dpr * 2);
+  const thumbWidth = Math.ceil(180 * dpr * 2);
 
   gallery.forEach((src,i)=>{
     const img = document.createElement("img");
 
-    // tiny placeholder
     img.src = `${src}?w=40&fm=webp&q=10`;
     img.loading = "lazy";
     img.decoding = "async";
 
-    // high-res swap
     const highRes = new Image();
-    highRes.decoding = "async";
-    highRes.src = `${src}?w=${thumbRequest}&fm=webp&q=85&fit=fill&fl=progressive`;
+    highRes.src = `${src}?w=${thumbWidth}&fm=webp&q=85`;
     highRes.onload = () => {
       img.src = highRes.src;
       img.classList.add("loaded");
     };
 
-    img.onclick = ()=>openLightbox(i);
+    img.onclick = () => openLightbox(i);
     row.appendChild(img);
   });
 
   document.getElementById("photoSections").appendChild(row);
 }
 
-// ----- LIGHTBOX -----
+// LIGHTBOX
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightbox-img");
 const lightboxBg = document.getElementById("lightbox-bg");
-const navLeft = document.querySelector(".nav-left");
-const navRight = document.querySelector(".nav-right");
 
 function openLightbox(i){
   currentIndex = i;
   lightbox.classList.add("show");
 
   const dpr = window.devicePixelRatio || 1;
-  const targetSize = Math.ceil(
+  const size = Math.ceil(
     Math.max(window.innerWidth, window.innerHeight) * dpr * 0.9
   );
 
@@ -309,41 +284,31 @@ function openLightbox(i){
     `url(${gallery[i]}?w=60&fm=webp&q=10)`;
 
   const imgLarge = new Image();
-  imgLarge.decoding = "async";
-  imgLarge.src =
-    `${gallery[i]}?w=${targetSize}&fm=webp&q=92&fit=fill&fl=progressive`;
-
-  imgLarge.onload = () => {
-    lightboxImg.src = imgLarge.src;
-  };
+  imgLarge.src = `${gallery[i]}?w=${size}&fm=webp&q=92`;
+  imgLarge.onload = () => lightboxImg.src = imgLarge.src;
 
   preloadNext(i);
 }
 
-// ----- PRELOAD NEXT ONLY -----
 function preloadNext(i){
-  const nextIndex = (i+1)%gallery.length;
+  const next = (i+1)%gallery.length;
   const dpr = window.devicePixelRatio || 1;
-  const targetSize = Math.ceil(
+  const size = Math.ceil(
     Math.max(window.innerWidth, window.innerHeight) * dpr * 0.9
   );
-
-  const imgPre = new Image();
-  imgPre.src =
-    `${gallery[nextIndex]}?w=${targetSize}&fm=webp&q=85&fit=fill`;
+  const img = new Image();
+  img.src = `${gallery[next]}?w=${size}&fm=webp&q=85`;
 }
 
-// ----- NAV -----
+// NAV
 function next(){ openLightbox((currentIndex+1)%gallery.length); }
 function prev(){ openLightbox((currentIndex-1+gallery.length)%gallery.length); }
 
-navRight.onclick = next;
-navLeft.onclick = prev;
+document.querySelector(".nav-right").onclick = next;
+document.querySelector(".nav-left").onclick = prev;
 
 lightbox.onclick = e => {
-  if(e.target !== lightboxImg && !e.target.classList.contains('nav-mark')) {
-    lightbox.classList.remove("show");
-  }
+  if(e.target === lightbox) lightbox.classList.remove("show");
 };
 
 document.addEventListener("keydown", e=>{
@@ -351,29 +316,6 @@ document.addEventListener("keydown", e=>{
   if(e.key==="ArrowRight") next();
   if(e.key==="ArrowLeft") prev();
   if(e.key==="Escape") lightbox.classList.remove("show");
-});
-
-// ----- MOBILE SWIPE (unchanged) -----
-let startX = 0;
-let startY = 0;
-const swipeThreshold = 50;
-
-lightboxImg.addEventListener('touchstart', e => {
-  if (e.touches.length === 1) {
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-  }
-});
-
-lightboxImg.addEventListener('touchend', e => {
-  const endX = e.changedTouches[0].clientX;
-  const endY = e.changedTouches[0].clientY;
-  const deltaX = endX - startX;
-  const deltaY = endY - startY;
-
-  if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
-    deltaX < 0 ? next() : prev();
-  }
 });
 
 fetchPhotos();

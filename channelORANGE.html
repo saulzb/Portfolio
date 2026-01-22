@@ -13,7 +13,6 @@ html, body {
   background:#0a0a0c;
   color:#eaeaea;
   font-family:'Michroma',sans-serif;
-  scroll-behavior:smooth;
 }
 
 /* ---------------- SECTION ---------------- */
@@ -98,7 +97,6 @@ section {
   justify-content:center;
 }
 
-/* CHROMATIC SPLIT PRISM COLORS */
 .prism-r { color:#ff453a; transform:translateX(-3px); filter:blur(0.9px); }
 .prism-o { color:#ff9f0a; transform:translateX(-2px); filter:blur(0.7px); }
 .prism-y { color:#ffd60a; transform:translateX(-1px); filter:blur(0.6px); }
@@ -114,7 +112,6 @@ section {
   justify-content:center;
 }
 
-/* BLUR-UP THUMBNAILS */
 .category-row img {
   width:180px;
   height:180px;
@@ -122,14 +119,14 @@ section {
   border-radius:6px;
   box-shadow:0 8px 20px rgba(0,0,0,0.45);
   cursor:pointer;
-
-  filter: blur(15px);
   opacity:0;
-  transition: filter 0.6s ease-out, opacity 0.6s ease-out;
+  filter:blur(14px);
+  transition:filter .6s ease, opacity .6s ease;
 }
+
 .category-row img.loaded {
-  filter: blur(0);
   opacity:1;
+  filter:blur(0);
 }
 
 /* ---------------- LIGHTBOX ---------------- */
@@ -152,15 +149,14 @@ section {
   background-position:center;
   filter:blur(60px) brightness(0.4);
   opacity:0.35;
-  transform:scale(1.1);
-  pointer-events:none;
 }
 
 .lightbox img {
-  position:relative;
   max-width:90vw;
   max-height:90vh;
   z-index:2;
+  will-change:transform;
+  transition:transform .25s ease;
 }
 
 /* ---------------- NAV ---------------- */
@@ -171,11 +167,11 @@ section {
   font-size:3rem;
   color:rgba(204,204,204,0.4);
   cursor:pointer;
-  z-index:3;
   user-select:none;
 }
 .nav-left { left:20px; }
 .nav-right { right:20px; }
+.nav-mark:hover { color:#fff; }
 
 @media (max-width:768px){
   .nav-mark { display:none; }
@@ -217,109 +213,96 @@ const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
 const CATEGORY_NAME = "channelORANGE";
 
-let gallery = [];
-let currentIndex = 0;
+let gallery=[], currentIndex=0;
+const preloadCache=new Map();
+const lightbox=document.getElementById("lightbox");
+const imgEl=document.getElementById("lightbox-img");
+const bg=document.getElementById("lightbox-bg");
 
-// FETCH
 async function fetchPhotos(){
-  const res = await fetch(
-    `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
-  );
-  const data = await res.json();
-
-  const assets = {};
-  data.includes.Asset.forEach(a => assets[a.sys.id] = a.fields.file.url);
-
-  gallery = data.items
-    .filter(i => i.fields.category === CATEGORY_NAME)
-    .map(i => `https:${assets[i.fields.photo.sys.id]}`);
-
+  const res=await fetch(`https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`);
+  const data=await res.json();
+  const assets={};
+  data.includes.Asset.forEach(a=>assets[a.sys.id]=a.fields.file.url);
+  gallery=data.items.filter(i=>i.fields.category===CATEGORY_NAME).map(i=>`https:${assets[i.fields.photo.sys.id]}`);
   renderPhotos();
 }
 
-// RENDER THUMBNAILS (SAFE + SHARP)
 function renderPhotos(){
-  const row = document.createElement("div");
-  row.className = "category-row";
-
-  const dpr = window.devicePixelRatio || 1;
-  const thumbWidth = Math.ceil(180 * dpr * 2);
-
+  const row=document.createElement("div");
+  row.className="category-row";
   gallery.forEach((src,i)=>{
-    const img = document.createElement("img");
-
-    img.src = `${src}?w=40&fm=webp&q=10`;
-    img.loading = "lazy";
-    img.decoding = "async";
-
-    const highRes = new Image();
-    highRes.src = `${src}?w=${thumbWidth}&fm=webp&q=85`;
-    highRes.onload = () => {
-      img.src = highRes.src;
-      img.classList.add("loaded");
-    };
-
-    img.onclick = () => openLightbox(i);
+    const img=document.createElement("img");
+    img.src=`${src}?w=40&q=10`;
+    const hi=new Image();
+    hi.src=`${src}?w=360&q=80`;
+    hi.onload=()=>{img.src=hi.src;img.classList.add("loaded");};
+    img.onclick=()=>openLightbox(i);
     row.appendChild(img);
   });
-
   document.getElementById("photoSections").appendChild(row);
 }
 
-// LIGHTBOX
-const lightbox = document.getElementById("lightbox");
-const lightboxImg = document.getElementById("lightbox-img");
-const lightboxBg = document.getElementById("lightbox-bg");
+function preloadAround(i){
+  const size=Math.ceil(Math.max(innerWidth,innerHeight)*devicePixelRatio*.9);
+  [-1,1,2].forEach(o=>{
+    const idx=(i+o+gallery.length)%gallery.length;
+    if(preloadCache.has(idx))return;
+    const im=new Image();
+    im.src=`${gallery[idx]}?w=${size}&q=85`;
+    preloadCache.set(idx,im);
+  });
+}
 
 function openLightbox(i){
-  currentIndex = i;
+  currentIndex=i;
   lightbox.classList.add("show");
-
-  const dpr = window.devicePixelRatio || 1;
-  const size = Math.ceil(
-    Math.max(window.innerWidth, window.innerHeight) * dpr * 0.9
-  );
-
-  lightboxBg.style.backgroundImage =
-    `url(${gallery[i]}?w=60&fm=webp&q=10)`;
-
-  const imgLarge = new Image();
-  imgLarge.src = `${gallery[i]}?w=${size}&fm=webp&q=92`;
-  imgLarge.onload = () => lightboxImg.src = imgLarge.src;
-
-  preloadNext(i);
+  bg.style.backgroundImage=`url(${gallery[i]}?w=50&q=10)`;
+  const size=Math.ceil(Math.max(innerWidth,innerHeight)*devicePixelRatio*.9);
+  if(preloadCache.has(i)) imgEl.src=preloadCache.get(i).src;
+  else{
+    const im=new Image();
+    im.src=`${gallery[i]}?w=${size}&q=90`;
+    im.onload=()=>imgEl.src=im.src;
+    preloadCache.set(i,im);
+  }
+  preloadAround(i);
 }
 
-function preloadNext(i){
-  const next = (i+1)%gallery.length;
-  const dpr = window.devicePixelRatio || 1;
-  const size = Math.ceil(
-    Math.max(window.innerWidth, window.innerHeight) * dpr * 0.9
-  );
-  const img = new Image();
-  img.src = `${gallery[next]}?w=${size}&fm=webp&q=85`;
-}
+/* NAV */
+const next=()=>openLightbox((currentIndex+1)%gallery.length);
+const prev=()=>openLightbox((currentIndex-1+gallery.length)%gallery.length);
+document.querySelector(".nav-right").onclick=next;
+document.querySelector(".nav-left").onclick=prev;
 
-// NAV
-function next(){ openLightbox((currentIndex+1)%gallery.length); }
-function prev(){ openLightbox((currentIndex-1+gallery.length)%gallery.length); }
+/* HOLD ARROW */
+let holdInt=null;
+document.addEventListener("keydown",e=>{
+  if(!lightbox.classList.contains("show"))return;
+  if(e.key==="ArrowRight"||e.key==="ArrowLeft"){
+    if(holdInt)return;
+    holdInt=setInterval(e.key==="ArrowRight"?next:prev,180);
+  }
+});
+document.addEventListener("keyup",()=>clearInterval(holdInt),holdInt=null);
 
-document.querySelector(".nav-right").onclick = next;
-document.querySelector(".nav-left").onclick = prev;
-
-lightbox.onclick = e => {
-  if(e.target === lightbox) lightbox.classList.remove("show");
+/* ZOOM */
+let scale=1;
+imgEl.onwheel=e=>{
+  e.preventDefault();
+  scale=Math.min(3,Math.max(1,scale+(e.deltaY<0?.1:-.1)));
+  imgEl.style.transform=`scale(${scale})`;
 };
 
-document.addEventListener("keydown", e=>{
-  if(!lightbox.classList.contains("show")) return;
-  if(e.key==="ArrowRight") next();
-  if(e.key==="ArrowLeft") prev();
-  if(e.key==="Escape") lightbox.classList.remove("show");
+/* SWIPE MOMENTUM */
+let sx=0, vx=0;
+imgEl.addEventListener("touchstart",e=>sx=e.touches[0].clientX);
+imgEl.addEventListener("touchend",e=>{
+  const dx=e.changedTouches[0].clientX-sx;
+  if(Math.abs(dx)>60) dx<0?next():prev();
 });
 
 fetchPhotos();
 </script>
-
 </body>
 </html>

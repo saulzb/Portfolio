@@ -43,7 +43,6 @@ section {
 /* ================================================================= */
 /* ======================= PRISM (UNCHANGED) ======================= */
 /* ================================================================= */
-
 .prism {
   position:relative;
   width:280px;
@@ -111,7 +110,6 @@ section {
 /* ================================================================= */
 /* =========================== GRID ================================ */
 /* ================================================================= */
-
 .category-row {
   display:flex;
   flex-wrap:wrap;
@@ -133,17 +131,79 @@ section {
   filter: blur(15px);
   opacity:0;
   transition: filter 0.6s ease-out, opacity 0.6s ease-out;
+  position:relative;
+  isolation:isolate;
 }
 
-.category-row img.loaded {
-  filter: blur(0);
+/* Blur-up loaded */
+.category-row img.loaded { filter: blur(0); opacity:1; }
+
+/* ---------------- HOVER GLITCH + CHROMATIC ---------------- */
+@media (hover:hover) {
+.category-row img:hover {
+  filter: blur(0) brightness(1.12) contrast(1.2);
+  box-shadow:
+    0 0 8px rgba(255,255,255,0.3),
+    0 0 20px rgba(255,255,255,0.2),
+    0 12px 28px rgba(0,0,0,0.6);
+}
+
+/* Main glitch line */
+.category-row img::after {
+  content:"";
+  position:absolute;
+  top: var(--glitch-top, -20%);
+  left: var(--glitch-x, 30%);
+  width: var(--glitch-w, 2px);
+  height: var(--glitch-h, 120%);
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0),
+    rgba(255,255,255,0.7),
+    rgba(255,255,255,0)
+  );
+  opacity:0;
+  pointer-events:none;
+  mix-blend-mode:overlay;
+  transform: skewX(var(--glitch-skew,0deg));
+}
+
+/* Second glitch line (chromatic) */
+.category-row img::before {
+  content:"";
+  position:absolute;
+  top: var(--glitch-top2, -10%);
+  left: var(--glitch-x2, 60%);
+  width: var(--glitch-w2,1px);
+  height: var(--glitch-h2,100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(255,0,255,0),
+    rgba(0,255,255,0.5),
+    rgba(0,255,0,0)
+  );
+  opacity:0;
+  pointer-events:none;
+  mix-blend-mode:overlay;
+  transform: skewX(var(--glitch-skew2,0deg));
+}
+
+/* Animate lines once per hover */
+.category-row img:hover::after,
+.category-row img:hover::before {
   opacity:1;
+  animation: glitch-scan var(--glitch-speed,0.7s) linear 1;
+}
+
+@keyframes glitch-scan {
+  from { transform: translateY(0) skewX(var(--glitch-skew,0deg)); }
+  to   { transform: translateY(140%) skewX(var(--glitch-skew,0deg)); }
+}
 }
 
 /* ================================================================= */
 /* ========================== LIGHTBOX ============================== */
 /* ================================================================= */
-
 .lightbox {
   position:fixed;
   inset:0;
@@ -156,10 +216,7 @@ section {
   z-index:999;
 }
 
-.lightbox.show {
-  display:flex;
-  opacity:1;
-}
+.lightbox.show { display:flex; opacity:1; }
 
 .lightbox-bg {
   position:absolute;
@@ -184,7 +241,6 @@ section {
 
 .lightbox img.visible { opacity:1; }
 
-/* ---------------- NAV ---------------- */
 .nav-mark {
   position:absolute;
   top:50%;
@@ -198,9 +254,7 @@ section {
 .nav-left { left:20px; }
 .nav-right { right:20px; }
 
-@media (max-width:768px){
-  .nav-mark { display:none; }
-}
+@media (max-width:768px){ .nav-mark { display:none; } }
 </style>
 </head>
 
@@ -209,7 +263,6 @@ section {
 <section>
   <a href="index.html#folders" class="back-home">Back to home</a>
 
-  <!-- PRISM HTML UNCHANGED -->
   <div class="prism">
     <div class="inner-face-right"></div>
     <div class="inner-face-horizontal"></div>
@@ -243,7 +296,6 @@ let gallery = [];
 let currentIndex = 0;
 const fullImageCache = new Map();
 
-/* ---------------- FETCH ---------------- */
 async function fetchPhotos(){
   const res = await fetch(
     `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
@@ -260,7 +312,6 @@ async function fetchPhotos(){
   renderPhotos();
 }
 
-/* ---------------- RENDER ---------------- */
 function renderPhotos(){
   const row = document.createElement("div");
   row.className = "category-row";
@@ -272,31 +323,60 @@ function renderPhotos(){
   gallery.forEach((src,i)=>{
     const img = document.createElement("img");
     img.src = `${src}?w=40&fm=webp&q=10`;
-    img.loading = "lazy";
-    img.decoding = "async";
-    img.style.transitionDelay = `${i * 60}ms`;
+    img.loading="lazy";
+    img.decoding="async";
+    img.style.transitionDelay=`${i*60}ms`;
 
+    // Preload high-res
     const hi = new Image();
     hi.src = `${src}?w=${thumbWidth}&fm=webp&q=85`;
     hi.onload = () => {
       img.src = hi.src;
       img.classList.add("loaded");
-
-      if (!fullImageCache.has(i)) {
+      if(!fullImageCache.has(i)){
         const preload = new Image();
         preload.src = `${src}?w=${fullSize}&fm=webp&q=90`;
-        fullImageCache.set(i, preload);
+        fullImageCache.set(i,preload);
       }
     };
 
-    img.onclick = () => openLightbox(i);
+    // Random glitch & chromatic
+    const glitchX = Math.random()*80+5;
+    const glitchW = Math.random()*3+1;
+    const glitchH = Math.random()*60+80;
+    const glitchSkew = (Math.random()*6-3) + "deg";
+    const glitchTop = Math.random()*-20;
+
+    const glitchX2 = Math.random()*80+5;
+    const glitchW2 = Math.random()*2+0.5;
+    const glitchH2 = Math.random()*40+60;
+    const glitchSkew2 = (Math.random()*6-3)+"deg";
+    const glitchTop2 = Math.random()*-20;
+
+    const glitchSpeed = (Math.random()*0.6+0.5).toFixed(2);
+
+    img.style.setProperty('--glitch-x', `${glitchX}%`);
+    img.style.setProperty('--glitch-w', `${glitchW}px`);
+    img.style.setProperty('--glitch-h', `${glitchH}%`);
+    img.style.setProperty('--glitch-skew', glitchSkew);
+    img.style.setProperty('--glitch-top', `${glitchTop}%`);
+
+    img.style.setProperty('--glitch-x2', `${glitchX2}%`);
+    img.style.setProperty('--glitch-w2', `${glitchW2}px`);
+    img.style.setProperty('--glitch-h2', `${glitchH2}%`);
+    img.style.setProperty('--glitch-skew2', glitchSkew2);
+    img.style.setProperty('--glitch-top2', `${glitchTop2}%`);
+
+    img.style.setProperty('--glitch-speed', `${glitchSpeed}s`);
+
+    img.onclick = ()=>openLightbox(i);
     row.appendChild(img);
   });
 
-  photoSections.appendChild(row);
+  document.getElementById("photoSections").appendChild(row);
 }
 
-/* ---------------- LIGHTBOX ---------------- */
+// LIGHTBOX
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightbox-img");
 const lightboxBg = document.getElementById("lightbox-bg");
@@ -312,47 +392,32 @@ function showImage(i){
   lightboxImg.classList.remove("visible");
 
   const cached = fullImageCache.get(i);
-  if (cached && cached.complete) {
-    requestAnimationFrame(() => {
-      lightboxImg.src = cached.src;
-      lightboxImg.classList.add("visible");
-    });
+  if(cached && cached.complete){
+    requestAnimationFrame(()=>{ lightboxImg.src = cached.src; lightboxImg.classList.add("visible"); });
   }
 
-  lightboxBg.style.backgroundImage =
-    `url(${gallery[i]}?w=240&fm=webp&q=20)`;
-
+  lightboxBg.style.backgroundImage = `url(${gallery[i]}?w=240&fm=webp&q=20)`;
   preloadNext(i);
 }
 
 function preloadNext(i){
   const next = (i+1)%gallery.length;
-  if (!fullImageCache.has(next)) {
-    const dpr = window.devicePixelRatio || 1;
-    const size = Math.ceil(Math.max(innerWidth, innerHeight) * dpr * 0.9);
+  if(!fullImageCache.has(next)){
+    const dpr = window.devicePixelRatio||1;
+    const size = Math.ceil(Math.max(innerWidth,innerHeight)*dpr*0.9);
     const img = new Image();
     img.src = `${gallery[next]}?w=${size}&fm=webp&q=85`;
-    fullImageCache.set(next, img);
+    fullImageCache.set(next,img);
   }
 }
 
-/* ---------------- EVENTS ---------------- */
-lightbox.addEventListener("click", e => {
-  if (e.target === lightbox) lightbox.classList.remove("show");
+// NAVIGATION
+lightbox.addEventListener("click", e=>{
+  if(e.target === lightbox) lightbox.classList.remove("show");
 });
-
-document.querySelector(".nav-right").onclick = e => {
-  e.stopPropagation();
-  showImage((currentIndex+1)%gallery.length);
-};
-
-document.querySelector(".nav-left").onclick = e => {
-  e.stopPropagation();
-  showImage((currentIndex-1+gallery.length)%gallery.length);
-};
-
-lightboxImg.onclick = e => e.stopPropagation();
-
+document.querySelector(".nav-right").onclick=e=>{ e.stopPropagation(); showImage((currentIndex+1)%gallery.length); };
+document.querySelector(".nav-left").onclick=e=>{ e.stopPropagation(); showImage((currentIndex-1+gallery.length)%gallery.length); };
+lightboxImg.onclick=e=>e.stopPropagation();
 document.addEventListener("keydown", e=>{
   if(!lightbox.classList.contains("show")) return;
   if(e.key==="ArrowRight") showImage((currentIndex+1)%gallery.length);

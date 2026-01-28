@@ -13,6 +13,7 @@ html, body {
   background:#0a0a0c;
   color:#eaeaea;
   font-family:'Michroma',sans-serif;
+  scroll-behavior:smooth;
 }
 
 /* ---------------- SECTION ---------------- */
@@ -35,6 +36,7 @@ section {
   font-size:0.75rem;
   color:rgba(204,204,204,0.5);
   text-decoration:none;
+  z-index:10;
 }
 .back-home:hover { color:rgba(255,255,255,0.8); }
 
@@ -47,7 +49,34 @@ section {
   clip-path: polygon(8% 0%,100% 0%,100% 100%,8% 100%,0% 50%);
   background:linear-gradient(135deg,rgba(255,255,255,0.16),rgba(255,255,255,0.04) 45%,rgba(255,255,255,0.1));
   border:1px solid rgba(255,255,255,0.25);
-  box-shadow:0 18px 36px rgba(0,0,0,0.75);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08),0 18px 36px rgba(0,0,0,0.75);
+}
+
+.prism::before {
+  content:"";
+  position:absolute;
+  left:0; top:0;
+  width:22px; height:100%;
+  background:linear-gradient(to bottom,rgba(255,255,255,0.35),rgba(255,255,255,0.02));
+  clip-path: polygon(0 50%,100% 0,100% 100%);
+}
+
+.inner-face-right {
+  position:absolute;
+  right:0; top:0;
+  width:34px; height:100%;
+  opacity:0.35;
+  background:linear-gradient(to right,rgba(255,255,255,0.35),rgba(255,255,255,0.08),rgba(255,255,255,0));
+  clip-path: polygon(0% 50%,100% 0%,100% 100%);
+}
+
+.inner-face-horizontal {
+  position:absolute;
+  left:-10%; top:46%;
+  width:120%; height:18%;
+  opacity:0.28;
+  background:linear-gradient(to bottom,rgba(255,255,255,0.35),rgba(255,255,255,0.08),rgba(255,255,255,0));
+  clip-path: polygon(0% 0%,100% 8%,100% 100%,0% 92%);
 }
 
 .prism-text {
@@ -58,6 +87,7 @@ section {
   justify-content:center;
   font-size:0.8rem;
   letter-spacing:0.32em;
+  filter: blur(0.45px);
 }
 
 .prism-text span {
@@ -68,6 +98,7 @@ section {
   justify-content:center;
 }
 
+/* CHROMATIC SPLIT PRISM COLORS */
 .prism-r { color:#ff453a; transform:translateX(-3px); filter:blur(0.9px); }
 .prism-o { color:#ff9f0a; transform:translateX(-2px); filter:blur(0.7px); }
 .prism-y { color:#ffd60a; transform:translateX(-1px); filter:blur(0.6px); }
@@ -83,15 +114,17 @@ section {
   justify-content:center;
 }
 
+/* BLUR-UP THUMBNAILS */
 .category-row img {
   width:180px;
   height:180px;
   object-fit:cover;
   border-radius:6px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.45);
   cursor:pointer;
-  filter: blur(14px);
+  filter: blur(15px);
   opacity:0;
-  transition:filter 0.6s ease, opacity 0.6s ease;
+  transition: filter 0.6s ease-out, opacity 0.6s ease-out;
 }
 .category-row img.loaded {
   filter: blur(0);
@@ -102,7 +135,7 @@ section {
 .lightbox {
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.9);
+  background:rgba(0,0,0,0.92);
   display:none;
   align-items:center;
   justify-content:center;
@@ -111,16 +144,24 @@ section {
 
 .lightbox.show { display:flex; }
 
+/* ✅ CLEAN MUSEUM BACKGROUND */
 .lightbox-bg {
   position:absolute;
   inset:0;
+
   background-position:center;
   background-repeat:no-repeat;
   background-size:contain;
-  filter:blur(28px) saturate(105%) brightness(0.7) contrast(110%);
+
+  filter:
+    blur(50px)
+    saturate(110%)
+    brightness(0.65)
+    contrast(115%);
+
   opacity:0.45;
-  transform:translateZ(0) scale(1.25);
-  will-change:transform, filter;
+  transform:scale(1.3);
+  pointer-events:none;
 }
 
 .lightbox img {
@@ -138,6 +179,7 @@ section {
   font-size:3rem;
   color:rgba(204,204,204,0.4);
   cursor:pointer;
+  z-index:3;
   user-select:none;
 }
 .nav-left { left:20px; }
@@ -155,6 +197,8 @@ section {
   <a href="index.html#folders" class="back-home">Back to home</a>
 
   <div class="prism">
+    <div class="inner-face-right"></div>
+    <div class="inner-face-horizontal"></div>
     <div class="prism-text">
       channelORANGE
       <span class="prism-r">channelORANGE</span>
@@ -183,8 +227,8 @@ const CATEGORY_NAME = "channelORANGE";
 
 let gallery = [];
 let currentIndex = 0;
-const fullImageCache = new Map();
 
+// FETCH
 async function fetchPhotos(){
   const res = await fetch(
     `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
@@ -201,39 +245,36 @@ async function fetchPhotos(){
   renderPhotos();
 }
 
+// RENDER THUMBNAILS
 function renderPhotos(){
   const row = document.createElement("div");
   row.className = "category-row";
 
   const dpr = window.devicePixelRatio || 1;
   const thumbWidth = Math.ceil(180 * dpr * 2);
-  const fullSize = Math.ceil(Math.max(innerWidth, innerHeight) * dpr * 0.9);
 
   gallery.forEach((src,i)=>{
     const img = document.createElement("img");
+
     img.src = `${src}?w=40&fm=webp&q=10`;
     img.loading = "lazy";
+    img.decoding = "async";
 
-    const hi = new Image();
-    hi.src = `${src}?w=${thumbWidth}&fm=webp&q=85`;
-    hi.onload = () => {
-      img.src = hi.src;
+    const highRes = new Image();
+    highRes.src = `${src}?w=${thumbWidth}&fm=webp&q=85`;
+    highRes.onload = () => {
+      img.src = highRes.src;
       img.classList.add("loaded");
-
-      if (!fullImageCache.has(i)) {
-        const preload = new Image();
-        preload.src = `${src}?w=${fullSize}&fm=webp&q=90`;
-        fullImageCache.set(i, preload);
-      }
     };
 
     img.onclick = () => openLightbox(i);
     row.appendChild(img);
   });
 
-  photoSections.appendChild(row);
+  document.getElementById("photoSections").appendChild(row);
 }
 
+// LIGHTBOX
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightbox-img");
 const lightboxBg = document.getElementById("lightbox-bg");
@@ -241,38 +282,39 @@ const lightboxBg = document.getElementById("lightbox-bg");
 function openLightbox(i){
   currentIndex = i;
   lightbox.classList.add("show");
-  showImage(i);
-}
 
-function showImage(i){
-  currentIndex = i;
-  const cached = fullImageCache.get(i);
-  if (cached && cached.complete) {
-    lightboxImg.src = cached.src;
-  }
+  const dpr = window.devicePixelRatio || 1;
+  const size = Math.ceil(
+    Math.max(window.innerWidth, window.innerHeight) * dpr * 0.9
+  );
 
+  /* ✅ Better background source for horizontals */
   lightboxBg.style.backgroundImage =
     `url(${gallery[i]}?w=240&fm=webp&q=20)`;
+
+  const imgLarge = new Image();
+  imgLarge.src = `${gallery[i]}?w=${size}&fm=webp&q=92`;
+  imgLarge.onload = () => lightboxImg.src = imgLarge.src;
 
   preloadNext(i);
 }
 
 function preloadNext(i){
   const next = (i+1)%gallery.length;
-  if (!fullImageCache.has(next)) {
-    const dpr = window.devicePixelRatio || 1;
-    const size = Math.ceil(Math.max(innerWidth, innerHeight) * dpr * 0.9);
-    const img = new Image();
-    img.src = `${gallery[next]}?w=${size}&fm=webp&q=85`;
-    fullImageCache.set(next, img);
-  }
+  const dpr = window.devicePixelRatio || 1;
+  const size = Math.ceil(
+    Math.max(window.innerWidth, window.innerHeight) * dpr * 0.9
+  );
+  const img = new Image();
+  img.src = `${gallery[next]}?w=${size}&fm=webp&q=85`;
 }
 
-document.querySelector(".nav-right").onclick = () =>
-  showImage((currentIndex+1)%gallery.length);
+// NAV
+function next(){ openLightbox((currentIndex+1)%gallery.length); }
+function prev(){ openLightbox((currentIndex-1+gallery.length)%gallery.length); }
 
-document.querySelector(".nav-left").onclick = () =>
-  showImage((currentIndex-1+gallery.length)%gallery.length);
+document.querySelector(".nav-right").onclick = next;
+document.querySelector(".nav-left").onclick = prev;
 
 lightbox.onclick = e => {
   if(e.target === lightbox) lightbox.classList.remove("show");
@@ -280,8 +322,8 @@ lightbox.onclick = e => {
 
 document.addEventListener("keydown", e=>{
   if(!lightbox.classList.contains("show")) return;
-  if(e.key==="ArrowRight") showImage((currentIndex+1)%gallery.length);
-  if(e.key==="ArrowLeft") showImage((currentIndex-1+gallery.length)%gallery.length);
+  if(e.key==="ArrowRight") next();
+  if(e.key==="ArrowLeft") prev();
   if(e.key==="Escape") lightbox.classList.remove("show");
 });
 

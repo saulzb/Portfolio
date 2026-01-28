@@ -114,7 +114,6 @@ section {
   opacity:0;
   animation:fadeIn 0.8s ease forwards;
 }
-
 @keyframes fadeIn { to { opacity:1; } }
 
 .category-row img {
@@ -126,37 +125,56 @@ section {
   cursor:pointer;
   filter: blur(15px);
   opacity:0;
-  transition: filter 0.6s ease-out, opacity 0.6s ease-out, box-shadow 0.3s ease;
+  transition: filter 0.15s ease, opacity 0.6s ease, box-shadow 0.15s ease;
   position:relative;
   isolation:isolate;
-  border:2px solid rgba(255,255,255,0.08); /* soft white base */
+  border:2px solid rgba(255,255,255,0.08);
 }
 
 /* Blur-up loaded */
 .category-row img.loaded { filter: blur(0); opacity:1; }
 
-/* ---------------- HOVER PRISM + GLITCH ---------------- */
-@media (hover:hover) {
-.category-row img:hover {
-  filter: blur(0) brightness(1.05) contrast(1.15);
-  box-shadow:
-    0 0 6px rgba(255,255,255,0.5), /* soft white core */
-    0 0 12px rgba(255,255,255,0.2),
-    0 8px 16px rgba(0,0,0,0.45);
-}
-
-/* Chromatic prism streaks */
+/* ---------------- PRISM STREAKS ---------------- */
 .category-row img::before,
 .category-row img::after {
-  content:"";
-  position:absolute;
-  pointer-events:none;
-  mix-blend-mode:screen;
-  border-radius:2px;
-  opacity:0.9;
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
 }
 
-/* Randomized streaks set via JS */
+.category-row img:hover::before,
+.category-row img:hover::after {
+  opacity:1;
+}
+
+/* ::before streak */
+.category-row img::before {
+  top: var(--streak-before-top, 10%);
+  left: var(--streak-before-left, 5%);
+  width: var(--streak-before-width, 4px);
+  height: var(--streak-before-height, 60%);
+  background: var(--streak-before-color, red);
+}
+
+/* ::after streak */
+.category-row img::after {
+  top: var(--streak-after-top, 20%);
+  left: var(--streak-after-left, 60%);
+  width: var(--streak-after-width, 3px);
+  height: var(--streak-after-height, 50%);
+  background: var(--streak-after-color, cyan);
+}
+
+/* Hover soft glow */
+.category-row img:hover {
+  filter: blur(0) brightness(1.05) contrast(1.15);
+  box-shadow: 0 0 6px rgba(255,255,255,0.35),
+              0 0 12px rgba(255,255,255,0.15),
+              0 8px 16px rgba(0,0,0,0.45);
 }
 
 /* ---------------- LIGHTBOX ---------------- */
@@ -283,7 +301,6 @@ function renderPhotos(){
     img.decoding="async";
     img.style.transitionDelay=`${i*60}ms`;
 
-    // Preload high-res
     const hi = new Image();
     hi.src = `${src}?w=${thumbWidth}&fm=webp&q=85`;
     hi.onload = () => {
@@ -296,12 +313,12 @@ function renderPhotos(){
       }
     };
 
-    // Random prism streak positions/colors
+    // Randomized chromatic streaks
     const streaks = [
       {
         top: 10+Math.random()*20+"%",
         left: 5+Math.random()*20+"%",
-        width: 4+Math.random()*4+"px",
+        width: 3+Math.random()*3+"px",
         height: 60+Math.random()*20+"%",
         color: `hsl(${Math.random()*360},90%,55%)`
       },
@@ -314,14 +331,17 @@ function renderPhotos(){
       }
     ];
 
-    streaks.forEach((s,j)=>{
-      const pseudo = j===0 ? 'before' : 'after';
-      img.style.setProperty(`--streak-${pseudo}-top`, s.top);
-      img.style.setProperty(`--streak-${pseudo}-left`, s.left);
-      img.style.setProperty(`--streak-${pseudo}-width`, s.width);
-      img.style.setProperty(`--streak-${pseudo}-height`, s.height);
-      img.style.setProperty(`--streak-${pseudo}-color`, s.color);
-    });
+    img.style.setProperty('--streak-before-top', streaks[0].top);
+    img.style.setProperty('--streak-before-left', streaks[0].left);
+    img.style.setProperty('--streak-before-width', streaks[0].width);
+    img.style.setProperty('--streak-before-height', streaks[0].height);
+    img.style.setProperty('--streak-before-color', streaks[0].color);
+
+    img.style.setProperty('--streak-after-top', streaks[1].top);
+    img.style.setProperty('--streak-after-left', streaks[1].left);
+    img.style.setProperty('--streak-after-width', streaks[1].width);
+    img.style.setProperty('--streak-after-height', streaks[1].height);
+    img.style.setProperty('--streak-after-color', streaks[1].color);
 
     img.onclick = ()=>openLightbox(i);
     row.appendChild(img);

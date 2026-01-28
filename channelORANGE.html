@@ -40,9 +40,7 @@ section {
 }
 .back-home:hover { color:rgba(255,255,255,0.8); }
 
-/* ================================================================= */
-/* ======================= PRISM (UNCHANGED) ======================= */
-/* ================================================================= */
+/* ---------------- PRISM ---------------- */
 .prism {
   position:relative;
   width:280px;
@@ -107,9 +105,7 @@ section {
 .prism-c { color:#64d2ff; transform:translateX(2px);  filter:blur(0.7px); }
 .prism-b { color:#0a84ff; transform:translateX(3px);  filter:blur(0.9px); }
 
-/* ================================================================= */
-/* =========================== GRID ================================ */
-/* ================================================================= */
+/* ---------------- GRID ---------------- */
 .category-row {
   display:flex;
   flex-wrap:wrap;
@@ -130,119 +126,40 @@ section {
   cursor:pointer;
   filter: blur(15px);
   opacity:0;
-  transition: filter 0.6s ease-out, opacity 0.6s ease-out, box-shadow 0.25s ease;
+  transition: filter 0.6s ease-out, opacity 0.6s ease-out, box-shadow 0.3s ease;
   position:relative;
   isolation:isolate;
-  border:2px solid rgba(255,255,255,0.05);
+  border:2px solid rgba(255,255,255,0.08); /* soft white base */
 }
 
 /* Blur-up loaded */
 .category-row img.loaded { filter: blur(0); opacity:1; }
 
-/* ---------------- HOVER GLITCH + CHROMATIC ---------------- */
-.category-row img {
-  border:2px solid rgba(255,255,255,0.08); /* soft white base */
-  position:relative;
-  overflow:hidden;
+/* ---------------- HOVER PRISM + GLITCH ---------------- */
+@media (hover:hover) {
+.category-row img:hover {
+  filter: blur(0) brightness(1.05) contrast(1.15);
+  box-shadow:
+    0 0 6px rgba(255,255,255,0.5), /* soft white core */
+    0 0 12px rgba(255,255,255,0.2),
+    0 8px 16px rgba(0,0,0,0.45);
 }
 
-.category-row img:hover::before,
-.category-row img:hover::after {
+/* Chromatic prism streaks */
+.category-row img::before,
+.category-row img::after {
   content:"";
   position:absolute;
   pointer-events:none;
   mix-blend-mode:screen;
   border-radius:2px;
+  opacity:0.9;
 }
 
-.category-row img:hover::before {
-  top: 10%;
-  left: 5%;
-  width: 6px;
-  height: 80%;
-  background: linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,80,50,0.8) 50%, rgba(255,255,255,0) 100%);
+/* Randomized streaks set via JS */
 }
 
-.category-row img:hover::after {
-  top: 20%;
-  right: 10%;
-  width: 4px;
-  height: 60%;
-  background: linear-gradient(to bottom, rgba(255,255,255,0.5) 0%, rgba(50,200,255,0.7) 50%, rgba(255,255,255,0) 100%);
-}
-
-}
-
-/* Main glitch line */
-.category-row img::after {
-  content:"";
-  position:absolute;
-  top: var(--glitch-top, -20%);
-  left: var(--glitch-x, 30%);
-  width: var(--glitch-w, 2px);
-  height: var(--glitch-h, 120%);
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    var(--glitch-color1, rgba(255,255,255,0.8)),
-    transparent
-  );
-  opacity:0;
-  pointer-events:none;
-  mix-blend-mode:overlay;
-  transform: skewX(var(--glitch-skew,0deg));
-}
-
-/* Second glitch line (rainbow animated) */
-.category-row img::before {
-  content:"";
-  position:absolute;
-  top: var(--glitch-top2, -10%);
-  left: var(--glitch-x2, 60%);
-  width: var(--glitch-w2,1px);
-  height: var(--glitch-h2,100%);
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    var(--glitch-color2, rgba(0,255,255,0.6)),
-    transparent
-  );
-  opacity:0;
-  pointer-events:none;
-  mix-blend-mode:overlay;
-  transform: skewX(var(--glitch-skew2,0deg));
-}
-
-/* Animate lines once per hover */
-.category-row img:hover::after,
-.category-row img:hover::before {
-  opacity:1;
-  animation: glitch-scan var(--glitch-speed,0.7s) linear 1;
-}
-
-@keyframes glitch-scan {
-  from { transform: translateY(0) skewX(var(--glitch-skew,0deg)); }
-  to   { transform: translateY(140%) skewX(var(--glitch-skew,0deg)); }
-}
-
-/* Rainbow animation for line colors */
-@keyframes rainbowShift {
-  0% { background-color: #ff3a3a; }
-  20% { background-color: #ff9f0a; }
-  40% { background-color: #ffd60a; }
-  60% { background-color: #32d74b; }
-  80% { background-color: #64d2ff; }
-  100% { background-color: #0a84ff; }
-}
-.category-row img:hover::after,
-.category-row img:hover::before {
-  animation: glitch-scan var(--glitch-speed,0.7s) linear 1, rainbowShift 0.8s linear infinite;
-}
-}
-
-/* ================================================================= */
-/* ========================== LIGHTBOX ============================== */
-/* ================================================================= */
+/* ---------------- LIGHTBOX ---------------- */
 .lightbox {
   position:fixed;
   inset:0;
@@ -379,36 +296,32 @@ function renderPhotos(){
       }
     };
 
-    // Random glitch & chromatic
-    const glitchX = Math.random()*80+5;
-    const glitchW = Math.random()*3+1;
-    const glitchH = Math.random()*60+80;
-    const glitchSkew = (Math.random()*6-3) + "deg";
-    const glitchTop = Math.random()*-20;
+    // Random prism streak positions/colors
+    const streaks = [
+      {
+        top: 10+Math.random()*20+"%",
+        left: 5+Math.random()*20+"%",
+        width: 4+Math.random()*4+"px",
+        height: 60+Math.random()*20+"%",
+        color: `hsl(${Math.random()*360},90%,55%)`
+      },
+      {
+        top: 20+Math.random()*30+"%",
+        left: 60+Math.random()*20+"%",
+        width: 2+Math.random()*3+"px",
+        height: 50+Math.random()*20+"%",
+        color: `hsl(${Math.random()*360},90%,55%)`
+      }
+    ];
 
-    const glitchX2 = Math.random()*80+5;
-    const glitchW2 = Math.random()*2+0.5;
-    const glitchH2 = Math.random()*40+60;
-    const glitchSkew2 = (Math.random()*6-3)+"deg";
-    const glitchTop2 = Math.random()*-20;
-
-    const glitchSpeed = (Math.random()*0.6+0.5).toFixed(2);
-
-    img.style.setProperty('--glitch-x', `${glitchX}%`);
-    img.style.setProperty('--glitch-w', `${glitchW}px`);
-    img.style.setProperty('--glitch-h', `${glitchH}%`);
-    img.style.setProperty('--glitch-skew', glitchSkew);
-    img.style.setProperty('--glitch-top', `${glitchTop}%`);
-
-    img.style.setProperty('--glitch-x2', `${glitchX2}%`);
-    img.style.setProperty('--glitch-w2', `${glitchW2}px`);
-    img.style.setProperty('--glitch-h2', `${glitchH2}%`);
-    img.style.setProperty('--glitch-skew2', glitchSkew2);
-    img.style.setProperty('--glitch-top2', `${glitchTop2}%`);
-
-    img.style.setProperty('--glitch-speed', `${glitchSpeed}s`);
-    img.style.setProperty('--glitch-color1', `hsl(${Math.random()*360},100%,80%)`);
-    img.style.setProperty('--glitch-color2', `hsl(${Math.random()*360},100%,80%)`);
+    streaks.forEach((s,j)=>{
+      const pseudo = j===0 ? 'before' : 'after';
+      img.style.setProperty(`--streak-${pseudo}-top`, s.top);
+      img.style.setProperty(`--streak-${pseudo}-left`, s.left);
+      img.style.setProperty(`--streak-${pseudo}-width`, s.width);
+      img.style.setProperty(`--streak-${pseudo}-height`, s.height);
+      img.style.setProperty(`--streak-${pseudo}-color`, s.color);
+    });
 
     img.onclick = ()=>openLightbox(i);
     row.appendChild(img);

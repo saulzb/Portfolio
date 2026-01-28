@@ -130,9 +130,10 @@ section {
   cursor:pointer;
   filter: blur(15px);
   opacity:0;
-  transition: filter 0.6s ease-out, opacity 0.6s ease-out;
+  transition: filter 0.6s ease-out, opacity 0.6s ease-out, box-shadow 0.25s ease;
   position:relative;
   isolation:isolate;
+  border:2px solid rgba(255,255,255,0.05);
 }
 
 /* Blur-up loaded */
@@ -143,9 +144,11 @@ section {
 .category-row img:hover {
   filter: blur(0) brightness(1.12) contrast(1.2);
   box-shadow:
-    0 0 8px rgba(255,255,255,0.3),
-    0 0 20px rgba(255,255,255,0.2),
-    0 12px 28px rgba(0,0,0,0.6);
+    0 0 10px rgba(255,255,255,0.35),
+    0 0 24px rgba(255,255,255,0.25),
+    0 12px 32px rgba(0,0,0,0.6);
+  border-image: linear-gradient(45deg, #ff3a3a, #ff9f0a, #ffd60a, #32d74b, #64d2ff, #0a84ff) 1;
+  border-image-slice: 1;
 }
 
 /* Main glitch line */
@@ -158,9 +161,9 @@ section {
   height: var(--glitch-h, 120%);
   background: linear-gradient(
     to bottom,
-    rgba(255,255,255,0),
-    rgba(255,255,255,0.7),
-    rgba(255,255,255,0)
+    transparent,
+    var(--glitch-color1, rgba(255,255,255,0.8)),
+    transparent
   );
   opacity:0;
   pointer-events:none;
@@ -168,7 +171,7 @@ section {
   transform: skewX(var(--glitch-skew,0deg));
 }
 
-/* Second glitch line (chromatic) */
+/* Second glitch line (rainbow animated) */
 .category-row img::before {
   content:"";
   position:absolute;
@@ -178,9 +181,9 @@ section {
   height: var(--glitch-h2,100%);
   background: linear-gradient(
     to bottom,
-    rgba(255,0,255,0),
-    rgba(0,255,255,0.5),
-    rgba(0,255,0,0)
+    transparent,
+    var(--glitch-color2, rgba(0,255,255,0.6)),
+    transparent
   );
   opacity:0;
   pointer-events:none;
@@ -198,6 +201,20 @@ section {
 @keyframes glitch-scan {
   from { transform: translateY(0) skewX(var(--glitch-skew,0deg)); }
   to   { transform: translateY(140%) skewX(var(--glitch-skew,0deg)); }
+}
+
+/* Rainbow animation for line colors */
+@keyframes rainbowShift {
+  0% { background-color: #ff3a3a; }
+  20% { background-color: #ff9f0a; }
+  40% { background-color: #ffd60a; }
+  60% { background-color: #32d74b; }
+  80% { background-color: #64d2ff; }
+  100% { background-color: #0a84ff; }
+}
+.category-row img:hover::after,
+.category-row img:hover::before {
+  animation: glitch-scan var(--glitch-speed,0.7s) linear 1, rainbowShift 0.8s linear infinite;
 }
 }
 
@@ -368,6 +385,8 @@ function renderPhotos(){
     img.style.setProperty('--glitch-top2', `${glitchTop2}%`);
 
     img.style.setProperty('--glitch-speed', `${glitchSpeed}s`);
+    img.style.setProperty('--glitch-color1', `hsl(${Math.random()*360},100%,80%)`);
+    img.style.setProperty('--glitch-color2', `hsl(${Math.random()*360},100%,80%)`);
 
     img.onclick = ()=>openLightbox(i);
     row.appendChild(img);

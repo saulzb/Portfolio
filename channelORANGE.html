@@ -140,18 +140,37 @@ section {
 .category-row img.loaded { filter: blur(0); opacity:1; }
 
 /* ---------------- HOVER GLITCH + CHROMATIC ---------------- */
-.category-row img:hover {
-  filter: blur(0) brightness(1.12) contrast(1.2);
-  box-shadow:
-    /* White core */
-    0 0 12px rgba(255,255,255,0.9),
-    0 0 24px rgba(255,255,255,0.35),
-    /* Chromatic fringe */
-    -2px 0 4px rgba(255,70,50,0.6),
-    2px 0 4px rgba(50,200,255,0.6),
-    0 2px 4px rgba(255,200,50,0.6),
-    0 -2px 4px rgba(100,255,200,0.4),
-    0 12px 32px rgba(0,0,0,0.6);
+.category-row img {
+  border:2px solid rgba(255,255,255,0.08); /* soft white base */
+  position:relative;
+  overflow:hidden;
+}
+
+.category-row img:hover::before,
+.category-row img:hover::after {
+  content:"";
+  position:absolute;
+  pointer-events:none;
+  mix-blend-mode:screen;
+  border-radius:2px;
+}
+
+.category-row img:hover::before {
+  top: 10%;
+  left: 5%;
+  width: 6px;
+  height: 80%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,80,50,0.8) 50%, rgba(255,255,255,0) 100%);
+}
+
+.category-row img:hover::after {
+  top: 20%;
+  right: 10%;
+  width: 4px;
+  height: 60%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.5) 0%, rgba(50,200,255,0.7) 50%, rgba(255,255,255,0) 100%);
+}
+
 }
 
 /* Main glitch line */

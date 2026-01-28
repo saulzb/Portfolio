@@ -3,223 +3,415 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saul Zidulka-Bejcek</title>
+<title>Saul Zidulka-Bejcek | channelORANGE</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
 
 <style>
-/* ---------------- RESET ---------------- */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-/* ---------------- PAGE ---------------- */
 html, body {
-  width: 100%;
-  height: 100%;
-  font-family: 'Michroma', sans-serif;
-  background: #111;
-  color: #eee;
-  overflow-x: hidden;
-  scroll-snap-type: y mandatory;
+  margin:0; padding:0; width:100%; height:100%;
+  background:#0a0a0c;
+  color:#eaeaea;
+  font-family:'Michroma',sans-serif;
+  scroll-behavior:smooth;
 }
 
+/* ---------------- SECTION ---------------- */
 section {
-  width: 100%;
-  height: 100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  scroll-snap-align:start;
-  opacity:0;
-  transition:opacity 0.9s ease;
-}
-
-section.visible {
-  opacity:1;
-}
-
-/* ---------------- HERO ---------------- */
-#hero {
-  background: url('SAULZIDULKA-BEJCEK.png') center/cover no-repeat;
-  position: relative;
-}
-
-.arrow-down {
-  position:absolute;
-  bottom:40px;
-  left:50%;
-  transform:translateX(-50%);
-  cursor:pointer;
-  font-size:1.2rem;
-  color:white;
-}
-
-/* ---------------- GRID ---------------- */
-.folder-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-  gap:80px;
-  max-width:900px;
-  padding:0 60px;
-  justify-items:center;
-}
-
-/* ---------------- FOLDER ---------------- */
-.folder {
+  min-height:100vh;
   display:flex;
   flex-direction:column;
   align-items:center;
-  cursor:pointer;
+  justify-content:center;
+  gap:60px;
 }
 
-/* ---------------- STACK ---------------- */
-.folder-stack {
-  position: relative;
-  width: 144px;
-  height: 64px;
-}
-
-/* ---------------- BASE FOLDER ---------------- */
-.folder-main {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 88px;
-  height: 64px;
-  background:#e4c97a;
-  border-radius:3px;
-  box-shadow:2px 2px 0 #000;
-  image-rendering: pixelated;
+/* ---------------- BACK ---------------- */
+.back-home {
+  position:absolute;
+  top:30px;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
+  font-size:0.75rem;
+  color:rgba(204,204,204,0.5);
+  text-decoration:none;
   z-index:10;
 }
+.back-home:hover { color:rgba(255,255,255,0.8); }
 
-/* ---------------- TAB ---------------- */
-.folder-tab {
+/* ================================================================= */
+/* ======================= PRISM (UNCHANGED) ======================= */
+/* ================================================================= */
+.prism {
+  position:relative;
+  width:280px;
+  height:68px;
+  overflow:hidden;
+  clip-path: polygon(8% 0%,100% 0%,100% 100%,8% 100%,0% 50%);
+  background:linear-gradient(135deg,rgba(255,255,255,0.16),rgba(255,255,255,0.04) 45%,rgba(255,255,255,0.1));
+  border:1px solid rgba(255,255,255,0.25);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08),0 18px 36px rgba(0,0,0,0.75);
+}
+
+.prism::before {
+  content:"";
   position:absolute;
-  top:-8px;
-  left:8px;
-  width:32px;
-  height:12px;
-  background:#e4c97a;
-  border-radius:2px;
-  box-shadow:1px 1px 0 #000;
+  left:0; top:0;
+  width:22px; height:100%;
+  background:linear-gradient(to bottom,rgba(255,255,255,0.35),rgba(255,255,255,0.02));
+  clip-path: polygon(0 50%,100% 0,100% 100%);
 }
 
-/* ---------------- TRAIL ---------------- */
-.trail {
+.inner-face-right {
   position:absolute;
-  top:0;
-  width:88px;
-  height:64px;
-  border-radius:3px;
-  image-rendering: pixelated;
+  right:0; top:0;
+  width:34px; height:100%;
+  opacity:0.35;
+  background:linear-gradient(to right,rgba(255,255,255,0.35),rgba(255,255,255,0.08),rgba(255,255,255,0));
+  clip-path: polygon(0% 50%,100% 0%,100% 100%);
 }
 
-.trail.t1 { right:12px; background:#c9a84a; z-index:6; }
-.trail.t2 { right:26px; background:#9b5c5c; z-index:5; }
-.trail.t3 { right:40px; background:#6e7f52; z-index:4; }
-.trail.t4 { right:54px; background:#5a6b8c; z-index:3; }
-
-/* ---------------- LABEL ---------------- */
-.folder span {
-  margin-top:16px;
-  width:144px;
-  text-align:center;
-  font-size:0.7rem;
-  letter-spacing:0.6px;
-  opacity:0.85;
+.inner-face-horizontal {
+  position:absolute;
+  left:-10%; top:46%;
+  width:120%; height:18%;
+  opacity:0.28;
+  background:linear-gradient(to bottom,rgba(255,255,255,0.35),rgba(255,255,255,0.08),rgba(255,255,255,0));
+  clip-path: polygon(0% 0%,100% 8%,100% 100%,0% 92%);
 }
 
-/* ---------------- MOBILE LAYOUT ---------------- */
-@media (max-width: 768px) {
-  #hero {
-    background: url('SAULZIDULKABEJCEKMOBILE.jpg') center/cover no-repeat;
-  }
-
-  .folder-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 48px 24px;
-    padding: 0 24px;
-    max-width: 100%;
-  }
-
-  .folder {
-    transform: scale(0.9);
-  }
-
-  section#folders {
-    align-items: center;
-  }
+.prism-text {
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:0.8rem;
+  letter-spacing:0.32em;
+  filter: blur(0.45px);
 }
+
+.prism-text span {
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.prism-r { color:#ff453a; transform:translateX(-3px); filter:blur(0.9px); }
+.prism-o { color:#ff9f0a; transform:translateX(-2px); filter:blur(0.7px); }
+.prism-y { color:#ffd60a; transform:translateX(-1px); filter:blur(0.6px); }
+.prism-g { color:#32d74b; transform:translateX(1px);  filter:blur(0.6px); }
+.prism-c { color:#64d2ff; transform:translateX(2px);  filter:blur(0.7px); }
+.prism-b { color:#0a84ff; transform:translateX(3px);  filter:blur(0.9px); }
+
+/* ================================================================= */
+/* =========================== GRID ================================ */
+/* ================================================================= */
+.category-row {
+  display:flex;
+  flex-wrap:wrap;
+  gap:40px;
+  justify-content:center;
+  opacity:0;
+  animation:fadeIn 0.8s ease forwards;
+}
+
+@keyframes fadeIn { to { opacity:1; } }
+
+.category-row img {
+  width:180px;
+  height:180px;
+  object-fit:cover;
+  border-radius:6px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.45);
+  cursor:pointer;
+  filter: blur(15px);
+  opacity:0;
+  transition: filter 0.6s ease-out, opacity 0.6s ease-out;
+  position:relative;
+  isolation:isolate;
+}
+
+.category-row img.loaded { filter: blur(0); opacity:1; }
+
+/* ---------------- HOVER GLITCH ---------------- */
+@media (hover:hover) {
+.category-row img:hover {
+  filter: blur(0) brightness(1.08) contrast(1.1);
+  box-shadow:0 0 0 1px rgba(255,255,255,0.15),0 12px 28px rgba(0,0,0,0.6);
+}
+
+.category-row img::after {
+  content:"";
+  position:absolute;
+  top: -120%;
+  left: var(--glitch-x, 30%);
+  width: var(--glitch-w, 2px);
+  height: 140%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0),
+    rgba(255,255,255,0.35),
+    rgba(255,255,255,0)
+  );
+  opacity:0;
+  pointer-events:none;
+  mix-blend-mode:overlay;
+}
+
+.category-row img:hover::after {
+  opacity:1;
+  animation: glitch-scan var(--glitch-speed,0.8s) linear 1;
+}
+
+/* Optional second line for natural effect */
+.category-row img::before {
+  content:"";
+  position:absolute;
+  top: -120%;
+  left: var(--glitch-x2, 60%);
+  width: var(--glitch-w2,1px);
+  height:140%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,0,255,0),
+    rgba(255,255,255,0.25),
+    rgba(255,0,255,0)
+  );
+  opacity:0;
+  pointer-events:none;
+  mix-blend-mode:overlay;
+}
+
+.category-row img:hover::before {
+  opacity:1;
+  animation: glitch-scan var(--glitch-speed2,0.9s) linear 1;
+}
+
+@keyframes glitch-scan {
+  from { transform:translateY(0); }
+  to { transform:translateY(140%); }
+}
+}
+
+/* ================================================================= */
+/* ========================== LIGHTBOX ============================== */
+/* ================================================================= */
+.lightbox {
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.92);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  transition:opacity 0.35s ease;
+  z-index:999;
+}
+
+.lightbox.show { display:flex; opacity:1; }
+
+.lightbox-bg {
+  position:absolute;
+  inset:0;
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:contain;
+  filter: blur(28px) saturate(105%) brightness(0.7) contrast(110%);
+  opacity:0.45;
+  transform:scale(1.25);
+  pointer-events:none;
+}
+
+.lightbox img {
+  position:relative;
+  max-width:90vw;
+  max-height:90vh;
+  z-index:2;
+  opacity:0;
+  transition:opacity 0.35s ease;
+}
+
+.lightbox img.visible { opacity:1; }
+
+.nav-mark {
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:3rem;
+  color:rgba(204,204,204,0.4);
+  cursor:pointer;
+  z-index:3;
+  user-select:none;
+}
+.nav-left { left:20px; }
+.nav-right { right:20px; }
+
+@media (max-width:768px){ .nav-mark { display:none; } }
+
 </style>
 </head>
 
 <body>
 
-<!-- HERO -->
-<section id="hero" class="visible">
-  <div class="arrow-down">↓</div>
+<section>
+  <a href="index.html#folders" class="back-home">Back to home</a>
+
+  <!-- PRISM HTML UNCHANGED -->
+  <div class="prism">
+    <div class="inner-face-right"></div>
+    <div class="inner-face-horizontal"></div>
+    <div class="prism-text">
+      channelORANGE
+      <span class="prism-r">channelORANGE</span>
+      <span class="prism-o">channelORANGE</span>
+      <span class="prism-y">channelORANGE</span>
+      <span class="prism-g">channelORANGE</span>
+      <span class="prism-c">channelORANGE</span>
+      <span class="prism-b">channelORANGE</span>
+    </div>
+  </div>
+
+  <div id="photoSections"></div>
 </section>
 
-<!-- FOLDERS -->
-<section id="folders">
-  <div class="folder-grid" id="folderGrid"></div>
-</section>
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-bg" id="lightbox-bg"></div>
+  <div class="nav-mark nav-left">◂</div>
+  <img id="lightbox-img">
+  <div class="nav-mark nav-right">▸</div>
+</div>
 
 <script>
-const categories = [
-  { label: "channelORANGE", page: "channelorange.html" },
-  { label: "Dream State", page: "dream-state.html" },
-  { label: "Raw PNW", page: "raw-pnw.html" },
-  { label: "Neon Lights", page: "neon-lights.html" },
-  { label: "Fluid", page: "Fluid.html" },
-  { label: "Crystallite", page: "crystallite.html" }
-];
+const SPACE_ID = '5w319pzc4eiq';
+const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
+const CATEGORY_NAME = "channelORANGE";
 
-const grid = document.getElementById("folderGrid");
+let gallery = [];
+let currentIndex = 0;
+const fullImageCache = new Map();
 
-categories.forEach(item => {
-  const folder = document.createElement("div");
-  folder.className = "folder";
+async function fetchPhotos(){
+  const res = await fetch(
+    `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
+  );
+  const data = await res.json();
 
-  folder.innerHTML = `
-    <div class="folder-stack">
-      <div class="trail t4"></div>
-      <div class="trail t3"></div>
-      <div class="trail t2"></div>
-      <div class="trail t1"></div>
+  const assets = {};
+  data.includes.Asset.forEach(a => assets[a.sys.id] = a.fields.file.url);
 
-      <div class="folder-main">
-        <div class="folder-tab"></div>
-      </div>
-    </div>
-    <span>${item.label}</span>
-  `;
+  gallery = data.items
+    .filter(i => i.fields.category === CATEGORY_NAME)
+    .map(i => `https:${assets[i.fields.photo.sys.id]}`);
 
-  folder.onclick = () => {
-    window.location.href = item.page;
-  };
+  renderPhotos();
+}
 
-  grid.appendChild(folder);
+function renderPhotos(){
+  const row = document.createElement("div");
+  row.className = "category-row";
+
+  const dpr = window.devicePixelRatio || 1;
+  const thumbWidth = Math.ceil(180 * dpr * 2);
+  const fullSize = Math.ceil(Math.max(innerWidth, innerHeight) * dpr * 0.9);
+
+  gallery.forEach((src,i)=>{
+    const img = document.createElement("img");
+    img.src = `${src}?w=40&fm=webp&q=10`;
+    img.loading="lazy";
+    img.decoding="async";
+    img.style.transitionDelay=`${i*60}ms`;
+
+    // Preload high-res
+    const hi = new Image();
+    hi.src = `${src}?w=${thumbWidth}&fm=webp&q=85`;
+    hi.onload = () => {
+      img.src = hi.src;
+      img.classList.add("loaded");
+      if(!fullImageCache.has(i)){
+        const preload = new Image();
+        preload.src = `${src}?w=${fullSize}&fm=webp&q=90`;
+        fullImageCache.set(i,preload);
+      }
+    };
+
+    // Random glitch variables
+    const glitchX = Math.random()*80 + 10;
+    const glitchW = Math.random()*2 + 1;
+    const glitchSpeed = (Math.random()*0.6 +0.5).toFixed(2);
+
+    const glitchX2 = Math.random()*80 + 10;
+    const glitchW2 = Math.random()*1 + 0.5;
+    const glitchSpeed2 = (Math.random()*0.6 +0.6).toFixed(2);
+
+    img.style.setProperty('--glitch-x', `${glitchX}%`);
+    img.style.setProperty('--glitch-w', `${glitchW}px`);
+    img.style.setProperty('--glitch-speed', `${glitchSpeed}s`);
+
+    img.style.setProperty('--glitch-x2', `${glitchX2}%`);
+    img.style.setProperty('--glitch-w2', `${glitchW2}px`);
+    img.style.setProperty('--glitch-speed2', `${glitchSpeed2}s`);
+
+    img.onclick = ()=>openLightbox(i);
+    row.appendChild(img);
+  });
+
+  photoSections.appendChild(row);
+}
+
+// LIGHTBOX
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightbox-img");
+const lightboxBg = document.getElementById("lightbox-bg");
+
+function openLightbox(i){
+  currentIndex = i;
+  lightbox.classList.add("show");
+  showImage(i);
+}
+
+function showImage(i){
+  currentIndex = i;
+  lightboxImg.classList.remove("visible");
+
+  const cached = fullImageCache.get(i);
+  if(cached && cached.complete){
+    requestAnimationFrame(()=>{ lightboxImg.src = cached.src; lightboxImg.classList.add("visible"); });
+  }
+
+  lightboxBg.style.backgroundImage = `url(${gallery[i]}?w=240&fm=webp&q=20)`;
+  preloadNext(i);
+}
+
+function preloadNext(i){
+  const next = (i+1)%gallery.length;
+  if(!fullImageCache.has(next)){
+    const dpr = window.devicePixelRatio||1;
+    const size = Math.ceil(Math.max(innerWidth,innerHeight)*dpr*0.9);
+    const img = new Image();
+    img.src = `${gallery[next]}?w=${size}&fm=webp&q=85`;
+    fullImageCache.set(next,img);
+  }
+}
+
+// NAVIGATION
+lightbox.addEventListener("click", e=>{
+  if(e.target === lightbox) lightbox.classList.remove("show");
+});
+document.querySelector(".nav-right").onclick=e=>{ e.stopPropagation(); showImage((currentIndex+1)%gallery.length); };
+document.querySelector(".nav-left").onclick=e=>{ e.stopPropagation(); showImage((currentIndex-1+gallery.length)%gallery.length); };
+lightboxImg.onclick=e=>e.stopPropagation();
+document.addEventListener("keydown", e=>{
+  if(!lightbox.classList.contains("show")) return;
+  if(e.key==="ArrowRight") showImage((currentIndex+1)%gallery.length);
+  if(e.key==="ArrowLeft") showImage((currentIndex-1+gallery.length)%gallery.length);
+  if(e.key==="Escape") lightbox.classList.remove("show");
 });
 
-/* ---------------- FADE IN ---------------- */
-const observer = new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting) e.target.classList.add("visible");
-  });
-},{threshold:0.3});
-
-document.querySelectorAll("section").forEach(s=>observer.observe(s));
-
-/* ---------------- SCROLL DOWN ---------------- */
-document.querySelector('.arrow-down').onclick = () => {
-  document.getElementById("folders")
-    .scrollIntoView({behavior:'smooth'});
-};
+fetchPhotos();
 </script>
 
 </body>

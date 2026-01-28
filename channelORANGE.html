@@ -85,11 +85,12 @@ section {
   gap:40px;
   justify-content:center;
   opacity:0;
-  animation:fadeIn 0.8s ease forwards;
+  transform:translateY(22px);
+  animation:categoryIn 0.9s cubic-bezier(.2,.8,.2,1) forwards;
 }
 
-@keyframes fadeIn {
-  to { opacity:1; }
+@keyframes categoryIn {
+  to { opacity:1; transform:translateY(0); }
 }
 
 .category-row img {
@@ -100,14 +101,17 @@ section {
   cursor:pointer;
   filter:blur(14px);
   opacity:0;
+  transform:translateY(12px);
   transition:
     filter 0.6s ease,
-    opacity 0.6s ease;
+    opacity 0.6s ease,
+    transform 0.6s ease;
 }
 
 .category-row img.loaded {
   filter:blur(0);
   opacity:1;
+  transform:translateY(0);
 }
 
 /* ---------------- LIGHTBOX ---------------- */
@@ -137,7 +141,7 @@ section {
   filter:blur(28px) saturate(105%) brightness(0.7) contrast(110%);
   opacity:0.45;
   transform:translateZ(0) scale(1.25);
-  pointer-events:none;
+  will-change:transform, filter;
 }
 
 .lightbox img {
@@ -160,7 +164,6 @@ section {
   color:rgba(204,204,204,0.4);
   cursor:pointer;
   user-select:none;
-  z-index:3;
 }
 .nav-left { left:20px; }
 .nav-right { right:20px; }
@@ -235,7 +238,7 @@ function renderPhotos(){
     const img = document.createElement("img");
     img.src = `${src}?w=40&fm=webp&q=10`;
     img.loading = "lazy";
-    img.style.transitionDelay = `${i * 60}ms`;
+    img.style.transitionDelay = `${i * 40}ms`;
 
     const hi = new Image();
     hi.src = `${src}?w=${thumbWidth}&fm=webp&q=85`;
@@ -273,10 +276,10 @@ function showImage(i){
 
   const cached = fullImageCache.get(i);
   if (cached && cached.complete) {
-    requestAnimationFrame(() => {
+    setTimeout(() => {
       lightboxImg.src = cached.src;
       lightboxImg.classList.add("visible");
-    });
+    }, 80);
   }
 
   lightboxBg.style.backgroundImage =
@@ -296,24 +299,15 @@ function preloadNext(i){
   }
 }
 
-/* ---- CLICK ANYWHERE OFF IMAGE TO CLOSE ---- */
-lightbox.addEventListener("click", e => {
-  if (e.target === lightbox || e.target === lightboxBg) {
-    lightbox.classList.remove("show");
-  }
-});
-
-document.querySelector(".nav-right").onclick = e => {
-  e.stopPropagation();
+document.querySelector(".nav-right").onclick = () =>
   showImage((currentIndex+1)%gallery.length);
-};
 
-document.querySelector(".nav-left").onclick = e => {
-  e.stopPropagation();
+document.querySelector(".nav-left").onclick = () =>
   showImage((currentIndex-1+gallery.length)%gallery.length);
-};
 
-lightboxImg.onclick = e => e.stopPropagation();
+lightbox.onclick = e => {
+  if(e.target === lightbox) lightbox.classList.remove("show");
+};
 
 document.addEventListener("keydown", e=>{
   if(!lightbox.classList.contains("show")) return;

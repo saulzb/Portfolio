@@ -125,14 +125,25 @@ section {
   cursor:pointer;
   filter: blur(15px);
   opacity:0;
-  transition: filter 0.15s ease, opacity 0.6s ease, box-shadow 0.15s ease;
   position:relative;
   isolation:isolate;
   border:2px solid rgba(255,255,255,0.08);
+
+  /* FIXED TRANSITIONS */
+  transition-property: opacity, filter, box-shadow;
+  transition-duration: 0.6s, 0.15s, 0.15s;
+  transition-timing-function: ease, ease, ease;
+  transition-delay: var(--fade-delay, 0ms), 0ms, 0ms;
+
+  /* GPU OPTIMIZATION */
+  will-change: filter, box-shadow;
 }
 
 /* Blur-up loaded */
-.category-row img.loaded { filter: blur(0); opacity:1; }
+.category-row img.loaded {
+  filter: blur(0);
+  opacity:1;
+}
 
 /* ---------------- PRISM STREAKS ---------------- */
 .category-row img::before,
@@ -299,13 +310,15 @@ function renderPhotos(){
     img.src = `${src}?w=40&fm=webp&q=10`;
     img.loading="lazy";
     img.decoding="async";
-    img.style.transitionDelay=`${i*60}ms`;
+
+    img.style.setProperty('--fade-delay', `${i * 60}ms`);
 
     const hi = new Image();
     hi.src = `${src}?w=${thumbWidth}&fm=webp&q=85`;
     hi.onload = () => {
       img.src = hi.src;
       img.classList.add("loaded");
+
       if(!fullImageCache.has(i)){
         const preload = new Image();
         preload.src = `${src}?w=${fullSize}&fm=webp&q=90`;
@@ -313,7 +326,6 @@ function renderPhotos(){
       }
     };
 
-    // Randomized chromatic streaks
     const streaks = [
       {
         top: 10+Math.random()*20+"%",
@@ -367,7 +379,10 @@ function showImage(i){
 
   const cached = fullImageCache.get(i);
   if(cached && cached.complete){
-    requestAnimationFrame(()=>{ lightboxImg.src = cached.src; lightboxImg.classList.add("visible"); });
+    requestAnimationFrame(()=>{
+      lightboxImg.src = cached.src;
+      lightboxImg.classList.add("visible");
+    });
   }
 
   lightboxBg.style.backgroundImage = `url(${gallery[i]}?w=240&fm=webp&q=20)`;

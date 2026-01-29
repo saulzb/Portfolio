@@ -120,7 +120,7 @@ section {
   width:180px;
   height:180px;
   object-fit:cover;
-  border-radius:0px;
+  border-radius:6px;
   box-shadow:0 8px 20px rgba(0,0,0,0.45);
   cursor:pointer;
   filter: blur(15px);
@@ -145,37 +145,37 @@ section {
   opacity:1;
 }
 
-/* Prism glass overlay - sharp corners */
+/* Glass prism overlay - sharp corners, inset */
 .category-row img::before {
   content: "";
   position: absolute;
-  inset: -12px;
+  inset: 0;
   border-radius: 0px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
-  background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05) 45%, rgba(255,255,255,0.1));
-  border: 1px solid rgba(255,255,255,0.25);
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05) 45%, rgba(255,255,255,0.08));
+  border: 1px solid rgba(255,255,255,0.2);
   box-shadow: 
     inset 0 0 0 1px rgba(255,255,255,0.15),
-    inset 2px 2px 6px rgba(255,255,255,0.2),
-    inset -2px -2px 6px rgba(0,0,0,0.4);
+    inset 2px 2px 8px rgba(255,255,255,0.15),
+    inset -2px -2px 8px rgba(0,0,0,0.3);
 }
 
-/* Chromatic aberration - pulling LEFT only */
+/* Chromatic aberration - LEFT side only, coming out of the square */
 .category-row img::after {
   content: "";
   position: absolute;
-  inset: -12px;
+  inset: 0;
   border-radius: 0px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
   background: 
-    radial-gradient(ellipse 80px 100px at -10% 50%, rgba(255,69,58,0.35) 0%, transparent 60%),
-    radial-gradient(ellipse 70px 90px at -15% 50%, rgba(255,159,10,0.3) 0%, transparent 60%),
-    radial-gradient(ellipse 60px 80px at -20% 50%, rgba(100,210,255,0.25) 0%, transparent 60%);
-  filter: blur(0.5px);
+    radial-gradient(ellipse 90px 110px at -20px 50%, rgba(255,69,58,0.4) 0%, transparent 55%),
+    radial-gradient(ellipse 80px 100px at -15px 50%, rgba(255,159,10,0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 70px 90px at -10px 50%, rgba(100,210,255,0.3) 0%, transparent 55%);
+  filter: blur(1.2px);
 }
 
 .category-row img:hover::before {
@@ -186,12 +186,10 @@ section {
   opacity: 1;
 }
 
-/* Base hover effect */
+/* Base hover effect - brightening only */
 .category-row img:hover {
   filter: blur(0) brightness(1.08) contrast(1.15);
-  box-shadow: 0 0 20px rgba(255,255,255,0.3),
-              0 0 30px rgba(255,255,255,0.15),
-              0 12px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
 }
 
 /* ---------------- LIGHTBOX ---------------- */

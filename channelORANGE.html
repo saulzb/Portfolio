@@ -10,10 +10,19 @@
 <style>
 html, body {
   margin:0; padding:0; width:100%; height:100%;
-  background:#0a0a0c;
+  background: url('IMG_2575.JPG') center/cover fixed no-repeat;
   color:#eaeaea;
   font-family:'Michroma',sans-serif;
   scroll-behavior:smooth;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 12, 0.65);
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* ---------------- SECTION ---------------- */
@@ -24,6 +33,8 @@ section {
   align-items:center;
   justify-content:center;
   gap:60px;
+  position: relative;
+  z-index: 2;
 }
 
 /* ---------------- BACK ---------------- */
@@ -145,7 +156,7 @@ section {
   opacity:1;
 }
 
-/* Prism glass overlay */
+/* Prism overlay effect */
 .category-row img::before {
   content: "";
   position: absolute;
@@ -162,23 +173,18 @@ section {
     inset 2px 2px 8px rgba(255,255,255,0.15);
 }
 
-/* Chromatic aberration - pulling LEFT */
+/* Chromatic aberration layers */
 .category-row img::after {
   content: "";
   position: absolute;
-  top: 0;
-  left: -40px;
-  width: 220px;
-  height: 180px;
+  inset: 0;
   border-radius: 6px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
   background: 
-    radial-gradient(ellipse 100px 140px at 60px 90px, rgba(255,69,58,0.35) 0%, transparent 50%),
-    radial-gradient(ellipse 90px 130px at 55px 90px, rgba(255,159,10,0.3) 0%, transparent 50%),
-    radial-gradient(ellipse 80px 120px at 50px 90px, rgba(100,210,255,0.25) 0%, transparent 50%);
-  filter: blur(1px);
+    radial-gradient(ellipse at 15% 15%, rgba(255,69,58,0.25) 0%, transparent 40%),
+    radial-gradient(ellipse at 85% 85%, rgba(100,210,255,0.25) 0%, transparent 40%);
 }
 
 .category-row img:hover::before {
@@ -196,6 +202,33 @@ section {
   box-shadow: 0 0 12px rgba(255,255,255,0.25),
               0 0 20px rgba(255,255,255,0.1),
               0 8px 16px rgba(0, 0, 0, 0.45);
+}
+
+/* Individual chromatic color layers using text-shadow style positioning */
+.category-row img:hover {
+  --chromatic-r: 0.5px;
+  --chromatic-offset: 1.5px;
+}
+
+/* Add chromatic streaks */
+.category-row img:hover {
+  box-shadow: 
+    /* Red chromatic layer */
+    -1px -1px 0 rgba(255,69,58,0.3),
+    /* Orange chromatic layer */
+    -0.5px -0.5px 0 rgba(255,159,10,0.25),
+    /* Yellow chromatic layer */
+    0 0 0 rgba(255,214,10,0.2),
+    /* Green chromatic layer */
+    0.5px 0.5px 0 rgba(50,215,75,0.25),
+    /* Cyan chromatic layer */
+    1px 1px 0 rgba(100,210,255,0.3),
+    /* Blue chromatic layer */
+    1.5px 1.5px 0 rgba(10,132,255,0.2),
+    /* Main glow */
+    0 0 12px rgba(255,255,255,0.25),
+    0 0 20px rgba(255,255,255,0.1),
+    0 8px 16px rgba(0, 0, 0, 0.45);
 }
 
 /* ---------------- LIGHTBOX ---------------- */

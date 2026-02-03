@@ -10,10 +10,19 @@
 <style>
 html, body {
   margin:0; padding:0; width:100%; height:100%;
-  background:#0a0a0c;
   color:#eaeaea;
+  background:#0a0a0c;
   font-family:'Michroma',sans-serif;
   scroll-behavior:smooth;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 12, 0.65);
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* ---------------- SECTION ---------------- */
@@ -22,8 +31,11 @@ section {
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:center;
-  gap:60px;
+  justify-content:flex-start;
+  gap:40px;        /* reduced gap between prism and photos */
+  position: relative;
+  z-index: 2;
+  padding-top:80px; /* prism raised higher */
 }
 
 /* ---------------- BACK ---------------- */
@@ -98,7 +110,6 @@ section {
   justify-content:center;
 }
 
-/* CHROMATIC SPLIT PRISM COLORS */
 .prism-r { color:#ff453a; transform:translateX(-3px); filter:blur(0.9px); }
 .prism-o { color:#ff9f0a; transform:translateX(-2px); filter:blur(0.7px); }
 .prism-y { color:#ffd60a; transform:translateX(-1px); filter:blur(0.6px); }
@@ -112,23 +123,87 @@ section {
   flex-wrap:wrap;
   gap:40px;
   justify-content:center;
+  max-width:1000px;
+  margin:0 auto;
+  opacity:0;
+  animation:fadeIn 0.8s ease forwards;
 }
+@keyframes fadeIn { to { opacity:1; } }
 
-/* BLUR-UP THUMBNAILS */
+#photoSections { padding-bottom:80px; }
+
 .category-row img {
-  width:180px;
-  height:180px;
+  flex: 1 1 120px;
+  max-width:180px;
+  aspect-ratio:1 / 1;
   object-fit:cover;
   border-radius:6px;
   box-shadow:0 8px 20px rgba(0,0,0,0.45);
   cursor:pointer;
   filter: blur(15px);
   opacity:0;
-  transition: filter 0.6s ease-out, opacity 0.6s ease-out;
+  position:relative;
+  isolation:isolate;
+  border:2px solid rgba(255,255,255,0.08);
+
+  transition-property: opacity, filter, box-shadow, border-color;
+  transition-duration: 0.6s, 0.15s, 0.15s, 0.3s;
+  transition-timing-function: ease, ease, ease, ease;
+  transition-delay: var(--fade-delay, 0ms), 0ms, 0ms, 0ms;
+
+  will-change: filter, box-shadow, border-color;
 }
-.category-row img.loaded {
-  filter: blur(0);
-  opacity:1;
+
+/* Blur-up loaded */
+.category-row img.loaded { filter: blur(0); opacity:1; }
+
+/* Prism overlay */
+.category-row img::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04) 45%, rgba(255,255,255,0.08));
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 
+    inset 0 0 0 1px rgba(255,255,255,0.1),
+    inset -2px -2px 8px rgba(0,0,0,0.3),
+    inset 2px 2px 8px rgba(255,255,255,0.15);
+}
+
+.category-row img::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  background: 
+    radial-gradient(ellipse at 15% 15%, rgba(255,69,58,0.25) 0%, transparent 40%),
+    radial-gradient(ellipse at 85% 85%, rgba(100,210,255,0.25) 0%, transparent 40%);
+}
+
+/* Hover effects including prism glow */
+.category-row img:hover::before { opacity:1; }
+.category-row img:hover::after { opacity:1; }
+
+.category-row img:hover {
+  filter: blur(0) brightness(1.06) contrast(1.12);
+  border-color: rgba(255,255,255,0.3);
+  box-shadow: 
+    -1px -1px 0 rgba(255,69,58,0.3),
+    -0.5px -0.5px 0 rgba(255,159,10,0.25),
+    0 0 0 rgba(255,214,10,0.2),
+    0.5px 0.5px 0 rgba(50,215,75,0.25),
+    1px 1px 0 rgba(100,210,255,0.3),
+    1.5px 1.5px 0 rgba(10,132,255,0.2),
+    0 0 12px rgba(255,255,255,0.25),
+    0 0 20px rgba(255,255,255,0.1),
+    0 8px 16px rgba(0,0,0,0.45);
 }
 
 /* ---------------- LIGHTBOX ---------------- */
@@ -139,28 +214,22 @@ section {
   display:none;
   align-items:center;
   justify-content:center;
+  opacity:0;
+  transition:opacity 0.35s ease;
   z-index:999;
 }
 
-.lightbox.show { display:flex; }
+.lightbox.show { display:flex; opacity:1; }
 
-/* ✅ CLEAN MUSEUM BACKGROUND */
 .lightbox-bg {
   position:absolute;
   inset:0;
-
   background-position:center;
   background-repeat:no-repeat;
   background-size:contain;
-
-  filter:
-    blur(50px)
-    saturate(110%)
-    brightness(0.65)
-    contrast(115%);
-
+  filter: blur(28px) saturate(105%) brightness(0.7) contrast(110%);
   opacity:0.45;
-  transform:scale(1.3);
+  transform:scale(1.25);
   pointer-events:none;
 }
 
@@ -169,9 +238,13 @@ section {
   max-width:90vw;
   max-height:90vh;
   z-index:2;
+  opacity:0;
+  transition:opacity 0.35s ease;
+  cursor: zoom-out;
 }
 
-/* ---------------- NAV ---------------- */
+.lightbox img.visible { opacity:1; }
+
 .nav-mark {
   position:absolute;
   top:50%;
@@ -185,8 +258,17 @@ section {
 .nav-left { left:20px; }
 .nav-right { right:20px; }
 
-@media (max-width:768px){
-  .nav-mark { display:none; }
+@media (max-width:768px) {
+  section { padding-top:80px; gap:30px; }
+  #photoSections { padding-bottom:60px; }
+}
+
+@media (max-width:480px) {
+  .category-row { gap:20px; }
+  .category-row img {
+    flex: 1 1 calc(50% - 20px);
+    max-width:140px;
+  }
 }
 </style>
 </head>
@@ -200,13 +282,13 @@ section {
     <div class="inner-face-right"></div>
     <div class="inner-face-horizontal"></div>
     <div class="prism-text">
-      FLUID
-      <span class="prism-r">FLUID</span>
-      <span class="prism-o">FLUID</span>
-      <span class="prism-y">FLUID</span>
-      <span class="prism-g">FLUID</span>
-      <span class="prism-c">FLUID</span>
-      <span class="prism-b">FLUID</span>
+      Fluid
+      <span class="prism-r">Fluid</span>
+      <span class="prism-o">Fluid</span>
+      <span class="prism-y">Fluid</span>
+      <span class="prism-g">Fluid</span>
+      <span class="prism-c">Fluid</span>
+      <span class="prism-b">Fluid</span>
     </div>
   </div>
 
@@ -227,8 +309,8 @@ const CATEGORY_NAME = "TI";
 
 let gallery = [];
 let currentIndex = 0;
+const fullImageCache = new Map();
 
-// FETCH
 async function fetchPhotos(){
   const res = await fetch(
     `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
@@ -245,29 +327,36 @@ async function fetchPhotos(){
   renderPhotos();
 }
 
-// RENDER THUMBNAILS
 function renderPhotos(){
   const row = document.createElement("div");
   row.className = "category-row";
 
   const dpr = window.devicePixelRatio || 1;
   const thumbWidth = Math.ceil(180 * dpr * 2);
+  const fullSize = Math.ceil(Math.max(innerWidth, innerHeight) * dpr * 0.9);
 
   gallery.forEach((src,i)=>{
     const img = document.createElement("img");
-
     img.src = `${src}?w=40&fm=webp&q=10`;
-    img.loading = "lazy";
-    img.decoding = "async";
+    img.loading="lazy";
+    img.decoding="async";
 
-    const highRes = new Image();
-    highRes.src = `${src}?w=${thumbWidth}&fm=webp&q=85`;
-    highRes.onload = () => {
-      img.src = highRes.src;
+    img.style.setProperty('--fade-delay', `${i * 60}ms`);
+
+    const hi = new Image();
+    hi.src = `${src}?w=${thumbWidth}&fm=webp&q=85`;
+    hi.onload = () => {
+      img.src = hi.src;
       img.classList.add("loaded");
+
+      if(!fullImageCache.has(i)){
+        const preload = new Image();
+        preload.src = `${src}?w=${fullSize}&fm=webp&q=90`;
+        fullImageCache.set(i,preload);
+      }
     };
 
-    img.onclick = () => openLightbox(i);
+    img.onclick = ()=>openLightbox(i);
     row.appendChild(img);
   });
 
@@ -282,48 +371,47 @@ const lightboxBg = document.getElementById("lightbox-bg");
 function openLightbox(i){
   currentIndex = i;
   lightbox.classList.add("show");
+  showImage(i);
+}
 
-  const dpr = window.devicePixelRatio || 1;
-  const size = Math.ceil(
-    Math.max(window.innerWidth, window.innerHeight) * dpr * 0.9
-  );
+function showImage(i){
+  currentIndex = i;
+  lightboxImg.classList.remove("visible");
 
-  /* ✅ Better background source for horizontals */
-  lightboxBg.style.backgroundImage =
-    `url(${gallery[i]}?w=240&fm=webp&q=20)`;
+  const cached = fullImageCache.get(i);
+  if(cached && cached.complete){
+    requestAnimationFrame(()=>{
+      lightboxImg.src = cached.src;
+      lightboxImg.classList.add("visible");
+    });
+  }
 
-  const imgLarge = new Image();
-  imgLarge.src = `${gallery[i]}?w=${size}&fm=webp&q=92`;
-  imgLarge.onload = () => lightboxImg.src = imgLarge.src;
-
+  lightboxBg.style.backgroundImage = `url(${gallery[i]}?w=240&fm=webp&q=20)`;
   preloadNext(i);
 }
 
 function preloadNext(i){
   const next = (i+1)%gallery.length;
-  const dpr = window.devicePixelRatio || 1;
-  const size = Math.ceil(
-    Math.max(window.innerWidth, window.innerHeight) * dpr * 0.9
-  );
-  const img = new Image();
-  img.src = `${gallery[next]}?w=${size}&fm=webp&q=85`;
+  if(!fullImageCache.has(next)){
+    const dpr = window.devicePixelRatio||1;
+    const size = Math.ceil(Math.max(innerWidth,innerHeight)*dpr*0.9);
+    const img = new Image();
+    img.src = `${gallery[next]}?w=${size}&fm=webp&q=85`;
+    fullImageCache.set(next,img);
+  }
 }
 
-// NAV
-function next(){ openLightbox((currentIndex+1)%gallery.length); }
-function prev(){ openLightbox((currentIndex-1+gallery.length)%gallery.length); }
-
-document.querySelector(".nav-right").onclick = next;
-document.querySelector(".nav-left").onclick = prev;
-
-lightbox.onclick = e => {
+// NAVIGATION
+lightbox.addEventListener("click", e=>{
   if(e.target === lightbox) lightbox.classList.remove("show");
-};
-
+});
+document.querySelector(".nav-right").onclick=e=>{ e.stopPropagation(); showImage((currentIndex+1)%gallery.length); };
+document.querySelector(".nav-left").onclick=e=>{ e.stopPropagation(); showImage((currentIndex-1+gallery.length)%gallery.length); };
+lightboxImg.onclick=e=>e.stopPropagation();
 document.addEventListener("keydown", e=>{
   if(!lightbox.classList.contains("show")) return;
-  if(e.key==="ArrowRight") next();
-  if(e.key==="ArrowLeft") prev();
+  if(e.key==="ArrowRight") showImage((currentIndex+1)%gallery.length);
+  if(e.key==="ArrowLeft") showImage((currentIndex-1+gallery.length)%gallery.length);
   if(e.key==="Escape") lightbox.classList.remove("show");
 });
 

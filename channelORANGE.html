@@ -127,13 +127,11 @@ section {
 }
 @keyframes fadeIn { to { opacity:1; } }
 
-#photoSections {
-  padding-bottom:80px; /* default bottom padding */
-}
+#photoSections { padding-bottom:80px; }
 
 .category-row img {
-  width:180px;
-  height:180px;
+  flex: 1 1 180px; /* shrink if needed, min width 180px */
+  aspect-ratio:1 / 1; /* maintain square */
   object-fit:cover;
   border-radius:6px;
   box-shadow:0 8px 20px rgba(0,0,0,0.45);
@@ -155,7 +153,7 @@ section {
 /* Blur-up loaded */
 .category-row img.loaded { filter: blur(0); opacity:1; }
 
-/* Prism overlay effect */
+/* Prism overlay */
 .category-row img::before {
   content: "";
   position: absolute;
@@ -193,7 +191,6 @@ section {
   filter: blur(0) brightness(1.06) contrast(1.12);
   border-color: rgba(255,255,255,0.3);
   box-shadow: 
-    /* chromatic layers */
     -1px -1px 0 rgba(255,69,58,0.3),
     -0.5px -0.5px 0 rgba(255,159,10,0.25),
     0 0 0 rgba(255,214,10,0.2),
@@ -252,14 +249,7 @@ section {
     padding-bottom:0; 
   }
 
-  #photoSections {
-    padding-bottom:60px; /* smaller padding below last row */
-  }
-
-  .category-row img {
-    width: calc((100% - 40px) / 2); /* always at least 2 per row */
-    height: auto;
-  }
+  #photoSections { padding-bottom:60px; }
 }
 </style>
 </head>

@@ -128,7 +128,7 @@ section {
 @keyframes fadeIn { to { opacity:1; } }
 
 #photoSections {
-  padding-bottom: 80px; /* Default bottom padding */
+  padding-bottom:80px; /* default bottom padding */
 }
 
 .category-row img {
@@ -152,10 +152,8 @@ section {
   will-change: filter, box-shadow, border-color;
 }
 
-.category-row img.loaded {
-  filter: blur(0);
-  opacity:1;
-}
+/* Blur-up loaded */
+.category-row img.loaded { filter: blur(0); opacity:1; }
 
 /* Prism overlay effect */
 .category-row img::before {
@@ -187,15 +185,24 @@ section {
     radial-gradient(ellipse at 85% 85%, rgba(100,210,255,0.25) 0%, transparent 40%);
 }
 
+/* Hover effects including prism glow */
 .category-row img:hover::before { opacity:1; }
 .category-row img:hover::after { opacity:1; }
 
 .category-row img:hover {
   filter: blur(0) brightness(1.06) contrast(1.12);
   border-color: rgba(255,255,255,0.3);
-  box-shadow: 0 0 12px rgba(255,255,255,0.25),
-              0 0 20px rgba(255,255,255,0.1),
-              0 8px 16px rgba(0, 0, 0, 0.45);
+  box-shadow: 
+    /* chromatic layers */
+    -1px -1px 0 rgba(255,69,58,0.3),
+    -0.5px -0.5px 0 rgba(255,159,10,0.25),
+    0 0 0 rgba(255,214,10,0.2),
+    0.5px 0.5px 0 rgba(50,215,75,0.25),
+    1px 1px 0 rgba(100,210,255,0.3),
+    1.5px 1.5px 0 rgba(10,132,255,0.2),
+    0 0 12px rgba(255,255,255,0.25),
+    0 0 20px rgba(255,255,255,0.1),
+    0 8px 16px rgba(0,0,0,0.45);
 }
 
 /* ---------------- LIGHTBOX ---------------- */
@@ -241,12 +248,17 @@ section {
 @media (max-width:768px) {
   section {
     justify-content:flex-start;
-    padding-top:140px; /* lower prism so it doesn't overlap back button */
+    padding-top:100px; /* slightly higher prism above back button */
     padding-bottom:0; 
   }
 
   #photoSections {
     padding-bottom:60px; /* smaller padding below last row */
+  }
+
+  .category-row img {
+    width: calc((100% - 40px) / 2); /* always at least 2 per row */
+    height: auto;
   }
 }
 </style>

@@ -31,10 +31,11 @@ section {
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:center;
+  justify-content:flex-start;
   gap:60px;
   position: relative;
   z-index: 2;
+  padding-top:120px; /* prism higher than back button */
 }
 
 /* ---------------- BACK ---------------- */
@@ -122,6 +123,8 @@ section {
   flex-wrap:wrap;
   gap:40px;
   justify-content:center;
+  max-width:1000px; /* cap row width to prevent huge images */
+  margin:0 auto;
   opacity:0;
   animation:fadeIn 0.8s ease forwards;
 }
@@ -130,7 +133,8 @@ section {
 #photoSections { padding-bottom:80px; }
 
 .category-row img {
-  flex: 1 1 180px; /* shrink if needed, min width 180px */
+  flex: 1 1 120px;  /* min width 120px, shrink if needed */
+  max-width:180px;   /* cap growth */
   aspect-ratio:1 / 1; /* maintain square */
   object-fit:cover;
   border-radius:6px;
@@ -241,14 +245,21 @@ section {
 
 .lightbox img.visible { opacity:1; }
 
-/* ---------------- MOBILE FIXES ---------------- */
-@media (max-width:768px) {
-  section {
-    justify-content:flex-start;
-    padding-top:100px; /* slightly higher prism above back button */
-    padding-bottom:0; 
-  }
+.nav-mark {
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:3rem;
+  color:rgba(204,204,204,0.4);
+  cursor:pointer;
+  z-index:3;
+  user-select:none;
+}
+.nav-left { left:20px; }
+.nav-right { right:20px; }
 
+@media (max-width:768px) {
+  section { padding-top:120px; }
   #photoSections { padding-bottom:60px; }
 }
 </style>

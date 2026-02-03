@@ -35,7 +35,7 @@ section {
   gap:60px;
   position: relative;
   z-index: 2;
-  padding-top:120px; /* prism higher than back button */
+  padding-top:120px; /* prism slightly above back button */
 }
 
 /* ---------------- BACK ---------------- */
@@ -263,12 +263,12 @@ section {
   #photoSections { padding-bottom:60px; }
 }
 
-/* ---------------- MOBILE FIX: always 2 per row ---------------- */
+/* ---------------- MOBILE FIX: scale down slightly but keep spacing ---------------- */
 @media (max-width:480px) {
   .category-row { gap:20px; }
   .category-row img {
-    flex: 1 1 calc(50% - 10px);
-    max-width: 45%;
+    flex: 1 1 calc(50% - 20px); /* leave gap between images */
+    max-width:140px; /* smaller than desktop 180px */
   }
 }
 </style>

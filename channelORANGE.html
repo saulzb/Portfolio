@@ -45,6 +45,7 @@ section {
   font-size:0.75rem;
   color:rgba(204,204,204,0.5);
   text-decoration:none;
+  z-index:10;
 }
 .back-home:hover { color:rgba(255,255,255,0.8); }
 
@@ -113,83 +114,57 @@ section {
 .prism-c { color:#64d2ff; transform:translateX(2px);  filter:blur(0.7px); }
 .prism-b { color:#0a84ff; transform:translateX(3px);  filter:blur(0.9px); }
 
-/* ---------------- GRID (BALANCED + ADAPTIVE + ROW ENTRY) ---------------- */
+/* ---------------- GRID ROW ---------------- */
 .category-row {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(180px, 1fr));
-  gap: 40px;
+  display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-
-  /* row entry initial state */
-  opacity: 0;
+  gap: 40px;
+  opacity:0;
   transform: translateY(16px);
   filter: blur(2px);
-  transition:
-    opacity 0.8s ease,
-    transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1),
-    filter 0.8s ease;
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2,0.8,0.2,1), filter 0.8s ease;
 }
 
-/* row in view */
 .category-row.in-view {
-  opacity: 1;
+  opacity:1;
   transform: translateY(0);
   filter: blur(0);
 }
 
-/* optional micro polish: subtle image settle */
+/* ---------------- IMAGE ---------------- */
 .category-row img {
-  transform: translateY(4px);
-  transition:
-    opacity 0.6s ease,
-    filter 0.15s ease,
-    box-shadow 0.15s ease,
-    border-color 0.3s ease,
-    transform 0.6s ease;
-}
-
-.category-row.in-view img {
-  transform: translateY(0);
-}
-
-/* Responsive adjustments */
-@media (min-width: 1600px) {
-  .category-row { grid-template-columns: repeat(5, minmax(200px, 1fr)); }
-}
-@media (max-width: 1200px) {
-  .category-row { grid-template-columns: repeat(4, minmax(180px, 1fr)); }
-}
-@media (max-width: 900px) {
-  .category-row { grid-template-columns: repeat(3, 180px); }
-}
-@media (max-width: 600px) {
-  .category-row { grid-template-columns: repeat(2, 180px); }
-}
-
-.category-row img {
-  width:100%;
-  height:180px;
-  object-fit:cover;
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
   border-radius:6px;
   box-shadow:0 8px 20px rgba(0,0,0,0.45);
   cursor:pointer;
   filter: blur(15px);
   opacity:0;
   border:2px solid rgba(255,255,255,0.08);
+  transition:
+    opacity 0.6s ease,
+    filter 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.3s ease,
+    transform 0.6s ease;
+  transform: translateY(4px); /* micro polish */
 }
 
-/* loaded images */
-.category-row img.loaded {
-  filter: blur(0);
+.category-row.in-view img {
   opacity:1;
+  filter: blur(0);
+  transform: translateY(0);
 }
 
+/* Hover */
 .category-row img:hover {
   filter: blur(0) brightness(1.06) contrast(1.12);
   border-color: rgba(255,255,255,0.3);
   box-shadow:
     -1px -1px 0 rgba(255,69,58,0.3),
-    1px 1px 0 rgba(100,210,255,0.3),
+    0.5px 0.5px 0 rgba(50,215,75,0.25),
     0 0 12px rgba(255,255,255,0.25),
     0 8px 16px rgba(0,0,0,0.45);
 }
@@ -224,6 +199,10 @@ section {
 }
 .nav-left { left:20px; }
 .nav-right { right:20px; }
+
+@media(max-width:1200px){ .category-row img{width:160px;height:160px;} }
+@media(max-width:900px){ .category-row img{width:140px;height:140px;} }
+@media(max-width:600px){ .category-row img{width:120px;height:120px;} }
 </style>
 </head>
 
@@ -263,20 +242,17 @@ const CATEGORY_NAME = "channelORANGE";
 let gallery = [];
 let currentIndex = 0;
 
-// ---------------- ROW ENTRY OBSERVER ----------------
-const rowObserver = new IntersectionObserver(
-  entries => {
-    entries.forEach(entry => {
-      if(entry.isIntersecting){
-        entry.target.classList.add("in-view");
-        rowObserver.unobserve(entry.target);
-      }
-    });
-  },
-  { threshold: 0.15 }
-);
+// IntersectionObserver for row animation
+const rowObserver = new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add("in-view");
+      rowObserver.unobserve(entry.target);
+    }
+  });
+},{threshold:0.15});
 
-// ---------------- FETCH & RENDER ----------------
+// Fetch photos
 async function fetchPhotos(){
   const res = await fetch(
     `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
@@ -293,31 +269,35 @@ async function fetchPhotos(){
   renderPhotos();
 }
 
+// Render photos in balanced rows
 function renderPhotos(){
-  const row = document.createElement("div");
-  row.className = "category-row";
+  const maxPerRow = 5;
+  for(let i=0; i<gallery.length; i+=maxPerRow){
+    const rowDiv = document.createElement('div');
+    rowDiv.className = "category-row";
 
-  gallery.forEach((src,i)=>{
-    const img = document.createElement("img");
-    img.src = `${src}?w=40&fm=webp&q=10`;
-    img.loading="lazy";
+    gallery.slice(i,i+maxPerRow).forEach((src,j)=>{
+      const img = document.createElement('img');
+      img.src = `${src}?w=40&fm=webp&q=10`;
+      img.loading="lazy";
 
-    const hi = new Image();
-    hi.src = `${src}?w=400&fm=webp&q=85`;
-    hi.onload = () => {
-      img.src = hi.src;
-      img.classList.add("loaded");
-    };
+      const hi = new Image();
+      hi.src = `${src}?w=400&fm=webp&q=85`;
+      hi.onload = ()=>{
+        img.src = hi.src;
+        img.classList.add("loaded");
+      };
 
-    img.onclick = ()=>openLightbox(i);
-    row.appendChild(img);
-  });
+      img.onclick = ()=>openLightbox(i+j);
+      rowDiv.appendChild(img);
+    });
 
-  document.getElementById("photoSections").appendChild(row);
-  rowObserver.observe(row); // attach row entry animation
+    document.getElementById("photoSections").appendChild(rowDiv);
+    rowObserver.observe(rowDiv);
+  }
 }
 
-// ---------------- LIGHTBOX ----------------
+// Lightbox
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightbox-img");
 
@@ -335,7 +315,6 @@ document.querySelector(".nav-left").onclick=e=>{
   e.stopPropagation();
   openLightbox((currentIndex-1+gallery.length)%gallery.length);
 };
-
 lightbox.onclick = ()=>lightbox.classList.remove("show");
 
 fetchPhotos();

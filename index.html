@@ -67,6 +67,14 @@ section.visible {
   justify-items:center;
 }
 
+/* Center last folder on desktop */
+@media (min-width: 769px) {
+  .folder-grid .folder:last-child {
+    grid-column: 1 / -1;
+    justify-self: center;
+  }
+}
+
 /* ---------------- FOLDER ---------------- */
 .folder {
   display:flex;
@@ -133,7 +141,7 @@ section.visible {
   opacity:0.85;
 }
 
-/* ---------------- MOBILE LAYOUT ---------------- */
+/* ---------------- MOBILE ---------------- */
 @media (max-width: 768px) {
   #hero {
     background: url('SAULZIDULKABEJCEKMOBILE.jpg') center/cover no-repeat;
@@ -143,15 +151,10 @@ section.visible {
     grid-template-columns: repeat(2, 1fr);
     gap: 48px 24px;
     padding: 0 24px;
-    max-width: 100%;
   }
 
   .folder {
     transform: scale(0.9);
-  }
-
-  section#folders {
-    align-items: center;
   }
 }
 </style>
@@ -170,6 +173,10 @@ section.visible {
 </section>
 
 <script>
+// Always start at hero on reload
+window.history.scrollRestoration = "manual";
+window.scrollTo(0, 0);
+
 const categories = [
   { label: "channelORANGE", page: "channelorange.html" },
   { label: "Dream State", page: "dream-state.html" },
@@ -177,7 +184,7 @@ const categories = [
   { label: "Neon Lights", page: "neon-lights.html" },
   { label: "Fluid", page: "Fluid.html" },
   { label: "Crystallite", page: "crystallite.html" },
-  { label: "Double Expo", page: "DoubleExpo" }
+  { label: "Double Expo", page: "DoubleExpo.html" }
 ];
 
 const grid = document.getElementById("folderGrid");
@@ -192,7 +199,6 @@ categories.forEach(item => {
       <div class="trail t3"></div>
       <div class="trail t2"></div>
       <div class="trail t1"></div>
-
       <div class="folder-main">
         <div class="folder-tab"></div>
       </div>

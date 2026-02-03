@@ -262,6 +262,15 @@ section {
   section { padding-top:120px; }
   #photoSections { padding-bottom:60px; }
 }
+
+/* ---------------- MOBILE FIX: always 2 per row ---------------- */
+@media (max-width:480px) {
+  .category-row { gap:20px; }
+  .category-row img {
+    flex: 1 1 calc(50% - 10px);
+    max-width: 45%;
+  }
+}
 </style>
 </head>
 

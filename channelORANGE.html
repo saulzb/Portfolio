@@ -8,155 +8,213 @@
 <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
 
 <style>
+/* ---------------- BASE ---------------- */
 html, body {
-  margin:0; padding:0;
-  width:100%; height:100%;
-  color:#eaeaea;
-  background:#0a0a0c;
-  font-family:'Michroma',sans-serif;
-  scroll-behavior:smooth;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  color: #eaeaea;
+  background: #0a0a0c;
+  font-family: 'Michroma', sans-serif;
+  scroll-behavior: smooth;
 }
 
 body::before {
-  content:"";
-  position:fixed;
-  inset:0;
-  background:rgba(10,10,12,0.65);
-  pointer-events:none;
-  z-index:1;
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 12, 0.65);
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* ---------------- SECTION ---------------- */
 section {
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:60px;
-  position:relative;
-  z-index:2;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+  position: relative;
+  z-index: 2;
 }
 
 /* ---------------- BACK ---------------- */
 .back-home {
-  position:absolute;
-  top:30px;
-  left:50%;
-  transform:translateX(-50%);
-  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
-  font-size:0.75rem;
-  color:rgba(204,204,204,0.5);
-  text-decoration:none;
-  z-index:10;
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  font-size: 0.75rem;
+  color: rgba(204,204,204,0.5);
+  text-decoration: none;
+  z-index: 10;
 }
-.back-home:hover { color:rgba(255,255,255,0.8); }
+.back-home:hover {
+  color: rgba(255,255,255,0.8);
+}
 
 /* ---------------- PRISM ---------------- */
 .prism {
-  position:relative;
-  width:280px;
-  height:68px;
-  overflow:hidden;
+  position: relative;
+  width: 280px;
+  height: 68px;
+  overflow: hidden;
   clip-path: polygon(8% 0%,100% 0%,100% 100%,8% 100%,0% 50%);
-  background:linear-gradient(135deg,rgba(255,255,255,0.16),rgba(255,255,255,0.04) 45%,rgba(255,255,255,0.1));
-  border:1px solid rgba(255,255,255,0.25);
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.16),
+    rgba(255,255,255,0.04) 45%,
+    rgba(255,255,255,0.1)
+  );
+  border: 1px solid rgba(255,255,255,0.25);
   box-shadow:
     inset 0 0 0 1px rgba(255,255,255,0.08),
     0 18px 36px rgba(0,0,0,0.75);
 }
 
-/* prism internals unchanged */
-.prism::before { content:""; position:absolute; left:0; top:0; width:22px; height:100%;
-  background:linear-gradient(to bottom,rgba(255,255,255,0.35),rgba(255,255,255,0.02));
+.prism::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 22px;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.35),
+    rgba(255,255,255,0.02)
+  );
   clip-path: polygon(0 50%,100% 0,100% 100%);
 }
-.inner-face-right { position:absolute; right:0; top:0; width:34px; height:100%;
-  opacity:0.35;
-  background:linear-gradient(to right,rgba(255,255,255,0.35),rgba(255,255,255,0.08),rgba(255,255,255,0));
+
+.inner-face-right {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 34px;
+  height: 100%;
+  opacity: 0.35;
+  background: linear-gradient(
+    to right,
+    rgba(255,255,255,0.35),
+    rgba(255,255,255,0.08),
+    rgba(255,255,255,0)
+  );
   clip-path: polygon(0% 50%,100% 0%,100% 100%);
 }
-.inner-face-horizontal { position:absolute; left:-10%; top:46%; width:120%; height:18%;
-  opacity:0.28;
-  background:linear-gradient(to bottom,rgba(255,255,255,0.35),rgba(255,255,255,0.08),rgba(255,255,255,0));
+
+.inner-face-horizontal {
+  position: absolute;
+  left: -10%;
+  top: 46%;
+  width: 120%;
+  height: 18%;
+  opacity: 0.28;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.35),
+    rgba(255,255,255,0.08),
+    rgba(255,255,255,0)
+  );
   clip-path: polygon(0% 0%,100% 8%,100% 100%,0% 92%);
 }
 
 .prism-text {
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:0.8rem;
-  letter-spacing:0.32em;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  letter-spacing: 0.32em;
   filter: blur(0.45px);
 }
-.prism-text span { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+
+.prism-text span {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .prism-r { color:#ff453a; transform:translateX(-3px); filter:blur(0.9px); }
 .prism-o { color:#ff9f0a; transform:translateX(-2px); filter:blur(0.7px); }
 .prism-y { color:#ffd60a; transform:translateX(-1px); filter:blur(0.6px); }
-.prism-g { color:#32d74b; transform:translateX(1px); filter:blur(0.6px); }
-.prism-c { color:#64d2ff; transform:translateX(2px); filter:blur(0.7px); }
-.prism-b { color:#0a84ff; transform:translateX(3px); filter:blur(0.9px); }
+.prism-g { color:#32d74b; transform:translateX(1px);  filter:blur(0.6px); }
+.prism-c { color:#64d2ff; transform:translateX(2px);  filter:blur(0.7px); }
+.prism-b { color:#0a84ff; transform:translateX(3px);  filter:blur(0.9px); }
 
 /* ---------------- GRID ---------------- */
 .category-row {
-  display:flex;
-  flex-wrap:wrap;
-  gap:40px;
-  justify-content:center;
-  opacity:0;
-  animation:fadeIn 0.8s ease forwards;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards;
 }
-@keyframes fadeIn { to { opacity:1; } }
+
+@keyframes fadeIn { to { opacity: 1; } }
 
 #photoSections {
-  padding-bottom:80px;
+  padding-bottom: 80px;
 }
 
 .category-row img {
-  width:180px;
-  height:180px;
-  object-fit:cover;
-  border-radius:6px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.45);
-  cursor:pointer;
-  filter:blur(15px);
-  opacity:0;
-  border:2px solid rgba(255,255,255,0.08);
-  transition:opacity .6s ease, filter .2s ease;
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 6px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+  cursor: pointer;
+  filter: blur(15px);
+  opacity: 0;
+  border: 2px solid rgba(255,255,255,0.08);
+  transition: opacity 0.6s ease, filter 0.25s ease;
 }
+
 .category-row img.loaded {
-  filter:blur(0);
-  opacity:1;
+  filter: blur(0);
+  opacity: 1;
 }
 
 /* ---------------- LIGHTBOX ---------------- */
 .lightbox {
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.92);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:999;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
 }
-.lightbox.show { display:flex; }
+.lightbox.show { display: flex; }
 
 /* ---------------- MOBILE FIXES ---------------- */
-@media (max-width:768px) {
+@media (max-width: 768px) {
 
   section {
-    justify-content:flex-start;
-    padding-top:120px;
+    min-height: auto;
+    justify-content: flex-start;
+    padding-top: 120px;
+    padding-bottom: 120px;
   }
 
   #photoSections {
-    padding-bottom:120px;
+    padding-bottom: 120px;
   }
 
-  .nav-mark { display:none; }
+  .category-row {
+    gap: 28px;
+  }
+
+  .nav-mark {
+    display: none;
+  }
 }
 </style>
 </head>
@@ -183,9 +241,13 @@ section {
   <div id="photoSections"></div>
 </section>
 
-<!-- 🔥 YOUR ORIGINAL JS (UNCHANGED) -->
+<div class="lightbox" id="lightbox">
+  <div class="nav-mark nav-left">◂</div>
+  <img id="lightbox-img">
+  <div class="nav-mark nav-right">▸</div>
+</div>
+
 <script>
-/* FULL JS FROM YOUR ORIGINAL POST — UNMODIFIED */
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
 const CATEGORY_NAME = "channelORANGE";
@@ -194,7 +256,44 @@ let gallery = [];
 let currentIndex = 0;
 const fullImageCache = new Map();
 
-/* rest of your JS exactly as before */
+async function fetchPhotos(){
+  const res = await fetch(
+    `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
+  );
+  const data = await res.json();
+
+  const assets = {};
+  data.includes.Asset.forEach(a => assets[a.sys.id] = a.fields.file.url);
+
+  gallery = data.items
+    .filter(i => i.fields.category === CATEGORY_NAME)
+    .map(i => `https:${assets[i.fields.photo.sys.id]}`);
+
+  renderPhotos();
+}
+
+function renderPhotos(){
+  const row = document.createElement("div");
+  row.className = "category-row";
+
+  gallery.forEach((src,i)=>{
+    const img = document.createElement("img");
+    img.src = `${src}?w=40&fm=webp&q=10`;
+    img.loading = "lazy";
+
+    const hi = new Image();
+    hi.src = `${src}?w=360&fm=webp&q=85`;
+    hi.onload = () => {
+      img.src = hi.src;
+      img.classList.add("loaded");
+    };
+
+    row.appendChild(img);
+  });
+
+  document.getElementById("photoSections").appendChild(row);
+}
+
 fetchPhotos();
 </script>
 

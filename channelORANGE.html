@@ -25,7 +25,6 @@ body::before {
   z-index: 1;
 }
 
-/* ---------------- SECTION ---------------- */
 section {
   min-height:100vh;
   display:flex;
@@ -37,7 +36,6 @@ section {
   z-index: 2;
 }
 
-/* ---------------- BACK ---------------- */
 .back-home {
   position:absolute;
   top:30px;
@@ -47,7 +45,6 @@ section {
   font-size:0.75rem;
   color:rgba(204,204,204,0.5);
   text-decoration:none;
-  z-index:10;
 }
 .back-home:hover { color:rgba(255,255,255,0.8); }
 
@@ -116,19 +113,61 @@ section {
 .prism-c { color:#64d2ff; transform:translateX(2px);  filter:blur(0.7px); }
 .prism-b { color:#0a84ff; transform:translateX(3px);  filter:blur(0.9px); }
 
-/* ---------------- GRID ---------------- */
+/* ---------------- GRID (BALANCED + ADAPTIVE + ROW ENTRY) ---------------- */
 .category-row {
-  display:flex;
-  flex-wrap:wrap;
-  gap:40px;
-  justify-content:center;
-  opacity:0;
-  animation:fadeIn 0.8s ease forwards;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(180px, 1fr));
+  gap: 40px;
+  justify-content: center;
+
+  /* row entry initial state */
+  opacity: 0;
+  transform: translateY(16px);
+  filter: blur(2px);
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 0.8s ease;
 }
-@keyframes fadeIn { to { opacity:1; } }
+
+/* row in view */
+.category-row.in-view {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* optional micro polish: subtle image settle */
+.category-row img {
+  transform: translateY(4px);
+  transition:
+    opacity 0.6s ease,
+    filter 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.3s ease,
+    transform 0.6s ease;
+}
+
+.category-row.in-view img {
+  transform: translateY(0);
+}
+
+/* Responsive adjustments */
+@media (min-width: 1600px) {
+  .category-row { grid-template-columns: repeat(5, minmax(200px, 1fr)); }
+}
+@media (max-width: 1200px) {
+  .category-row { grid-template-columns: repeat(4, minmax(180px, 1fr)); }
+}
+@media (max-width: 900px) {
+  .category-row { grid-template-columns: repeat(3, 180px); }
+}
+@media (max-width: 600px) {
+  .category-row { grid-template-columns: repeat(2, 180px); }
+}
 
 .category-row img {
-  width:180px;
+  width:100%;
   height:180px;
   object-fit:cover;
   border-radius:6px;
@@ -136,99 +175,23 @@ section {
   cursor:pointer;
   filter: blur(15px);
   opacity:0;
-  position:relative;
-  isolation:isolate;
   border:2px solid rgba(255,255,255,0.08);
-
-  /* FIXED TRANSITIONS */
-  transition-property: opacity, filter, box-shadow, border-color;
-  transition-duration: 0.6s, 0.15s, 0.15s, 0.3s;
-  transition-timing-function: ease, ease, ease, ease;
-  transition-delay: var(--fade-delay, 0ms), 0ms, 0ms, 0ms;
-
-  /* GPU OPTIMIZATION */
-  will-change: filter, box-shadow, border-color;
 }
 
-/* Blur-up loaded */
+/* loaded images */
 .category-row img.loaded {
   filter: blur(0);
   opacity:1;
 }
 
-/* Prism overlay effect */
-.category-row img::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 6px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04) 45%, rgba(255,255,255,0.08));
-  border: 1px solid rgba(255,255,255,0.2);
-  box-shadow: 
-    inset 0 0 0 1px rgba(255,255,255,0.1),
-    inset -2px -2px 8px rgba(0,0,0,0.3),
-    inset 2px 2px 8px rgba(255,255,255,0.15);
-}
-
-/* Chromatic aberration layers */
-.category-row img::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 6px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  background: 
-    radial-gradient(ellipse at 15% 15%, rgba(255,69,58,0.25) 0%, transparent 40%),
-    radial-gradient(ellipse at 85% 85%, rgba(100,210,255,0.25) 0%, transparent 40%);
-}
-
-.category-row img:hover::before {
-  opacity: 1;
-}
-
-.category-row img:hover::after {
-  opacity: 1;
-}
-
-/* Base hover effect */
 .category-row img:hover {
   filter: blur(0) brightness(1.06) contrast(1.12);
   border-color: rgba(255,255,255,0.3);
-  box-shadow: 0 0 12px rgba(255,255,255,0.25),
-              0 0 20px rgba(255,255,255,0.1),
-              0 8px 16px rgba(0, 0, 0, 0.45);
-}
-
-/* Individual chromatic color layers using text-shadow style positioning */
-.category-row img:hover {
-  --chromatic-r: 0.5px;
-  --chromatic-offset: 1.5px;
-}
-
-/* Add chromatic streaks */
-.category-row img:hover {
-  box-shadow: 
-    /* Red chromatic layer */
+  box-shadow:
     -1px -1px 0 rgba(255,69,58,0.3),
-    /* Orange chromatic layer */
-    -0.5px -0.5px 0 rgba(255,159,10,0.25),
-    /* Yellow chromatic layer */
-    0 0 0 rgba(255,214,10,0.2),
-    /* Green chromatic layer */
-    0.5px 0.5px 0 rgba(50,215,75,0.25),
-    /* Cyan chromatic layer */
     1px 1px 0 rgba(100,210,255,0.3),
-    /* Blue chromatic layer */
-    1.5px 1.5px 0 rgba(10,132,255,0.2),
-    /* Main glow */
     0 0 12px rgba(255,255,255,0.25),
-    0 0 20px rgba(255,255,255,0.1),
-    0 8px 16px rgba(0, 0, 0, 0.45);
+    0 8px 16px rgba(0,0,0,0.45);
 }
 
 /* ---------------- LIGHTBOX ---------------- */
@@ -243,31 +206,12 @@ section {
   transition:opacity 0.35s ease;
   z-index:999;
 }
-
 .lightbox.show { display:flex; opacity:1; }
 
-.lightbox-bg {
-  position:absolute;
-  inset:0;
-  background-position:center;
-  background-repeat:no-repeat;
-  background-size:contain;
-  filter: blur(28px) saturate(105%) brightness(0.7) contrast(110%);
-  opacity:0.45;
-  transform:scale(1.25);
-  pointer-events:none;
-}
-
 .lightbox img {
-  position:relative;
   max-width:90vw;
   max-height:90vh;
-  z-index:2;
-  opacity:0;
-  transition:opacity 0.35s ease;
 }
-
-.lightbox img.visible { opacity:1; }
 
 .nav-mark {
   position:absolute;
@@ -276,13 +220,10 @@ section {
   font-size:3rem;
   color:rgba(204,204,204,0.4);
   cursor:pointer;
-  z-index:3;
   user-select:none;
 }
 .nav-left { left:20px; }
 .nav-right { right:20px; }
-
-@media (max-width:768px){ .nav-mark { display:none; } }
 </style>
 </head>
 
@@ -309,7 +250,6 @@ section {
 </section>
 
 <div class="lightbox" id="lightbox">
-  <div class="lightbox-bg" id="lightbox-bg"></div>
   <div class="nav-mark nav-left">◂</div>
   <img id="lightbox-img">
   <div class="nav-mark nav-right">▸</div>
@@ -322,8 +262,21 @@ const CATEGORY_NAME = "channelORANGE";
 
 let gallery = [];
 let currentIndex = 0;
-const fullImageCache = new Map();
 
+// ---------------- ROW ENTRY OBSERVER ----------------
+const rowObserver = new IntersectionObserver(
+  entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add("in-view");
+        rowObserver.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.15 }
+);
+
+// ---------------- FETCH & RENDER ----------------
 async function fetchPhotos(){
   const res = await fetch(
     `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
@@ -344,118 +297,46 @@ function renderPhotos(){
   const row = document.createElement("div");
   row.className = "category-row";
 
-  const dpr = window.devicePixelRatio || 1;
-  const thumbWidth = Math.ceil(180 * dpr * 2);
-  const fullSize = Math.ceil(Math.max(innerWidth, innerHeight) * dpr * 0.9);
-
   gallery.forEach((src,i)=>{
     const img = document.createElement("img");
     img.src = `${src}?w=40&fm=webp&q=10`;
     img.loading="lazy";
-    img.decoding="async";
-
-    img.style.setProperty('--fade-delay', `${i * 60}ms`);
 
     const hi = new Image();
-    hi.src = `${src}?w=${thumbWidth}&fm=webp&q=85`;
+    hi.src = `${src}?w=400&fm=webp&q=85`;
     hi.onload = () => {
       img.src = hi.src;
       img.classList.add("loaded");
-
-      if(!fullImageCache.has(i)){
-        const preload = new Image();
-        preload.src = `${src}?w=${fullSize}&fm=webp&q=90`;
-        fullImageCache.set(i,preload);
-      }
     };
-
-    const streaks = [
-      {
-        top: 10+Math.random()*20+"%",
-        left: 5+Math.random()*20+"%",
-        width: 3+Math.random()*3+"px",
-        height: 60+Math.random()*20+"%",
-        color: `hsl(${Math.random()*360},90%,55%)`
-      },
-      {
-        top: 20+Math.random()*30+"%",
-        left: 60+Math.random()*20+"%",
-        width: 2+Math.random()*3+"px",
-        height: 50+Math.random()*20+"%",
-        color: `hsl(${Math.random()*360},90%,55%)`
-      }
-    ];
-
-    img.style.setProperty('--streak-before-top', streaks[0].top);
-    img.style.setProperty('--streak-before-left', streaks[0].left);
-    img.style.setProperty('--streak-before-width', streaks[0].width);
-    img.style.setProperty('--streak-before-height', streaks[0].height);
-    img.style.setProperty('--streak-before-color', streaks[0].color);
-
-    img.style.setProperty('--streak-after-top', streaks[1].top);
-    img.style.setProperty('--streak-after-left', streaks[1].left);
-    img.style.setProperty('--streak-after-width', streaks[1].width);
-    img.style.setProperty('--streak-after-height', streaks[1].height);
-    img.style.setProperty('--streak-after-color', streaks[1].color);
 
     img.onclick = ()=>openLightbox(i);
     row.appendChild(img);
   });
 
   document.getElementById("photoSections").appendChild(row);
+  rowObserver.observe(row); // attach row entry animation
 }
 
-// LIGHTBOX
+// ---------------- LIGHTBOX ----------------
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightbox-img");
-const lightboxBg = document.getElementById("lightbox-bg");
 
 function openLightbox(i){
   currentIndex = i;
   lightbox.classList.add("show");
-  showImage(i);
+  lightboxImg.src = gallery[i];
 }
 
-function showImage(i){
-  currentIndex = i;
-  lightboxImg.classList.remove("visible");
+document.querySelector(".nav-right").onclick=e=>{
+  e.stopPropagation();
+  openLightbox((currentIndex+1)%gallery.length);
+};
+document.querySelector(".nav-left").onclick=e=>{
+  e.stopPropagation();
+  openLightbox((currentIndex-1+gallery.length)%gallery.length);
+};
 
-  const cached = fullImageCache.get(i);
-  if(cached && cached.complete){
-    requestAnimationFrame(()=>{
-      lightboxImg.src = cached.src;
-      lightboxImg.classList.add("visible");
-    });
-  }
-
-  lightboxBg.style.backgroundImage = `url(${gallery[i]}?w=240&fm=webp&q=20)`;
-  preloadNext(i);
-}
-
-function preloadNext(i){
-  const next = (i+1)%gallery.length;
-  if(!fullImageCache.has(next)){
-    const dpr = window.devicePixelRatio||1;
-    const size = Math.ceil(Math.max(innerWidth,innerHeight)*dpr*0.9);
-    const img = new Image();
-    img.src = `${gallery[next]}?w=${size}&fm=webp&q=85`;
-    fullImageCache.set(next,img);
-  }
-}
-
-// NAVIGATION
-lightbox.addEventListener("click", e=>{
-  if(e.target === lightbox) lightbox.classList.remove("show");
-});
-document.querySelector(".nav-right").onclick=e=>{ e.stopPropagation(); showImage((currentIndex+1)%gallery.length); };
-document.querySelector(".nav-left").onclick=e=>{ e.stopPropagation(); showImage((currentIndex-1+gallery.length)%gallery.length); };
-lightboxImg.onclick=e=>e.stopPropagation();
-document.addEventListener("keydown", e=>{
-  if(!lightbox.classList.contains("show")) return;
-  if(e.key==="ArrowRight") showImage((currentIndex+1)%gallery.length);
-  if(e.key==="ArrowLeft") showImage((currentIndex-1+gallery.length)%gallery.length);
-  if(e.key==="Escape") lightbox.classList.remove("show");
-});
+lightbox.onclick = ()=>lightbox.classList.remove("show");
 
 fetchPhotos();
 </script>

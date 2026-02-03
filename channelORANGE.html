@@ -187,13 +187,8 @@ section {
     radial-gradient(ellipse at 85% 85%, rgba(100,210,255,0.25) 0%, transparent 40%);
 }
 
-.category-row img:hover::before {
-  opacity: 1;
-}
-
-.category-row img:hover::after {
-  opacity: 1;
-}
+.category-row img:hover::before { opacity: 1; }
+.category-row img:hover::after { opacity: 1; }
 
 /* Base hover effect */
 .category-row img:hover {
@@ -213,19 +208,12 @@ section {
 /* Add chromatic streaks */
 .category-row img:hover {
   box-shadow: 
-    /* Red chromatic layer */
     -1px -1px 0 rgba(255,69,58,0.3),
-    /* Orange chromatic layer */
     -0.5px -0.5px 0 rgba(255,159,10,0.25),
-    /* Yellow chromatic layer */
     0 0 0 rgba(255,214,10,0.2),
-    /* Green chromatic layer */
     0.5px 0.5px 0 rgba(50,215,75,0.25),
-    /* Cyan chromatic layer */
     1px 1px 0 rgba(100,210,255,0.3),
-    /* Blue chromatic layer */
     1.5px 1.5px 0 rgba(10,132,255,0.2),
-    /* Main glow */
     0 0 12px rgba(255,255,255,0.25),
     0 0 20px rgba(255,255,255,0.1),
     0 8px 16px rgba(0, 0, 0, 0.45);
@@ -341,68 +329,60 @@ async function fetchPhotos(){
 }
 
 function renderPhotos(){
-  const row = document.createElement("div");
-  row.className = "category-row";
+  const photoSections = document.getElementById("photoSections");
+  photoSections.innerHTML = ""; // clear previous content
 
   const dpr = window.devicePixelRatio || 1;
   const thumbWidth = Math.ceil(180 * dpr * 2);
   const fullSize = Math.ceil(Math.max(innerWidth, innerHeight) * dpr * 0.9);
 
-  gallery.forEach((src,i)=>{
-    const img = document.createElement("img");
-    img.src = `${src}?w=40&fm=webp&q=10`;
-    img.loading="lazy";
-    img.decoding="async";
+  // Determine max per row: 5 on desktop, 3 on tablet, 2 on mobile
+  let maxPerRow;
+  if(window.innerWidth >= 1200) maxPerRow = 5;
+  else if(window.innerWidth >= 768) maxPerRow = 3;
+  else maxPerRow = 2;
 
-    img.style.setProperty('--fade-delay', `${i * 60}ms`);
+  // Calculate number of rows needed
+  const totalPhotos = gallery.length;
+  const rows = Math.ceil(totalPhotos / maxPerRow);
 
-    const hi = new Image();
-    hi.src = `${src}?w=${thumbWidth}&fm=webp&q=85`;
-    hi.onload = () => {
-      img.src = hi.src;
-      img.classList.add("loaded");
+  // Split photos into balanced rows
+  let photosLeft = totalPhotos;
+  let startIndex = 0;
+  for(let r = 0; r < rows; r++){
+    const photosInThisRow = Math.ceil(photosLeft / (rows - r)); // balance remaining
+    const rowDiv = document.createElement("div");
+    rowDiv.className = "category-row";
 
-      if(!fullImageCache.has(i)){
-        const preload = new Image();
-        preload.src = `${src}?w=${fullSize}&fm=webp&q=90`;
-        fullImageCache.set(i,preload);
-      }
-    };
+    gallery.slice(startIndex, startIndex + photosInThisRow).forEach((src,i)=>{
+      const img = document.createElement("img");
+      img.src = `${src}?w=40&fm=webp&q=10`;
+      img.loading="lazy";
+      img.decoding="async";
+      img.style.setProperty('--fade-delay', `${i*60}ms`);
 
-    const streaks = [
-      {
-        top: 10+Math.random()*20+"%",
-        left: 5+Math.random()*20+"%",
-        width: 3+Math.random()*3+"px",
-        height: 60+Math.random()*20+"%",
-        color: `hsl(${Math.random()*360},90%,55%)`
-      },
-      {
-        top: 20+Math.random()*30+"%",
-        left: 60+Math.random()*20+"%",
-        width: 2+Math.random()*3+"px",
-        height: 50+Math.random()*20+"%",
-        color: `hsl(${Math.random()*360},90%,55%)`
-      }
-    ];
+      const hi = new Image();
+      hi.src = `${src}?w=${thumbWidth}&fm=webp&q=85`;
+      hi.onload = () => {
+        img.src = hi.src;
+        img.classList.add("loaded");
 
-    img.style.setProperty('--streak-before-top', streaks[0].top);
-    img.style.setProperty('--streak-before-left', streaks[0].left);
-    img.style.setProperty('--streak-before-width', streaks[0].width);
-    img.style.setProperty('--streak-before-height', streaks[0].height);
-    img.style.setProperty('--streak-before-color', streaks[0].color);
+        if(!fullImageCache.has(startIndex + i)){
+          const preload = new Image();
+          preload.src = `${src}?w=${fullSize}&fm=webp&q=90`;
+          fullImageCache.set(startIndex + i, preload);
+        }
+      };
 
-    img.style.setProperty('--streak-after-top', streaks[1].top);
-    img.style.setProperty('--streak-after-left', streaks[1].left);
-    img.style.setProperty('--streak-after-width', streaks[1].width);
-    img.style.setProperty('--streak-after-height', streaks[1].height);
-    img.style.setProperty('--streak-after-color', streaks[1].color);
+      img.onclick = ()=>openLightbox(startIndex + i);
+      rowDiv.appendChild(img);
+    });
 
-    img.onclick = ()=>openLightbox(i);
-    row.appendChild(img);
-  });
+    photoSections.appendChild(rowDiv);
 
-  document.getElementById("photoSections").appendChild(row);
+    photosLeft -= photosInThisRow;
+    startIndex += photosInThisRow;
+  }
 }
 
 // LIGHTBOX

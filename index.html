@@ -8,21 +8,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
 
 <style>
-/* ---------------- RESET ---------------- */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ---------------- PAGE ---------------- */
 html, body {
   width: 100%;
   height: 100%;
   font-family: 'Michroma', sans-serif;
   background: #070803;
   color: #eee;
-  overflow-x: hidden;
+  overflow: hidden; /* disable scrollwheel */
   scroll-snap-type: y mandatory;
 }
 
@@ -38,47 +32,27 @@ section {
   position: relative;
 }
 
-section.visible {
-  opacity:1;
-}
+section.visible { opacity:1; }
 
-/* ---------------- HERO ---------------- */
-#hero {
-  background: url('SaulHero5.jpg') center/cover no-repeat;
-}
+#hero { background: url('SaulHero5.jpg') center/cover no-repeat; }
 
 /* ---------------- ARROWS ---------------- */
-.arrow-down,
-.arrow-up {
+.arrow-down, .arrow-up {
   position:absolute;
   left:50%;
   transform:translateX(-50%);
-  font-size:1.2rem;
-  color:white;
+  font-size:1rem; /* smaller */
+  color: rgba(255,255,255,0.85); /* softer */
   user-select:none;
 }
 
 /* permanent hero arrow */
-#hero .arrow-down {
-  opacity:0.75;
-  cursor:pointer;
-}
+#hero .arrow-down { opacity:0.75; cursor:pointer; }
 
-/* fade-controlled arrows */
-.arrow-fade {
-  opacity:0;
-  pointer-events:none;
-  transition: opacity 1.2s ease; /* slower fade */
-}
-
-.arrow-visible {
-  opacity:0.75;
-  pointer-events:auto;
-  cursor:pointer;
-}
-
-.arrow-down { bottom:40px; }
-.arrow-up   { top:40px; }
+.arrow-fade { opacity:0; pointer-events:none; transition: opacity 1.2s ease; }
+.arrow-visible { opacity:0.75; pointer-events:auto; cursor:pointer; }
+.arrow-down { bottom:36px; }
+.arrow-up   { top:36px; }
 
 /* ---------------- GRID ---------------- */
 .folder-grid {
@@ -90,148 +64,56 @@ section.visible {
   justify-items:center;
 }
 
-@media (min-width: 769px) {
-  .folder-grid .folder:last-child {
-    grid-column: 1 / -1;
-    justify-self: center;
-  }
-}
-
-/* ---------------- FOLDER ---------------- */
-.folder {
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  cursor:pointer;
-}
-
-.folder-stack {
-  position: relative;
-  width: 144px;
-  height: 64px;
-}
-
+.folder { display:flex; flex-direction:column; align-items:center; cursor:pointer; }
+.folder-stack { position: relative; width: 144px; height: 64px; }
 .folder-main {
   position: absolute;
-  right: 0;
-  top: 0;
-  width: 88px;
-  height: 64px;
-  background:#e4c97a;
-  border-radius:3px;
-  box-shadow:2px 2px 0 #000;
-  z-index:10;
+  right: 0; top: 0;
+  width: 88px; height: 64px;
+  background:#e4c97a; border-radius:3px; box-shadow:2px 2px 0 #000; z-index:10;
 }
-
-.folder-tab {
-  position:absolute;
-  top:-8px;
-  left:8px;
-  width:32px;
-  height:12px;
-  background:#e4c97a;
-  border-radius:2px;
-  box-shadow:1px 1px 0 #000;
-}
-
-.trail {
-  position:absolute;
-  top:0;
-  width:88px;
-  height:64px;
-  border-radius:3px;
-}
-
+.folder-tab { position:absolute; top:-8px; left:8px; width:32px; height:12px;
+  background:#e4c97a; border-radius:2px; box-shadow:1px 1px 0 #000; }
+.trail { position:absolute; top:0; width:88px; height:64px; border-radius:3px; }
 .trail.t1 { right:12px; background:#c9a84a; z-index:6; }
 .trail.t2 { right:26px; background:#9b5c5c; z-index:5; }
 .trail.t3 { right:40px; background:#6e7f52; z-index:4; }
 .trail.t4 { right:54px; background:#5a6b8c; z-index:3; }
-
-.folder span {
-  margin-top:16px;
-  width:144px;
-  text-align:center;
-  font-size:0.7rem;
-  letter-spacing:0.6px;
-  opacity:0.85;
-}
+.folder span { margin-top:16px; width:144px; text-align:center; font-size:0.7rem; letter-spacing:0.6px; opacity:0.85; }
 
 /* ---------------- CONTACT ---------------- */
-@keyframes breathe {
-  0%   { transform: scale(1); opacity:0.85; }
-  50%  { transform: scale(1.05); opacity:1; }
-  100% { transform: scale(1); opacity:0.85; }
-}
-
-.contact-icons {
-  display:flex;
-  gap:80px;
-}
-
-.contact-icons a {
-  animation:breathe 6s ease-in-out infinite;
-}
-
-.contact-icons a:nth-child(2) { animation-delay:1.2s; }
-.contact-icons a:nth-child(3) { animation-delay:2.4s; }
-
-.icon svg {
-  width:36px;
-  height:36px;
-  stroke:#eee;
-  fill:none;
-  stroke-width:1.4;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-  transition:transform 0.3s ease;
-}
-
-.icon:hover svg {
-  transform:translateY(-4px);
-}
+@keyframes breathe { 0%{transform:scale(1);opacity:0.85;} 50%{transform:scale(1.05);opacity:1;} 100%{transform:scale(1);opacity:0.85;} }
+.contact-icons { display:flex; gap:80px; }
+.contact-icons a { animation:breathe 6s ease-in-out infinite; }
+.contact-icons a:nth-child(2){ animation-delay:1.2s; }
+.contact-icons a:nth-child(3){ animation-delay:2.4s; }
+.icon svg { width:36px; height:36px; stroke:#eee; fill:none; stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; transition:transform 0.3s ease; }
+.icon:hover svg { transform:translateY(-4px); }
 
 /* ---------------- MOBILE ---------------- */
-@media (max-width: 768px) {
-  #hero {
-    background: url('SaulHero5Mobile.jpg') center/cover no-repeat;
-  }
-
-  .folder-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 48px 24px;
-    padding: 0 24px;
-  }
-
+@media (max-width:768px){
+  #hero { background:url('SaulHero5Mobile.jpg') center/cover no-repeat; }
+  .folder-grid { grid-template-columns:repeat(2,1fr); gap:48px 24px; padding:0 24px; }
   .folder { transform: scale(0.85); }
-
   .contact-icons { gap:48px; }
-
-  .icon svg {
-    width:30px;
-    height:30px;
-    stroke-width:1.2;
-  }
+  .icon svg { width:30px; height:30px; stroke-width:1.2; }
 }
 </style>
 </head>
 
 <body>
 
-<!-- HERO -->
 <section id="hero" class="visible">
   <div class="arrow-down" id="heroDown">↓</div>
 </section>
 
-<!-- FOLDERS -->
 <section id="folders">
   <div class="folder-grid" id="folderGrid"></div>
   <div class="arrow-down arrow-fade" id="foldersDown">↓</div>
 </section>
 
-<!-- CONTACT -->
 <section id="contact">
   <div class="arrow-up arrow-fade" id="contactUp">↑</div>
-
   <div class="contact-icons">
     <a href="https://www.linkedin.com" target="_blank" class="icon">
       <svg viewBox="0 0 24 24">
@@ -240,7 +122,6 @@ section.visible {
         <circle cx="4" cy="4" r="2"/>
       </svg>
     </a>
-
     <a href="https://www.instagram.com" target="_blank" class="icon">
       <svg viewBox="0 0 24 24">
         <rect x="2" y="2" width="20" height="20" rx="5"/>
@@ -248,7 +129,6 @@ section.visible {
         <circle cx="17.5" cy="6.5" r="1"/>
       </svg>
     </a>
-
     <a href="mailto:you@email.com" class="icon">
       <svg viewBox="0 0 24 24">
         <rect x="2" y="4" width="20" height="16" rx="2"/>
@@ -260,28 +140,26 @@ section.visible {
 
 <script>
 /* -------- FORCE HERO ON RELOAD -------- */
-window.history.scrollRestoration = "manual";
-window.addEventListener("load", () => {
-  document.getElementById("hero").scrollIntoView();
-});
+window.history.scrollRestoration="manual";
+window.addEventListener("load",()=>{document.getElementById("hero").scrollIntoView();});
 
 /* ---------------- FOLDERS DATA ---------------- */
-const categories = [
-  { label: "Raw PNW", page: "raw-pnw.html" },
-  { label: "Fluid", page: "Fluid.html" },
-  { label: "Crystallite", page: "crystallite.html" },
-  { label: "channelORANGE", page: "channelorange.html" },
-  { label: "Dream State", page: "dream-state.html" },
-  { label: "Charged", page: "neon-lights.html" },
-  { label: "Double Expo", page: "DoubleExpo.html" },
+const categories=[
+  { label:"Raw PNW", page:"raw-pnw.html" },
+  { label:"Fluid", page:"Fluid.html" },
+  { label:"Crystallite", page:"crystallite.html" },
+  { label:"channelORANGE", page:"channelorange.html" },
+  { label:"Dream State", page:"dream-state.html" },
+  { label:"Charged", page:"neon-lights.html" },
+  { label:"Double Expo", page:"DoubleExpo.html" }
 ];
 
-const grid = document.getElementById("folderGrid");
+const grid=document.getElementById("folderGrid");
 
-categories.forEach(item => {
-  const folder = document.createElement("div");
-  folder.className = "folder";
-  folder.innerHTML = `
+categories.forEach(item=>{
+  const folder=document.createElement("div");
+  folder.className="folder";
+  folder.innerHTML=`
     <div class="folder-stack">
       <div class="trail t4"></div>
       <div class="trail t3"></div>
@@ -293,35 +171,38 @@ categories.forEach(item => {
     </div>
     <span>${item.label}</span>
   `;
-  folder.onclick = () => window.location.href = item.page;
+  folder.onclick=()=>window.location.href=item.page;
   grid.appendChild(folder);
 });
 
-/* ---------------- FADE CONTROL (TUNED) ---------------- */
-const observer = new IntersectionObserver(entries=>{
+/* ---------------- FADE CONTROL ---------------- */
+const observer=new IntersectionObserver(entries=>{
   entries.forEach(entry=>{
     if(entry.isIntersecting){
       entry.target.classList.add("visible");
-
-      const arrows = entry.target.querySelectorAll('.arrow-fade');
-      const delay = entry.target.id === "folders" ? 900 : 600;
-
-      setTimeout(() => {
-        arrows.forEach(a => a.classList.add("arrow-visible"));
-      }, delay);
+      const arrows=entry.target.querySelectorAll('.arrow-fade');
+      const delay=entry.target.id==="folders"?900:600;
+      setTimeout(()=>{arrows.forEach(a=>a.classList.add("arrow-visible"));}, delay);
     } else {
-      entry.target.querySelectorAll('.arrow-fade')
-        .forEach(a => a.classList.remove("arrow-visible"));
+      entry.target.querySelectorAll('.arrow-fade').forEach(a=>a.classList.remove("arrow-visible"));
     }
   });
 },{threshold:0.6});
 
 document.querySelectorAll("section").forEach(s=>observer.observe(s));
 
-/* ---------------- SCROLL ACTIONS ---------------- */
-heroDown.onclick    = () => folders.scrollIntoView({behavior:'smooth'});
-foldersDown.onclick = () => contact.scrollIntoView({behavior:'smooth'});
-contactUp.onclick   = () => folders.scrollIntoView({behavior:'smooth'});
+/* ---------------- ARROW CLICK SCROLL ---------------- */
+const heroDown=document.getElementById("heroDown");
+const foldersDown=document.getElementById("foldersDown");
+const contactUp=document.getElementById("contactUp");
+
+heroDown.onclick=()=>document.getElementById("folders").scrollIntoView({behavior:'smooth'});
+foldersDown.onclick=()=>document.getElementById("contact").scrollIntoView({behavior:'smooth'});
+contactUp.onclick=()=>document.getElementById("folders").scrollIntoView({behavior:'smooth'});
+
+/* ---------------- DISABLE WHEEL SCROLL ---------------- */
+window.addEventListener('wheel',e=>e.preventDefault(), {passive:false});
+window.addEventListener('touchmove',e=>e.preventDefault(), {passive:false});
 </script>
 
 </body>

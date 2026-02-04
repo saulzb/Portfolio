@@ -58,11 +58,17 @@ section.visible {
   user-select:none;
 }
 
-/* default hidden (observer-controlled arrows) */
+/* permanent hero arrow */
+#hero .arrow-down {
+  opacity:0.75;
+  cursor:pointer;
+}
+
+/* fade-controlled arrows */
 .arrow-fade {
   opacity:0;
   pointer-events:none;
-  transition:opacity 0.5s ease;
+  transition: opacity 1.2s ease; /* slower fade */
 }
 
 .arrow-visible {
@@ -213,7 +219,6 @@ section.visible {
 
 <!-- HERO -->
 <section id="hero" class="visible">
-  <!-- permanent arrow -->
   <div class="arrow-down" id="heroDown">↓</div>
 </section>
 
@@ -292,16 +297,18 @@ categories.forEach(item => {
   grid.appendChild(folder);
 });
 
-/* ---------------- FADE CONTROL (SHORTER DELAY) ---------------- */
+/* ---------------- FADE CONTROL (TUNED) ---------------- */
 const observer = new IntersectionObserver(entries=>{
   entries.forEach(entry=>{
     if(entry.isIntersecting){
       entry.target.classList.add("visible");
 
       const arrows = entry.target.querySelectorAll('.arrow-fade');
+      const delay = entry.target.id === "folders" ? 900 : 600;
+
       setTimeout(() => {
         arrows.forEach(a => a.classList.add("arrow-visible"));
-      }, 600); // shorter delay
+      }, delay);
     } else {
       entry.target.querySelectorAll('.arrow-fade')
         .forEach(a => a.classList.remove("arrow-visible"));

@@ -22,7 +22,8 @@ html, body {
   font-family: 'Michroma', sans-serif;
   background: #070803;
   color: #eee;
-  overflow: hidden; /* important: JS controls scroll */
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
 }
 
 section {
@@ -31,6 +32,7 @@ section {
   display:flex;
   justify-content:center;
   align-items:center;
+  scroll-snap-align:start;
   opacity:0;
   transition:opacity 0.9s ease;
   position: relative;
@@ -51,14 +53,14 @@ section.visible {
   position:absolute;
   left:50%;
   transform:translateX(-50%);
-  font-size:1rem; /* smaller */
-  color:rgba(255,255,255,0.85); /* softer white */
+  font-size:1.2rem;
+  color:white;
   user-select:none;
 }
 
 /* permanent hero arrow */
 #hero .arrow-down {
-  opacity:0.6;
+  opacity:0.75;
   cursor:pointer;
 }
 
@@ -66,17 +68,17 @@ section.visible {
 .arrow-fade {
   opacity:0;
   pointer-events:none;
-  transition: opacity 1.2s ease;
+  transition: opacity 1.2s ease; /* slower fade */
 }
 
 .arrow-visible {
-  opacity:0.6;
+  opacity:0.75;
   pointer-events:auto;
   cursor:pointer;
 }
 
-.arrow-down { bottom:36px; }
-.arrow-up   { top:36px; }
+.arrow-down { bottom:40px; }
+.arrow-up   { top:40px; }
 
 /* ---------------- GRID ---------------- */
 .folder-grid {
@@ -86,6 +88,13 @@ section.visible {
   max-width:900px;
   padding:0 60px;
   justify-items:center;
+}
+
+@media (min-width: 769px) {
+  .folder-grid .folder:last-child {
+    grid-column: 1 / -1;
+    justify-self: center;
+  }
 }
 
 /* ---------------- FOLDER ---------------- */
@@ -111,6 +120,7 @@ section.visible {
   background:#e4c97a;
   border-radius:3px;
   box-shadow:2px 2px 0 #000;
+  z-index:10;
 }
 
 .folder-tab {
@@ -132,10 +142,10 @@ section.visible {
   border-radius:3px;
 }
 
-.trail.t1 { right:12px; background:#c9a84a; }
-.trail.t2 { right:26px; background:#9b5c5c; }
-.trail.t3 { right:40px; background:#6e7f52; }
-.trail.t4 { right:54px; background:#5a6b8c; }
+.trail.t1 { right:12px; background:#c9a84a; z-index:6; }
+.trail.t2 { right:26px; background:#9b5c5c; z-index:5; }
+.trail.t3 { right:40px; background:#6e7f52; z-index:4; }
+.trail.t4 { right:54px; background:#5a6b8c; z-index:3; }
 
 .folder span {
   margin-top:16px;
@@ -148,9 +158,9 @@ section.visible {
 
 /* ---------------- CONTACT ---------------- */
 @keyframes breathe {
-  0%   { transform: scale(1); opacity:0.8; }
-  50%  { transform: scale(1.04); opacity:0.95; }
-  100% { transform: scale(1); opacity:0.8; }
+  0%   { transform: scale(1); opacity:0.85; }
+  50%  { transform: scale(1.05); opacity:1; }
+  100% { transform: scale(1); opacity:0.85; }
 }
 
 .contact-icons {
@@ -159,20 +169,25 @@ section.visible {
 }
 
 .contact-icons a {
-  animation:breathe 7s ease-in-out infinite;
+  animation:breathe 6s ease-in-out infinite;
 }
 
-.contact-icons a:nth-child(2) { animation-delay:1.4s; }
-.contact-icons a:nth-child(3) { animation-delay:2.8s; }
+.contact-icons a:nth-child(2) { animation-delay:1.2s; }
+.contact-icons a:nth-child(3) { animation-delay:2.4s; }
 
 .icon svg {
-  width:34px;
-  height:34px;
+  width:36px;
+  height:36px;
   stroke:#eee;
   fill:none;
   stroke-width:1.4;
   stroke-linecap:round;
   stroke-linejoin:round;
+  transition:transform 0.3s ease;
+}
+
+.icon:hover svg {
+  transform:translateY(-4px);
 }
 
 /* ---------------- MOBILE ---------------- */
@@ -186,6 +201,8 @@ section.visible {
     gap: 48px 24px;
     padding: 0 24px;
   }
+
+  .folder { transform: scale(0.85); }
 
   .contact-icons { gap:48px; }
 
@@ -216,7 +233,6 @@ section.visible {
   <div class="arrow-up arrow-fade" id="contactUp">↑</div>
 
   <div class="contact-icons">
-    <!-- LinkedIn -->
     <a href="https://www.linkedin.com" target="_blank" class="icon">
       <svg viewBox="0 0 24 24">
         <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/>
@@ -225,7 +241,6 @@ section.visible {
       </svg>
     </a>
 
-    <!-- Instagram -->
     <a href="https://www.instagram.com" target="_blank" class="icon">
       <svg viewBox="0 0 24 24">
         <rect x="2" y="2" width="20" height="20" rx="5"/>
@@ -234,7 +249,6 @@ section.visible {
       </svg>
     </a>
 
-    <!-- Email -->
     <a href="mailto:you@email.com" class="icon">
       <svg viewBox="0 0 24 24">
         <rect x="2" y="4" width="20" height="16" rx="2"/>
@@ -245,47 +259,45 @@ section.visible {
 </section>
 
 <script>
-/* ---------- FORCE HERO ON LOAD ---------- */
+/* -------- FORCE HERO ON RELOAD -------- */
 window.history.scrollRestoration = "manual";
 window.addEventListener("load", () => {
   document.getElementById("hero").scrollIntoView();
 });
 
-/* ---------- SECTION CONTROL ---------- */
-const sections = [...document.querySelectorAll("section")];
-let currentIndex = 0;
-let isScrolling = false;
+/* ---------------- FOLDERS DATA ---------------- */
+const categories = [
+  { label: "Raw PNW", page: "raw-pnw.html" },
+  { label: "Fluid", page: "Fluid.html" },
+  { label: "Crystallite", page: "crystallite.html" },
+  { label: "channelORANGE", page: "channelorange.html" },
+  { label: "Dream State", page: "dream-state.html" },
+  { label: "Charged", page: "neon-lights.html" },
+  { label: "Double Expo", page: "DoubleExpo.html" },
+];
 
-/* ---------- SCROLL LOCK LOGIC ---------- */
-window.addEventListener("wheel", e => {
-  if (isScrolling) return;
+const grid = document.getElementById("folderGrid");
 
-  if (e.deltaY > 0 && currentIndex < sections.length - 1) {
-    currentIndex++;
-  } else if (e.deltaY < 0 && currentIndex > 0) {
-    currentIndex--;
-  } else {
-    return;
-  }
+categories.forEach(item => {
+  const folder = document.createElement("div");
+  folder.className = "folder";
+  folder.innerHTML = `
+    <div class="folder-stack">
+      <div class="trail t4"></div>
+      <div class="trail t3"></div>
+      <div class="trail t2"></div>
+      <div class="trail t1"></div>
+      <div class="folder-main">
+        <div class="folder-tab"></div>
+      </div>
+    </div>
+    <span>${item.label}</span>
+  `;
+  folder.onclick = () => window.location.href = item.page;
+  grid.appendChild(folder);
+});
 
-  isScrolling = true;
-  sections[currentIndex].scrollIntoView({ behavior: "smooth" });
-
-  setTimeout(() => isScrolling = false, 900);
-}, { passive: false });
-
-/* ---------- ARROW NAV ---------- */
-heroDown.onclick    = () => goTo(1);
-foldersDown.onclick = () => goTo(2);
-contactUp.onclick   = () => goTo(1);
-
-function goTo(index) {
-  if (index < 0 || index >= sections.length) return;
-  currentIndex = index;
-  sections[index].scrollIntoView({ behavior: "smooth" });
-}
-
-/* ---------- FADE CONTROL ---------- */
+/* ---------------- FADE CONTROL (TUNED) ---------------- */
 const observer = new IntersectionObserver(entries=>{
   entries.forEach(entry=>{
     if(entry.isIntersecting){
@@ -304,7 +316,12 @@ const observer = new IntersectionObserver(entries=>{
   });
 },{threshold:0.6});
 
-sections.forEach(s => observer.observe(s));
+document.querySelectorAll("section").forEach(s=>observer.observe(s));
+
+/* ---------------- SCROLL ACTIONS ---------------- */
+heroDown.onclick    = () => folders.scrollIntoView({behavior:'smooth'});
+foldersDown.onclick = () => contact.scrollIntoView({behavior:'smooth'});
+contactUp.onclick   = () => folders.scrollIntoView({behavior:'smooth'});
 </script>
 
 </body>

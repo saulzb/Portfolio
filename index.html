@@ -47,16 +47,21 @@ section.visible {
   background: url('SaulHero5.jpg') center/cover no-repeat;
 }
 
-.arrow-down {
+/* ---------------- ARROWS ---------------- */
+.arrow-down,
+.arrow-up {
   position:absolute;
-  bottom:40px;
   left:50%;
   transform:translateX(-50%);
   cursor:pointer;
   font-size:1.2rem;
   color:white;
   opacity:0.75;
+  user-select:none;
 }
+
+.arrow-down { bottom:40px; }
+.arrow-up   { top:40px; }
 
 /* ---------------- GRID ---------------- */
 .folder-grid {
@@ -68,7 +73,6 @@ section.visible {
   justify-items:center;
 }
 
-/* Center last folder on desktop */
 @media (min-width: 769px) {
   .folder-grid .folder:last-child {
     grid-column: 1 / -1;
@@ -84,14 +88,12 @@ section.visible {
   cursor:pointer;
 }
 
-/* ---------------- STACK ---------------- */
 .folder-stack {
   position: relative;
   width: 144px;
   height: 64px;
 }
 
-/* ---------------- BASE FOLDER ---------------- */
 .folder-main {
   position: absolute;
   right: 0;
@@ -101,11 +103,9 @@ section.visible {
   background:#e4c97a;
   border-radius:3px;
   box-shadow:2px 2px 0 #000;
-  image-rendering: pixelated;
   z-index:10;
 }
 
-/* ---------------- TAB ---------------- */
 .folder-tab {
   position:absolute;
   top:-8px;
@@ -117,14 +117,12 @@ section.visible {
   box-shadow:1px 1px 0 #000;
 }
 
-/* ---------------- TRAIL ---------------- */
 .trail {
   position:absolute;
   top:0;
   width:88px;
   height:64px;
   border-radius:3px;
-  image-rendering: pixelated;
 }
 
 .trail.t1 { right:12px; background:#c9a84a; z-index:6; }
@@ -132,7 +130,6 @@ section.visible {
 .trail.t3 { right:40px; background:#6e7f52; z-index:4; }
 .trail.t4 { right:54px; background:#5a6b8c; z-index:3; }
 
-/* ---------------- LABEL ---------------- */
 .folder span {
   margin-top:16px;
   width:144px;
@@ -143,15 +140,10 @@ section.visible {
 }
 
 /* ---------------- CONTACT ---------------- */
-#contact {
-  background:#070803;
-}
-
-/* subtle breathing animation */
 @keyframes breathe {
-  0%   { transform: scale(1);   opacity:0.85; }
+  0%   { transform: scale(1); opacity:0.85; }
   50%  { transform: scale(1.05); opacity:1; }
-  100% { transform: scale(1);   opacity:0.85; }
+  100% { transform: scale(1); opacity:0.85; }
 }
 
 .contact-icons {
@@ -160,25 +152,25 @@ section.visible {
 }
 
 .contact-icons a {
-  animation: breathe 6s ease-in-out infinite;
+  animation:breathe 6s ease-in-out infinite;
 }
 
-.contact-icons a:nth-child(2) { animation-delay: 1.2s; }
-.contact-icons a:nth-child(3) { animation-delay: 2.4s; }
+.contact-icons a:nth-child(2) { animation-delay:1.2s; }
+.contact-icons a:nth-child(3) { animation-delay:2.4s; }
 
 .icon svg {
   width:36px;
   height:36px;
   stroke:#eee;
   fill:none;
-  stroke-width:1.4;          /* tuned weight */
+  stroke-width:1.4;
   stroke-linecap:round;
   stroke-linejoin:round;
-  transition: transform 0.3s ease;
+  transition:transform 0.3s ease;
 }
 
 .icon:hover svg {
-  transform: translateY(-4px);
+  transform:translateY(-4px);
 }
 
 /* ---------------- MOBILE ---------------- */
@@ -193,13 +185,9 @@ section.visible {
     padding: 0 24px;
   }
 
-  .folder {
-    transform: scale(0.85);
-  }
+  .folder { transform: scale(0.85); }
 
-  .contact-icons {
-    gap:48px;
-  }
+  .contact-icons { gap:48px; }
 
   .icon svg {
     width:30px;
@@ -214,20 +202,21 @@ section.visible {
 
 <!-- HERO -->
 <section id="hero" class="visible">
-  <div class="arrow-down" id="heroArrow">↓</div>
+  <div class="arrow-down" id="heroDown">↓</div>
 </section>
 
 <!-- FOLDERS -->
 <section id="folders">
+  <div class="arrow-up" id="foldersUp">↑</div>
   <div class="folder-grid" id="folderGrid"></div>
-  <div class="arrow-down" id="foldersArrow">↓</div>
+  <div class="arrow-down" id="foldersDown">↓</div>
 </section>
 
 <!-- CONTACT -->
 <section id="contact">
-  <div class="contact-icons">
+  <div class="arrow-up" id="contactUp">↑</div>
 
-    <!-- LinkedIn -->
+  <div class="contact-icons">
     <a href="https://www.linkedin.com" target="_blank" class="icon">
       <svg viewBox="0 0 24 24">
         <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/>
@@ -236,8 +225,7 @@ section.visible {
       </svg>
     </a>
 
-    <!-- Instagram -->
-    <a href="https://www.instagram.com/saul_5607/" target="_blank" class="icon">
+    <a href="https://www.instagram.com" target="_blank" class="icon">
       <svg viewBox="0 0 24 24">
         <rect x="2" y="2" width="20" height="20" rx="5"/>
         <circle cx="12" cy="12" r="4"/>
@@ -245,21 +233,23 @@ section.visible {
       </svg>
     </a>
 
-    <!-- Email -->
-    <a href="mailto:saulzb@hotmail.com" class="icon">
+    <a href="mailto:you@email.com" class="icon">
       <svg viewBox="0 0 24 24">
         <rect x="2" y="4" width="20" height="16" rx="2"/>
         <polyline points="2,6 12,13 22,6"/>
       </svg>
     </a>
-
   </div>
 </section>
 
 <script>
-// Always start at hero on reload
+/* -------- FORCE HERO ON RELOAD (FIX) -------- */
 window.history.scrollRestoration = "manual";
-window.scrollTo(0, 0);
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    document.getElementById("hero").scrollIntoView();
+  }, 0);
+});
 
 /* ---------------- FOLDERS DATA ---------------- */
 const categories = [
@@ -304,14 +294,11 @@ const observer = new IntersectionObserver(entries=>{
 
 document.querySelectorAll("section").forEach(s=>observer.observe(s));
 
-/* ---------------- SCROLL ARROWS ---------------- */
-document.getElementById("heroArrow").onclick = () => {
-  document.getElementById("folders").scrollIntoView({ behavior:'smooth' });
-};
-
-document.getElementById("foldersArrow").onclick = () => {
-  document.getElementById("contact").scrollIntoView({ behavior:'smooth' });
-};
+/* ---------------- SCROLL CONTROLS ---------------- */
+heroDown.onclick    = () => folders.scrollIntoView({behavior:'smooth'});
+foldersUp.onclick   = () => hero.scrollIntoView({behavior:'smooth'});
+foldersDown.onclick = () => contact.scrollIntoView({behavior:'smooth'});
+contactUp.onclick   = () => folders.scrollIntoView({behavior:'smooth'});
 </script>
 
 </body>

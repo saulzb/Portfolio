@@ -38,9 +38,7 @@ section {
   position: relative;
 }
 
-section.visible {
-  opacity:1;
-}
+section.visible { opacity:1; }
 
 /* ---------------- HERO ---------------- */
 #hero {
@@ -48,8 +46,7 @@ section.visible {
 }
 
 /* ---------------- ARROWS ---------------- */
-.arrow-down,
-.arrow-up {
+.arrow-down {
   position:absolute;
   left:50%;
   transform:translateX(-50%);
@@ -59,26 +56,12 @@ section.visible {
 }
 
 /* permanent hero arrow */
-#hero .arrow-down {
-  opacity:0.75;
-  cursor:pointer;
-}
+#hero .arrow-down { opacity:0.75; cursor:pointer; }
 
 /* fade-controlled arrows */
-.arrow-fade {
-  opacity:0;
-  pointer-events:none;
-  transition: opacity 1.2s ease; /* slower fade */
-}
-
-.arrow-visible {
-  opacity:0.75;
-  pointer-events:auto;
-  cursor:pointer;
-}
-
+.arrow-fade { opacity:0; pointer-events:none; transition: opacity 1.5s ease; }
+.arrow-visible { opacity:0.75; pointer-events:auto; cursor:pointer; }
 .arrow-down { bottom:40px; }
-.arrow-up   { top:40px; }
 
 /* ---------------- GRID ---------------- */
 .folder-grid {
@@ -230,8 +213,6 @@ section.visible {
 
 <!-- CONTACT -->
 <section id="contact">
-  <div class="arrow-up arrow-fade" id="contactUp">↑</div>
-
   <div class="contact-icons">
     <a href="https://www.linkedin.com" target="_blank" class="icon">
       <svg viewBox="0 0 24 24">
@@ -241,7 +222,7 @@ section.visible {
       </svg>
     </a>
 
-    <a href="https://www.instagram.com" target="_blank" class="icon">
+    <a href="https://www.instagram.com/saul_5607/" target="_blank" class="icon">
       <svg viewBox="0 0 24 24">
         <rect x="2" y="2" width="20" height="20" rx="5"/>
         <circle cx="12" cy="12" r="4"/>
@@ -249,7 +230,7 @@ section.visible {
       </svg>
     </a>
 
-    <a href="mailto:you@email.com" class="icon">
+    <a href="mailto:saulzb@hotmail.com" class="icon">
       <svg viewBox="0 0 24 24">
         <rect x="2" y="4" width="20" height="16" rx="2"/>
         <polyline points="2,6 12,13 22,6"/>
@@ -297,21 +278,19 @@ categories.forEach(item => {
   grid.appendChild(folder);
 });
 
-/* ---------------- FADE CONTROL (TUNED) ---------------- */
+/* ---------------- FADE CONTROL (ONLY SECOND DOWN ARROW) ---------------- */
 const observer = new IntersectionObserver(entries=>{
   entries.forEach(entry=>{
     if(entry.isIntersecting){
       entry.target.classList.add("visible");
 
-      const arrows = entry.target.querySelectorAll('.arrow-fade');
-      const delay = entry.target.id === "folders" ? 900 : 600;
-
-      setTimeout(() => {
-        arrows.forEach(a => a.classList.add("arrow-visible"));
-      }, delay);
-    } else {
-      entry.target.querySelectorAll('.arrow-fade')
-        .forEach(a => a.classList.remove("arrow-visible"));
+      // Only fade the second down arrow
+      if(entry.target.id === "folders") {
+        const arrows = entry.target.querySelectorAll('.arrow-fade');
+        setTimeout(() => {
+          arrows.forEach(a => a.classList.add("arrow-visible"));
+        }, 1500); // longer delay
+      }
     }
   });
 },{threshold:0.6});
@@ -319,9 +298,11 @@ const observer = new IntersectionObserver(entries=>{
 document.querySelectorAll("section").forEach(s=>observer.observe(s));
 
 /* ---------------- SCROLL ACTIONS ---------------- */
-heroDown.onclick    = () => folders.scrollIntoView({behavior:'smooth'});
-foldersDown.onclick = () => contact.scrollIntoView({behavior:'smooth'});
-contactUp.onclick   = () => folders.scrollIntoView({behavior:'smooth'});
+const heroDown = document.getElementById("heroDown");
+const foldersDown = document.getElementById("foldersDown");
+
+heroDown.onclick = () => document.getElementById("folders").scrollIntoView({behavior:'smooth'});
+foldersDown.onclick = () => document.getElementById("contact").scrollIntoView({behavior:'smooth'});
 </script>
 
 </body>

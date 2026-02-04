@@ -81,6 +81,7 @@ section.visible {
   flex-direction:column;
   align-items:center;
   cursor:pointer;
+  transition: transform 0.3s ease;
 }
 
 /* ---------------- STACK ---------------- */
@@ -88,6 +89,7 @@ section.visible {
   position: relative;
   width: 144px;
   height: 64px;
+  transition: width 0.3s ease, height 0.3s ease;
 }
 
 /* ---------------- BASE FOLDER ---------------- */
@@ -139,6 +141,7 @@ section.visible {
   font-size:0.7rem;
   letter-spacing:0.6px;
   opacity:0.85;
+  transition: width 0.3s ease, font-size 0.3s ease;
 }
 
 /* ---------------- MOBILE ---------------- */
@@ -153,8 +156,37 @@ section.visible {
     padding: 0 24px;
   }
 
+  /* Shrink folders proportionally on mobile */
   .folder {
-    transform: scale(0.9);
+    transform: scale(0.75);
+  }
+
+  .folder-stack {
+    width: 108px;
+    height: 48px;
+  }
+
+  .folder-main {
+    width: 66px;
+    height: 48px;
+  }
+
+  .folder-tab {
+    width: 24px;
+    height: 9px;
+    top: -6px;
+    left: 6px;
+  }
+
+  .trail {
+    width: 66px;
+    height: 48px;
+  }
+
+  .folder span {
+    width: 108px;
+    font-size: 0.6rem;
+    margin-top: 12px;
   }
 }
 </style>

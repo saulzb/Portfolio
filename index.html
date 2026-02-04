@@ -55,20 +55,24 @@ section.visible {
   transform:translateX(-50%);
   font-size:1.2rem;
   color:white;
-  opacity:0;
-  pointer-events:none;
-  transition: opacity 0.6s ease;
   user-select:none;
 }
 
-.arrow-down { bottom:40px; }
-.arrow-up   { top:40px; }
+/* default hidden (observer-controlled arrows) */
+.arrow-fade {
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.5s ease;
+}
 
 .arrow-visible {
   opacity:0.75;
   pointer-events:auto;
   cursor:pointer;
 }
+
+.arrow-down { bottom:40px; }
+.arrow-up   { top:40px; }
 
 /* ---------------- GRID ---------------- */
 .folder-grid {
@@ -209,19 +213,19 @@ section.visible {
 
 <!-- HERO -->
 <section id="hero" class="visible">
-  <div class="arrow-down">↓</div>
+  <!-- permanent arrow -->
+  <div class="arrow-down" id="heroDown">↓</div>
 </section>
 
 <!-- FOLDERS -->
 <section id="folders">
-  <div class="arrow-up">↑</div>
   <div class="folder-grid" id="folderGrid"></div>
-  <div class="arrow-down">↓</div>
+  <div class="arrow-down arrow-fade" id="foldersDown">↓</div>
 </section>
 
 <!-- CONTACT -->
 <section id="contact">
-  <div class="arrow-up">↑</div>
+  <div class="arrow-up arrow-fade" id="contactUp">↑</div>
 
   <div class="contact-icons">
     <a href="https://www.linkedin.com" target="_blank" class="icon">
@@ -288,19 +292,19 @@ categories.forEach(item => {
   grid.appendChild(folder);
 });
 
-/* ---------------- FADE + ARROW CONTROL ---------------- */
+/* ---------------- FADE CONTROL (SHORTER DELAY) ---------------- */
 const observer = new IntersectionObserver(entries=>{
   entries.forEach(entry=>{
-    const arrows = entry.target.querySelectorAll('.arrow-up, .arrow-down');
-
     if(entry.isIntersecting){
       entry.target.classList.add("visible");
 
+      const arrows = entry.target.querySelectorAll('.arrow-fade');
       setTimeout(() => {
         arrows.forEach(a => a.classList.add("arrow-visible"));
-      }, 1200);
+      }, 600); // shorter delay
     } else {
-      arrows.forEach(a => a.classList.remove("arrow-visible"));
+      entry.target.querySelectorAll('.arrow-fade')
+        .forEach(a => a.classList.remove("arrow-visible"));
     }
   });
 },{threshold:0.6});
@@ -308,17 +312,9 @@ const observer = new IntersectionObserver(entries=>{
 document.querySelectorAll("section").forEach(s=>observer.observe(s));
 
 /* ---------------- SCROLL ACTIONS ---------------- */
-document.querySelectorAll('.arrow-down')[0].onclick = () =>
-  folders.scrollIntoView({behavior:'smooth'});
-
-document.querySelectorAll('.arrow-down')[1].onclick = () =>
-  contact.scrollIntoView({behavior:'smooth'});
-
-document.querySelectorAll('.arrow-up')[0].onclick = () =>
-  hero.scrollIntoView({behavior:'smooth'});
-
-document.querySelectorAll('.arrow-up')[1].onclick = () =>
-  folders.scrollIntoView({behavior:'smooth'});
+heroDown.onclick    = () => folders.scrollIntoView({behavior:'smooth'});
+foldersDown.onclick = () => contact.scrollIntoView({behavior:'smooth'});
+contactUp.onclick   = () => folders.scrollIntoView({behavior:'smooth'});
 </script>
 
 </body>

@@ -32,10 +32,10 @@ section {
   flex-direction:column;
   align-items:center;
   justify-content:flex-start;
-  gap:40px;        /* reduced gap between prism and photos */
+  gap:40px;
   position: relative;
   z-index: 2;
-  padding-top:80px; /* prism raised higher */
+  padding-top:80px;
 }
 
 /* ---------------- BACK ---------------- */
@@ -154,10 +154,8 @@ section {
   will-change: filter, box-shadow, border-color;
 }
 
-/* Blur-up loaded */
 .category-row img.loaded { filter: blur(0); opacity:1; }
 
-/* Prism overlay */
 .category-row img::before {
   content: "";
   position: absolute;
@@ -187,7 +185,6 @@ section {
     radial-gradient(ellipse at 85% 85%, rgba(100,210,255,0.25) 0%, transparent 40%);
 }
 
-/* Hover effects including prism glow */
 .category-row img:hover::before { opacity:1; }
 .category-row img:hover::after { opacity:1; }
 
@@ -337,10 +334,9 @@ function renderPhotos(){
 
   gallery.forEach((src,i)=>{
     const img = document.createElement("img");
-    img.src = `${src}?w=40&fm=webp&q=10`;
+    img.src = `${src}?w=120&fm=webp&q=20`; // larger placeholder
     img.loading="lazy";
     img.decoding="async";
-
     img.style.setProperty('--fade-delay', `${i * 60}ms`);
 
     const hi = new Image();
@@ -414,6 +410,26 @@ document.addEventListener("keydown", e=>{
   if(e.key==="ArrowLeft") showImage((currentIndex-1+gallery.length)%gallery.length);
   if(e.key==="Escape") lightbox.classList.remove("show");
 });
+
+// MOBILE SWIPE
+let touchStartX = 0;
+let touchEndX = 0;
+
+lightbox.addEventListener("touchstart", e => {
+  touchStartX = e.changedTouches[0].screenX;
+});
+
+lightbox.addEventListener("touchend", e => {
+  touchEndX = e.changedTouches[0].screenX;
+  handleSwipe();
+});
+
+function handleSwipe() {
+  const diff = touchEndX - touchStartX;
+  if (Math.abs(diff) < 40) return; // ignore tiny swipes
+  if (diff > 0) showImage((currentIndex - 1 + gallery.length) % gallery.length);
+  else showImage((currentIndex + 1) % gallery.length);
+}
 
 fetchPhotos();
 </script>

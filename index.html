@@ -53,15 +53,22 @@ section.visible {
   position:absolute;
   left:50%;
   transform:translateX(-50%);
-  cursor:pointer;
   font-size:1.2rem;
   color:white;
-  opacity:0.75;
+  opacity:0;
+  pointer-events:none;
+  transition: opacity 0.6s ease;
   user-select:none;
 }
 
 .arrow-down { bottom:40px; }
 .arrow-up   { top:40px; }
+
+.arrow-visible {
+  opacity:0.75;
+  pointer-events:auto;
+  cursor:pointer;
+}
 
 /* ---------------- GRID ---------------- */
 .folder-grid {
@@ -202,19 +209,19 @@ section.visible {
 
 <!-- HERO -->
 <section id="hero" class="visible">
-  <div class="arrow-down" id="heroDown">↓</div>
+  <div class="arrow-down">↓</div>
 </section>
 
 <!-- FOLDERS -->
 <section id="folders">
-  <div class="arrow-up" id="foldersUp">↑</div>
+  <div class="arrow-up">↑</div>
   <div class="folder-grid" id="folderGrid"></div>
-  <div class="arrow-down" id="foldersDown">↓</div>
+  <div class="arrow-down">↓</div>
 </section>
 
 <!-- CONTACT -->
 <section id="contact">
-  <div class="arrow-up" id="contactUp">↑</div>
+  <div class="arrow-up">↑</div>
 
   <div class="contact-icons">
     <a href="https://www.linkedin.com" target="_blank" class="icon">
@@ -243,12 +250,10 @@ section.visible {
 </section>
 
 <script>
-/* -------- FORCE HERO ON RELOAD (FIX) -------- */
+/* -------- FORCE HERO ON RELOAD -------- */
 window.history.scrollRestoration = "manual";
 window.addEventListener("load", () => {
-  setTimeout(() => {
-    document.getElementById("hero").scrollIntoView();
-  }, 0);
+  document.getElementById("hero").scrollIntoView();
 });
 
 /* ---------------- FOLDERS DATA ---------------- */
@@ -267,7 +272,6 @@ const grid = document.getElementById("folderGrid");
 categories.forEach(item => {
   const folder = document.createElement("div");
   folder.className = "folder";
-
   folder.innerHTML = `
     <div class="folder-stack">
       <div class="trail t4"></div>
@@ -280,25 +284,41 @@ categories.forEach(item => {
     </div>
     <span>${item.label}</span>
   `;
-
   folder.onclick = () => window.location.href = item.page;
   grid.appendChild(folder);
 });
 
-/* ---------------- FADE IN ---------------- */
+/* ---------------- FADE + ARROW CONTROL ---------------- */
 const observer = new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting) e.target.classList.add("visible");
+  entries.forEach(entry=>{
+    const arrows = entry.target.querySelectorAll('.arrow-up, .arrow-down');
+
+    if(entry.isIntersecting){
+      entry.target.classList.add("visible");
+
+      setTimeout(() => {
+        arrows.forEach(a => a.classList.add("arrow-visible"));
+      }, 1200);
+    } else {
+      arrows.forEach(a => a.classList.remove("arrow-visible"));
+    }
   });
-},{threshold:0.3});
+},{threshold:0.6});
 
 document.querySelectorAll("section").forEach(s=>observer.observe(s));
 
-/* ---------------- SCROLL CONTROLS ---------------- */
-heroDown.onclick    = () => folders.scrollIntoView({behavior:'smooth'});
-foldersUp.onclick   = () => hero.scrollIntoView({behavior:'smooth'});
-foldersDown.onclick = () => contact.scrollIntoView({behavior:'smooth'});
-contactUp.onclick   = () => folders.scrollIntoView({behavior:'smooth'});
+/* ---------------- SCROLL ACTIONS ---------------- */
+document.querySelectorAll('.arrow-down')[0].onclick = () =>
+  folders.scrollIntoView({behavior:'smooth'});
+
+document.querySelectorAll('.arrow-down')[1].onclick = () =>
+  contact.scrollIntoView({behavior:'smooth'});
+
+document.querySelectorAll('.arrow-up')[0].onclick = () =>
+  hero.scrollIntoView({behavior:'smooth'});
+
+document.querySelectorAll('.arrow-up')[1].onclick = () =>
+  folders.scrollIntoView({behavior:'smooth'});
 </script>
 
 </body>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saul Zidulka-Bejcek | Travel</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+
+<style>
+html, body {
+  margin:0; padding:0; width:100%; height:100%;
+  color:#eaeaea;
+  background:#0a0a0c;
+  font-family:'Michroma',sans-serif;
+  scroll-behavior:smooth;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 12, 0.65);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ---------------- SECTION ---------------- */
+section {
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:40px;
+  position: relative;
+  z-index: 2;
+  padding-top:80px;
+}
+
+/* ---------------- BACK ---------------- */
+.back-home {
+  position:absolute;
+  top:30px;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
+  font-size:0.75rem;
+  color:rgba(204,204,204,0.5);
+  text-decoration:none;
+  z-index:10;
+}
+.back-home:hover { color:rgba(255,255,255,0.8); }
+
+/* ---------------- PRISM ---------------- */
+.prism {
+  position:relative;
+  width:280px;
+  height:68px;
+  overflow:hidden;
+  clip-path: polygon(8% 0%,100% 0%,100% 100%,8% 100%,0% 50%);
+  background:linear-gradient(135deg,rgba(255,255,255,0.16),rgba(255,255,255,0.04) 45%,rgba(255,255,255,0.1));
+  border:1px solid rgba(255,255,255,0.25);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08),0 18px 36px rgba(0,0,0,0.75);
+}
+
+.prism::before {
+  content:"";
+  position:absolute;
+  left:0; top:0;
+  width:22px; height:100%;
+  background:linear-gradient(to bottom,rgba(255,255,255,0.35),rgba(255,255,255,0.02));
+  clip-path: polygon(0 50%,100% 0,100% 100%);
+}
+
+.inner-face-right {
+  position:absolute;
+  right:0; top:0;
+  width:34px; height:100%;
+  opacity:0.35;
+  background:linear-gradient(to right,rgba(255,255,255,0.35),rgba(255,255,255,0.08),rgba(255,255,255,0));
+  clip-path: polygon(0% 50%,100% 0%,100% 100%);
+}
+
+.inner-face-horizontal {
+  position:absolute;
+  left:-10%; top:46%;
+  width:120%; height:18%;
+  opacity:0.28;
+  background:linear-gradient(to bottom,rgba(255,255,255,0.35),rgba(255,255,255,0.08),rgba(255,255,255,0));
+  clip-path: polygon(0% 0%,100% 8%,100% 100%,0% 92%);
+}
+
+.prism-text {
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:0.8rem;
+  letter-spacing:0.32em;
+  filter: blur(0.45px);
+}
+
+.prism-text span {
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.prism-r { color:#ff453a; transform:translateX(-3px); filter:blur(0.9px); }
+.prism-o { color:#ff9f0a; transform:translateX(-2px); filter:blur(0.7px); }
+.prism-y { color:#ffd60a; transform:translateX(-1px); filter:blur(0.6px); }
+.prism-g { color:#32d74b; transform:translateX(1px);  filter:blur(0.6px); }
+.prism-c { color:#64d2ff; transform:translateX(2px);  filter:blur(0.7px); }
+.prism-b { color:#0a84ff; transform:translateX(3px);  filter:blur(0.9px); }
+
+/* ---------------- GRID ---------------- */
+.category-row {
+  display:flex;
+  flex-wrap:wrap;
+  gap:40px;
+  justify-content:center;
+  max-width:1000px;
+  margin:0 auto;
+  opacity:0;
+  animation:fadeIn 0.8s ease forwards;
+}
+@keyframes fadeIn { to { opacity:1; } }
+
+#photoSections { padding-bottom:80px; }
+
+.category-row img {
+  flex: 1 1 120px;
+  max-width:180px;
+  aspect-ratio:1 / 1;
+  object-fit:cover;
+  border-radius:6px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.45);
+  cursor:pointer;
+  filter: blur(15px);
+  opacity:0;
+  position:relative;
+  isolation:isolate;
+  border:2px solid rgba(255,255,255,0.08);
+
+  transition-property: opacity, filter, box-shadow, border-color;
+  transition-duration: 0.6s, 0.15s, 0.15s, 0.3s;
+  transition-timing-function: ease, ease, ease, ease;
+  transition-delay: var(--fade-delay, 0ms), 0ms, 0ms, 0ms;
+
+  will-change: filter, box-shadow, border-color;
+}
+
+.category-row img.loaded { filter: blur(0); opacity:1; }
+
+.category-row img::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04) 45%, rgba(255,255,255,0.08));
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 
+    inset 0 0 0 1px rgba(255,255,255,0.1),
+    inset -2px -2px 8px rgba(0,0,0,0.3),
+    inset 2px 2px 8px rgba(255,255,255,0.15);
+}
+
+.category-row img::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  background: 
+    radial-gradient(ellipse at 15% 15%, rgba(255,69,58,0.25) 0%, transparent 40%),
+    radial-gradient(ellipse at 85% 85%, rgba(100,210,255,0.25) 0%, transparent 40%);
+}
+
+.category-row img:hover::before { opacity:1; }
+.category-row img:hover::after { opacity:1; }
+
+.category-row img:hover {
+  filter: blur(0) brightness(1.06) contrast(1.12);
+  border-color: rgba(255,255,255,0.3);
+  box-shadow: 
+    -1px -1px 0 rgba(255,69,58,0.3),
+    -0.5px -0.5px 0 rgba(255,159,10,0.25),
+    0 0 0 rgba(255,214,10,0.2),
+    0.5px 0.5px 0 rgba(50,215,75,0.25),
+    1px 1px 0 rgba(100,210,255,0.3),
+    1.5px 1.5px 0 rgba(10,132,255,0.2),
+    0 0 12px rgba(255,255,255,0.25),
+    0 0 20px rgba(255,255,255,0.1),
+    0 8px 16px rgba(0,0,0,0.45);
+}
+
+/* ---------------- LIGHTBOX ---------------- */
+.lightbox {
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.92);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  transition:opacity 0.35s ease;
+  z-index:999;
+}
+
+.lightbox.show { display:flex; opacity:1; }
+
+.lightbox-bg {
+  position:absolute;
+  inset:0;
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:contain;
+  filter: blur(28px) saturate(105%) brightness(0.7) contrast(110%);
+  opacity:0.45;
+  transform:scale(1.25);
+  pointer-events:none;
+}
+
+.lightbox img {
+  position:relative;
+  max-width:90vw;
+  max-height:90vh;
+  z-index:2;
+  opacity:0;
+  transition:opacity 0.35s ease;
+  cursor: zoom-out;
+}
+
+.lightbox img.visible { opacity:1; }
+
+.nav-mark {
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:3rem;
+  color:rgba(204,204,204,0.4);
+  cursor:pointer;
+  z-index:3;
+  user-select:none;
+}
+.nav-left { left:20px; }
+.nav-right { right:20px; }
+
+@media (max-width:768px) {
+  section { padding-top:80px; gap:30px; }
+  #photoSections { padding-bottom:60px; }
+}
+
+@media (max-width:480px) {
+  .category-row { gap:20px; }
+  .category-row img {
+    flex: 1 1 calc(50% - 20px);
+    max-width:140px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<section>
+  <a href="index.html#folders" class="back-home">Back to home</a>
+
+  <div class="prism">
+    <div class="inner-face-right"></div>
+    <div class="inner-face-horizontal"></div>
+    <div class="prism-text">
+      Travel
+      <span class="prism-r">Travel</span>
+      <span class="prism-o">Travel</span>
+      <span class="prism-y">Travel</span>
+      <span class="prism-g">Travel</span>
+      <span class="prism-c">Travel</span>
+      <span class="prism-b">Travel</span>
+    </div>
+  </div>
+
+  <div id="photoSections"></div>
+</section>
+
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-bg" id="lightbox-bg"></div>
+  <div class="nav-mark nav-left">◂</div>
+  <img id="lightbox-img">
+  <div class="nav-mark nav-right">▸</div>
+</div>
+
+<script>
+const SPACE_ID = '5w319pzc4eiq';
+const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
+const CATEGORY_NAME = "Travel";
+
+let gallery = [];
+let currentIndex = 0;
+const fullImageCache = new Map();
+
+async function fetchPhotos(){
+  const res = await fetch(
+    `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
+  );
+  const data = await res.json();
+
+  const assets = {};
+  data.includes.Asset.forEach(a => assets[a.sys.id] = a.fields.file.url);
+
+  gallery = data.items
+    .filter(i => i.fields.category === CATEGORY_NAME)
+    .map(i => `https:${assets[i.fields.photo.sys.id]}`);
+
+  renderPhotos();
+}
+
+function renderPhotos(){
+  const row = document.createElement("div");
+  row.className = "category-row";
+
+  const dpr = window.devicePixelRatio || 1;
+  const thumbWidth = Math.ceil(180 * dpr * 2);
+  const fullSize = Math.ceil(Math.max(innerWidth, innerHeight) * dpr * 0.9);
+
+  gallery.forEach((src,i)=>{
+    const img = document.createElement("img");
+    img.src = `${src}?w=120&fm=webp&q=20`; // larger placeholder
+    img.loading="lazy";
+    img.decoding="async";
+    img.style.setProperty('--fade-delay', `${i * 60}ms`);
+
+    const hi = new Image();
+    hi.src = `${src}?w=${thumbWidth}&fm=webp&q=85`;
+    hi.onload = () => {
+      img.src = hi.src;
+      img.classList.add("loaded");
+
+      if(!fullImageCache.has(i)){
+        const preload = new Image();
+        preload.src = `${src}?w=${fullSize}&fm=webp&q=90`;
+        fullImageCache.set(i,preload);
+      }
+    };
+
+    img.onclick = ()=>openLightbox(i);
+    row.appendChild(img);
+  });
+
+  document.getElementById("photoSections").appendChild(row);
+}
+
+// LIGHTBOX
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightbox-img");
+const lightboxBg = document.getElementById("lightbox-bg");
+
+function openLightbox(i){
+  currentIndex = i;
+  lightbox.classList.add("show");
+  showImage(i);
+}
+
+function showImage(i){
+  currentIndex = i;
+  lightboxImg.classList.remove("visible");
+
+  const cached = fullImageCache.get(i);
+  if(cached && cached.complete){
+    requestAnimationFrame(()=>{
+      lightboxImg.src = cached.src;
+      lightboxImg.classList.add("visible");
+    });
+  }
+
+  lightboxBg.style.backgroundImage = `url(${gallery[i]}?w=240&fm=webp&q=20)`;
+  preloadNext(i);
+}
+
+function preloadNext(i){
+  const next = (i+1)%gallery.length;
+  if(!fullImageCache.has(next)){
+    const dpr = window.devicePixelRatio||1;
+    const size = Math.ceil(Math.max(innerWidth,innerHeight)*dpr*0.9);
+    const img = new Image();
+    img.src = `${gallery[next]}?w=${size}&fm=webp&q=85`;
+    fullImageCache.set(next,img);
+  }
+}
+
+// NAVIGATION
+lightbox.addEventListener("click", e=>{
+  if(e.target === lightbox) lightbox.classList.remove("show");
+});
+document.querySelector(".nav-right").onclick=e=>{ e.stopPropagation(); showImage((currentIndex+1)%gallery.length); };
+document.querySelector(".nav-left").onclick=e=>{ e.stopPropagation(); showImage((currentIndex-1+gallery.length)%gallery.length); };
+lightboxImg.onclick=e=>e.stopPropagation();
+document.addEventListener("keydown", e=>{
+  if(!lightbox.classList.contains("show")) return;
+  if(e.key==="ArrowRight") showImage((currentIndex+1)%gallery.length);
+  if(e.key==="ArrowLeft") showImage((currentIndex-1+gallery.length)%gallery.length);
+  if(e.key==="Escape") lightbox.classList.remove("show");
+});
+
+// MOBILE SWIPE
+let touchStartX = 0;
+let touchEndX = 0;
+
+lightbox.addEventListener("touchstart", e => {
+  touchStartX = e.changedTouches[0].screenX;
+});
+
+lightbox.addEventListener("touchend", e => {
+  touchEndX = e.changedTouches[0].screenX;
+  handleSwipe();
+});
+
+function handleSwipe() {
+  const diff = touchEndX - touchStartX;
+  if (Math.abs(diff) < 40) return; // ignore tiny swipes
+  if (diff > 0) showImage((currentIndex - 1 + gallery.length) % gallery.length);
+  else showImage((currentIndex + 1) % gallery.length);
+}
+
+fetchPhotos();
+</script>
+
+</body>
+</html>

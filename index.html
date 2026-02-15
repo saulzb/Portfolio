@@ -18,7 +18,6 @@ html, body {
   background: #070803;
   color: #eee;
   overflow-x: hidden;
-  scroll-snap-type: y mandatory;
 }
 
 section {
@@ -27,7 +26,6 @@ section {
   display:flex;
   justify-content:center;
   align-items:center;
-  scroll-snap-align:start;
   position: relative;
   background: #070803;
 }
@@ -144,15 +142,44 @@ section.visible { opacity:1; }
 </section>
 
 <script>
+/* ---------------- SETTINGS ---------------- */
+
 window.history.scrollRestoration = "manual";
 
-/* ---------------- RETURN POSITION ---------------- */
+const sections = document.querySelectorAll("section");
+
+let isSnapping = false;
+let snapTimeout = null;
+
+
+/* ---------------- SCROLL TO SECTION FUNCTION ---------------- */
+
+function scrollToSection(index, smooth = true) {
+
+  if (index < 0) index = 0;
+  if (index >= sections.length) index = sections.length - 1;
+
+  isSnapping = true;
+
+  sections[index].scrollIntoView({
+    behavior: smooth ? "smooth" : "auto"
+  });
+
+  setTimeout(() => {
+    isSnapping = false;
+  }, 600);
+
+}
+
+
+/* ---------------- INITIAL LOAD POSITION ---------------- */
 
 window.addEventListener("load", () => {
 
   if (sessionStorage.getItem("returnToFolders") === "true") {
 
     scrollToSection(1, false);
+
     sessionStorage.removeItem("returnToFolders");
 
   } else {
@@ -164,126 +191,64 @@ window.addEventListener("load", () => {
 });
 
 
-/* ---------------- SECTION SCROLL CONTROL ---------------- */
+/* ---------------- SCROLL DAMPING SYSTEM ---------------- */
 
-const sections = document.querySelectorAll("section");
+window.addEventListener("scroll", () => {
 
-let currentSection = 0;
-let isScrolling = false;
-let touchStartY = 0;
-let touchEndY = 0;
+  if (isSnapping) return;
 
-function scrollToSection(index, smooth = true) {
+  clearTimeout(snapTimeout);
 
-  if (index < 0 || index >= sections.length) return;
+  snapTimeout = setTimeout(() => {
 
-  currentSection = index;
+    const scrollY = window.scrollY;
 
-  sections[index].scrollIntoView({
-    behavior: smooth ? "smooth" : "auto"
-  });
+    let closestIndex = 0;
+    let closestDistance = Infinity;
 
-}
+    sections.forEach((section, i) => {
 
+      const top = section.offsetTop;
+      const distance = Math.abs(scrollY - top);
 
-/* ---------------- WHEEL CONTROL ---------------- */
+      if (distance < closestDistance) {
 
-window.addEventListener("wheel", (e) => {
+        closestDistance = distance;
+        closestIndex = i;
 
-  if (isScrolling) return;
+      }
 
-  if (Math.abs(e.deltaY) < 10) return;
+    });
 
-  isScrolling = true;
+    scrollToSection(closestIndex);
 
-  if (e.deltaY > 0) {
-    scrollToSection(currentSection + 1);
-  } else {
-    scrollToSection(currentSection - 1);
-  }
-
-  setTimeout(() => {
-    isScrolling = false;
-  }, 700);
+  }, 140);
 
 }, { passive: true });
 
 
-/* ---------------- TOUCH CONTROL ---------------- */
-
-window.addEventListener("touchstart", (e) => {
-  touchStartY = e.changedTouches[0].screenY;
-});
-
-window.addEventListener("touchend", (e) => {
-
-  if (isScrolling) return;
-
-  touchEndY = e.changedTouches[0].screenY;
-
-  const diff = touchStartY - touchEndY;
-
-  if (Math.abs(diff) < 50) return;
-
-  isScrolling = true;
-
-  if (diff > 0) {
-    scrollToSection(currentSection + 1);
-  } else {
-    scrollToSection(currentSection - 1);
-  }
-
-  setTimeout(() => {
-    isScrolling = false;
-  }, 700);
-
-});
-
-
-/* ---------------- KEYBOARD CONTROL ---------------- */
-
-window.addEventListener("keydown", (e) => {
-
-  if (isScrolling) return;
-
-  if (e.key === "ArrowDown" || e.key === "PageDown") {
-
-    isScrolling = true;
-    scrollToSection(currentSection + 1);
-
-  }
-
-  if (e.key === "ArrowUp" || e.key === "PageUp") {
-
-    isScrolling = true;
-    scrollToSection(currentSection - 1);
-
-  }
-
-  setTimeout(() => {
-    isScrolling = false;
-  }, 700);
-
-});
-
-
-/* ---------------- CLICK ARROWS ---------------- */
+/* ---------------- ARROW CONTROLS ---------------- */
 
 const heroDown = document.getElementById("heroDown");
 const foldersDown = document.getElementById("foldersDown");
 
 heroDown.addEventListener("click", () => {
+
   scrollToSection(1);
+
 });
 
 foldersDown.addEventListener("click", () => {
+
   scrollToSection(2);
+
 });
 
 
-/* ---------------- FOLDERS ---------------- */
+/* ---------------- FOLDER GRID ---------------- */
 
 const categories = [
+
   { label: "Raw PNW", page: "raw-pnw.html" },
   { label: "Fluid", page: "Fluid.html" },
   { label: "Crystallite", page: "crystallite.html" },
@@ -291,6 +256,7 @@ const categories = [
   { label: "Dream State", page: "dream-state.html" },
   { label: "Charged", page: "neon-lights.html" },
   { label: "Double Expo", page: "DoubleExpo.html" },
+
 ];
 
 const grid = document.getElementById("folderGrid");
@@ -307,25 +273,30 @@ categories.forEach(item => {
       <div class="trail t3"></div>
       <div class="trail t2"></div>
       <div class="trail t1"></div>
-      <div class="folder-main"><div class="folder-tab"></div></div>
+      <div class="folder-main">
+        <div class="folder-tab"></div>
+      </div>
     </div>
     <span>${item.label}</span>
   `;
 
-  folder.onclick = () => {
+  folder.addEventListener("click", () => {
+
     window.location.href = item.page;
-  };
+
+  });
 
   grid.appendChild(folder);
 
 });
 
 
-/* ---------------- ARROW FADE ---------------- */
+/* ---------------- FOLDER ARROW FADE ---------------- */
 
 setTimeout(() => {
 
   foldersDown.classList.add("arrow-visible");
+
   foldersDown.style.transition = "opacity 2s ease";
 
 }, 3000);

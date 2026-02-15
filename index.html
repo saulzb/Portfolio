@@ -149,17 +149,23 @@ window.history.scrollRestoration = "manual";
 
 window.addEventListener("load", () => {
 
-  const hash = window.location.hash;
+  const returnToFolders = sessionStorage.getItem("returnToFolders");
 
-  if (hash === "#folders") {
+  if (returnToFolders === "true") {
+
     document.getElementById("folders").scrollIntoView();
-  }
-  else if (hash === "#contact") {
-    document.getElementById("contact").scrollIntoView();
-  }
-  else {
-    // default behavior: fresh load → hero
+
+    // clear flag so refresh goes to hero next time
+    sessionStorage.removeItem("returnToFolders");
+
+    // remove hash from URL if present
+    history.replaceState(null, null, window.location.pathname);
+
+  } else {
+
+    // default: always go to hero on reload
     document.getElementById("hero").scrollIntoView();
+
   }
 
 });

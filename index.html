@@ -18,7 +18,9 @@ html, body {
   background: #070803;
   color: #eee;
   overflow-x: hidden;
+
   scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
 }
 
 section {
@@ -28,6 +30,7 @@ section {
   justify-content:center;
   align-items:center;
   scroll-snap-align:start;
+  scroll-snap-stop: always; /* THIS is critical */
   position: relative;
   background: #070803;
 }
@@ -144,35 +147,35 @@ section.visible { opacity:1; }
 </section>
 
 <script>
-/* ---------------- SCROLL RESTORATION ---------------- */
 window.history.scrollRestoration = "manual";
+
+/* ---------------- INITIAL POSITION ---------------- */
 
 window.addEventListener("load", () => {
 
-  const returnToFolders = sessionStorage.getItem("returnToFolders");
+  if (sessionStorage.getItem("returnToFolders") === "true") {
 
-  if (returnToFolders === "true") {
+    document.getElementById("folders").scrollIntoView({
+      behavior: "auto"
+    });
 
-    document.getElementById("folders").scrollIntoView();
-
-    // clear flag so refresh goes to hero next time
     sessionStorage.removeItem("returnToFolders");
-
-    // remove hash from URL if present
-    history.replaceState(null, null, window.location.pathname);
 
   } else {
 
-    // default: always go to hero on reload
-    document.getElementById("hero").scrollIntoView();
+    document.getElementById("hero").scrollIntoView({
+      behavior: "auto"
+    });
 
   }
 
 });
 
 
-/* ---------------- FOLDERS ---------------- */
+/* ---------------- FOLDER GRID ---------------- */
+
 const categories = [
+
   { label: "Raw PNW", page: "raw-pnw.html" },
   { label: "Fluid", page: "Fluid.html" },
   { label: "Crystallite", page: "crystallite.html" },
@@ -180,6 +183,7 @@ const categories = [
   { label: "Dream State", page: "dream-state.html" },
   { label: "Charged", page: "neon-lights.html" },
   { label: "Double Expo", page: "DoubleExpo.html" },
+
 ];
 
 const grid = document.getElementById("folderGrid");
@@ -196,13 +200,17 @@ categories.forEach(item => {
       <div class="trail t3"></div>
       <div class="trail t2"></div>
       <div class="trail t1"></div>
-      <div class="folder-main"><div class="folder-tab"></div></div>
+      <div class="folder-main">
+        <div class="folder-tab"></div>
+      </div>
     </div>
     <span>${item.label}</span>
   `;
 
   folder.onclick = () => {
+
     window.location.href = item.page;
+
   };
 
   grid.appendChild(folder);
@@ -215,36 +223,27 @@ categories.forEach(item => {
 const heroDown = document.getElementById("heroDown");
 const foldersDown = document.getElementById("foldersDown");
 
-heroDown.addEventListener("click", () => {
+heroDown.onclick = () => {
 
-  document.getElementById("folders").scrollIntoView({
-    behavior:'smooth'
-  });
+  document.getElementById("folders").scrollIntoView();
 
-  heroDown.style.display = "none";
+};
 
-});
+foldersDown.onclick = () => {
+
+  document.getElementById("contact").scrollIntoView();
+
+};
 
 
-// Folders arrow fade in after 3s
+/* ---------------- ARROW FADE ---------------- */
+
 setTimeout(() => {
 
   foldersDown.classList.add("arrow-visible");
 
-  foldersDown.style.transition = "opacity 2s ease";
-
 }, 3000);
 
-
-foldersDown.addEventListener("click", () => {
-
-  document.getElementById("contact").scrollIntoView({
-    behavior:'smooth'
-  });
-
-  foldersDown.style.display = "none";
-
-});
 </script>
 
 

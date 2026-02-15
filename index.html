@@ -144,34 +144,145 @@ section.visible { opacity:1; }
 </section>
 
 <script>
-/* ---------------- SCROLL RESTORATION ---------------- */
 window.history.scrollRestoration = "manual";
+
+/* ---------------- RETURN POSITION ---------------- */
 
 window.addEventListener("load", () => {
 
-  const returnToFolders = sessionStorage.getItem("returnToFolders");
+  if (sessionStorage.getItem("returnToFolders") === "true") {
 
-  if (returnToFolders === "true") {
-
-    document.getElementById("folders").scrollIntoView();
-
-    // clear flag so refresh goes to hero next time
+    scrollToSection(1, false);
     sessionStorage.removeItem("returnToFolders");
-
-    // remove hash from URL if present
-    history.replaceState(null, null, window.location.pathname);
 
   } else {
 
-    // default: always go to hero on reload
-    document.getElementById("hero").scrollIntoView();
+    scrollToSection(0, false);
 
   }
 
 });
 
 
+/* ---------------- SECTION SCROLL CONTROL ---------------- */
+
+const sections = document.querySelectorAll("section");
+
+let currentSection = 0;
+let isScrolling = false;
+let touchStartY = 0;
+let touchEndY = 0;
+
+function scrollToSection(index, smooth = true) {
+
+  if (index < 0 || index >= sections.length) return;
+
+  currentSection = index;
+
+  sections[index].scrollIntoView({
+    behavior: smooth ? "smooth" : "auto"
+  });
+
+}
+
+
+/* ---------------- WHEEL CONTROL ---------------- */
+
+window.addEventListener("wheel", (e) => {
+
+  if (isScrolling) return;
+
+  if (Math.abs(e.deltaY) < 10) return;
+
+  isScrolling = true;
+
+  if (e.deltaY > 0) {
+    scrollToSection(currentSection + 1);
+  } else {
+    scrollToSection(currentSection - 1);
+  }
+
+  setTimeout(() => {
+    isScrolling = false;
+  }, 700);
+
+}, { passive: true });
+
+
+/* ---------------- TOUCH CONTROL ---------------- */
+
+window.addEventListener("touchstart", (e) => {
+  touchStartY = e.changedTouches[0].screenY;
+});
+
+window.addEventListener("touchend", (e) => {
+
+  if (isScrolling) return;
+
+  touchEndY = e.changedTouches[0].screenY;
+
+  const diff = touchStartY - touchEndY;
+
+  if (Math.abs(diff) < 50) return;
+
+  isScrolling = true;
+
+  if (diff > 0) {
+    scrollToSection(currentSection + 1);
+  } else {
+    scrollToSection(currentSection - 1);
+  }
+
+  setTimeout(() => {
+    isScrolling = false;
+  }, 700);
+
+});
+
+
+/* ---------------- KEYBOARD CONTROL ---------------- */
+
+window.addEventListener("keydown", (e) => {
+
+  if (isScrolling) return;
+
+  if (e.key === "ArrowDown" || e.key === "PageDown") {
+
+    isScrolling = true;
+    scrollToSection(currentSection + 1);
+
+  }
+
+  if (e.key === "ArrowUp" || e.key === "PageUp") {
+
+    isScrolling = true;
+    scrollToSection(currentSection - 1);
+
+  }
+
+  setTimeout(() => {
+    isScrolling = false;
+  }, 700);
+
+});
+
+
+/* ---------------- CLICK ARROWS ---------------- */
+
+const heroDown = document.getElementById("heroDown");
+const foldersDown = document.getElementById("foldersDown");
+
+heroDown.addEventListener("click", () => {
+  scrollToSection(1);
+});
+
+foldersDown.addEventListener("click", () => {
+  scrollToSection(2);
+});
+
+
 /* ---------------- FOLDERS ---------------- */
+
 const categories = [
   { label: "Raw PNW", page: "raw-pnw.html" },
   { label: "Fluid", page: "Fluid.html" },
@@ -210,41 +321,15 @@ categories.forEach(item => {
 });
 
 
-/* ---------------- ARROWS ---------------- */
+/* ---------------- ARROW FADE ---------------- */
 
-const heroDown = document.getElementById("heroDown");
-const foldersDown = document.getElementById("foldersDown");
-
-heroDown.addEventListener("click", () => {
-
-  document.getElementById("folders").scrollIntoView({
-    behavior:'smooth'
-  });
-
-  heroDown.style.display = "none";
-
-});
-
-
-// Folders arrow fade in after 3s
 setTimeout(() => {
 
   foldersDown.classList.add("arrow-visible");
-
   foldersDown.style.transition = "opacity 2s ease";
 
 }, 3000);
 
-
-foldersDown.addEventListener("click", () => {
-
-  document.getElementById("contact").scrollIntoView({
-    behavior:'smooth'
-  });
-
-  foldersDown.style.display = "none";
-
-});
 </script>
 
 

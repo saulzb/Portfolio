@@ -273,8 +273,16 @@ section {
 <body>
 
 <section>
-<a href="index.html" class="back-home" onclick="sessionStorage.setItem('returnToFolders', 'true')">Back to home</a>
+<a href="#" class="back-home" onclick="goHome(event)">Back to home</a>
 
+<script>
+function goHome(e) {
+  e.preventDefault();
+  sessionStorage.setItem("returnToFolders", "true");
+  window.location.href = "index.html";
+}
+</script>
+  
   <div class="prism">
     <div class="inner-face-right"></div>
     <div class="inner-face-horizontal"></div>

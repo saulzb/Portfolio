@@ -144,11 +144,26 @@ section.visible { opacity:1; }
 </section>
 
 <script>
-/* ---------------- START AT HERO ---------------- */
+/* ---------------- SCROLL RESTORATION ---------------- */
 window.history.scrollRestoration = "manual";
+
 window.addEventListener("load", () => {
-  document.getElementById("hero").scrollIntoView();
+
+  const hash = window.location.hash;
+
+  if (hash === "#folders") {
+    document.getElementById("folders").scrollIntoView();
+  }
+  else if (hash === "#contact") {
+    document.getElementById("contact").scrollIntoView();
+  }
+  else {
+    // default behavior: fresh load → hero
+    document.getElementById("hero").scrollIntoView();
+  }
+
 });
+
 
 /* ---------------- FOLDERS ---------------- */
 const categories = [
@@ -162,9 +177,13 @@ const categories = [
 ];
 
 const grid = document.getElementById("folderGrid");
+
 categories.forEach(item => {
+
   const folder = document.createElement("div");
+
   folder.className = "folder";
+
   folder.innerHTML = `
     <div class="folder-stack">
       <div class="trail t4"></div>
@@ -175,30 +194,53 @@ categories.forEach(item => {
     </div>
     <span>${item.label}</span>
   `;
-  folder.onclick = () => window.location.href = item.page;
+
+  folder.onclick = () => {
+    window.location.href = item.page;
+  };
+
   grid.appendChild(folder);
+
 });
 
+
 /* ---------------- ARROWS ---------------- */
+
 const heroDown = document.getElementById("heroDown");
 const foldersDown = document.getElementById("foldersDown");
 
 heroDown.addEventListener("click", () => {
-  document.getElementById("folders").scrollIntoView({behavior:'smooth'});
+
+  document.getElementById("folders").scrollIntoView({
+    behavior:'smooth'
+  });
+
   heroDown.style.display = "none";
+
 });
+
 
 // Folders arrow fade in after 3s
 setTimeout(() => {
+
   foldersDown.classList.add("arrow-visible");
+
   foldersDown.style.transition = "opacity 2s ease";
+
 }, 3000);
 
+
 foldersDown.addEventListener("click", () => {
-  document.getElementById("contact").scrollIntoView({behavior:'smooth'});
+
+  document.getElementById("contact").scrollIntoView({
+    behavior:'smooth'
+  });
+
   foldersDown.style.display = "none";
+
 });
 </script>
+
 
 </body>
 </html>

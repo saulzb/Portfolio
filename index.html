@@ -142,44 +142,47 @@ section.visible { opacity:1; }
 </section>
 
 <script>
-/* ---------------- SETTINGS ---------------- */
-
 window.history.scrollRestoration = "manual";
 
 const sections = document.querySelectorAll("section");
 
-let isSnapping = false;
-let snapTimeout = null;
+let currentSection = 0;
+let isAnimating = false;
+let scrollAccumulator = 0;
+let scrollTimeout = null;
+
+const SCROLL_THRESHOLD = 60; // how much scroll required
+const SCROLL_COOLDOWN = 700; // animation duration
 
 
-/* ---------------- SCROLL TO SECTION FUNCTION ---------------- */
+/* ---------------- SCROLL FUNCTION ---------------- */
 
 function scrollToSection(index, smooth = true) {
 
   if (index < 0) index = 0;
   if (index >= sections.length) index = sections.length - 1;
 
-  isSnapping = true;
+  currentSection = index;
+  isAnimating = true;
 
   sections[index].scrollIntoView({
     behavior: smooth ? "smooth" : "auto"
   });
 
   setTimeout(() => {
-    isSnapping = false;
-  }, 600);
+    isAnimating = false;
+  }, SCROLL_COOLDOWN);
 
 }
 
 
-/* ---------------- INITIAL LOAD POSITION ---------------- */
+/* ---------------- INITIAL LOAD ---------------- */
 
 window.addEventListener("load", () => {
 
   if (sessionStorage.getItem("returnToFolders") === "true") {
 
     scrollToSection(1, false);
-
     sessionStorage.removeItem("returnToFolders");
 
   } else {
@@ -191,58 +194,78 @@ window.addEventListener("load", () => {
 });
 
 
-/* ---------------- SCROLL DAMPING SYSTEM ---------------- */
+/* ---------------- MOMENTUM DAMPED WHEEL CONTROL ---------------- */
 
-window.addEventListener("scroll", () => {
+window.addEventListener("wheel", (e) => {
 
-  if (isSnapping) return;
+  if (isAnimating) {
+    e.preventDefault();
+    return;
+  }
 
-  clearTimeout(snapTimeout);
+  scrollAccumulator += e.deltaY;
 
-  snapTimeout = setTimeout(() => {
+  clearTimeout(scrollTimeout);
 
-    const scrollY = window.scrollY;
+  scrollTimeout = setTimeout(() => {
+    scrollAccumulator = 0;
+  }, 120);
 
-    let closestIndex = 0;
-    let closestDistance = Infinity;
+  if (scrollAccumulator > SCROLL_THRESHOLD) {
 
-    sections.forEach((section, i) => {
+    scrollAccumulator = 0;
+    scrollToSection(currentSection + 1);
 
-      const top = section.offsetTop;
-      const distance = Math.abs(scrollY - top);
+  }
+  else if (scrollAccumulator < -SCROLL_THRESHOLD) {
 
-      if (distance < closestDistance) {
+    scrollAccumulator = 0;
+    scrollToSection(currentSection - 1);
 
-        closestDistance = distance;
-        closestIndex = i;
+  }
 
-      }
+  e.preventDefault();
 
-    });
+}, { passive: false });
 
-    scrollToSection(closestIndex);
 
-  }, 140);
+/* ---------------- TOUCH CONTROL ---------------- */
+
+let touchStartY = 0;
+
+window.addEventListener("touchstart", (e) => {
+  touchStartY = e.touches[0].clientY;
+});
+
+window.addEventListener("touchmove", (e) => {
+
+  if (isAnimating) return;
+
+  const touchY = e.touches[0].clientY;
+  const diff = touchStartY - touchY;
+
+  if (Math.abs(diff) > 50) {
+
+    if (diff > 0) {
+      scrollToSection(currentSection + 1);
+    } else {
+      scrollToSection(currentSection - 1);
+    }
+
+    touchStartY = touchY;
+
+  }
 
 }, { passive: true });
 
 
-/* ---------------- ARROW CONTROLS ---------------- */
+/* ---------------- ARROWS ---------------- */
 
 const heroDown = document.getElementById("heroDown");
 const foldersDown = document.getElementById("foldersDown");
 
-heroDown.addEventListener("click", () => {
-
-  scrollToSection(1);
-
-});
-
-foldersDown.addEventListener("click", () => {
-
-  scrollToSection(2);
-
-});
+heroDown.onclick = () => scrollToSection(1);
+foldersDown.onclick = () => scrollToSection(2);
 
 
 /* ---------------- FOLDER GRID ---------------- */
@@ -280,29 +303,24 @@ categories.forEach(item => {
     <span>${item.label}</span>
   `;
 
-  folder.addEventListener("click", () => {
-
+  folder.onclick = () => {
     window.location.href = item.page;
-
-  });
+  };
 
   grid.appendChild(folder);
 
 });
 
 
-/* ---------------- FOLDER ARROW FADE ---------------- */
+/* ---------------- ARROW FADE ---------------- */
 
 setTimeout(() => {
 
   foldersDown.classList.add("arrow-visible");
 
-  foldersDown.style.transition = "opacity 2s ease";
-
 }, 3000);
 
 </script>
-
 
 </body>
 </html>

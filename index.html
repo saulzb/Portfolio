@@ -83,15 +83,12 @@ section {
   width:88px; height:64px;
   object-fit: cover;
   border-radius: 3px 3px 0 0;
-  top: 0; left: 0;
+  top: -20px;
+  left: 0;
   opacity: 0;
   transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 15; /* in front of folder */
 }
-
-/* stacked / fanned */
-.folder-preview-0 { top: -8px; left: 0; }
-.folder-preview-1 { top: -16px; left: -10px; }
-.folder-preview-2 { top: -24px; left: -20px; }
 
 .folder:hover .folder-preview { opacity: 1; }
 .folder:hover .folder-main { opacity: 0; }
@@ -178,26 +175,25 @@ async function fetchFolders() {
   const res = await fetch(`https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`);
   const data = await res.json();
   
-  // map assets for quick lookup
   const assets = {};
-  data.includes.Asset.forEach(a => assets[a.sys.id] = a.fields.file.url);
+  if(data.includes?.Asset) data.includes.Asset.forEach(a => assets[a.sys.id] = a.fields.file.url);
 
   categories.forEach(item => {
     const gallery = data.items
       .filter(i => i.fields.category === item.contentName)
-      .map(i => assets[i.fields.photo.sys.id])
+      .map(i => assets[i.fields.photo?.sys?.id])
       .filter(Boolean);
-
-    if (gallery.length === 0) return; // skip empty categories
 
     const folder = document.createElement("div");
     folder.className = "folder";
 
-    // stacked previews (max 3)
-    const previews = gallery.slice(0,3).map((url, idx) => `
-      <img src="https:${url}?w=88&h=64&fm=webp&q=85" 
-           class="folder-preview folder-preview-${idx}">
-    `).join('');
+    // random fanned previews max 3
+    const previews = gallery.slice(0,3).map((url, idx) => {
+      const rotate = Math.floor(Math.random() * 10 - 5); // -5 to 5 degrees
+      return `<img src="https:${url}?w=88&h=64&fm=webp&q=85" 
+                   class="folder-preview folder-preview-${idx}" 
+                   style="transform: rotate(${rotate}deg);">`;
+    }).join('');
 
     folder.innerHTML = `
       <div class="folder-stack">
@@ -210,7 +206,6 @@ async function fetchFolders() {
       </div>
       <span>${item.label}</span>
     `;
-
     folder.onclick = () => { window.location.href = item.page; };
     grid.appendChild(folder);
   });

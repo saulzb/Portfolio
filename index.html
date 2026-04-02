@@ -34,7 +34,232 @@ section {
   background: #070803;
 }
 
-section.visible { opacity:1; }
+/* ---------------- HERO ---------------- */
+#hero {
+  background: url('SaulHero5.jpg') center/cover no-repeat;
+}
+
+/* ---------------- ARROWS ---------------- */
+.arrow-down {
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:1.2rem;
+  color: rgba(255,255,255,0.85);
+  user-select:none;
+  cursor:pointer;
+  transition: opacity 1.5s ease;
+}
+
+#hero .arrow-down { opacity:0.75; }
+
+.arrow-fade { opacity:0; pointer-events:none; }
+.arrow-visible { opacity:0.75; pointer-events:auto; cursor:pointer; }
+.arrow-down { bottom: 40px; }
+
+/* ---------------- GRID ---------------- */
+.folder-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:80px;
+  max-width:900px;
+  padding:0 60px;
+  justify-items:center;
+}
+
+.folder { display:flex; flex-direction:column; align-items:center; cursor:pointer; }
+.folder-stack { 
+  position: relative; 
+  width:144px; 
+  height:80px; /* taller to allow preview image */
+  overflow: visible; 
+}
+.folder-main { 
+  position: absolute; 
+  right:0; 
+  top:0; 
+  width:88px; 
+  height:64px; 
+  background:#e4c97a; 
+  border-radius:3px; 
+  box-shadow:2px 2px 0 #000; 
+  z-index:10; 
+}
+.folder-tab { 
+  position:absolute; 
+  top:-8px; 
+  left:8px; 
+  width:32px; 
+  height:12px; 
+  background:#e4c97a; 
+  border-radius:2px; 
+  box-shadow:1px 1px 0 #000; 
+}
+.trail { 
+  position:absolute; 
+  top:0; 
+  width:88px; 
+  height:64px; 
+  border-radius:3px; 
+}
+.trail.t1 { right:12px; background:#c9a84a; z-index:6; }
+.trail.t2 { right:26px; background:#9b5c5c; z-index:5; }
+.trail.t3 { right:40px; background:#6e7f52; z-index:4; }
+.trail.t4 { right:54px; background:#5a6b8c; z-index:3; }
+.folder span { margin-top:16px; width:144px; text-align:center; font-size:0.7rem; letter-spacing:0.6px; opacity:0.85; }
+
+/* ---------------- FOLDER PREVIEW IMAGE ---------------- */
+.folder-preview {
+  position: absolute;
+  top: -16px; /* peek above tab */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 88px;
+  max-height: 56px;
+  object-fit: cover;
+  border-radius: 2px;
+  z-index: 9;
+  box-shadow: none;
+  border: none;
+}
+
+/* ---------------- CONTACT ---------------- */
+@keyframes breathe {
+  0% { transform: scale(1); opacity:0.85; }
+  50% { transform: scale(1.05); opacity:1; }
+  100% { transform: scale(1); opacity:0.85; }
+}
+
+.contact-icons { display:flex; gap:80px; }
+.contact-icons a { animation:breathe 6s ease-in-out infinite; }
+.contact-icons a:nth-child(2) { animation-delay:1.2s; }
+.contact-icons a:nth-child(3) { animation-delay:2.4s; }
+.icon svg { width:36px; height:36px; stroke:#eee; fill:none; stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; transition: transform 0.3s ease; }
+.icon:hover svg { transform:translateY(-4px); }
+
+/* ---------------- MOBILE ---------------- */
+@media (max-width:768px){
+  #hero { background:url('SaulHero5Mobile.jpg') center/cover no-repeat; }
+  .folder-grid { grid-template-columns: repeat(2,1fr); gap:48px 24px; padding:0 24px; }
+  .folder { transform: scale(0.85); }
+  .contact-icons { gap:48px; }
+  .icon svg { width:30px; height:30px; stroke-width:1.2; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="arrow-down" id="heroDown">↓</div>
+</section>
+
+<!-- FOLDERS -->
+<section id="folders">
+  <div class="folder-grid" id="folderGrid"></div>
+  <div class="arrow-down arrow-fade" id="foldersDown">↓</div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-icons">
+    <a href="https://www.linkedin.com/in/saul-zidulka-bejcek" target="_blank" class="icon">
+      <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+    </a>
+    <a href="https://www.instagram.com/saul_5607/" target="_blank" class="icon">
+      <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+    </a>
+    <a href="mailto:saulzb@hotmail.com" class="icon">
+      <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,6 12,13 22,6"/></svg>
+    </a>
+  </div>
+</section>
+
+<script>
+window.history.scrollRestoration = "manual";
+
+/* ---------------- INITIAL POSITION ---------------- */
+window.addEventListener("load", () => {
+  if (sessionStorage.getItem("returnToFolders") === "true") {
+    document.getElementById("folders").scrollIntoView({behavior: "auto"});
+    sessionStorage.removeItem("returnToFolders");
+  } else {
+    document.getElementById("hero").scrollIntoView({behavior: "auto"});
+  }
+});
+
+/* ---------------- CONTENTFUL CONFIG ---------------- */
+const SPACE_ID = 'YOUR_SPACE_ID';
+const ACCESS_TOKEN = 'YOUR_ACCESS_TOKEN';
+
+const categories = [
+  { label: "Summer 2026 - Yukon", page: "Neon-lights.html", contentfulCategory: "Summer 2026 - Yukon" },
+  { label: "Wildlife + Adventure", page: "raw-pnw.html", contentfulCategory: "Wildlife + Adventure" },
+  { label: "Double Exposures", page: "DoubleExpo.html", contentfulCategory: "Double Exposures" },
+  { label: "Creatives", page: "crystallite.html", contentfulCategory: "Creatives" }
+];
+
+const grid = document.getElementById("folderGrid");
+
+/* ---------------- FETCH FIRST PHOTO FROM CONTENTFUL ---------------- */
+async function fetchFirstPhoto(categoryName) {
+  const res = await fetch(
+    `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
+  );
+  const data = await res.json();
+  const assets = {};
+  data.includes.Asset.forEach(a => assets[a.sys.id] = a.fields.file.url);
+
+  const item = data.items.find(i => i.fields.category === categoryName);
+  if(item && item.fields.photo && assets[item.fields.photo.sys.id]){
+    return "https:" + assets[item.fields.photo.sys.id];
+  }
+  return null;
+}
+
+/* ---------------- CREATE FOLDERS ---------------- */
+async function createFolders() {
+  for(const cat of categories){
+    const preview = await fetchFirstPhoto(cat.contentfulCategory);
+
+    const folder = document.createElement("div");
+    folder.className = "folder";
+
+    folder.innerHTML = `
+      <div class="folder-stack">
+        <div class="trail t4"></div>
+        <div class="trail t3"></div>
+        <div class="trail t2"></div>
+        <div class="trail t1"></div>
+        <div class="folder-main">
+          <div class="folder-tab"></div>
+          ${preview ? `<img class="folder-preview" src="${preview}" alt="Preview">` : ""}
+        </div>
+      </div>
+      <span>${cat.label}</span>
+    `;
+
+    folder.onclick = () => { window.location.href = cat.page; };
+    grid.appendChild(folder);
+  }
+}
+
+/* ---------------- INITIALIZE ---------------- */
+createFolders();
+
+/* ---------------- ARROWS ---------------- */
+document.getElementById("heroDown").onclick = () => document.getElementById("folders").scrollIntoView();
+document.getElementById("foldersDown").onclick = () => document.getElementById("contact").scrollIntoView();
+
+/* ---------------- ARROW FADE ---------------- */
+setTimeout(() => {
+  document.getElementById("foldersDown").classList.add("arrow-visible");
+}, 3000);
+</script>
+
+</body>
+</html>section.visible { opacity:1; }
 
 /* ---------------- HERO ---------------- */
 #hero {

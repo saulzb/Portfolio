@@ -32,9 +32,151 @@ section {
   flex-direction:column;
   align-items:center;
   justify-content:flex-start;
-  gap:40px;
+  gap:18px; /* slightly tighter */
   position: relative;
   z-index: 2;
+  padding-top:80px;
+}
+
+/* ---------------- BACK ---------------- */
+.back-home {
+  position:absolute;
+  top:30px;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
+  font-size:0.75rem;
+  color:rgba(204,204,204,0.5);
+  text-decoration:none;
+  z-index:10;
+}
+.back-home:hover { color:rgba(255,255,255,0.8); }
+
+/* ---------------- PRISM ---------------- */
+.prism {
+  position:relative;
+  width:280px;
+  height:68px;
+  overflow:hidden;
+  clip-path: polygon(8% 0%,100% 0%,100% 100%,8% 100%,0% 50%);
+  background:linear-gradient(135deg,rgba(255,255,255,0.16),rgba(255,255,255,0.04) 45%,rgba(255,255,255,0.1));
+  border:1px solid rgba(255,255,255,0.25);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08),0 18px 36px rgba(0,0,0,0.75);
+}
+
+.prism::before {
+  content:"";
+  position:absolute;
+  left:0; top:0;
+  width:22px; height:100%;
+  background:linear-gradient(to bottom,rgba(255,255,255,0.35),rgba(255,255,255,0.02));
+  clip-path: polygon(0 50%,100% 0,100% 100%);
+}
+
+.inner-face-right {
+  position:absolute;
+  right:0; top:0;
+  width:34px; height:100%;
+  opacity:0.35;
+  background:linear-gradient(to right,rgba(255,255,255,0.35),rgba(255,255,255,0.08),rgba(255,255,255,0));
+  clip-path: polygon(0% 50%,100% 0%,100% 100%);
+}
+
+.inner-face-horizontal {
+  position:absolute;
+  left:-10%; top:46%;
+  width:120%; height:18%;
+  opacity:0.28;
+  background:linear-gradient(to bottom,rgba(255,255,255,0.35),rgba(255,255,255,0.08),rgba(255,255,255,0));
+  clip-path: polygon(0% 0%,100% 8%,100% 100%,0% 92%);
+}
+
+.prism-text {
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:0.8rem;
+  letter-spacing:0.32em;
+  filter: blur(0.45px);
+}
+
+/* ---------------- NEW DESCRIPTION ---------------- */
+.prism-desc {
+  max-width:420px;
+  text-align:center;
+  font-size:0.6rem;
+  letter-spacing:0.35px;
+  line-height:1.4;
+  opacity:0.75;
+  color:#ffffff;
+  margin-top:6px;
+}
+
+/* ---------------- GRID ---------------- */
+.category-row {
+  display:flex;
+  flex-wrap:wrap;
+  gap:40px;
+  justify-content:center;
+  max-width:1000px;
+  margin:0 auto;
+  opacity:0;
+  animation:fadeIn 0.8s ease forwards;
+}
+
+@keyframes fadeIn { to { opacity:1; } }
+
+#photoSections { padding-bottom:80px; }
+
+/* images unchanged... */
+
+/* ---------------- MOBILE ---------------- */
+@media (max-width:768px) {
+  section { padding-top:80px; gap:14px; }
+  #photoSections { padding-bottom:60px; }
+
+  .prism-desc {
+    font-size:0.52rem;
+    max-width:300px;
+  }
+}
+
+@media (max-width:480px) {
+  .category-row { gap:20px; }
+}
+</style>
+</head>
+
+<body>
+
+<section>
+<a href="#" class="back-home" onclick="goHome(event)">Back to home</a>
+
+<script>
+function goHome(e) {
+  e.preventDefault();
+  sessionStorage.setItem("returnToFolders", "true");
+  window.location.href = "index.html";
+}
+</script>
+
+  <div class="prism">
+    <div class="inner-face-right"></div>
+    <div class="inner-face-horizontal"></div>
+    <div class="prism-text">Creatives</div>
+  </div>
+
+  <!-- ✅ NEW DESCRIPTION TEXT -->
+  <div class="prism-desc">
+    Abstract compositions, layered visuals, and experimental creative work.
+  </div>
+
+  <div id="photoSections"></div>
+</section>
+
+<!-- LIGHTBOX + JS unchanged -->  z-index: 2;
   padding-top:80px;
 }
 

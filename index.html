@@ -54,7 +54,16 @@ section.visible { opacity:1; }
   transition: opacity 1.5s ease;
 }
 
-#hero .arrow-down { opacity:0.75; }
+#hero .arrow-down {
+  opacity:0.75;
+
+  /* thicker arrow (only hero) */
+  text-shadow: 
+    0.5px 0 currentColor,
+   -0.5px 0 currentColor,
+    0 0.5px currentColor,
+    0 -0.5px currentColor;
+}
 
 .arrow-fade { opacity:0; pointer-events:none; }
 .arrow-visible { opacity:0.75; pointer-events:auto; cursor:pointer; }
@@ -117,11 +126,17 @@ section.visible { opacity:1; }
 /* ---------------- MOBILE ---------------- */
 @media (max-width:768px){
   #hero { background:url('SAULZIDULKABEJCEK-5.jpg') center/cover no-repeat; }
+
+  /* NEW: folders background only on mobile */
+  #folders {
+    background: url('websitebackground2.jpg') center/cover no-repeat;
+  }
+
   .folder-grid { grid-template-columns: repeat(2,1fr); gap:48px 24px; padding:0 24px; }
   .folder { transform: scale(0.85); }
   .contact-icons { gap:48px; }
   .icon svg { width:30px; height:30px; stroke-width:1.2; }
-  .folder-preview { display:none; } /* hide previews on mobile */
+  .folder-preview { display:none; }
 }
 </style>
 </head>
@@ -207,16 +222,15 @@ async function renderFolders(){
   for(const cat of categories){
     const photos = await fetchPhotos(cat.contentName);
     
-    if(photos.length === 0) continue; // skip empty folders
+    if(photos.length === 0) continue;
     
     const folder = document.createElement("div");
     folder.className = "folder";
     
-    // previews (max 3)
     const previews = photos.slice(0,3).map((url, idx)=>{
       const rotate = Math.floor(Math.random() * 10 - 5);
       return `<img src="${url}?w=88&h=64&fm=webp&q=85" 
-                  class="folder-preview folder-preview-${idx}" 
+                  class="folder-preview" 
                   style="transform: rotate(${rotate}deg);">`;
     }).join('');
     
@@ -249,7 +263,6 @@ const foldersDown = document.getElementById("foldersDown");
 heroDown.onclick = () => { document.getElementById("folders").scrollIntoView(); };
 foldersDown.onclick = () => { document.getElementById("contact").scrollIntoView(); };
 
-/* ---------------- ARROW FADE ---------------- */
 setTimeout(() => { foldersDown.classList.add("arrow-visible"); }, 3000);
 </script>
 

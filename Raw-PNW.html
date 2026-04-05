@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saul Zidulka-Bejcek | Pacific Northwest</title>
+<title>Saul Zidulka-Bejcek | Double Exposures</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
 
@@ -117,6 +117,20 @@ section {
 .prism-c { color:#64d2ff; transform:translateX(2px);  filter:blur(0.7px); }
 .prism-b { color:#0a84ff; transform:translateX(3px);  filter:blur(0.9px); }
 
+/* ---------------- DESCRIPTION ---------------- */
+.prism-desc {
+  margin-top:-20px;
+  font-size:0.6rem;
+  letter-spacing:0.4px;
+  opacity:0;
+  color:#ffffff;
+  text-align:center;
+  max-width:420px;
+  line-height:1.4;
+  transition:opacity 1.2s ease;
+}
+.prism-desc.visible { opacity:0.75; }
+
 /* ---------------- GRID ---------------- */
 .category-row {
   display:flex;
@@ -148,60 +162,10 @@ section {
 
   transition-property: opacity, filter, box-shadow, border-color;
   transition-duration: 0.6s, 0.15s, 0.15s, 0.3s;
-  transition-timing-function: ease, ease, ease, ease;
-  transition-delay: var(--fade-delay, 0ms), 0ms, 0ms, 0ms;
-
-  will-change: filter, box-shadow, border-color;
+  transition-delay: var(--fade-delay, 0ms);
 }
 
 .category-row img.loaded { filter: blur(0); opacity:1; }
-
-.category-row img::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 6px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04) 45%, rgba(255,255,255,0.08));
-  border: 1px solid rgba(255,255,255,0.2);
-  box-shadow: 
-    inset 0 0 0 1px rgba(255,255,255,0.1),
-    inset -2px -2px 8px rgba(0,0,0,0.3),
-    inset 2px 2px 8px rgba(255,255,255,0.15);
-}
-
-.category-row img::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 6px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  background: 
-    radial-gradient(ellipse at 15% 15%, rgba(255,69,58,0.25) 0%, transparent 40%),
-    radial-gradient(ellipse at 85% 85%, rgba(100,210,255,0.25) 0%, transparent 40%);
-}
-
-.category-row img:hover::before { opacity:1; }
-.category-row img:hover::after { opacity:1; }
-
-.category-row img:hover {
-  filter: blur(0) brightness(1.06) contrast(1.12);
-  border-color: rgba(255,255,255,0.3);
-  box-shadow: 
-    -1px -1px 0 rgba(255,69,58,0.3),
-    -0.5px -0.5px 0 rgba(255,159,10,0.25),
-    0 0 0 rgba(255,214,10,0.2),
-    0.5px 0.5px 0 rgba(50,215,75,0.25),
-    1px 1px 0 rgba(100,210,255,0.3),
-    1.5px 1.5px 0 rgba(10,132,255,0.2),
-    0 0 12px rgba(255,255,255,0.25),
-    0 0 20px rgba(255,255,255,0.1),
-    0 8px 16px rgba(0,0,0,0.45);
-}
 
 /* ---------------- LIGHTBOX ---------------- */
 .lightbox {
@@ -215,31 +179,24 @@ section {
   transition:opacity 0.35s ease;
   z-index:999;
 }
-
 .lightbox.show { display:flex; opacity:1; }
 
 .lightbox-bg {
   position:absolute;
   inset:0;
   background-position:center;
-  background-repeat:no-repeat;
   background-size:contain;
-  filter: blur(28px) saturate(105%) brightness(0.7) contrast(110%);
+  filter: blur(28px);
   opacity:0.45;
   transform:scale(1.25);
-  pointer-events:none;
 }
 
 .lightbox img {
-  position:relative;
   max-width:90vw;
   max-height:90vh;
-  z-index:2;
   opacity:0;
   transition:opacity 0.35s ease;
-  cursor: zoom-out;
 }
-
 .lightbox img.visible { opacity:1; }
 
 .nav-mark {
@@ -249,24 +206,9 @@ section {
   font-size:3rem;
   color:rgba(204,204,204,0.4);
   cursor:pointer;
-  z-index:3;
-  user-select:none;
 }
 .nav-left { left:20px; }
 .nav-right { right:20px; }
-
-@media (max-width:768px) {
-  section { padding-top:80px; gap:30px; }
-  #photoSections { padding-bottom:60px; }
-}
-
-@media (max-width:480px) {
-  .category-row { gap:20px; }
-  .category-row img {
-    flex: 1 1 calc(50% - 20px);
-    max-width:140px;
-  }
-}
 </style>
 </head>
 
@@ -275,29 +217,25 @@ section {
 <section>
 <a href="#" class="back-home" onclick="goHome(event)">Back to home</a>
 
-<script>
-function goHome(e) {
-  e.preventDefault();
-  sessionStorage.setItem("returnToFolders", "true");
-  window.location.href = "index.html";
-}
-</script>
-
-  <div class="prism">
-    <div class="inner-face-right"></div>
-    <div class="inner-face-horizontal"></div>
-    <div class="prism-text">
-      Wildlife + Adventure
-      <span class="prism-r">Wildlife + Adventure</span>
-      <span class="prism-o">Wildlife + Adventure</span>
-      <span class="prism-y">Wildlife + Adventure</span>
-      <span class="prism-g">Wildlife + Adventure</span>
-      <span class="prism-c">Wildlife + Adventure</span>
-      <span class="prism-b">Wildlife + Adventure</span>
-    </div>
+<div class="prism">
+  <div class="inner-face-right"></div>
+  <div class="inner-face-horizontal"></div>
+  <div class="prism-text">
+    Double Exposures
+    <span class="prism-r">Double Exposures</span>
+    <span class="prism-o">Double Exposures</span>
+    <span class="prism-y">Double Exposures</span>
+    <span class="prism-g">Double Exposures</span>
+    <span class="prism-c">Double Exposures</span>
+    <span class="prism-b">Double Exposures</span>
   </div>
+</div>
 
-  <div id="photoSections"></div>
+<div class="prism-desc" id="prismDesc">
+Photos on film, layered exposures creating surreal compositions and fisheye overlays.
+</div>
+
+<div id="photoSections"></div>
 </section>
 
 <div class="lightbox" id="lightbox">
@@ -308,135 +246,81 @@ function goHome(e) {
 </div>
 
 <script>
-const SPACE_ID = '5w319pzc4eiq';
-const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
-const CATEGORY_NAME = "Raw PNW";
+function goHome(e){
+  e.preventDefault();
+  sessionStorage.setItem("returnToFolders","true");
+  window.location.href="index.html";
+}
 
-let gallery = [];
-let currentIndex = 0;
-const fullImageCache = new Map();
+/* fade-in */
+window.addEventListener("load",()=>{
+  setTimeout(()=>document.getElementById("prismDesc").classList.add("visible"),400);
+});
+
+/* ORIGINAL JS */
+const SPACE_ID='5w319pzc4eiq';
+const ACCESS_TOKEN='l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
+const CATEGORY_NAME="Double-Expo";
+
+let gallery=[];
+let currentIndex=0;
+const fullImageCache=new Map();
 
 async function fetchPhotos(){
-  const res = await fetch(
-    `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`
-  );
-  const data = await res.json();
+  const res=await fetch(`https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`);
+  const data=await res.json();
 
-  const assets = {};
-  data.includes.Asset.forEach(a => assets[a.sys.id] = a.fields.file.url);
+  const assets={};
+  data.includes.Asset.forEach(a=>assets[a.sys.id]=a.fields.file.url);
 
-  gallery = data.items
-    .filter(i => i.fields.category === CATEGORY_NAME)
-    .map(i => `https:${assets[i.fields.photo.sys.id]}`);
+  gallery=data.items
+    .filter(i=>i.fields.category===CATEGORY_NAME)
+    .map(i=>`https:${assets[i.fields.photo.sys.id]}`);
 
   renderPhotos();
 }
 
 function renderPhotos(){
-  const row = document.createElement("div");
-  row.className = "category-row";
+  const row=document.createElement("div");
+  row.className="category-row";
 
-  const dpr = window.devicePixelRatio || 1;
-  const thumbWidth = Math.ceil(180 * dpr * 2);
-  const fullSize = Math.ceil(Math.max(innerWidth, innerHeight) * dpr * 0.9);
+  const dpr=window.devicePixelRatio||1;
+  const thumbWidth=Math.ceil(180*dpr*2);
+  const fullSize=Math.ceil(Math.max(innerWidth,innerHeight)*dpr*0.9);
 
   gallery.forEach((src,i)=>{
-    const img = document.createElement("img");
-    img.src = `${src}?w=120&fm=webp&q=20`; // larger placeholder
-    img.loading="lazy";
-    img.decoding="async";
-    img.style.setProperty('--fade-delay', `${i * 60}ms`);
+    const img=document.createElement("img");
+    img.src=`${src}?w=120&fm=webp&q=20`;
+    img.style.setProperty('--fade-delay',`${i*60}ms`);
 
-    const hi = new Image();
-    hi.src = `${src}?w=${thumbWidth}&fm=webp&q=85`;
-    hi.onload = () => {
-      img.src = hi.src;
+    const hi=new Image();
+    hi.src=`${src}?w=${thumbWidth}&fm=webp&q=85`;
+    hi.onload=()=>{
+      img.src=hi.src;
       img.classList.add("loaded");
-
-      if(!fullImageCache.has(i)){
-        const preload = new Image();
-        preload.src = `${src}?w=${fullSize}&fm=webp&q=90`;
-        fullImageCache.set(i,preload);
-      }
     };
 
-    img.onclick = ()=>openLightbox(i);
+    img.onclick=()=>openLightbox(i);
     row.appendChild(img);
   });
 
   document.getElementById("photoSections").appendChild(row);
 }
 
-// LIGHTBOX
-const lightbox = document.getElementById("lightbox");
-const lightboxImg = document.getElementById("lightbox-img");
-const lightboxBg = document.getElementById("lightbox-bg");
-
+/* lightbox same */
 function openLightbox(i){
-  currentIndex = i;
+  currentIndex=i;
   lightbox.classList.add("show");
   showImage(i);
 }
 
 function showImage(i){
-  currentIndex = i;
+  currentIndex=i;
   lightboxImg.classList.remove("visible");
-
-  const cached = fullImageCache.get(i);
-  if(cached && cached.complete){
-    requestAnimationFrame(()=>{
-      lightboxImg.src = cached.src;
-      lightboxImg.classList.add("visible");
-    });
-  }
-
-  lightboxBg.style.backgroundImage = `url(${gallery[i]}?w=240&fm=webp&q=20)`;
-  preloadNext(i);
-}
-
-function preloadNext(i){
-  const next = (i+1)%gallery.length;
-  if(!fullImageCache.has(next)){
-    const dpr = window.devicePixelRatio||1;
-    const size = Math.ceil(Math.max(innerWidth,innerHeight)*dpr*0.9);
-    const img = new Image();
-    img.src = `${gallery[next]}?w=${size}&fm=webp&q=85`;
-    fullImageCache.set(next,img);
-  }
-}
-
-// NAVIGATION
-lightbox.addEventListener("click", e=>{
-  if(e.target === lightbox) lightbox.classList.remove("show");
-});
-document.querySelector(".nav-right").onclick=e=>{ e.stopPropagation(); showImage((currentIndex+1)%gallery.length); };
-document.querySelector(".nav-left").onclick=e=>{ e.stopPropagation(); showImage((currentIndex-1+gallery.length)%gallery.length); };
-lightboxImg.onclick=e=>e.stopPropagation();
-document.addEventListener("keydown", e=>{
-  if(!lightbox.classList.contains("show")) return;
-  if(e.key==="ArrowRight") showImage((currentIndex+1)%gallery.length);
-  if(e.key==="ArrowLeft") showImage((currentIndex-1+gallery.length)%gallery.length);
-  if(e.key==="Escape") lightbox.classList.remove("show");
-});
-
-// MOBILE SWIPE
-let touchStartX = 0;
-let touchEndX = 0;
-
-lightbox.addEventListener("touchstart", e => {
-  touchStartX = e.changedTouches[0].screenX;
-});
-
-lightbox.addEventListener("touchend", e => {
-  touchEndX = e.changedTouches[0].screenX;
-  handleSwipe();
-});
-
-function handleSwipe() {
-  const diff = touchEndX - touchStartX;
-  if (Math.abs(diff) < 40) return; // ignore tiny swipes
-  if (diff > 0) showImage((currentIndex - 1 + gallery.length) % gallery.length);
-  else showImage((currentIndex + 1) % gallery.length);
+  requestAnimationFrame(()=>{
+    lightboxImg.src=gallery[i];
+    lightboxImg.classList.add("visible");
+  });
 }
 
 fetchPhotos();

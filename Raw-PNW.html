@@ -128,6 +128,7 @@ section {
   max-width:420px;
   line-height:1.4;
   transition:opacity 1.2s ease;
+  padding:0 10px; /* default horizontal padding */
 }
 .prism-desc.visible { opacity:0.75; }
 
@@ -193,6 +194,12 @@ section {
 @media (max-width:768px) {
   section { padding-top:80px; gap:30px; }
   #photoSections { padding-bottom:60px; }
+
+  /* Mobile-specific description tweaks */
+  .prism-desc {
+    margin-top:12px;  /* more space below prism title */
+    padding: 0 20px;  /* increase horizontal padding for smaller screens */
+  }
 }
 
 @media (max-width:480px) {

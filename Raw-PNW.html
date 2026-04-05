@@ -117,7 +117,7 @@ section {
 .prism-c { color:#64d2ff; transform:translateX(2px);  filter:blur(0.7px); }
 .prism-b { color:#0a84ff; transform:translateX(3px);  filter:blur(0.9px); }
 
-/* ----------- DESCRIPTION (ADDED ONLY) ----------- */
+/* ---------------- DESCRIPTION ---------------- */
 .prism-desc {
   margin-top:-20px;
   font-size:0.6rem;
@@ -146,7 +146,6 @@ section {
 
 #photoSections { padding-bottom:80px; }
 
-/* (UNCHANGED rest of your CSS) */
 .category-row img {
   flex: 1 1 120px;
   max-width:180px;
@@ -162,12 +161,12 @@ section {
   border:2px solid rgba(255,255,255,0.08);
   transition-property: opacity, filter, box-shadow, border-color;
   transition-duration: 0.6s, 0.15s, 0.15s, 0.3s;
-  transition-delay: var(--fade-delay, 0ms);
+  transition-delay: var(--fade-delay,0ms);
 }
 
 .category-row img.loaded { filter: blur(0); opacity:1; }
 
-/* ---------------- LIGHTBOX (UNCHANGED) ---------------- */
+/* ---------------- LIGHTBOX ---------------- */
 .lightbox {
   position:fixed;
   inset:0;
@@ -179,23 +178,36 @@ section {
   transition:opacity 0.35s ease;
   z-index:999;
 }
+
 .lightbox.show { display:flex; opacity:1; }
 
-.lightbox img {
+.lightbox-img {
   max-width:90vw;
   max-height:90vh;
   opacity:0;
   transition:opacity 0.35s ease;
 }
-.lightbox img.visible { opacity:1; }
+.lightbox-img.visible { opacity:1; }
+
+/* ---------------- MEDIA QUERIES ---------------- */
+@media (max-width:768px) {
+  section { padding-top:80px; gap:30px; }
+  #photoSections { padding-bottom:60px; }
+}
+
+@media (max-width:480px) {
+  .category-row { gap:20px; }
+  .category-row img {
+    flex: 1 1 calc(50% - 20px);
+    max-width:140px;
+  }
+}
 </style>
 </head>
 
 <body>
-
 <section>
 <a href="#" class="back-home" onclick="goHome(event)">Back to home</a>
-
 <script>
 function goHome(e){
   e.preventDefault();
@@ -218,16 +230,15 @@ function goHome(e){
   </div>
 </div>
 
-<!-- ADDED -->
 <div class="prism-desc" id="prismDesc">
-
+My favorite animal photos and photos of the world. Mostly on Vancouver Island.
 </div>
 
 <div id="photoSections"></div>
 </section>
 
 <div class="lightbox" id="lightbox">
-  <img id="lightbox-img">
+  <img id="lightbox-img" class="lightbox-img">
 </div>
 
 <script>
@@ -235,13 +246,13 @@ window.addEventListener("load",()=>{
   setTimeout(()=>document.getElementById("prismDesc").classList.add("visible"),400);
 });
 
-/* ORIGINAL JS UNCHANGED */
 const SPACE_ID='5w319pzc4eiq';
 const ACCESS_TOKEN='l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
 const CATEGORY_NAME="Raw PNW";
 
 let gallery=[];
 let currentIndex=0;
+const fullImageCache=new Map();
 
 async function fetchPhotos(){
   const res=await fetch(`https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=photo&access_token=${ACCESS_TOKEN}&include=1`);
@@ -250,10 +261,7 @@ async function fetchPhotos(){
   const assets={};
   data.includes.Asset.forEach(a=>assets[a.sys.id]=a.fields.file.url);
 
-  gallery=data.items
-    .filter(i=>i.fields.category===CATEGORY_NAME)
-    .map(i=>`https:${assets[i.fields.photo.sys.id]}`);
-
+  gallery=data.items.filter(i=>i.fields.category===CATEGORY_NAME).map(i=>`https:${assets[i.fields.photo.sys.id]}`);
   renderPhotos();
 }
 
@@ -261,26 +269,85 @@ function renderPhotos(){
   const row=document.createElement("div");
   row.className="category-row";
 
+  const dpr=window.devicePixelRatio||1;
+  const thumbWidth=Math.ceil(180*dpr*2);
+  const fullSize=Math.ceil(Math.max(innerWidth,innerHeight)*dpr*0.9);
+
   gallery.forEach((src,i)=>{
     const img=document.createElement("img");
     img.src=`${src}?w=120&fm=webp&q=20`;
+    img.loading="lazy";
+    img.decoding="async";
     img.style.setProperty('--fade-delay',`${i*60}ms`);
 
     const hi=new Image();
-    hi.src=`${src}?w=360&fm=webp&q=85`;
+    hi.src=`${src}?w=${thumbWidth}&fm=webp&q=85`;
     hi.onload=()=>{
       img.src=hi.src;
       img.classList.add("loaded");
+
+      if(!fullImageCache.has(i)){
+        const preload=new Image();
+        preload.src=`${src}?w=${fullSize}&fm=webp&q=90`;
+        fullImageCache.set(i,preload);
+      }
     };
 
+    img.onclick=()=>openLightbox(i);
     row.appendChild(img);
   });
 
   document.getElementById("photoSections").appendChild(row);
 }
 
+/* LIGHTBOX */
+const lightbox=document.getElementById("lightbox");
+const lightboxImg=document.getElementById("lightbox-img");
+
+function openLightbox(i){
+  currentIndex=i;
+  lightbox.classList.add("show");
+  showImage(i);
+}
+
+function showImage(i){
+  currentIndex=i;
+  lightboxImg.classList.remove("visible");
+
+  const cached=fullImageCache.get(i);
+  if(cached&&cached.complete){
+    requestAnimationFrame(()=>{lightboxImg.src=cached.src; lightboxImg.classList.add("visible");});
+  } else {
+    lightboxImg.src=gallery[i];
+    lightboxImg.classList.add("visible");
+  }
+
+  preloadNext(i);
+}
+
+function preloadNext(i){
+  const next=(i+1)%gallery.length;
+  if(!fullImageCache.has(next)){
+    const dpr=window.devicePixelRatio||1;
+    const size=Math.ceil(Math.max(innerWidth,innerHeight)*dpr*0.9);
+    const img=new Image();
+    img.src=`${gallery[next]}?w=${size}&fm=webp&q=85`;
+    fullImageCache.set(next,img);
+  }
+}
+
+/* NAVIGATION */
+lightbox.addEventListener("click", e=>{
+  if(e.target===lightbox) lightbox.classList.remove("show");
+});
+document.addEventListener("keydown", e=>{
+  if(!lightbox.classList.contains("show")) return;
+  if(e.key==="ArrowRight") showImage((currentIndex+1)%gallery.length);
+  if(e.key==="ArrowLeft") showImage((currentIndex-1+gallery.length)%gallery.length);
+  if(e.key==="Escape") lightbox.classList.remove("show");
+});
+
 fetchPhotos();
 </script>
-
 </body>
 </html>

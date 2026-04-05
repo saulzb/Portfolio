@@ -128,6 +128,7 @@ section {
   max-width:420px;
   line-height:1.4;
   transition:opacity 1.2s ease;
+  padding:0 10px; /* default horizontal padding */
 }
 .prism-desc.visible { opacity:0.75; }
 
@@ -209,7 +210,16 @@ section {
 
 /* ---------------- MOBILE ---------------- */
 @media (max-width:768px){
-  .prism-desc { font-size:0.52rem; max-width:300px; }
+  .prism-desc {
+    font-size:0.52rem;       /* slightly larger on mobile */
+    max-width:300px;
+    margin-top:12px;         /* more space from prism title */
+    padding:0 20px;          /* more horizontal padding for small screens */
+  }
+  .category-row img {
+    flex: 1 1 calc(50% - 20px);
+    max-width:140px;
+  }
 }
 </style>
 </head>
@@ -242,7 +252,7 @@ function goHome(e){
 </div>
 
 <div class="prism-desc" id="prismDesc">
-  
+  My favorite creative works and artistic experiments. Mostly from recent projects.
 </div>
 
 <div id="photoSections"></div>

@@ -12,42 +12,53 @@
 
 html, body {
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   font-family: 'Michroma', sans-serif;
-  background: #070803;
-  color: #eee;
-  overflow-x: hidden;
-  scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
+  background:#070803;
+  color:#eee;
+  overflow-x:hidden;
+  scroll-behavior:smooth;
+}
+
+/* safer than strict snap (fixes mobile cut-off issues) */
+body {
+  scroll-snap-type: y proximity;
 }
 
 section {
-  width: 100%;
-  height: 100vh;
+  width:100%;
+  min-height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
+  position:relative;
   scroll-snap-align:start;
-  position: relative;
 }
 
-/* HERO */
+/* ---------------- HERO ---------------- */
 #hero {
-  background: url('SaulHero5.jpg') center/cover no-repeat;
+  background:url('SaulHero5.jpg') center/cover no-repeat;
 }
 
-/* ARROWS */
+/* MOBILE HERO FIX */
+@media (max-width:768px){
+  #hero {
+    background:url('SAULZIDULKABEJCEK-3.jpg') center/cover no-repeat !important;
+  }
+}
+
+/* ---------------- ARROWS ---------------- */
 .arrow-down {
   position:absolute;
   left:50%;
   transform:translateX(-50%);
   bottom:40px;
   font-size:1.2rem;
-  color: rgba(255,255,255,0.85);
+  color:rgba(255,255,255,0.85);
   cursor:pointer;
 }
 
-/* GRID */
+/* ---------------- GRID ---------------- */
 .folder-grid {
   display:grid;
   grid-template-columns: repeat(3, 1fr);
@@ -57,10 +68,10 @@ section {
   justify-items:center;
 }
 
-/* Yukon centered */
+/* Yukon centered on desktop */
 .folder-grid .folder:first-child {
-  grid-column: 1 / -1;
-  justify-self: center;
+  grid-column:1 / -1;
+  justify-self:center;
 }
 
 .folder {
@@ -68,11 +79,16 @@ section {
   flex-direction:column;
   align-items:center;
   cursor:pointer;
-  position: relative;
+  position:relative;
 }
 
-/* folder base */
-.folder-stack { position: relative; width:144px; height:64px; }
+/* ---------------- FOLDER ---------------- */
+.folder-stack {
+  position:relative;
+  width:144px;
+  height:64px;
+}
+
 .folder-main {
   position:absolute;
   right:0;
@@ -84,6 +100,7 @@ section {
   box-shadow:2px 2px 0 #000;
   z-index:10;
 }
+
 .folder-tab {
   position:absolute;
   top:-8px;
@@ -93,6 +110,7 @@ section {
   background:#e4c97a;
   border-radius:2px;
 }
+
 .trail { position:absolute; top:0; width:88px; height:64px; border-radius:3px; }
 .trail.t1 { right:12px; background:#c9a84a; }
 .trail.t2 { right:26px; background:#9b5c5c; }
@@ -113,42 +131,43 @@ section {
 }
 
 /* ---------------- YUKON MENU ---------------- */
-.yukon-folder { position: relative; }
+.yukon-folder { position:relative; }
 
 .yukon-menu {
   position:absolute;
   top:50%;
   left:50%;
-  transform: translate(-50%, -40%) scale(0.85);
+  transform:translate(-50%, -40%) scale(0.85);
   width:260px;
   padding:18px;
   display:grid;
-  grid-template-columns: repeat(2,1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap:12px;
 
-  background: rgba(20,20,20,0.95);
-  backdrop-filter: blur(6px);
+  background:rgba(20,20,20,0.95);
+  backdrop-filter:blur(6px);
   border-radius:12px;
 
   opacity:0;
   pointer-events:none;
-  transition:0.3s ease;
+  transition:0.25s ease;
   z-index:50;
 }
 
+/* hover desktop */
 .yukon-folder:hover .yukon-menu {
   opacity:1;
-  transform: translate(-50%, -50%) scale(1);
+  transform:translate(-50%, -50%) scale(1);
   pointer-events:auto;
 }
 
+/* mobile open state */
 .yukon-folder.open .yukon-menu {
   opacity:1;
-  transform: translate(-50%, -50%) scale(1);
+  transform:translate(-50%, -50%) scale(1);
   pointer-events:auto;
 }
 
-/* submenu items */
 .yukon-item {
   padding:10px;
   font-size:0.65rem;
@@ -156,29 +175,40 @@ section {
   border-radius:6px;
   cursor:pointer;
   color:#000;
-  transition: transform 0.2s ease, filter 0.2s ease;
+  transition:transform 0.2s ease, filter 0.2s ease;
 }
 
 .yukon-item:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.1);
+  transform:translateY(-2px);
+  filter:brightness(1.1);
 }
 
-/* COLOURS (your folder palette) */
-.yukon-item.wildlife { background:#c9a84a; }
-.yukon-item.landscapes { background:#9b5c5c; }
-.yukon-item.drawings { background:#6e7f52; }
-.yukon-item.creatives { background:#5a6b8c; }
+/* palette colors */
+.wildlife { background:#c9a84a; }
+.landscapes { background:#9b5c5c; }
+.drawings { background:#6e7f52; }
+.creatives { background:#5a6b8c; }
 
-/* fade folder when open */
 .yukon-folder.open .folder-stack {
   opacity:0.25;
 }
 
-/* MOBILE */
+/* ---------------- CONTACT ---------------- */
+#contact {
+  background:#070803;
+}
+
+.contact-icons {
+  display:flex;
+  gap:60px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+/* ---------------- MOBILE ---------------- */
 @media (max-width:768px){
   .folder-grid {
-    grid-template-columns: repeat(2,1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap:48px 24px;
     padding:0 24px;
   }
@@ -187,19 +217,30 @@ section {
     grid-column:auto;
   }
 
-  .folder { transform: scale(0.85); }
+  .folder { transform:scale(0.85); }
 }
 </style>
 </head>
 
 <body>
 
+<!-- HERO -->
 <section id="hero">
   <div class="arrow-down">↓</div>
 </section>
 
+<!-- FOLDERS -->
 <section id="folders">
   <div class="folder-grid" id="folderGrid"></div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-icons">
+    <a href="#">LinkedIn</a>
+    <a href="#">Instagram</a>
+    <a href="#">Email</a>
+  </div>
 </section>
 
 <script>
@@ -210,19 +251,16 @@ const categories = [
   { label:"Creatives", page:"crystallite.html", contentName:"Crystallite" },
 ];
 
-function renderFolders(){
+function render(){
   const grid = document.getElementById("folderGrid");
 
   categories.forEach(cat => {
 
-    const folder = document.createElement("div");
-    folder.className = "folder";
-
     const isYukon = cat.label.includes("Yukon");
 
-    if(isYukon){
-      folder.classList.add("yukon-folder");
-    }
+    const folder = document.createElement("div");
+    folder.className = "folder";
+    if(isYukon) folder.classList.add("yukon-folder");
 
     folder.innerHTML = `
       <div class="folder-stack">
@@ -236,12 +274,12 @@ function renderFolders(){
       </div>
 
       ${isYukon ? `
-        <div class="yukon-menu">
-          <div class="yukon-item wildlife" onclick="location.href='yukon-wildlife.html'">Wildlife</div>
-          <div class="yukon-item landscapes" onclick="location.href='yukon-landscapes.html'">Landscapes</div>
-          <div class="yukon-item drawings" onclick="location.href='yukon-drawings.html'">Drawings</div>
-          <div class="yukon-item creatives" onclick="location.href='yukon-creatives.html'">Creatives</div>
-        </div>
+      <div class="yukon-menu">
+        <div class="yukon-item wildlife" onclick="location.href='yukon-wildlife.html'">Wildlife</div>
+        <div class="yukon-item landscapes" onclick="location.href='yukon-landscapes.html'">Landscapes</div>
+        <div class="yukon-item drawings" onclick="location.href='yukon-drawings.html'">Drawings</div>
+        <div class="yukon-item creatives" onclick="location.href='yukon-creatives.html'">Creatives</div>
+      </div>
       ` : ''}
 
       <span>${cat.label}</span>
@@ -261,9 +299,9 @@ function renderFolders(){
   });
 }
 
-renderFolders();
+render();
 
-/* close Yukon menu when clicking outside */
+/* close menu when clicking outside */
 document.addEventListener("click", () => {
   document.querySelectorAll(".yukon-folder").forEach(f => f.classList.remove("open"));
 });

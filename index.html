@@ -28,7 +28,6 @@ section {
   justify-content:center;
   align-items:center;
   scroll-snap-align:start;
-  scroll-snap-stop: always;
   position: relative;
 }
 
@@ -62,7 +61,7 @@ section {
   justify-items:center;
 }
 
-/* Yukon centered on first row (desktop only) */
+/* Yukon centered */
 .folder-grid .folder:first-child {
   grid-column: 1 / -1;
   justify-self: center;
@@ -76,12 +75,8 @@ section {
   position: relative;
 }
 
-.folder-stack {
-  position: relative;
-  width:144px;
-  height:64px;
-}
-
+/* Folder visuals */
+.folder-stack { position: relative; width:144px; height:64px; }
 .folder-main {
   position: absolute;
   right:0;
@@ -93,7 +88,6 @@ section {
   box-shadow:2px 2px 0 #000;
   z-index:10;
 }
-
 .folder-tab {
   position:absolute;
   top:-8px;
@@ -104,19 +98,17 @@ section {
   border-radius:2px;
   box-shadow:1px 1px 0 #000;
 }
-
 .trail { position:absolute; top:0; width:88px; height:64px; border-radius:3px; }
-.trail.t1 { right:12px; background:#c9a84a; z-index:6; }
-.trail.t2 { right:26px; background:#9b5c5c; z-index:5; }
-.trail.t3 { right:40px; background:#6e7f52; z-index:4; }
-.trail.t4 { right:54px; background:#5a6b8c; z-index:3; }
+.trail.t1 { right:12px; background:#c9a84a; }
+.trail.t2 { right:26px; background:#9b5c5c; }
+.trail.t3 { right:40px; background:#6e7f52; }
+.trail.t4 { right:54px; background:#5a6b8c; }
 
 .folder span {
   margin-top:16px;
   width:144px;
   text-align:center;
   font-size:0.7rem;
-  opacity:0.85;
 }
 
 .photo-count {
@@ -131,30 +123,76 @@ section {
   width:88px;
   height:64px;
   object-fit:cover;
-  border-radius:3px 3px 0 0;
   top:-20px;
   right:0;
   opacity:0;
   transition:0.3s;
-  z-index:15;
+}
+.folder:hover .folder-preview { opacity:1; }
+
+/* ---------------- YUKON MENU ---------------- */
+.yukon-folder { position: relative; }
+
+.yukon-menu {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform: translate(-50%, -40%) scale(0.85);
+  width:260px;
+  padding:20px;
+  display:grid;
+  grid-template-columns: repeat(2,1fr);
+  gap:12px;
+
+  background: rgba(20,20,20,0.95);
+  backdrop-filter: blur(6px);
+  border-radius:12px;
+
+  opacity:0;
+  pointer-events:none;
+  transition: all 0.3s ease;
+  z-index:50;
 }
 
-.folder:hover .folder-preview { opacity:1; }
+.yukon-item {
+  background:#e4c97a;
+  color:#000;
+  padding:10px;
+  font-size:0.65rem;
+  text-align:center;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+/* Desktop hover */
+.yukon-folder:hover .yukon-menu {
+  opacity:1;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events:auto;
+}
+
+/* Mobile open state */
+.yukon-folder.open .yukon-menu {
+  opacity:1;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events:auto;
+}
+
+/* Fade base folder slightly */
+.yukon-folder.open .folder-stack {
+  opacity:0.3;
+}
 
 /* MOBILE */
 @media (max-width:768px){
-  #hero { background:url('SAULZIDULKABEJCEK-3.jpg') center/cover no-repeat; }
-
   .folder-grid {
     grid-template-columns: repeat(2,1fr);
     gap:48px 24px;
     padding:0 24px;
   }
 
-  /* Reset Yukon so it behaves normally on mobile */
   .folder-grid .folder:first-child {
-    grid-column: auto;
-    justify-self: center;
+    grid-column:auto;
   }
 
   .folder { transform: scale(0.85); }
@@ -176,9 +214,9 @@ section {
 
 <section id="contact">
   <div class="contact-icons">
-    <a href="https://www.linkedin.com" target="_blank">LinkedIn</a>
-    <a href="https://www.instagram.com" target="_blank">Instagram</a>
-    <a href="mailto:your@email.com">Email</a>
+    <a href="#">LinkedIn</a>
+    <a href="#">Instagram</a>
+    <a href="#">Email</a>
   </div>
 </section>
 
@@ -216,6 +254,12 @@ async function renderFolders(){
     const folder = document.createElement("div");
     folder.className = "folder";
 
+    const isYukon = cat.label.includes("Yukon");
+
+    if (isYukon) {
+      folder.classList.add("yukon-folder");
+    }
+
     const previews = photos.slice(0,3).map(url=>{
       const rotate = Math.floor(Math.random()*10-5);
       return `<img src="${url}?w=88&h=64&fm=webp&q=85"
@@ -234,12 +278,28 @@ async function renderFolders(){
         </div>
         ${previews}
       </div>
+
+      ${isYukon ? `
+        <div class="yukon-menu">
+          <div class="yukon-item" onclick="window.location.href='yukon-wildlife.html'">Wildlife</div>
+          <div class="yukon-item" onclick="window.location.href='yukon-landscapes.html'">Landscapes</div>
+          <div class="yukon-item" onclick="window.location.href='yukon-drawings.html'">Drawings</div>
+          <div class="yukon-item" onclick="window.location.href='yukon-creatives.html'">Creatives</div>
+        </div>
+      ` : ''}
+
       <span>${cat.label}</span>
       <div class="photo-count">${photos.length} photos</div>
     `;
 
-    folder.onclick = () => {
-      window.location.href = cat.page;
+    // Click behavior
+    folder.onclick = (e) => {
+      if (isYukon) {
+        e.stopPropagation();
+        folder.classList.toggle("open");
+      } else {
+        window.location.href = cat.page;
+      }
     };
 
     grid.appendChild(folder);
@@ -247,6 +307,11 @@ async function renderFolders(){
 }
 
 renderFolders();
+
+/* Close Yukon menu when clicking outside */
+document.addEventListener("click", () => {
+  document.querySelectorAll(".yukon-folder").forEach(f => f.classList.remove("open"));
+});
 
 /* ARROWS */
 document.getElementById("heroDown").onclick = () => {

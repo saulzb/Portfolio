@@ -121,40 +121,51 @@ section {
   margin-top:2px;
 }
 
-/* ---------------- YUKON MENU ---------------- */
-.yukon-folder { position:relative; }
+/* ---------------- YUKON SLIDE MENU ---------------- */
+.yukon-folder {
+  position: relative;
+}
 
+/* stack animation when open */
+.yukon-folder .folder-stack {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* SIDE SLIDE PANEL */
 .yukon-menu {
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%, -50%) scale(0.9);
-  width:260px;
-  padding:18px;
-  display:grid;
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translate(10px, -50%);
+
+  width: 260px;
+  padding: 18px;
+
+  display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap:12px;
+  gap: 12px;
 
   background: rgba(20,20,20,0.95);
   backdrop-filter: blur(6px);
-  border-radius:12px;
+  border-radius: 12px;
 
-  opacity:0;
-  pointer-events:none;
-  transition:0.25s ease;
-  z-index:50;
+  opacity: 0;
+  pointer-events: none;
+
+  transition: all 0.35s ease;
+  z-index: 50;
 }
 
-.yukon-folder:hover .yukon-menu {
-  opacity:1;
-  pointer-events:auto;
-  transform:translate(-50%, -50%) scale(1);
-}
-
+/* OPEN STATE */
 .yukon-folder.open .yukon-menu {
-  opacity:1;
-  pointer-events:auto;
-  transform:translate(-50%, -50%) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(24px, -50%);
+}
+
+.yukon-folder.open .folder-stack {
+  opacity: 0.6;
+  transform: translateX(-10px);
 }
 
 .yukon-item {
@@ -171,11 +182,7 @@ section {
 .drawings { background:#6e7f52; }
 .creatives { background:#5a6b8c; }
 
-.yukon-folder.open .folder-stack {
-  opacity:0.25;
-}
-
-/* ---------------- CONTACT (RESTORED ORIGINAL STYLE) ---------------- */
+/* ---------------- CONTACT ---------------- */
 .contact-icons {
   display:flex;
   gap:80px;
@@ -321,7 +328,7 @@ categories.forEach(cat => {
   grid.appendChild(folder);
 });
 
-/* close menu on outside click */
+/* close on outside click */
 document.addEventListener("click", () => {
   document.querySelectorAll(".yukon-folder").forEach(f => f.classList.remove("open"));
 });

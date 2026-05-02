@@ -55,11 +55,17 @@ section {
 /* GRID */
 .folder-grid {
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap:80px;
   max-width:900px;
   padding:0 60px;
   justify-items:center;
+}
+
+/* Yukon centered on first row (desktop only) */
+.folder-grid .folder:first-child {
+  grid-column: 1 / -1;
+  justify-self: center;
 }
 
 .folder {
@@ -69,8 +75,6 @@ section {
   cursor:pointer;
   position: relative;
 }
-
-.folder.empty { opacity:0.6; }
 
 .folder-stack {
   position: relative;
@@ -137,13 +141,22 @@ section {
 
 .folder:hover .folder-preview { opacity:1; }
 
-/* CONTACT */
-.contact-icons { display:flex; gap:80px; }
-
 /* MOBILE */
 @media (max-width:768px){
   #hero { background:url('SAULZIDULKABEJCEK-3.jpg') center/cover no-repeat; }
-  .folder-grid { grid-template-columns: repeat(2,1fr); gap:48px 24px; padding:0 24px; }
+
+  .folder-grid {
+    grid-template-columns: repeat(2,1fr);
+    gap:48px 24px;
+    padding:0 24px;
+  }
+
+  /* Reset Yukon so it behaves normally on mobile */
+  .folder-grid .folder:first-child {
+    grid-column: auto;
+    justify-self: center;
+  }
+
   .folder { transform: scale(0.85); }
   .folder-preview { display:none; }
 }
@@ -203,18 +216,12 @@ async function renderFolders(){
     const folder = document.createElement("div");
     folder.className = "folder";
 
-    if (photos.length === 0) {
-      folder.classList.add("empty");
-    }
-
-    const previews = photos.length > 0
-      ? photos.slice(0,3).map(url=>{
-          const rotate = Math.floor(Math.random()*10-5);
-          return `<img src="${url}?w=88&h=64&fm=webp&q=85"
-                  class="folder-preview"
-                  style="transform: rotate(${rotate}deg);">`;
-        }).join('')
-      : `<div class="folder-preview" style="opacity:0.15; background:#aaa;"></div>`;
+    const previews = photos.slice(0,3).map(url=>{
+      const rotate = Math.floor(Math.random()*10-5);
+      return `<img src="${url}?w=88&h=64&fm=webp&q=85"
+              class="folder-preview"
+              style="transform: rotate(${rotate}deg);">`;
+    }).join('');
 
     folder.innerHTML = `
       <div class="folder-stack">
@@ -228,9 +235,7 @@ async function renderFolders(){
         ${previews}
       </div>
       <span>${cat.label}</span>
-      <div class="photo-count">
-        ${photos.length > 0 ? `${photos.length} photos` : "Coming soon"}
-      </div>
+      <div class="photo-count">${photos.length} photos</div>
     `;
 
     folder.onclick = () => {

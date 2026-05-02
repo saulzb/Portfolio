@@ -10,7 +10,7 @@
 <style>
 * { box-sizing:border-box; margin:0; padding:0; }
 
-/* ---------------- ORIGINAL SCROLL SYSTEM ---------------- */
+/* ---------------- BASE ---------------- */
 html, body {
   width: 100%;
   height: 100%;
@@ -45,17 +45,6 @@ section {
   }
 }
 
-/* ---------------- ARROW ---------------- */
-.arrow-down {
-  position:absolute;
-  left:50%;
-  transform:translateX(-50%);
-  bottom:40px;
-  font-size:1.2rem;
-  color: rgba(255,255,255,0.85);
-  cursor:pointer;
-}
-
 /* ---------------- GRID ---------------- */
 .folder-grid {
   display:grid;
@@ -78,6 +67,7 @@ section {
   position: relative;
   width:144px;
   height:64px;
+  transition: transform 0.35s ease, opacity 0.35s ease;
 }
 
 .folder-main {
@@ -121,66 +111,83 @@ section {
   margin-top:2px;
 }
 
-/* ---------------- YUKON SLIDE MENU ---------------- */
+/* ---------------- YUKON UNFOLD SYSTEM ---------------- */
 .yukon-folder {
   position: relative;
 }
 
-/* stack animation when open */
-.yukon-folder .folder-stack {
-  transition: opacity 0.25s ease, transform 0.25s ease;
+/* stack shift when open */
+.yukon-folder.open .folder-stack,
+.yukon-folder:hover .folder-stack {
+  transform: translateX(-12px);
+  opacity: 0.65;
 }
 
-/* SIDE SLIDE PANEL */
+/* container for unfolding folders */
 .yukon-menu {
-  position: absolute;
-  left: 100%;
-  top: 50%;
-  transform: translate(10px, -50%);
+  position:absolute;
+  left:100%;
+  top:0;
 
-  width: 260px;
-  padding: 18px;
+  display:flex;
+  gap:10px;
+  padding-left:18px;
+  align-items:center;
 
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-
-  background: rgba(20,20,20,0.95);
-  backdrop-filter: blur(6px);
-  border-radius: 12px;
-
-  opacity: 0;
-  pointer-events: none;
-
-  transition: all 0.35s ease;
-  z-index: 50;
+  pointer-events:none;
 }
 
-/* OPEN STATE */
-.yukon-folder.open .yukon-menu {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translate(24px, -50%);
-}
-
-.yukon-folder.open .folder-stack {
-  opacity: 0.6;
-  transform: translateX(-10px);
-}
-
+/* each "folder card" */
 .yukon-item {
-  padding:10px;
+  width:110px;
+  height:64px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
   font-size:0.65rem;
-  text-align:center;
   border-radius:6px;
-  cursor:pointer;
   color:#000;
+
+  cursor:pointer;
+
+  opacity:0;
+  transform:translateX(-30px);
+  transition: all 0.35s ease;
 }
 
+/* colors */
 .wildlife { background:#c9a84a; }
 .landscapes { background:#9b5c5c; }
 .drawings { background:#6e7f52; }
 .creatives { background:#5a6b8c; }
+
+/* ---------------- UNFOLD ANIMATION ---------------- */
+.yukon-folder.open .yukon-item,
+.yukon-folder:hover .yukon-item {
+  opacity:1;
+  transform:translateX(0);
+  pointer-events:auto;
+}
+
+/* stagger sequence (key effect) */
+.yukon-folder.open .yukon-item:nth-child(1),
+.yukon-folder:hover .yukon-item:nth-child(1) { transition-delay:0ms; }
+
+.yukon-folder.open .yukon-item:nth-child(2),
+.yukon-folder:hover .yukon-item:nth-child(2) { transition-delay:80ms; }
+
+.yukon-folder.open .yukon-item:nth-child(3),
+.yukon-folder:hover .yukon-item:nth-child(3) { transition-delay:160ms; }
+
+.yukon-folder.open .yukon-item:nth-child(4),
+.yukon-folder:hover .yukon-item:nth-child(4) { transition-delay:240ms; }
+
+/* reset delay on close */
+.yukon-item {
+  transition-delay: 0ms;
+}
 
 /* ---------------- CONTACT ---------------- */
 .contact-icons {
@@ -234,9 +241,7 @@ section {
 <body>
 
 <!-- HERO -->
-<section id="hero">
-  <div class="arrow-down">↓</div>
-</section>
+<section id="hero"></section>
 
 <!-- FOLDERS -->
 <section id="folders">

@@ -31,16 +31,15 @@ html, body {
   scroll-behavior:smooth;
 }
 
-/* ---------------- INSTAGRAM GAP FIX ---------------- */
-/* 👉 THIS IS YOUR ONLY CONTROL KNOB */
+/* ---------------- INSTAGRAM GAP FIX (ONLY CONTROL) ---------------- */
 
 :root {
-  --ig-gap-fix: 0px; /* change to -1px or -2px if needed */
+  --ig-gap: 0px; /* 👈 ONLY CHANGE THIS NUMBER IF NEEDED */
 }
 
-/* applies ONLY when Instagram triggers it */
+/* Only applies when activated by JS */
 body.ig-fix {
-  transform: translateX(var(--ig-gap-fix));
+  transform: translateX(var(--ig-gap));
 }
 
 /* ---------------- SECTIONS ---------------- */
@@ -171,7 +170,7 @@ section {
 
 .icon {
   color:#eee;
-  font-size:34px;
+  font-size:36px;
   transition:0.3s ease;
 }
 
@@ -235,12 +234,10 @@ section {
 <script>
 
 const categories = [
-
   { label:"Yukon 2026", page:"yukon-wildlife.html" },
   { label:"Wildlife + Adventure", page:"raw-pnw.html" },
   { label:"Double Exposures", page:"DoubleExpo.html" },
   { label:"Creatives", page:"crystallite.html" }
-
 ];
 
 const topRow = document.getElementById("topRow");
@@ -284,7 +281,7 @@ categories.forEach((cat,index)=>{
 
 </script>
 
-<!-- INSTAGRAM FIX SCRIPT -->
+<!-- INSTAGRAM ONLY FIX -->
 <script>
 (function () {
 
@@ -293,269 +290,19 @@ categories.forEach((cat,index)=>{
 
   if (!isInstagram) return;
 
-  // 👉 THIS IS THE ONLY VALUE YOU TUNE
-  const GAP_FIX = "-1px";  // try -1px or -2px if needed
-
   document.body.classList.add("ig-fix");
-  document.documentElement.style.setProperty("--ig-gap-fix", GAP_FIX);
+
+  // 🎯 ONLY NUMBER YOU EVER TOUCH
+  const GAP_FIX = "-1px"; // try -1px or -2px if needed
+
+  document.documentElement.style.setProperty("--ig-gap", GAP_FIX);
 
 })();
 </script>
 
-</body>
-</html>
-/* ---------------- SECTIONS ---------------- */
-
-section {
-  width:100%;
-  height:100vh;
-
-  display:flex;
-  justify-content:center;
-  align-items:center;
-
-  scroll-snap-align:start;
-
-  position:relative;
-  background:#070803;
-}
-
-/* ---------------- HERO ---------------- */
-
-#hero {
-  background:url('SaulHero5.jpg') center/cover no-repeat;
-}
-
-@media (max-width:768px){
-  #hero {
-    background:url('SAULZIDULKABEJCEK-3.jpg') center/cover no-repeat;
-  }
-}
-
-/* ---------------- GRID ---------------- */
-
-.folder-grid {
-  display:flex;
-  flex-direction:column;
-  gap:80px;
-  align-items:center;
-}
-
-.folder-row {
-  display:flex;
-  gap:80px;
-  justify-content:center;
-  width:100%;
-}
-
-/* ---------------- FOLDERS ---------------- */
-
-.folder {
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  cursor:pointer;
-  position:relative;
-}
-
-.folder-stack {
-  position:relative;
-  width:144px;
-  height:64px;
-  transition: transform 0.4s ease, opacity 0.4s ease;
-}
-
-.folder:hover .folder-stack {
-  transform:translateY(-3px);
-}
-
-.folder-main {
-  position:absolute;
-  right:0;
-  top:0;
-
-  width:88px;
-  height:64px;
-
-  background:#e4c97a;
-  border-radius:3px;
-
-  box-shadow:2px 2px 0 #000;
-  z-index:10;
-}
-
-.folder-tab {
-  position:absolute;
-  top:-8px;
-  left:8px;
-
-  width:32px;
-  height:12px;
-
-  background:#e4c97a;
-  border-radius:2px;
-}
-
-.trail {
-  position:absolute;
-  top:0;
-  width:88px;
-  height:64px;
-  border-radius:3px;
-}
-
-.trail.t1 { right:12px; background:#c9a84a; }
-.trail.t2 { right:26px; background:#9b5c5c; }
-.trail.t3 { right:40px; background:#6e7f52; }
-.trail.t4 { right:54px; background:#5a6b8c; }
-
-.folder span {
-  margin-top:16px;
-  width:144px;
-  text-align:center;
-  font-size:0.7rem;
-  line-height:1.5;
-}
-
-/* ---------------- CONTACT ---------------- */
-
-.contact-icons {
-  display:flex;
-  gap:80px;
-  justify-content:center;
-  align-items:center;
-}
-
-.icon {
-  color:#eee;
-  font-size:34px;
-  transition:0.3s ease;
-}
-
-.icon:hover {
-  transform:translateY(-3px);
-  opacity:0.8;
-}
-
-/* ---------------- MOBILE ---------------- */
-
-@media (max-width:768px){
-  .folder-row {
-    flex-wrap:wrap;
-    gap:40px;
-  }
-
-  .contact-icons{
-    gap:50px;
-  }
-}
-
-</style>
-</head>
-
-<body>
-
-<!-- HERO -->
-<section id="hero"></section>
-
-<!-- FOLDERS -->
-<section id="folders">
-
-  <div class="folder-grid">
-
-    <div class="folder-row" id="topRow"></div>
-    <div class="folder-row" id="bottomRow"></div>
-
-  </div>
-
-</section>
-
-<!-- CONTACT -->
-<section id="contact">
-
-  <div class="contact-icons">
-
-    <a class="icon"
-       href="https://instagram.com/YOURUSERNAME"
-       target="_blank">
-      <i class="fa-brands fa-instagram"></i>
-    </a>
-
-    <a class="icon"
-       href="mailto:you@email.com">
-      <i class="fa-regular fa-envelope"></i>
-    </a>
-
-    <a class="icon"
-       href="https://facebook.com/YOURUSERNAME"
-       target="_blank">
-      <i class="fa-brands fa-facebook"></i>
-    </a>
-
-  </div>
-
-</section>
-
-<script>
-
-/* ---------------- FOLDERS ---------------- */
-
-const categories = [
-
-  { label:"Yukon 2026", page:"yukon-wildlife.html" },
-  { label:"Wildlife + Adventure", page:"raw-pnw.html" },
-  { label:"Double Exposures", page:"DoubleExpo.html" },
-  { label:"Creatives", page:"crystallite.html" }
-
-];
-
-const topRow = document.getElementById("topRow");
-const bottomRow = document.getElementById("bottomRow");
-
-categories.forEach((cat,index)=>{
-
-  const folder = document.createElement("div");
-  folder.className="folder";
-
-  folder.innerHTML=`
-
-    <div class="folder-stack">
-
-      <div class="trail t4"></div>
-      <div class="trail t3"></div>
-      <div class="trail t2"></div>
-      <div class="trail t1"></div>
-
-      <div class="folder-main">
-        <div class="folder-tab"></div>
-      </div>
-
-    </div>
-
-    <span>${cat.label}</span>
-
-  `;
-
-  folder.onclick=()=>{
-    location.href=cat.page;
-  };
-
-  if(index < 2){
-    topRow.appendChild(folder);
-  } else {
-    bottomRow.appendChild(folder);
-  }
-
-});
-
-</script>
-
-<!-- Instagram 1px fix ONLY -->
-<script>
-if(navigator.userAgent.includes("Instagram")){
-  document.body.style.transform = "translateX(-1px)";
-}
-</script>
+<!-- ICON LIBRARY -->
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 </body>
 </html>

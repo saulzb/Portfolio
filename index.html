@@ -2,12 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Saul Zidulka-Bejcek</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+
+<!-- REAL ICONS -->
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 <style>
 
@@ -17,16 +20,16 @@
   padding:0;
 }
 
-html,
-body{
-  width:100%;
-  min-height:100%;
-  max-width:100vw;
-  overflow-x:hidden;
+/* ---------------- BASE ---------------- */
 
-  font-family:'Michroma',sans-serif;
+html, body {
+  width:100%;
+  height:100%;
+  font-family:'Michroma', sans-serif;
   background:#070803;
   color:#eee;
+
+  overflow-x:hidden;
 
   scroll-snap-type:y mandatory;
   scroll-behavior:smooth;
@@ -34,9 +37,9 @@ body{
 
 /* ---------------- SECTIONS ---------------- */
 
-section{
+section {
   width:100%;
-  min-height:100svh;
+  height:100vh;
 
   display:flex;
   justify-content:center;
@@ -50,31 +53,26 @@ section{
 
 /* ---------------- HERO ---------------- */
 
-#hero{
-  background:url('SaulHero5.jpg')
-             center center/cover no-repeat;
+#hero {
+  background:url('SaulHero5.jpg') center/cover no-repeat;
 }
 
 @media (max-width:768px){
-
-  #hero{
-    background:url('SAULZIDULKABEJCEK-3.jpg')
-               center center/cover no-repeat;
+  #hero {
+    background:url('SAULZIDULKABEJCEK-3.jpg') center/cover no-repeat;
   }
 }
 
 /* ---------------- GRID ---------------- */
 
-.folder-grid{
+.folder-grid {
   display:flex;
   flex-direction:column;
   gap:80px;
   align-items:center;
-  width:100%;
-  padding:40px;
 }
 
-.folder-row{
+.folder-row {
   display:flex;
   gap:80px;
   justify-content:center;
@@ -83,7 +81,7 @@ section{
 
 /* ---------------- FOLDERS ---------------- */
 
-.folder{
+.folder {
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -91,21 +89,18 @@ section{
   position:relative;
 }
 
-.folder-stack{
+.folder-stack {
   position:relative;
   width:144px;
   height:64px;
-
-  transition:
-    transform .4s ease,
-    opacity .4s ease;
+  transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
-.folder:hover .folder-stack{
+.folder:hover .folder-stack {
   transform:translateY(-3px);
 }
 
-.folder-main{
+.folder-main {
   position:absolute;
   right:0;
   top:0;
@@ -120,7 +115,7 @@ section{
   z-index:10;
 }
 
-.folder-tab{
+.folder-tab {
   position:absolute;
   top:-8px;
   left:8px;
@@ -132,75 +127,57 @@ section{
   border-radius:2px;
 }
 
-.trail{
+.trail {
   position:absolute;
   top:0;
-
   width:88px;
   height:64px;
   border-radius:3px;
 }
 
-.trail.t1{right:12px;background:#c9a84a;}
-.trail.t2{right:26px;background:#9b5c5c;}
-.trail.t3{right:40px;background:#6e7f52;}
-.trail.t4{right:54px;background:#5a6b8c;}
+.trail.t1 { right:12px; background:#c9a84a; }
+.trail.t2 { right:26px; background:#9b5c5c; }
+.trail.t3 { right:40px; background:#6e7f52; }
+.trail.t4 { right:54px; background:#5a6b8c; }
 
-.folder span{
+.folder span {
   margin-top:16px;
   width:144px;
-
   text-align:center;
-  font-size:.7rem;
+  font-size:0.7rem;
   line-height:1.5;
-}
-
-.photo-count{
-  font-size:.65rem;
-  opacity:.7;
-  margin-top:6px;
 }
 
 /* ---------------- CONTACT ---------------- */
 
-.contact-icons{
+.contact-icons {
   display:flex;
-  gap:70px;
+  gap:80px;
   justify-content:center;
   align-items:center;
 }
 
-.icon{
-  transition:transform .3s ease;
+.icon {
+  color:#eee;
+  font-size:34px;
+  transition:0.3s ease;
 }
 
-.icon:hover{
+.icon:hover {
   transform:translateY(-3px);
-}
-
-.icon svg{
-  width:38px;
-  height:38px;
-
-  stroke:#eee;
-  fill:none;
-
-  stroke-width:1.5;
-  stroke-linecap:round;
-  stroke-linejoin:round;
+  opacity:0.8;
 }
 
 /* ---------------- MOBILE ---------------- */
 
 @media (max-width:768px){
-
-  .folder-row{
+  .folder-row {
     flex-wrap:wrap;
     gap:40px;
   }
 
   .contact-icons{
-    gap:40px;
+    gap:50px;
   }
 }
 
@@ -210,17 +187,14 @@ section{
 <body>
 
 <!-- HERO -->
-
 <section id="hero"></section>
 
 <!-- FOLDERS -->
-
 <section id="folders">
 
   <div class="folder-grid">
 
     <div class="folder-row" id="topRow"></div>
-
     <div class="folder-row" id="bottomRow"></div>
 
   </div>
@@ -228,47 +202,25 @@ section{
 </section>
 
 <!-- CONTACT -->
-
 <section id="contact">
 
   <div class="contact-icons">
 
-    <!-- Instagram -->
-
     <a class="icon"
-       href="https://instagram.com/YOUR_ACCOUNT"
+       href="https://instagram.com/YOURUSERNAME"
        target="_blank">
-
-      <svg viewBox="0 0 24 24">
-        <rect x="3" y="3" width="18" height="18" rx="5"></rect>
-        <circle cx="12" cy="12" r="4"></circle>
-        <circle cx="17.5" cy="6.5" r="1"></circle>
-      </svg>
-
+      <i class="fa-brands fa-instagram"></i>
     </a>
 
-    <!-- Email -->
-
     <a class="icon"
-       href="mailto:your@email.com">
-
-      <svg viewBox="0 0 24 24">
-        <path d="M4 6h16v12H4z"></path>
-        <path d="M4 7l8 6 8-6"></path>
-      </svg>
-
+       href="mailto:you@email.com">
+      <i class="fa-regular fa-envelope"></i>
     </a>
 
-    <!-- Facebook -->
-
     <a class="icon"
-       href="https://facebook.com/YOUR_ACCOUNT"
+       href="https://facebook.com/YOURUSERNAME"
        target="_blank">
-
-      <svg viewBox="0 0 24 24">
-        <path d="M14 8h3V4h-3c-3 0-5 2-5 5v3H6v4h3v4h4v-4h3l1-4h-4V9c0-.6.4-1 1-1z"/>
-      </svg>
-
+      <i class="fa-brands fa-facebook"></i>
     </a>
 
   </div>
@@ -277,49 +229,23 @@ section{
 
 <script>
 
-/* ---------------- FOLDER DATA ---------------- */
+/* ---------------- FOLDERS ---------------- */
 
 const categories = [
 
-  {
-    label:"Yukon 2026",
-    page:"yukon-wildlife.html",
-    count:164
-  },
-
-  {
-    label:"Wildlife + Adventure",
-    page:"raw-pnw.html",
-    count:231
-  },
-
-  {
-    label:"Double Exposures",
-    page:"DoubleExpo.html",
-    count:42
-  },
-
-  {
-    label:"Creatives",
-    page:"crystallite.html",
-    count:58
-  }
+  { label:"Yukon 2026", page:"yukon-wildlife.html" },
+  { label:"Wildlife + Adventure", page:"raw-pnw.html" },
+  { label:"Double Exposures", page:"DoubleExpo.html" },
+  { label:"Creatives", page:"crystallite.html" }
 
 ];
 
-/* ---------------- BUILD ---------------- */
-
-const topRow =
-document.getElementById("topRow");
-
-const bottomRow =
-document.getElementById("bottomRow");
+const topRow = document.getElementById("topRow");
+const bottomRow = document.getElementById("bottomRow");
 
 categories.forEach((cat,index)=>{
 
-  const folder =
-  document.createElement("div");
-
+  const folder = document.createElement("div");
   folder.className="folder";
 
   folder.innerHTML=`
@@ -339,10 +265,6 @@ categories.forEach((cat,index)=>{
 
     <span>${cat.label}</span>
 
-    <div class="photo-count">
-      ${cat.count} Images
-    </div>
-
   `;
 
   folder.onclick=()=>{
@@ -351,12 +273,19 @@ categories.forEach((cat,index)=>{
 
   if(index < 2){
     topRow.appendChild(folder);
-  }else{
+  } else {
     bottomRow.appendChild(folder);
   }
 
 });
 
+</script>
+
+<!-- Instagram 1px fix ONLY -->
+<script>
+if(navigator.userAgent.includes("Instagram")){
+  document.body.style.transform = "translateX(-1px)";
+}
 </script>
 
 </body>

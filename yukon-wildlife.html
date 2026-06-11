@@ -343,12 +343,6 @@ window.addEventListener("load",()=>{
 
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
-
-/*
-  NEW CONTENT TYPE:
-  YukonWildlife
-*/
-
 const CONTENT_TYPE = 'YukonWildlife';
 
 let gallery = [];
@@ -356,8 +350,9 @@ let currentIndex = 0;
 
 async function fetchPhotos(){
 
+  // Fixed the template literal structure here to map variables properly
   const res = await fetch(
-    `https://cdn.contentful.com/spaces/${5w319pzc4eiq}/entries?content_type=${YukonWildlife}&access_token=${l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg}&include=1`
+    `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=${CONTENT_TYPE}&access_token=${ACCESS_TOKEN}&include=1`
   );
 
   const data = await res.json();

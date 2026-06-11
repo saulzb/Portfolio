@@ -233,13 +233,16 @@ section {
   filter:blur(28px);
   opacity:0.45;
   transform:scale(1.25);
+  z-index: 1; /* Places the blurred image layer on the bottom */
 }
 
 .lightbox img {
+  position: relative;
   max-width:90vw;
   max-height:90vh;
   opacity:0;
   transition:opacity 0.35s ease;
+  z-index: 2; /* Forces the main photo cleanly over the blurred layer */
 }
 
 .lightbox img.visible {
@@ -253,6 +256,7 @@ section {
   font-size:3rem;
   color:rgba(204,204,204,0.4);
   cursor:pointer;
+  z-index: 3; /* Keeps arrows overlayed on top of everything for clean clicking */
 }
 
 .nav-left { left:20px; }
@@ -358,7 +362,6 @@ async function fetchPhotos(){
     const data = await res.json();
     const assets = {};
 
-    // Map the media assets raw file locations
     if(data.includes && data.includes.Asset){
       data.includes.Asset.forEach(asset => {
         if(asset.fields && asset.fields.file) {
@@ -367,7 +370,6 @@ async function fetchPhotos(){
       });
     }
 
-    // Filter by category string matching "YukonWildlife" then push to array
     gallery = data.items
       .filter(item => item.fields && item.fields.category === CATEGORY_NAME)
       .map(item => {

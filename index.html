@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>Saul Zidulka-Bejcek</title>
 
@@ -10,49 +10,64 @@
 
 <style>
 
+/* CRITICAL CONTENT RESET: 
+   Enforces strict content bounds across all elements, preventing component margins
+   from forcing horizontal layouts past the device edge.
+*/
 * {
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+}
+
+/* THE DEEP CANVAS FIX:
+   By assigning your specific dark color hue to the global document root, 
+   we override the stock browser default behavior. Any sub-pixel canvas gaps 
+   or layout shifts on mobile webviews will render dark instead of flashing a white strip.
+*/
+:root {
+  background: #070803;
 }
 
 /* ---------------- BASE ---------------- */
 
 html, body {
-  width:100%;
-  height:100%;
-  font-family:'Michroma', sans-serif;
-  background:#070803;
-  color:#eee;
+  width: 100%;
+  height: 100%;
+  font-family: 'Michroma', sans-serif;
+  background: #070803;
+  color: #eee;
 
-  /* Snaps off the 1vw intentional overflow block on mobile */
-  overflow-x:hidden;
+  /* Explicitly locks horizontal translation adjustments */
+  overflow-x: hidden;
+  position: relative;
 
-  scroll-snap-type:y mandatory;
-  scroll-behavior:smooth;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
 }
 
 /* ---------------- SECTIONS ---------------- */
 
 section {
-  width:100%;
-  height:100vh;
+  width: 100%;
+  height: 100vh;
 
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-  scroll-snap-align:start;
+  scroll-snap-align: start;
 
-  position:relative;
-  background:#070803; 
+  position: relative;
+  background: #070803; 
+  overflow: hidden;
 }
 
 /* ---------------- HERO Structural Layout ---------------- */
 
 #hero {
   position: relative;
-  overflow: hidden;
   background: #070803;
 }
 
@@ -67,132 +82,117 @@ section {
 
 @media (max-width:768px){
   .hero-img {
-    /* 1. 'object-position: left' forces the image flush to the left edge.
-      2. 'width: 101vw' expands the canvas layout just past the right edge boundary.
-      3. This forces WebKit to render color data over the sub-pixel calculations.
-    */
+    /* Locks the portrait file firmly flush against the left boundary edge */
     object-position: left center;
-    width: 101vw;
-    height: 100%;
   }
 }
 
 /* ---------------- GRID ---------------- */
 
 .folder-grid {
-  display:flex;
-  flex-direction:column;
-  gap:80px;
-  align-items:center;
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+  align-items: center;
 }
 
 .folder-row {
-  display:flex;
-  gap:80px;
-  justify-content:center;
-  width:100%;
+  display: flex;
+  gap: 80px;
+  justify-content: center;
+  width: 100%;
 }
 
 /* ---------------- FOLDERS ---------------- */
 
 .folder {
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  cursor:pointer;
-  position:relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
 }
 
 .folder-stack {
-  position:relative;
-  width:144px;
-  height:64px;
-
+  position: relative;
+  width: 144px;
+  height: 64px;
   transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
 .folder:hover .folder-stack {
-  transform:translateY(-3px);
+  transform: translateY(-3px);
 }
 
 .folder-main {
-  position:absolute;
-  right:0;
-  top:0;
-
-  width:88px;
-  height:64px;
-
-  background:#e4c97a;
-  border-radius:3px;
-
-  box-shadow:2px 2px 0 #000;
-  z-index:10;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 88px;
+  height: 64px;
+  background: #e4c97a;
+  border-radius: 3px;
+  box-shadow: 2px 2px 0 #000;
+  z-index: 10;
 }
 
 .folder-tab {
-  position:absolute;
-  top:-8px;
-  left:8px;
-
-  width:32px;
-  height:12px;
-
-  background:#e4c97a;
-  border-radius:2px;
+  position: absolute;
+  top: -8px;
+  left: 8px;
+  width: 32px;
+  height: 12px;
+  background: #e4c97a;
+  border-radius: 2px;
 }
 
 .trail {
-  position:absolute;
-  top:0;
-
-  width:88px;
-  height:64px;
-
-  border-radius:3px;
+  position: absolute;
+  top: 0;
+  width: 88px;
+  height: 64px;
+  border-radius: 3px;
 }
 
-.trail.t1 { right:12px; background:#c9a84a; }
-.trail.t2 { right:26px; background:#9b5c5c; }
-.trail.t3 { right:40px; background:#6e7f52; }
-.trail.t4 { right:54px; background:#5a6b8c; }
+.trail.t1 { right: 12px; background: #c9a84a; }
+.trail.t2 { right: 26px; background: #9b5c5c; }
+.trail.t3 { right: 40px; background: #6e7f52; }
+.trail.t4 { right: 54px; background: #5a6b8c; }
 
 .folder span {
-  margin-top:16px;
-  width:144px;
-
-  text-align:center;
-  font-size:0.7rem;
-  line-height:1.5;
+  margin-top: 16px;
+  width: 144px;
+  text-align: center;
+  font-size: 0.7rem;
+  line-height: 1.5;
 }
 
 /* ---------------- CONTACT ---------------- */
 
 .contact-icons {
-  display:flex;
-  gap:80px;
-  justify-content:center;
-  align-items:center;
+  display: flex;
+  gap: 80px;
+  justify-content: center;
+  align-items: center;
 }
 
 .icon {
-  color:#eee;
-  font-size:36px;
-  transition:0.3s ease;
+  color: #eee;
+  font-size: 36px;
+  transition: 0.3s ease;
 }
 
 .icon:hover {
-  transform:translateY(-3px);
-  opacity:0.8;
+  transform: translateY(-3px);
+  opacity: 0.8;
 }
 
 /* ---------------- MOBILE ---------------- */
 
 @media (max-width:768px){
-
   .folder-row {
-    flex-wrap:wrap;
-    gap:40px;
+    flex-wrap: wrap;
+    gap: 40px;
   }
 }
 
@@ -209,91 +209,66 @@ section {
 </section>
 
 <section id="folders">
-
   <div class="folder-grid">
-
     <div class="folder-row" id="topRow"></div>
     <div class="folder-row" id="bottomRow"></div>
-
   </div>
-
 </section>
   
 <section id="contact">
-
   <div class="contact-icons">
-
     <a class="icon" href="https://instagram.com/saul_5607" target="_blank">
       <i class="fa-brands fa-instagram"></i>
     </a>
-
     <a class="icon" href="mailto:saulzb@hotmail.com">
       <i class="fa-regular fa-envelope"></i>
     </a>
-
-    <a class="icon"
-       href="https://www.linkedin.com/in/saul-zidulka-bejcek-b700692b6/"
-       target="_blank"
-       rel="noopener noreferrer">
+    <a class="icon" href="https://www.linkedin.com/in/saul-zidulka-bejcek-b700692b6/" target="_blank" rel="noopener noreferrer">
       <i class="fa-brands fa-linkedin"></i>
     </a>
-
   </div>
-
 </section>
 
 <script>
-
 const categories = [
-  { label:"Yukon 2026", page:"yukon-wildlife.html" },
-  { label:"Wildlife + Adventure", page:"raw-pnw.html" },
-  { label:"Double Exposures", page:"DoubleExpo.html" },
-  { label:"Creatives", page:"crystallite.html" }
+  { label: "Yukon 2026", page: "yukon-wildlife.html" },
+  { label: "Wildlife + Adventure", page: "raw-pnw.html" },
+  { label: "Double Exposures", page: "DoubleExpo.html" },
+  { label: "Creatives", page: "crystallite.html" }
 ];
 
 const topRow = document.getElementById("topRow");
 const bottomRow = document.getElementById("bottomRow");
 
-categories.forEach((cat,index)=>{
-
+categories.forEach((cat, index) => {
   const folder = document.createElement("div");
-  folder.className="folder";
-
-  folder.innerHTML=`
-
+  folder.className = "folder";
+  folder.innerHTML = `
     <div class="folder-stack">
-
       <div class="trail t4"></div>
       <div class="trail t3"></div>
       <div class="trail t2"></div>
       <div class="trail t1"></div>
-
       <div class="folder-main">
         <div class="folder-tab"></div>
       </div>
-
     </div>
-
     <span>${cat.label}</span>
-
   `;
 
-  folder.onclick=()=>{
-    location.href=cat.page;
+  folder.onclick = () => {
+    location.href = cat.page;
   };
 
-  if(index < 2){
+  if (index < 2) {
     topRow.appendChild(folder);
   } else {
     bottomRow.appendChild(folder);
   }
-
 });
-
 </script>
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 </body>
 </html>

@@ -339,37 +339,50 @@ window.addEventListener("load",()=>{
   },400);
 });
 
-/* ---------------- CONTENTFUL ---------------- */
+/* ---------------- CONTENTFUL CONFIG ---------------- */
 
 const SPACE_ID = '5w319pzc4eiq';
 const ACCESS_TOKEN = 'l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg';
-const CONTENT_TYPE = 'YukonWildlife';
+const CONTENT_TYPE = 'photo'; 
+const CATEGORY_NAME = 'YukonWildlife'; 
 
 let gallery = [];
 let currentIndex = 0;
 
 async function fetchPhotos(){
+  try {
+    const res = await fetch(
+      `https://cdn.contentful.com/spaces/${SPACE_ID}/entries?content_type=${CONTENT_TYPE}&access_token=${ACCESS_TOKEN}&include=1`
+    );
 
-  // Fixed the template literal structure here to map variables properly
-  const res = await fetch(
-    `https://cdn.contentful.com/spaces/${5w319pzc4eiq}/entries?content_type=${YukonWildlife}&access_token=${l_S14vNHPLKqDVzZDxMSlO3g3AhMne9mAvyC74dyetg}&include=1`
-  );
+    const data = await res.json();
+    const assets = {};
 
-  const data = await res.json();
+    // Map the media assets raw file locations
+    if(data.includes && data.includes.Asset){
+      data.includes.Asset.forEach(asset => {
+        if(asset.fields && asset.fields.file) {
+          assets[asset.sys.id] = asset.fields.file.url;
+        }
+      });
+    }
 
-  const assets = {};
+    // Filter by category string matching "YukonWildlife" then push to array
+    gallery = data.items
+      .filter(item => item.fields && item.fields.category === CATEGORY_NAME)
+      .map(item => {
+        if (item.fields.photo && item.fields.photo.sys && item.fields.photo.sys.id) {
+          return `https:${assets[item.fields.photo.sys.id]}`;
+        }
+        return null;
+      })
+      .filter(url => url !== null);
 
-  if(data.includes && data.includes.Asset){
-    data.includes.Asset.forEach(asset=>{
-      assets[asset.sys.id] = asset.fields.file.url;
-    });
+    renderPhotos();
+    
+  } catch (error) {
+    console.error("Error fetching or parsing data from Contentful:", error);
   }
-
-  gallery = data.items.map(item => {
-    return `https:${assets[item.fields.photo.sys.id]}`;
-  });
-
-  renderPhotos();
 }
 
 function renderPhotos(){
@@ -411,21 +424,10 @@ function openLightbox(i){
 }
 
 function showImage(i){
-
   currentIndex = i;
-
-  lightboxImg.classList.remove("visible");
-
-  setTimeout(()=>{
-
-    lightboxImg.src = gallery[i];
-    lightboxBg.style.backgroundImage = `url(${gallery[i]})`;
-
-    lightboxImg.onload = ()=>{
-      lightboxImg.classList.add("visible");
-    };
-
-  },80);
+  lightboxImg.src = gallery[i];
+  lightboxBg.style.backgroundImage = `url(${gallery[i]})`;
+  lightboxImg.classList.add("visible");
 }
 
 document.querySelector(".nav-right").onclick = (e)=>{

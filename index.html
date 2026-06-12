@@ -49,19 +49,33 @@ section {
 
   position:relative;
   background:#070803;
+  
+  /* Keeps scaled backgrounds safely contained inside their own section */
+  overflow:hidden; 
 }
 
-/* ---------------- HERO (WITH INSTAGRAM FIX) ---------------- */
+/* ---------------- HERO (FIXED BACKGROUND BLEED) ---------------- */
 
-#hero {
-  background:url('SaulHero5.jpg') center/cover no-repeat;
+/* Desktop defaults */
+#hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('SaulHero5.jpg') center/cover no-repeat;
+  z-index: -1;
 }
 
 @media (max-width:768px){
-  #hero {
-    background:url('SAULZIDULKABEJCEK-3.jpg') center/cover no-repeat;
+  #hero::before {
+    background: url('SAULZIDULKABEJCEK-3.jpg') center/cover no-repeat;
     
-    /* Pushed to 1.065 to completely cover stubborn sub-pixel lines */
+    /* 🎯 THE FIX: We scale ONLY the background image layer by 6.5%.
+       The actual <section> container stays exactly 100vw/100vh, 
+       so scroll snapping works perfectly and nothing bleeds into page 2.
+    */
     transform: scale(1.065);
     transform-origin: center center;
   }

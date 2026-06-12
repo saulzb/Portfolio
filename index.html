@@ -25,11 +25,21 @@ html, body {
   background:#070803;
   color:#eee;
 
-  /* Snaps off the 1vw intentional overflow block on mobile */
   overflow-x:hidden;
 
   scroll-snap-type:y mandatory;
   scroll-behavior:smooth;
+}
+
+/* ---------------- INSTAGRAM GAP FIX (ONLY CONTROL) ---------------- */
+
+:root {
+  --ig-gap: 0px; /* 👈 ONLY CHANGE THIS NUMBER IF NEEDED */
+}
+
+/* Only applies when activated by JS */
+body.ig-fix {
+  transform: translateX(var(--ig-gap));
 }
 
 /* ---------------- SECTIONS ---------------- */
@@ -45,35 +55,18 @@ section {
   scroll-snap-align:start;
 
   position:relative;
-  background:#070803; 
+  background:#070803;
 }
 
-/* ---------------- HERO Structural Layout ---------------- */
+/* ---------------- HERO ---------------- */
 
 #hero {
-  position: relative;
-  overflow: hidden;
-  background: #070803;
-}
-
-.hero-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
+  background:url('SaulHero5.jpg') center/cover no-repeat;
 }
 
 @media (max-width:768px){
-  .hero-img {
-    /* 1. 'object-position: left' forces the image flush to the left edge.
-      2. 'width: 101vw' expands the canvas layout just past the right edge boundary.
-      3. This forces WebKit to render color data over the sub-pixel calculations.
-    */
-    object-position: left center;
-    width: 101vw;
-    height: 100%;
+  #hero {
+    background:url('SAULZIDULKABEJCEK-3.jpg') center/cover no-repeat;
   }
 }
 
@@ -201,13 +194,10 @@ section {
 
 <body>
 
-<section id="hero">
-  <picture>
-    <source media="(max-width: 768px)" srcset="SAULZIDULKABEJCEK-3.jpg">
-    <img src="SaulHero5.jpg" alt="Hero Portrait Background" class="hero-img">
-  </picture>
-</section>
+<!-- HERO -->
+<section id="hero"></section>
 
+<!-- FOLDERS -->
 <section id="folders">
 
   <div class="folder-grid">
@@ -219,6 +209,7 @@ section {
 
 </section>
   
+<!-- CONTACT -->
 <section id="contact">
 
   <div class="contact-icons">
@@ -242,6 +233,7 @@ section {
 
 </section>
 
+<!-- FOLDER SCRIPT -->
 <script>
 
 const categories = [
@@ -292,6 +284,26 @@ categories.forEach((cat,index)=>{
 
 </script>
 
+<!-- INSTAGRAM ONLY FIX -->
+<script>
+(function () {
+
+  const isInstagram =
+    navigator.userAgent.includes("Instagram");
+
+  if (!isInstagram) return;
+
+  document.body.classList.add("ig-fix");
+
+  // 🎯 ONLY NUMBER YOU EVER TOUCH
+  const GAP_FIX = "-1px"; // try -1px or -2px if needed
+
+  document.documentElement.style.setProperty("--ig-gap", GAP_FIX);
+
+})();
+</script>
+
+<!-- ICON LIBRARY -->
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 

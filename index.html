@@ -31,17 +31,6 @@ html, body {
   scroll-behavior:smooth;
 }
 
-/* ---------------- INSTAGRAM GAP FIX (ONLY CONTROL) ---------------- */
-
-:root {
-  --ig-gap: 0px; /* 👈 ONLY CHANGE THIS NUMBER IF NEEDED */
-}
-
-/* Only applies when activated by JS */
-body.ig-fix {
-  transform: translateX(var(--ig-gap));
-}
-
 /* ---------------- SECTIONS ---------------- */
 
 section {
@@ -68,6 +57,18 @@ section {
   #hero {
     background:url('SAULZIDULKABEJCEK-3.jpg') center/cover no-repeat;
   }
+}
+
+/* 🎯 INSTAGRAM ONLY HERO FIX 
+   This class is only injected by JavaScript if the user is on Instagram.
+   It widens the hero container slightly and centers it so it bleeds over 
+   the left and right margins, covering the white sub-pixel gap seamlessly 
+   without touching any height dimensions or scroll snapping.
+*/
+#hero.ig-hero-bleed {
+  width: 105vw;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /* ---------------- GRID ---------------- */
@@ -194,10 +195,8 @@ section {
 
 <body>
 
-<!-- HERO -->
 <section id="hero"></section>
 
-<!-- FOLDERS -->
 <section id="folders">
 
   <div class="folder-grid">
@@ -209,7 +208,6 @@ section {
 
 </section>
   
-<!-- CONTACT -->
 <section id="contact">
 
   <div class="contact-icons">
@@ -233,7 +231,6 @@ section {
 
 </section>
 
-<!-- FOLDER SCRIPT -->
 <script>
 
 const categories = [
@@ -284,28 +281,22 @@ categories.forEach((cat,index)=>{
 
 </script>
 
-<!-- INSTAGRAM ONLY FIX -->
 <script>
 (function () {
 
-  const isInstagram =
-    navigator.userAgent.includes("Instagram");
-
+  const isInstagram = navigator.userAgent.includes("Instagram");
   if (!isInstagram) return;
 
-  document.body.classList.add("ig-fix");
-
-  // 🎯 ONLY NUMBER YOU EVER TOUCH
-  const GAP_FIX = "-1px"; // try -1px or -2px if needed
-
-  document.documentElement.style.setProperty("--ig-gap", GAP_FIX);
+  /* 🎯 Target ONLY the hero section instead of the entire body */
+  const heroSection = document.getElementById("hero");
+  if (heroSection) {
+    heroSection.classList.add("ig-hero-bleed");
+  }
 
 })();
 </script>
 
-<!-- ICON LIBRARY -->
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 </body>
 </html>

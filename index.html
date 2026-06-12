@@ -18,13 +18,7 @@
 
 /* ---------------- BASE ---------------- */
 
-html {
-  /* Forces the lowest canvas element of the browser window to match your palette.
-     If Instagram clips or rounds a pixel fraction, it peeks through as dark, not white. */
-  background:#070803 !important;
-}
-
-body {
+html, body {
   width:100%;
   height:100%;
   font-family:'Michroma', sans-serif;
@@ -37,15 +31,22 @@ body {
   scroll-behavior:smooth;
 }
 
+/* ---------------- INSTAGRAM GAP FIX (ONLY CONTROL) ---------------- */
+
+:root {
+  --ig-gap: 0px; /* 👈 ONLY CHANGE THIS NUMBER IF NEEDED */
+}
+
+/* Only applies when activated by JS */
+body.ig-fix {
+  transform: translateX(var(--ig-gap));
+}
+
 /* ---------------- SECTIONS ---------------- */
 
 section {
   width:100%;
-  
-  /* Locks the height to Short Viewport Height (svh) to stop Instagram's 
-     collapsing browser bars from resizing your layout and breaking your snap physics. */
   height:100vh;
-  height:100svh;
 
   display:flex;
   justify-content:center;
@@ -193,8 +194,10 @@ section {
 
 <body>
 
+<!-- HERO -->
 <section id="hero"></section>
 
+<!-- FOLDERS -->
 <section id="folders">
 
   <div class="folder-grid">
@@ -206,6 +209,7 @@ section {
 
 </section>
   
+<!-- CONTACT -->
 <section id="contact">
 
   <div class="contact-icons">
@@ -229,6 +233,7 @@ section {
 
 </section>
 
+<!-- FOLDER SCRIPT -->
 <script>
 
 const categories = [
@@ -279,7 +284,28 @@ categories.forEach((cat,index)=>{
 
 </script>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<!-- INSTAGRAM ONLY FIX -->
+<script>
+(function () {
+
+  const isInstagram =
+    navigator.userAgent.includes("Instagram");
+
+  if (!isInstagram) return;
+
+  document.body.classList.add("ig-fix");
+
+  // 🎯 ONLY NUMBER YOU EVER TOUCH
+  const GAP_FIX = "-1px"; // try -1px or -2px if needed
+
+  document.documentElement.style.setProperty("--ig-gap", GAP_FIX);
+
+})();
+</script>
+
+<!-- ICON LIBRARY -->
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 </body>
 </html>

@@ -59,16 +59,14 @@ section {
   }
 }
 
-/* 🎯 INSTAGRAM ONLY HERO FIX 
-   This class is only injected by JavaScript if the user is on Instagram.
-   It widens the hero container slightly and centers it so it bleeds over 
-   the left and right margins, covering the white sub-pixel gap seamlessly 
-   without touching any height dimensions or scroll snapping.
+/* 🎯 TARGETED INSTAGRAM PATCH:
+   This class is only applied to the hero container by Javascript if the 
+   user views it inside the Instagram browser app. It casts a tiny, dark border-shadow 
+   on the left side that hides the white hairline glitch without altering your 
+   layout dimensions, zooming the text, or interfering with scroll snapping.
 */
-#hero.ig-hero-bleed {
-  width: 105vw;
-  left: 50%;
-  transform: translateX(-50%);
+#hero.ig-left-line-patch {
+  box-shadow: inset 3px 0px 0px 0px #070803;
 }
 
 /* ---------------- GRID ---------------- */
@@ -287,10 +285,10 @@ categories.forEach((cat,index)=>{
   const isInstagram = navigator.userAgent.includes("Instagram");
   if (!isInstagram) return;
 
-  /* 🎯 Target ONLY the hero section instead of the entire body */
-  const heroSection = document.getElementById("hero");
-  if (heroSection) {
-    heroSection.classList.add("ig-hero-bleed");
+  /* Target only the hero page element if we are executing within Instagram */
+  const heroElement = document.getElementById("hero");
+  if (heroElement) {
+    heroElement.classList.add("ig-left-line-patch");
   }
 
 })();

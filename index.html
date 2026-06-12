@@ -18,7 +18,14 @@
 
 /* ---------------- BASE ---------------- */
 
-html, body {
+/* 1. We force the HTML background to be dark so if the browser 
+     canvas peeks through, it peeks through as dark green/black.
+*/
+html {
+  background:#070803 !important;
+}
+
+body {
   width:100%;
   height:100%;
   font-family:'Michroma', sans-serif;
@@ -29,23 +36,6 @@ html, body {
 
   scroll-snap-type:y mandatory;
   scroll-behavior:smooth;
-}
-
-/* --- INSTAGRAM GAP FIX ---
-  This creates a solid backdrop shield behind everything. 
-  If Instagram shifts the viewport by a pixel, it just exposes 
-  more of this matching dark background instead of a white line.
-*/
-body::before {
-  content: "";
-  position: fixed;
-  top: -10px;
-  left: -10px;
-  right: -10px;
-  bottom: -10px;
-  background: #070803;
-  z-index: -1000;
-  pointer-events: none;
 }
 
 /* ---------------- SECTIONS ---------------- */
@@ -64,7 +54,7 @@ section {
   background:#070803;
 }
 
-/* ---------------- HERO ---------------- */
+/* ---------------- HERO (WITH INSTAGRAM FIX) ---------------- */
 
 #hero {
   background:url('SaulHero5.jpg') center/cover no-repeat;
@@ -73,6 +63,15 @@ section {
 @media (max-width:768px){
   #hero {
     background:url('SAULZIDULKABEJCEK-3.jpg') center/cover no-repeat;
+    
+    /* 2. TARGET ONLY THE FIRST PAGE: 
+         This slightly over-scales the hero section by 1.5% on mobile.
+         Because 'overflow-x:hidden' is on the body, it won't create 
+         a horizontal scrollbar, but it forces the image/background 
+         to bleed past any sub-pixel gaps Instagram creates.
+    */
+    transform: scale(1.015);
+    transform-origin: center center;
   }
 }
 

@@ -2,14 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
-<!-- 🎯 THE VIEWPORT FIX:
-     Adding 'viewport-fit=cover' forces the browser window to stretch cleanly underneath 
-     any native webview boundaries. Setting explicit minimum and maximum scales to 1.0 
-     forces the layout engine to align perfectly on its sub-pixel grid, eliminating 
-     the rounding error that causes that white edge line.
--->
-<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Saul Zidulka-Bejcek</title>
 
@@ -21,11 +14,17 @@
   box-sizing:border-box;
   margin:0;
   padding:0;
-} perfume
+}
 
 /* ---------------- BASE ---------------- */
 
-html, body {
+html {
+  /* Forces the lowest canvas element of the browser window to match your palette.
+     If Instagram clips or rounds a pixel fraction, it peeks through as dark, not white. */
+  background:#070803 !important;
+}
+
+body {
   width:100%;
   height:100%;
   font-family:'Michroma', sans-serif;
@@ -42,7 +41,11 @@ html, body {
 
 section {
   width:100%;
+  
+  /* Locks the height to Short Viewport Height (svh) to stop Instagram's 
+     collapsing browser bars from resizing your layout and breaking your snap physics. */
   height:100vh;
+  height:100svh;
 
   display:flex;
   justify-content:center;
@@ -190,10 +193,8 @@ section {
 
 <body>
 
-<!-- HERO -->
 <section id="hero"></section>
 
-<!-- FOLDERS -->
 <section id="folders">
 
   <div class="folder-grid">
@@ -205,7 +206,6 @@ section {
 
 </section>
   
-<!-- CONTACT -->
 <section id="contact">
 
   <div class="contact-icons">
@@ -229,7 +229,6 @@ section {
 
 </section>
 
-<!-- FOLDER SCRIPT -->
 <script>
 
 const categories = [
@@ -280,7 +279,6 @@ categories.forEach((cat,index)=>{
 
 </script>
 
-<!-- ICON LIBRARY -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 </body>

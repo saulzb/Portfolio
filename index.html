@@ -19,7 +19,9 @@
 /* ---------------- BASE ---------------- */
 
 html {
-  background:#070803 !important;
+  /* Forces the lowest level window layer to be dark green/black. 
+     If Instagram clips the layout, it will peek through as dark, not white. */
+  background:#070803 !important; 
 }
 
 body {
@@ -35,15 +37,7 @@ body {
   scroll-behavior:smooth;
 }
 
-/* ---------------- WRAPPER & SECTIONS ---------------- */
-
-/* This outermost wrapper catches any spillover from the zoom 
-   and forces scroll-snapping to calculate perfectly. */
-.snap-container {
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden;
-}
+/* ---------------- SECTIONS ---------------- */
 
 section {
   width:100%;
@@ -59,7 +53,7 @@ section {
   background:#070803;
 }
 
-/* ---------------- HERO (CLEAN INLINE ZOOM) ---------------- */
+/* ---------------- HERO (SAFE OVER-SIZED BACKGROUND) ---------------- */
 
 #hero {
   background:url('SaulHero5.jpg') center/cover no-repeat;
@@ -67,15 +61,15 @@ section {
 
 @media (max-width:768px){
   #hero {
-    background:url('SAULZIDULKABEJCEK-3.jpg') center/cover no-repeat;
+    background:url('SAULZIDULKABEJCEK-3.jpg') center no-repeat;
     
-    /* 🎯 THE ULTIMATE FIX: 
-       We use a safe 4% horizontal scale, but reset the vertical scale to 1. 
-       This completely eliminates the side line, stops the image from 
-       bleeding down into the next page, and keeps scroll-snapping intact.
+    /* 🎯 THE CLEAN FIX:
+       Instead of 'transform: scale()', we explicitly size the background image.
+       108% width makes it bleed 4% past the left and right screen borders, 
+       burying the white line. 101vh ensures it stays perfectly tall enough.
+       Because the element itself isn't scaled, scroll-snap functions flawlessly.
     */
-    transform: scale(1.04, 1.0);
-    transform-origin: center center;
+    background-size: 108% 101vh;
   }
 }
 
@@ -203,45 +197,41 @@ section {
 
 <body>
 
-<div class="snap-container">
+<section id="hero"></section>
 
-  <section id="hero"></section>
+<section id="folders">
 
-  <section id="folders">
+  <div class="folder-grid">
 
-    <div class="folder-grid">
+    <div class="folder-row" id="topRow"></div>
+    <div class="folder-row" id="bottomRow"></div>
 
-      <div class="folder-row" id="topRow"></div>
-      <div class="folder-row" id="bottomRow"></div>
+  </div>
 
-    </div>
+</section>
+  
+<section id="contact">
 
-  </section>
-    
-  <section id="contact">
+  <div class="contact-icons">
 
-    <div class="contact-icons">
+    <a class="icon" href="https://instagram.com/saul_5607" target="_blank">
+      <i class="fa-brands fa-instagram"></i>
+    </a>
 
-      <a class="icon" href="https://instagram.com/saul_5607" target="_blank">
-        <i class="fa-brands fa-instagram"></i>
-      </a>
+    <a class="icon" href="mailto:saulzb@hotmail.com">
+      <i class="fa-regular fa-envelope"></i>
+    </a>
 
-      <a class="icon" href="mailto:saulzb@hotmail.com">
-        <i class="fa-regular fa-envelope"></i>
-      </a>
+    <a class="icon"
+       href="https://www.linkedin.com/in/saul-zidulka-bejcek-b700692b6/"
+       target="_blank"
+       rel="noopener noreferrer">
+      <i class="fa-brands fa-linkedin"></i>
+    </a>
 
-      <a class="icon"
-         href="https://www.linkedin.com/in/saul-zidulka-bejcek-b700692b6/"
-         target="_blank"
-         rel="noopener noreferrer">
-        <i class="fa-brands fa-linkedin"></i>
-      </a>
+  </div>
 
-    </div>
-
-  </section>
-
-</div>
+</section>
 
 <script>
 
